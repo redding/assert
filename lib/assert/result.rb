@@ -4,7 +4,7 @@ module Assert::Result
   class Base
     attr_reader :message
 
-    def initialize(message)
+    def initialize(message="")
       @message = message
     end
 

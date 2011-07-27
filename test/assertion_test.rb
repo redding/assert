@@ -24,8 +24,7 @@ class Assert::Assertion
     end
 
     should "be skipped" do
-      skip
-      assert_kind_of TestBelt::Result::Skip, subject.result
+      assert_kind_of Assert::Result::Skip, subject.result
     end
 
   end

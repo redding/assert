@@ -6,7 +6,7 @@ module Assert::Result
     include TestBelt
 
     context "a base result"
-    subject { Assert::Result::Base.new "a result" }
+    subject { Assert::Result::Base.new }
 
     should have_readers :message
 
