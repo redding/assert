@@ -10,7 +10,6 @@ class Assert::Test
     subject { Assert::Test.new("should do stuff") {} }
 
     should have_readers :name, :assertions
-    should have_readers :setups, :teardowns
 
     should "know its name" do
       assert_equal "should do stuff", subject.name
@@ -20,12 +19,39 @@ class Assert::Test
       assert_equal [], subject.assertions
     end
 
-    should "have no setups" do
-      assert_equal [], subject.setups
+  end
+
+  class AssertionsTest < Test::Unit::TestCase
+    include TestBelt
+
+    context "a Test with assertions: pass, fail, skip, error"
+    subject do
+      Assert::Test.new("should assert stuff") do
+        assert { 1 == 1 }
+        assert { 1 == 0 }
+        assert {  }
+        assert { raise ArgumentError }
+      end
     end
 
-    should "have no teardowns" do
-      assert_equal [], subject.teardowns
+    should "have 4 assertions" do
+      assert_equal 4, subject.assertions.size
+    end
+
+    should "pass its first assertion" do
+      assert_kind_of Asset::Result::Pass, subject.assertions[0].result
+    end
+
+    should "fail its second assertion" do
+      assert_kind_of Assert::Result::Fail, subject.assertions[1].result
+    end
+
+    should "skip its third assertion" do
+      assert_kind_of Assert::Result::Skip, subject.assertions[2].result
+    end
+
+    should "error its fourth assertion" do
+      assert_kind_of Assert::Result::Error, subject.assertions[3].result
     end
 
   end
