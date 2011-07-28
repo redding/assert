@@ -1,5 +1,6 @@
 require 'test_belt'
 require 'assert/suite'
+require 'assert/context'
 
 class Assert::Suite
 
@@ -9,14 +10,10 @@ class Assert::Suite
     context "an basic suite"
     subject { Assert::Suite.new }
 
-    should have_instance_method :run, :<<
+    should have_instance_method :<<
 
     should "be a hash" do
       assert_kind_of ::Hash, subject
-    end
-
-    should "return an integer exit code" do
-      assert_equal 0, subject.run
     end
 
     should "push contexts on itself" do
