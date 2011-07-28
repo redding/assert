@@ -1,11 +1,16 @@
 module Assert
-  class Suite < ::SortedSet
+  class Suite < ::Hash
 
     # A suite is the set contexts to run.  When a test class subclasses
     # the Context class, that klass is pushed to the suite.
 
-    def initialize
+    def initialize(*args, &block)
       @run_time = 0
+      super
+    end
+
+    def <<(context_klass)
+      self[context_klass] ||= []
     end
 
     def run
@@ -24,6 +29,33 @@ module Assert
       count(:failed) + count(:errored)
     end
 
+    def run_seconds
+      '%.6f' % @run_time
+    end
+
+    def count(type)
+      case type
+      when :tests
+        @tests_count ||= self.values.inject(0) do |test_count, context_tests|
+          test_count += context_tests.size
+        end
+      when :assertions
+        @assertions_count ||= self.values.inject(0) do |test_count, context_tests|
+          test_count += context_tests.inject(0) do |assertion_count, test|
+            assertion_count += test.assertion_count
+          end
+        end
+      when :passed
+        0
+      when :failed
+        0
+      when :skipped
+        0
+      when :errored
+        0
+      end
+    end
+
     protected
 
     def benchmark
@@ -36,27 +68,6 @@ module Assert
       srand
       seed = srand % 0xFFFF
       srand seed
-    end
-
-    def run_seconds
-      '%.6f' % @run_time
-    end
-
-    def count(type)
-      case type
-      when :tests
-        0
-      when :assertions
-        0
-      when :passed
-        0
-      when :failed
-        0
-      when :skipped
-        0
-      when :errored
-        0
-      end
     end
 
     def run_preamble

@@ -1,3 +1,6 @@
+require 'assert/suite'
+require 'assert/context'
+
 module Assert
 
   # a flag to know if at_exit hook has been installed already
