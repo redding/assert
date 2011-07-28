@@ -1,8 +1,8 @@
 module Assert
   class Test
-    # TODO: subj meth calling to context
-    # instance eval subject blocks in order
-    # same for
+
+    # a Test is some code/ method to run in the scope of a Context.  After a
+    # a test runs, it should have some assertions which are its results.
 
     attr_reader :name, :assertions
 

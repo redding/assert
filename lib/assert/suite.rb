@@ -1,8 +1,8 @@
 module Assert
   class Suite < ::Hash
 
-    # A suite is the set contexts to run.  When a test class subclasses
-    # the Context class, that klass is pushed to the suite.
+    # A suite is a set of tests to run.  When a test class subclasses
+    # the Context class, that test class is pushed to the suite.
 
     def <<(context_klass)
       self[context_klass] ||= []

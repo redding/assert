@@ -10,7 +10,6 @@ module Assert
     end
 
     def run
-
       # don't do anything if there aren't any tests to run
       return 0 if count(:tests) == 0
 
