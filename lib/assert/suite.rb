@@ -5,34 +5,28 @@ module Assert
     # the Context class, that test class is pushed to the suite.
 
     def <<(context_klass)
+      # gsub off any trailing 'Test'
       self[context_klass] ||= []
     end
 
     def run
-      self.each {|context| context.run}
+      self.each do |context_klass, tests|
+        # TODO: look for local public methods stating with 'test_'and add
+        # TODO: provide options for test order
+        tests.each do |test|
+          context_klass.new(test)
+        end
+      end
     end
 
-    def count(type)
-      case type
-      when :tests
-        @tests_count ||= self.values.inject(0) do |test_count, context_tests|
-          test_count += context_tests.size
-        end
-      when :assertions
-        @assertions_count ||= self.values.inject(0) do |test_count, context_tests|
-          test_count += context_tests.inject(0) do |assertion_count, test|
-            assertion_count += test.assertion_count
-          end
-        end
-      when :passed
-        0
-      when :failed
-        0
-      when :skipped
-        0
-      when :errored
-        0
-      end
+    def test_count(klass=nil)
+      count_tests(klass.nil? ? self.values : self[klass])
+    end
+
+    private
+
+    def count_tests(test_sets)
+      test_sets.inject(0) {|count, tests| count += tests.size}
     end
 
   end

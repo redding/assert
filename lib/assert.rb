@@ -6,9 +6,6 @@ module Assert
   # a flag to know if at_exit hook has been installed already
   @@at_exit_installed ||= false
 
-  # the output stream to write results to
-  @@out = $stdout
-
   # the set of contexts to run
   @@suite = Suite.new
 
@@ -17,13 +14,6 @@ module Assert
     # access the suite
     def suite
       @@suite
-    end
-
-    def puts(msg="")
-      @@out.puts msg
-    end
-    def print(msg="")
-      @@out.print msg
     end
 
     # install at_exit hook (if needed) (runs at process exit)
@@ -41,7 +31,7 @@ module Assert
 
         exit_code = nil
         at_exit { exit(false) if exit_code && exit_code != 0 }
-        exit_code = Runner.new(suite).run
+        exit_code = Runner.new(suite, :output => $stdout).run
       end unless @@at_exit_installed
       @@at_exit_installed = true
     end

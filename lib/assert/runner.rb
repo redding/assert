@@ -3,26 +3,27 @@ module Assert
 
     # a Runner runs a suite of tests.
 
-    def initialize(suite)
+    def initialize(suite, opts={})
       raise ArgumentError if !suite.kind_of?(Suite)
       @suite = suite
+      @out = opts[:output]
       @run_time = 0
     end
 
     def run
       # don't do anything if there aren't any tests to run
-      return 0 if count(:tests) == 0
+      if count(:tests) > 0
+        self.puts run_preamble
 
-      Assert.puts run_preamble
+        benchmark do
+          suite.run
+        end
 
-      benchmark do
-        suite.run
+        # TODO: result_details
+        # TODO: result_summary
       end
 
-      # TODO: result_details
-      # TODO: result_summary
-
-      Assert.puts run_postamble
+      self.puts run_postamble
 
       # the sum of the failed and errored counts serves as the return code
       count(:failed) + count(:errored)
@@ -34,6 +35,13 @@ module Assert
 
     def count(type)
       @suite.count(type)
+    end
+
+    def puts(msg="")
+      @out.puts msg if @out && @out.respond_to?(:puts)
+    end
+    def print(msg="")
+      @out.print msg if @out && @out.respond_to?(:print)
     end
 
     protected
@@ -53,19 +61,19 @@ module Assert
 
     def run_preamble
       "Loaded suite (" +
-        count(:tests) + " tests, " +
-        count(:assertions) + " assertions)"
+        count(:tests).to_s + " tests, " +
+        count(:assertions).to_s + " assertions)"
     end
 
     def run_postamble
       "\n" +
-        count(:tests) + " tests running " +
-        count(:assertions) + " assertions (" +
-        count(:passed) + " passed, " +
-        count(:failed) + " failed, " +
-        count(:skipped) + " skipped, " +
-        count(:errored) + " errored)\n" +
-        "(" + time + "seconds)"
+        count(:tests).to_s + " tests running " +
+        count(:assertions).to_s + " assertions (" +
+        count(:passed).to_s + " passed, " +
+        count(:failed).to_s + " failed, " +
+        count(:skipped).to_s + " skipped, " +
+        count(:errored).to_s + " errored)\n" +
+        "(" + time.to_s + "seconds)"
     end
 
   end
