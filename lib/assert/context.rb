@@ -1,4 +1,5 @@
 require 'assert/suite'
+require 'assert/result'
 
 module Assert
   class Context
@@ -17,6 +18,24 @@ module Assert
     # put all logic here to keep context instances pure for running tests
     class << self
 
+    end
+
+    def initialize(test)
+      test.result = begin
+        # TODO: setups
+        if test.code.kind_of?(::Proc)
+          instance_eval(&test.code)
+        elsif self.respond_to?(test.code.to_s)
+          self.send(test.code.to_s)
+        end
+        # TODO: teardowns
+
+        raise Result::Pass
+      rescue Result::Base => err
+        err
+      rescue Exception => err
+        Result::Error.new(err)
+      end
     end
 
   end
