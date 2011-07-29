@@ -34,7 +34,7 @@ class Assert::Test
     context "and passes"
     subject do
       Assert::Test.new("should assert stuff", ::Proc.new do
-        assert { 1 == 1 }
+        assert(1 == 1)
         #assert { 1 == 0 }
         #assert {  }
         #assert { raise ArgumentError }

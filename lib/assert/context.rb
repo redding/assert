@@ -20,7 +20,9 @@ module Assert
 
     end
 
-    def initialize(test)
+    def initialize(test=nil)
+      return if test.nil? || !test.kind_of?(Test)
+
       test.result = begin
         # TODO: setups
         if test.code.kind_of?(::Proc)
@@ -35,6 +37,14 @@ module Assert
         err
       rescue Exception => err
         Result::Error.new(err)
+      end
+    end
+
+    # the basic building block to run any type of assertion
+    # raise Result::Fail if the condition is not true
+    def assert(condition, fail_message=nil)
+      unless condition == true
+        raise Result::Fail, fail_message || "<#{condition.inspect}> is not true"
       end
     end
 
