@@ -1,13 +1,7 @@
 module Assert; end
 module Assert::Result
 
-  class Base
-    attr_reader :message
-
-    def initialize(message="")
-      @message = message
-    end
-
+  class Base < RuntimeError
     [:pass?, :fail?, :error?, :skip?].each do |meth|
       define_method("#{meth}") { false }
     end

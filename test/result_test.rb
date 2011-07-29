@@ -19,6 +19,10 @@ module Assert::Result
       end
     end
 
+    should "be a RuntimeError" do
+      assert_kind_of RuntimeError, subject
+    end
+
   end
 
   class PassTest < Test::Unit::TestCase
