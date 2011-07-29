@@ -5,12 +5,12 @@ module Assert
     # a test runs, it should have some assertions which are its results.
 
     attr_reader :name, :code
-    attr_accessor :result
+    attr_accessor :results
 
     def initialize(name, code)
       @name = name
       @code = code
-      @result = nil
+      @results = []
     end
 
   end

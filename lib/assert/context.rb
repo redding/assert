@@ -22,8 +22,8 @@ module Assert
 
     def initialize(test=nil)
       return if test.nil? || !test.kind_of?(Test)
-
-      test.result = begin
+      @__test = test
+      begin
         # TODO: setups
         if test.code.kind_of?(::Proc)
           instance_eval(&test.code)
@@ -31,22 +31,43 @@ module Assert
           self.send(test.code.to_s)
         end
         # TODO: teardowns
-
-        raise Result::Pass
       rescue Result::Base => err
-        err
+        @__test.results << err
       rescue Exception => err
-        Result::Error.new(err)
+        @__test.results << Result::Error.new(err)
       end
     end
 
     # the basic building block to run any type of assertion
     # raise Result::Fail if the condition is not true
     def assert(condition, fail_message=nil)
-      unless condition == true
-        raise Result::Fail, fail_message || "<#{condition.inspect}> is not true"
+      begin
+        if condition == true
+          raise Result::Pass
+        else
+          raise Result::Fail, fail_message || "<#{condition.inspect}> is not true"
+        end
+      rescue Result::Pass => err
+        @__test.results << err
+        err
+      rescue Result::Fail => err
+        @__test.results << err
+        err
       end
     end
+
+    # call this method to break test execution at any point in the test
+    # adds a Skip result to the end of the test's results
+    def skip
+      raise Result::Skip
+    end
+
+    # call this method to break test execution at any point in the test
+    # adds a Fail result to the end of the test's results
+    def fail(fail_message=nil)
+      raise Result::Fail, fail_message
+    end
+    alias_method :flunk, :fail
 
   end
 end
