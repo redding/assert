@@ -22,7 +22,7 @@ module Assert
 
     def initialize(test=nil)
       return if test.nil? || !test.kind_of?(Test)
-      @__test = test
+      @_test = test
       begin
         # TODO: setups
         if test.code.kind_of?(::Proc)
@@ -32,28 +32,22 @@ module Assert
         end
         # TODO: teardowns
       rescue Result::Base => err
-        @__test.results << err
+        @_test.results << err
       rescue Exception => err
-        @__test.results << Result::Error.new(err)
+        @_test.results << Result::Error.new(err)
       end
     end
 
-    # the basic building block to run any type of assertion
-    # raise Result::Fail if the condition is not true
-    def assert(condition, fail_message=nil)
-      begin
-        if condition == true
-          raise Result::Pass
-        else
-          raise Result::Fail, fail_message || "<#{condition.inspect}> is not true"
-        end
-      rescue Result::Pass => err
-        @__test.results << err
-        err
-      rescue Result::Fail => err
-        @__test.results << err
-        err
-      end
+    # raise Result::Fail if the assertion is false or nil
+    def assert(assertion, fail_msg=nil)
+      msg = fail_message(fail_msg) { "Failed assert.  No message given." }
+      assertion_result { assertion ? pass : fail(msg) }
+    end
+
+    # the opposite of assert, raise Result::Fail if the assertion is not false or nil
+    def refute(assertion, fail_msg=nil)
+      msg = fail_message(fail_msg) { "Failed refute.  No message given." }
+      assertion_result { assertion ? fail(msg) : pass }
     end
 
     # call this method to break test execution at any point in the test
@@ -63,11 +57,42 @@ module Assert
     end
 
     # call this method to break test execution at any point in the test
+    # adds a Pass result to the end of the test's results
+    def pass
+      raise Result::Pass
+    end
+
+    # call this method to break test execution at any point in the test
     # adds a Fail result to the end of the test's results
-    def fail(fail_message=nil)
-      raise Result::Fail, fail_message
+    def fail(fail_msg=nil)
+      raise Result::Fail, (fail_message(fail_msg) { }).call
     end
     alias_method :flunk, :fail
+
+    protected
+
+    # capture a pass or fail result from a given block and return it
+    # handles adding any fail_msg to fail results.
+    def assertion_result
+      begin
+        yield if block_given?
+      rescue Result::Pass => err
+        @_test.results << err
+        err
+      rescue Result::Fail => err
+        @_test.results << err
+        err
+      else
+        raise RuntimeError, "no pass or fail result captured"
+      end
+    end
+
+    # Returns a Proc that will output a custom message along with the default fail message.
+    def fail_message(custom_msg=nil, &default_msg)
+      custom_msg.kind_of?(::Proc) ? custom_msg : Proc.new do
+        [ default_msg.call, custom_msg ].compact.join("\n")
+      end
+    end
 
   end
 end
