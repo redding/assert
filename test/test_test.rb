@@ -14,9 +14,14 @@ class Assert::Test
 
     should have_readers :name, :code
     should have_accessor :results
+    should have_instance_method :result_count
 
     should "know its name" do
       assert_equal "should do stuff", subject.name
+    end
+
+    should "have zero results before running" do
+      assert_equal 0, subject.result_count
     end
 
   end

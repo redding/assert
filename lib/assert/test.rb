@@ -13,5 +13,9 @@ module Assert
       @results = []
     end
 
+    def result_count
+      @results.size
+    end
+
   end
 end
