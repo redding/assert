@@ -13,8 +13,19 @@ module Assert
       @results = []
     end
 
-    def result_count
-      @results.size
+    def result_count(type=nil)
+      case type
+      when :pass
+        @results.select{|r| r.kind_of?(Result::Pass)}.size
+      when :fail
+        @results.select{|r| r.kind_of?(Result::Fail)}.size
+      when :skip
+        @results.select{|r| r.kind_of?(Result::Skip)}.size
+      when :error
+        @results.select{|r| r.kind_of?(Result::Error)}.size
+      else
+        @results.size
+      end
     end
 
   end

@@ -43,7 +43,7 @@ class Assert::Test
     end
 
     should "have 0 results" do
-      assert_equal 0, subject.results.size
+      assert_equal 0, subject.result_count
     end
 
   end
@@ -57,7 +57,7 @@ class Assert::Test
     end
 
     should "have 1 result" do
-      assert_equal 1, subject.results.size
+      assert_equal 1, subject.result_count
     end
 
     should "have a passing result" do
@@ -75,7 +75,7 @@ class Assert::Test
     end
 
     should "have 1 result" do
-      assert_equal 1, subject.results.size
+      assert_equal 1, subject.result_count
     end
 
     should "have a failing result" do
@@ -93,7 +93,7 @@ class Assert::Test
     end
 
     should "have 1 result" do
-      assert_equal 1, subject.results.size
+      assert_equal 1, subject.result_count
     end
 
     should "have a skipped result" do
@@ -110,12 +110,189 @@ class Assert::Test
     end
 
     should "have 1 result" do
-      assert_equal 1, subject.results.size
+      assert_equal 1, subject.result_count
     end
 
     should "have a errored result" do
       assert_kind_of Assert::Result::Error, subject.results.first
     end
   end
+
+  class MixedTest < ResultTest
+    context "and has 1 pass and 1 fail assertion"
+    subject do
+      Assert::Test.new("should assert stuff", ::Proc.new do
+        assert(1 == 1)
+        assert(1 == 0)
+      end)
+    end
+
+    should "have 2 total results" do
+      assert_equal 2, subject.result_count
+    end
+
+    should "have 1 pass result" do
+      assert_equal 1, subject.result_count(:pass)
+    end
+
+    should "have 1 fail result" do
+      assert_equal 1, subject.result_count(:fail)
+    end
+
+  end
+
+
+
+  class MixedSkipTest < ResultTest
+    context "and has 1 pass and 1 fail assertion with a skip call in between"
+    subject do
+      Assert::Test.new("should assert stuff", ::Proc.new do
+        assert(1 == 1)
+        skip
+        assert(1 == 0)
+      end)
+    end
+
+    should "have a skip for its last result" do
+      assert_kind_of Assert::Result::Skip, subject.results.last
+    end
+
+    should "have 2 total results" do
+      assert_equal 2, subject.result_count
+    end
+
+    should "have 1 pass result" do
+      assert_equal 1, subject.result_count(:pass)
+    end
+
+    should "have 1 skip result" do
+      assert_equal 1, subject.result_count(:skip)
+    end
+
+    should "have 0 fail results" do
+      assert_equal 0, subject.result_count(:fail)
+    end
+  end
+
+
+  class MixedErrorTest < ResultTest
+    context "and has 1 pass and 1 fail assertion with an exception raised in between"
+    subject do
+      Assert::Test.new("should assert stuff", ::Proc.new do
+        assert(1 == 1)
+        raise Exception, "something errored"
+        assert(1 == 0)
+      end)
+    end
+
+    should "have an error for its last result" do
+      assert_kind_of Assert::Result::Error, subject.results.last
+    end
+
+    should "have 2 total results" do
+      assert_equal 2, subject.result_count
+    end
+
+    should "have 1 pass result" do
+      assert_equal 1, subject.result_count(:pass)
+    end
+
+    should "have 1 error result" do
+      assert_equal 1, subject.result_count(:error)
+    end
+
+    should "have 0 fail results" do
+      assert_equal 0, subject.result_count(:fail)
+    end
+  end
+
+
+  class MixedPassTest < ResultTest
+    context "and has 1 pass and 1 fail assertion with a pass call in between"
+    subject do
+      Assert::Test.new("should assert stuff", ::Proc.new do
+        assert(1 == 1)
+        pass
+        assert(1 == 0)
+      end)
+    end
+
+    should "have a pass for its last result" do
+      assert_kind_of Assert::Result::Pass, subject.results.last
+    end
+
+    should "have 2 total results" do
+      assert_equal 2, subject.result_count
+    end
+
+    should "have 2 pass results" do
+      assert_equal 2, subject.result_count(:pass)
+    end
+
+    should "have 0 fail results" do
+      assert_equal 0, subject.result_count(:fail)
+    end
+
+  end
+
+
+  class MixedFailTest < ResultTest
+    context "and has 1 pass and 1 fail assertion with a fail call in between"
+    subject do
+      Assert::Test.new("should assert stuff", ::Proc.new do
+        assert(1 == 0)
+        fail
+        assert(1 == 1)
+      end)
+    end
+
+    should "have a fail for its last result" do
+      assert_kind_of Assert::Result::Fail, subject.results.last
+    end
+
+    should "have 2 total results" do
+      assert_equal 2, subject.result_count
+    end
+
+    should "have 0 pass results" do
+      assert_equal 0, subject.result_count(:pass)
+    end
+
+    should "have 2 fail results" do
+      assert_equal 2, subject.result_count(:fail)
+    end
+
+  end
+
+
+  class MixedFlunkTest < ResultTest
+    context "and has 1 pass and 1 fail assertion with a flunk call in between"
+    subject do
+      Assert::Test.new("should assert stuff", ::Proc.new do
+        assert(1 == 0)
+        flunk
+        assert(1 == 1)
+      end)
+    end
+
+    should "have a fail for its last result" do
+      assert_kind_of Assert::Result::Fail, subject.results.last
+    end
+
+    should "have 2 total results" do
+      assert_equal 2, subject.result_count
+    end
+
+    should "have 0 pass results" do
+      assert_equal 0, subject.result_count(:pass)
+    end
+
+    should "have 2 fail results" do
+      assert_equal 2, subject.result_count(:fail)
+    end
+
+  end
+
+
 
 end
