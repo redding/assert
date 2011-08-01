@@ -1,8 +1,9 @@
-require 'assert/suite'
+require 'assert/assertions'
 require 'assert/result'
 
 module Assert
   class Context
+    include Assert::Assertions
 
     # a Context is a scope for tests to run in.  Contexts have setup and
     # teardown blocks, subjects, and descriptions.  Tests are run in the
