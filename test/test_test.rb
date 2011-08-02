@@ -31,7 +31,9 @@ class Assert::Test
 
     context "that runs"
     before do
-      Assert::Suite[{Assert::Context => [subject]}].run
+      Assert::Suite[{Assert::Context => [subject]}].contexts.each do |c|
+        c.run
+      end
     end
   end
 

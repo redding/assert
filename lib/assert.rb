@@ -1,3 +1,4 @@
+require 'assert/suite'
 require 'assert/context'
 require 'assert/runner'
 
@@ -6,15 +7,7 @@ module Assert
   # a flag to know if at_exit hook has been installed already
   @@at_exit_installed ||= false
 
-  # the set of contexts to run
-  @@suite = Suite.new
-
   class << self
-
-    # access the suite
-    def suite
-      @@suite
-    end
 
     # install at_exit hook (if needed) (runs at process exit)
     # this ensures the test suite won't run unitl all test files are loaded

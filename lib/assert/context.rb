@@ -8,7 +8,7 @@ module Assert
     # a Context is a scope for tests to run in.  Contexts have setup and
     # teardown blocks, subjects, and descriptions.  Tests are run in the
     # scope of a Context instance.  Therefore, a Context should have
-    # no base logic/methods/instance_vars.  The instance should remain
+    # minimal base logic/methods/instance_vars.  The instance should remain
     # pure to not pollute test scopes.
 
     # if a class subclasses Context, add it to the suite
@@ -24,12 +24,15 @@ module Assert
     def initialize(test=nil)
       return if test.nil? || !test.kind_of?(Test)
       @_test = test
+    end
+
+    def run
       begin
         # TODO: setups
-        if test.code.kind_of?(::Proc)
-          instance_eval(&test.code)
-        elsif self.respond_to?(test.code.to_s)
-          self.send(test.code.to_s)
+        if @_test.code.kind_of?(::Proc)
+          instance_eval(&@_test.code)
+        elsif self.respond_to?(@_test.code.to_s)
+          self.send(@_test.code.to_s)
         end
         # TODO: teardowns
       rescue Result::Base => err
