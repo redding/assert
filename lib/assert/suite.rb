@@ -23,10 +23,20 @@ module Assert
       count_tests(klass.nil? ? self.values : self[klass])
     end
 
+    def assert_count(type=nil)
+      count_asserts(self.values, type)
+    end
+
     private
 
     def count_tests(test_sets)
       test_sets.inject(0) {|count, tests| count += tests.size}
+    end
+
+    def count_asserts(test_sets, type)
+      test_sets.inject(0) do |count, tests|
+        count += tests.inject(0) {|count, test| count += test.assert_count(type)}
+      end
     end
 
   end

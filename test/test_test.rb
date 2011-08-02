@@ -14,7 +14,7 @@ class Assert::Test
 
     should have_readers :name, :code
     should have_accessor :results
-    should have_instance_method :result_count
+    should have_instance_methods :result_count, :assert_count
 
     should "know its name" do
       assert_equal "should do stuff", subject.name
