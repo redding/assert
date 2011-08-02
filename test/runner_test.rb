@@ -1,4 +1,5 @@
 require 'test_belt'
+
 require 'assert/runner'
 require 'assert/suite'
 
