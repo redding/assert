@@ -3,14 +3,15 @@ module Assert
 
     # a Runner runs a suite of tests.
 
+    attr_reader :time
+
     def initialize(suite, opts={})
       raise ArgumentError if !suite.kind_of?(Suite)
       @suite = suite
-      @run_time = 0
+      @time = 0
     end
 
     def run(*args)
-      # don't do anything if there aren't any tests to run
       benchmark do
         # TODO: parallel running
         tests_to_run(*args).each {|test| test.run}
@@ -22,29 +23,26 @@ module Assert
       @suite.count(type)
     end
 
-    def time(format='%.6f')
-      format % @run_time
-    end
-
     protected
 
     def benchmark
       start = Time.now
       yield if block_given?
-      @run_time = Time.now - start
+      @time = Time.now - start
     end
 
     def tests_to_run(*args)
-      # TODO: randomize
-      @suite.contexts
+      # run tests in a randomized order
+      tests = @suite.contexts
+      max = tests.size
+      tests.sort.sort_by { rand max }
     end
 
-    # TODO: for randomizing test run order
-    # def seed
-    #   srand
-    #   seed = srand % 0xFFFF
-    #   srand seed
-    # end
+    def seed
+      srand
+      seed = srand % 0xFFFF
+      srand seed
+    end
 
   end
 
