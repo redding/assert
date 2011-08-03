@@ -15,7 +15,10 @@ class Assert::Suite
     context "an basic suite"
     subject { Assert::Suite.new }
 
-    should have_instance_method :<<, :contexts, :test_count, :assert_count
+    should have_instance_methods :<<, :contexts
+    should have_instance_methods :count, :test_count, :assert_count
+    should have_accessors :start_time, :end_time
+    should have_instance_method :run_time
 
     should "be a hash" do
       assert_kind_of ::Hash, subject
