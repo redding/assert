@@ -24,7 +24,10 @@ module Assert
 
         exit_code = nil
         at_exit { exit(false) if exit_code && exit_code != 0 }
-        exit_code = Runner.new(suite, :output => $stdout).run
+
+        runner = Runner.new(self.suite, $stdout)
+
+        exit_code = runner.run
       end unless @@at_exit_installed
       @@at_exit_installed = true
     end

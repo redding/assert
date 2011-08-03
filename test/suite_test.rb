@@ -38,6 +38,10 @@ class Assert::Suite
       )
     end
 
+    should "have zero run time by default" do
+      assert_equal 0, subject.run_time
+    end
+
   end
 
   class WithTestsTest < Test::Unit::TestCase

@@ -1,21 +1,28 @@
+require 'assert/view'
+
 module Assert
   class Runner
 
     # a Runner runs a suite of tests.
 
-    attr_reader :time
-
-    def initialize(suite, opts={})
+    def initialize(suite, output_io)
       raise ArgumentError if !suite.kind_of?(Suite)
       @suite = suite
-      @time = 0
+      # TODO: specify other views
+      @view = View::Basic.new(@suite, output_io)
     end
 
     def run(*args)
-      benchmark do
-        # TODO: parallel running
-        tests_to_run(*args).each {|test| test.run}
-      end if count(:tests) > 0
+      @view.puts(:intro)
+
+      if count(:tests) > 0
+        benchmark { run_suite }
+        @view.puts(:details)
+        @view.puts(:summary)
+      end
+
+      @view.puts(:outro)
+
       count(:failed) + count(:errored)
     end
 
@@ -25,23 +32,28 @@ module Assert
 
     protected
 
-    def benchmark
-      start = Time.now
-      yield if block_given?
-      @time = Time.now - start
-    end
-
-    def tests_to_run(*args)
-      # run tests in a randomized order
+    def tests_to_run
       tests = @suite.contexts
-      max = tests.size
-      tests.sort.sort_by { rand max }
-    end
 
-    def seed
+      # order tests randomly
+      max = tests.size
       srand
       seed = srand % 0xFFFF
       srand seed
+      tests.sort.sort_by { rand max }
+    end
+
+    private
+
+    def run_suite
+      # TODO: parallel running
+      tests_to_run.each { |test| test.run }
+    end
+
+    def benchmark
+      @suite.start_time = Time.now
+      yield if block_given?
+      @suite.end_time = Time.now
     end
 
   end

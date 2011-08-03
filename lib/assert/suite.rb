@@ -8,7 +8,7 @@ module Assert
     attr_accessor :start_time, :end_time
 
     def run_time
-      @end_time - @start_time
+      (@end_time || 0) - (@start_time || 0)
     end
 
     def <<(context_klass)
