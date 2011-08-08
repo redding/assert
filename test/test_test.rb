@@ -14,9 +14,9 @@ class Assert::Test
       Assert::Test.new("should do stuff", ::Proc.new {}, Assert::Context)
     end
 
-    should have_readers :name, :code
+    should have_readers :name, :code, :context
     should have_accessor :results
-    should have_instance_methods :result_count, :assert_count
+    should have_instance_methods :run, :result_count, :assert_count, :assertion_result
 
     should "know its name" do
       assert_equal "should do stuff", subject.name

@@ -58,6 +58,8 @@ module Assert
 
     protected
 
+    # ask the running test to handle the result of the assertion and decide how to store
+    # that result
     def assertion_result(&block)
       @__running_test__.assertion_result(&block)
     end
