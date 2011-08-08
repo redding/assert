@@ -15,7 +15,7 @@ class Assert::Suite
     context "an basic suite"
     subject { Assert::Suite.new }
 
-    should have_instance_methods :<<, :contexts
+    should have_instance_methods :<<, :tests
     should have_instance_methods :count, :test_count, :assert_count
     should have_accessors :start_time, :end_time
     should have_instance_method :run_time
@@ -49,31 +49,33 @@ class Assert::Suite
 
     context "an suite with tests"
     subject do
+      # TODO: factories / fixtures ?
+      context_klass = Assert::Context
       Assert::Suite[{
-        Assert::Context => [
+        context_klass => [
           Assert::Test.new("should do nothing", ::Proc.new do
             # no assertions
-          end),
+          end, context_klass),
           Assert::Test.new("should pass", ::Proc.new do
             assert(1==1)
             refute(1==0)
-          end),
+          end, context_klass),
           Assert::Test.new("should fail", ::Proc.new do
             assert(1==0)
             refute(1==1)
-          end),
+          end, context_klass),
           Assert::Test.new("should skip", ::Proc.new do
             skip
             assert(1==1)
-          end),
+          end, context_klass),
           Assert::Test.new("should error", ::Proc.new do
             raise Exception
             assert(1==1)
-          end)
+          end, context_klass)
         ]
       }]
     end
-    before { subject.contexts.each {|c| c.run} }
+    before { subject.tests.each {|c| c.run} }
 
     should "know how many tests it has" do
       assert_equal 5, subject.test_count
@@ -134,15 +136,17 @@ class Assert::Suite
   end
 
 
-  class ContextsTest < WithTestsTest
+  class TestsTest < WithTestsTest
 
-    should "build context instances to run from its collection of tests" do
-      assert_kind_of Assert::Context, subject.contexts.first
+    should "build test instances to run" do
+      assert_kind_of Assert::Test, subject.tests.first
     end
 
+=begin TODO: not needed?
     should "build the same number of context instances as its tests" do
       assert_equal subject.count(:tests), subject.contexts.size
     end
+=end
 
   end
 

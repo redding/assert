@@ -10,7 +10,9 @@ class Assert::Test
     include TestBelt
 
     context "a Test"
-    subject { Assert::Test.new("should do stuff", ::Proc.new {}) }
+    subject do
+      Assert::Test.new("should do stuff", ::Proc.new {}, Assert::Context)
+    end
 
     should have_readers :name, :code
     should have_accessor :results
@@ -31,8 +33,8 @@ class Assert::Test
 
     context "that runs"
     before do
-      Assert::Suite[{Assert::Context => [subject]}].contexts.each do |c|
-        c.run
+      Assert::Suite[{Assert::Context => [subject]}].tests.each do |test|
+        test.run
       end
     end
   end
@@ -41,7 +43,7 @@ class Assert::Test
     context "and does nothing"
     subject do
       Assert::Test.new("should assert stuff", ::Proc.new do
-      end)
+      end, Assert::Context)
     end
 
     should "have 0 results" do
@@ -55,7 +57,7 @@ class Assert::Test
     subject do
       Assert::Test.new("should assert stuff", ::Proc.new do
         assert(1 == 1)
-      end)
+      end, Assert::Context)
     end
 
     should "have 1 result" do
@@ -73,7 +75,7 @@ class Assert::Test
     subject do
       Assert::Test.new("should assert stuff", ::Proc.new do
         assert(1 == 0)
-      end)
+      end, Assert::Context)
     end
 
     should "have 1 result" do
@@ -91,7 +93,7 @@ class Assert::Test
     subject do
       Assert::Test.new("should assert stuff", ::Proc.new do
         skip
-      end)
+      end, Assert::Context)
     end
 
     should "have 1 result" do
@@ -108,7 +110,7 @@ class Assert::Test
     subject do
       Assert::Test.new("should assert stuff", ::Proc.new do
         raise Exception
-      end)
+      end, Assert::Context)
     end
 
     should "have 1 result" do
@@ -126,7 +128,7 @@ class Assert::Test
       Assert::Test.new("should assert stuff", ::Proc.new do
         assert(1 == 1)
         assert(1 == 0)
-      end)
+      end, Assert::Context)
     end
 
     should "have 2 total results" do
@@ -152,7 +154,7 @@ class Assert::Test
         assert(1 == 1)
         skip
         assert(1 == 0)
-      end)
+      end, Assert::Context)
     end
 
     should "have a skip for its last result" do
@@ -184,7 +186,7 @@ class Assert::Test
         assert(1 == 1)
         raise Exception, "something errored"
         assert(1 == 0)
-      end)
+      end, Assert::Context)
     end
 
     should "have an error for its last result" do
@@ -216,7 +218,7 @@ class Assert::Test
         assert(1 == 1)
         pass
         assert(1 == 0)
-      end)
+      end, Assert::Context)
     end
 
     should "have a pass for its last result" do
@@ -245,7 +247,7 @@ class Assert::Test
         assert(1 == 0)
         fail
         assert(1 == 1)
-      end)
+      end, Assert::Context)
     end
 
     should "have a fail for its last result" do
@@ -274,7 +276,7 @@ class Assert::Test
         assert(1 == 0)
         flunk
         assert(1 == 1)
-      end)
+      end, Assert::Context)
     end
 
     should "have a fail for its last result" do
