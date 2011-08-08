@@ -13,16 +13,10 @@ module Assert
     end
 
     def run(*args)
-      @view.puts(:intro)
-
-      if count(:tests) > 0
-        benchmark { run_suite }
-        @view.puts(:details)
-        @view.puts(:summary)
-      end
-
-      @view.puts(:outro)
-
+      # @view.render do
+      #   benchmark { run_suite }
+      # end
+      # return_code
       count(:failed) + count(:errored)
     end
 
@@ -45,15 +39,15 @@ module Assert
 
     private
 
-    def run_suite
-      # TODO: parallel running
-      tests_to_run.each { |test| test.run }
-    end
-
     def benchmark
       @suite.start_time = Time.now
       yield if block_given?
       @suite.end_time = Time.now
+    end
+
+    def run_suite
+      # TODO: parallel running
+      tests_to_run.each { |test| test.run }
     end
 
   end
