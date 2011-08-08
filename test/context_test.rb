@@ -123,8 +123,16 @@ class Assert::Context
   end
 
 
+  class SetupAndTeardownTest < BasicTest
+
+  end
+
+
 
   class AssertionsTest < BasicTest
+
+    should have_class_methods :setup, :teardown, :_assert_setups, :_assert_teardowns
+    should have_class_methods :before, :after
 
     should have_instance_methods :assert_block
     should have_instance_methods :assert_raises, :assert_raise
