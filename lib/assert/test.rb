@@ -30,7 +30,7 @@ module Assert
         @results << Result::Error.new(err)
       end
     end
-    
+
     # capture a pass or fail result from a given block and return it
     # pass and fail results are captured here to not break test execution.
     # skip or error results never get handled here b/c they break
@@ -64,6 +64,10 @@ module Assert
       end
     end
     alias_method :assert_count, :result_count
+
+    def <=>(other_test)
+      self.name <=> other_test.name
+    end
 
   end
 end
