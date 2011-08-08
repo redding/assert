@@ -13,10 +13,9 @@ module Assert
     end
 
     def run(*args)
-      # @view.render do
-      #   benchmark { run_suite }
-      # end
-      # return_code
+      @view.render do
+        benchmark { run_suite }
+      end
       count(:failed) + count(:errored)
     end
 

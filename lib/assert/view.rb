@@ -1,4 +1,4 @@
-module Assert::View
+ module Assert::View
   class Base
 
     # a Runner runs a suite of tests.
@@ -38,7 +38,7 @@ module Assert::View
 
   class Basic < Base
 
-    def layout(runner)
+    def render(*args, &runner)
       self.puts(:intro)
 
       if count(:tests) > 0
@@ -51,12 +51,6 @@ module Assert::View
       self.puts(:outro)
     end
 
-    # override these parts or define you own to create custom output
-    def intro; nil; end
-    def details; nil; end
-    def summary; nil; end
-    def outro; nil; end
-
     def intro
       "Loaded suite (" +
         count(:tests).to_s + " tests, " +
@@ -64,15 +58,33 @@ module Assert::View
     end
 
     def outro
-      "\n" +
-        count(:tests).to_s + " tests running " +
-        count(:assertions).to_s + " assertions (" +
-        count(:passed).to_s + " passed, " +
-        count(:failed).to_s + " failed, " +
-        count(:skipped).to_s + " skipped, " +
-        count(:errored).to_s + " errored)\n" +
-        "(" + run_time.to_s + "seconds)"
+      [ "\n",
+        test_assert_count_oneliner, ': ',
+        results_oneliner, ' ',
+        "(#{run_time} seconds)"
+      ].join('')
     end
+
+    protected
+
+    def test_assert_count_oneliner
+      tplur = (tcount = count(:tests)) == 1 ? "test": "tests"
+      aplur = (acount = count(:assertions)) == 1 ? "assertion" : "assertions"
+
+      [acount, aplur, "(#{tcount} #{tplur})"].join(' ')
+    end
+
+    def results_oneliner
+      if count(:passed) == count(:tests)
+        "all passed"
+      else
+        [:passed, :failed, :skipped, :errored].inject([]) do |parts, part|
+          parts << count(part) > 0 ? "#{count(part)} #{part}" : nil
+        end.join(', ')
+      end
+    end
+
+
 
   end
 end

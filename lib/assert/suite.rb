@@ -1,3 +1,5 @@
+require 'assert/test'
+
 module Assert
   class Suite < ::Hash
 
@@ -53,6 +55,7 @@ module Assert
     end
 
     def assert_count(type=nil)
+      prep
       count_asserts(self.values, type)
     end
 
