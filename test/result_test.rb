@@ -1,4 +1,5 @@
 require 'test_belt'
+
 require 'assert/result'
 
 module Assert::Result
@@ -8,7 +9,7 @@ module Assert::Result
     context "a base result"
     subject { Assert::Result::Base.new }
 
-    should have_readers :message
+    should have_readers :message, :abbrev, :to_sym
 
     RESULTS = [:pass?, :fail?, :error?, :skip?]
     should have_instance_methods *RESULTS
@@ -41,6 +42,14 @@ module Assert::Result
         assert_equal false, subject.send(meth)
       end
     end
+
+    should "show '.' for its abbrev" do
+      assert_equal '.', subject.abbrev
+    end
+
+    should "know its to_sym" do
+      assert_equal :passed, subject.to_sym
+    end
   end
 
   class FailTest < Test::Unit::TestCase
@@ -58,6 +67,14 @@ module Assert::Result
       should "not be #{meth}" do
         assert_equal false, subject.send(meth)
       end
+    end
+
+    should "show 'F' for its abbrev" do
+      assert_equal 'F', subject.abbrev
+    end
+
+    should "know its to_sym" do
+      assert_equal :failed, subject.to_sym
     end
   end
 
@@ -77,6 +94,14 @@ module Assert::Result
         assert_equal false, subject.send(meth)
       end
     end
+
+    should "show 'E' for its abbrev" do
+      assert_equal 'E', subject.abbrev
+    end
+
+    should "know its to_sym" do
+      assert_equal :errored, subject.to_sym
+    end
   end
 
   class SkipTest < Test::Unit::TestCase
@@ -94,6 +119,14 @@ module Assert::Result
       should "not be #{meth}" do
         assert_equal false, subject.send(meth)
       end
+    end
+
+    should "show 'S' for its abbrev" do
+      assert_equal 'S', subject.abbrev
+    end
+
+    should "know its to_sym" do
+      assert_equal :skipped, subject.to_sym
     end
   end
 
