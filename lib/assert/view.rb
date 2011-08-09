@@ -47,9 +47,9 @@
 
 
 
-  class BasicTerminal < Base
+  class Terminal < Base
 
-    TERM_COLORS = {
+    TERM_STYLES = {
       :reset     => 0,
       :bold      => 1,
       :underline => 4,
@@ -71,8 +71,20 @@
       :bgwhite   => 47
     }
 
+    attr_reader :result_styles
+
+    def initialize(suite, output_io, opts={})
+      super(suite, output_io)
+      @result_styles = {
+        :passed  => :green,
+        :failed  => :red,
+        :skipped => :cyan,
+        :errored  => :yellow
+      }.merge(opts[:result_styles] || {})
+    end
+
     def render(*args, &runner)
-      self.io_puts(self.intro)
+      self.io_puts(self.load_stmt)
 
       if count(:tests) > 0
         # yield the output IO to the runner so it can add any result output
@@ -81,51 +93,51 @@
         #self.io_puts(:summary)
       end
 
-      self.io_puts(:outro)
-    end
-
-    def intro
-      tplur = (tcount = count(:tests)) == 1 ? "test": "tests"
-      "\nLoaded suite (#{tcount} #{tplur})"
-    end
-
-    def outro
-      aplur = (acount = count(:assertions)) == 1 ? "assertion" : "assertions"
-      [ "\n",
-        "#{acount} #{aplur}: ", results_breakdown, "\n\n",
-        "(#{run_time} seconds)"
-      ].join('')
+      self.io_puts(:results_stmt)
     end
 
     protected
 
+    def load_stmt
+      tplur = (tcount = count(:tests)) == 1 ? "test": "tests"
+      "\nLoaded suite (#{tcount} #{tplur})"
+    end
+
+    def results_stmt
+      rplur = (rcount = count(:assertions)) == 1 ? "result" : "result"
+      [ "\n",
+        "#{rcount} #{rplur}: ", results_breakdown, "\n\n",
+        "(#{run_time} seconds)"
+      ].join('')
+    end
+
     def results_breakdown
       if count(:passed) == count(:tests)
-        io_msg("all passed", :term_color => :green)
+        result_io_msg("all passed", :passed)
       else
-        [ [:passed, :green],
-          [:failed, :red],
-          [:skipped, :cyan],
-          [:errored, :yellow]
-        ].inject([]) do |parts, p_c|
-          parts << (if count(p_c[0]) > 0
-            io_msg("#{count(p_c[0])} #{p_c[0]}", :term_color => p_c[1])
-          end)
+        [:passed, :failed, :skipped, :errored].inject([]) do |results, result|
+          results << (result_io_msg("#{count(result)} #{result}", result) if count(result) > 0)
         end.compact.join(', ')
       end
     end
 
+    def result_io_msg(msg, result)
+      io_msg(msg, :term_styles => self.result_styles[result])
+    end
+
     def io_msg(msg, opts={})
       val = super
-      if color = term_color(opts[:term_color])
-        val = color + val + term_color(:reset)
+      if color = term_style(*opts[:term_styles])
+        val = color + val + term_style(:reset)
       else
         val
       end
     end
 
-    def term_color(code)
-      TERM_COLORS.include?(code) ? "\e[#{TERM_COLORS[code]}m" : nil
+    def term_style(*styles)
+      styles.collect do |style|
+        TERM_STYLES.include?(style) ? "\e[#{TERM_STYLES[style]}m" : nil
+      end.join('')
     end
 
   end

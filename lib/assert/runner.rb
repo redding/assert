@@ -9,7 +9,7 @@ module Assert
       raise ArgumentError if !suite.kind_of?(Suite)
       @suite = suite
       # TODO: specify other views
-      @view = View::BasicTerminal.new(@suite, output_io)
+      @view = View::Terminal.new(@suite, output_io)
     end
 
     def run(*args)
