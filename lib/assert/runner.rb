@@ -9,7 +9,7 @@ module Assert
       raise ArgumentError if !suite.kind_of?(Suite)
       @suite = suite
       # TODO: specify other views
-      @view = View::Basic.new(@suite, output_io)
+      @view = View::BasicTerminal.new(@suite, output_io)
     end
 
     def run(*args)
@@ -33,7 +33,8 @@ module Assert
       srand
       seed = srand % 0xFFFF
       srand seed
-      tests.sort.sort_by { rand max }
+      #tests.sort.sort_by { rand max }
+      tests
     end
 
     private
