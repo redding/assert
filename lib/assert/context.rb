@@ -45,7 +45,7 @@ module Assert
         teardowns = if superclass.respond_to?(:_assert_teardowns)
           superclass._assert_teardowns
         end
-        (teardowns || []) + (@_assert_teardowns || [])
+        (@_assert_teardowns || []) + (teardowns || [])
       end
 
     end

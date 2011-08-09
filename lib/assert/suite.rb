@@ -66,9 +66,7 @@ module Assert
     end
 
     def count_asserts(test_sets, type)
-      test_sets.inject(0) do |count, tests|
-        count += tests.inject(0) {|count, test| count += test.assert_count(type)}
-      end
+      self.values.flatten.inject(0){|count, test| count += test.assert_count(type) }
     end
 
     def prep

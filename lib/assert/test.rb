@@ -17,17 +17,29 @@ module Assert
     def run
       begin
         run_scope = @context.new(self)
-        # TODO: setups
+        run_setup(run_scope)
         if @code.kind_of?(::Proc)
           run_scope.instance_eval(&@code)
         elsif run_scope.respond_to?(@code.to_s)
           run_scope.send(@code.to_s)
         end
-        # TODO: teardowns
+        run_teardown(run_scope)
       rescue Result::Base => err
         @results << err
       rescue Exception => err
         @results << Result::Error.new(err)
+      end
+    end
+
+    def run_setup(scope)
+      @context._assert_setups.each do |setup|
+        scope.instance_eval(&setup)
+      end
+    end
+
+    def run_teardown(scope)
+      @context._assert_teardowns.each do |teardown|
+        scope.instance_eval(&teardown)
       end
     end
 

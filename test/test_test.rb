@@ -297,6 +297,62 @@ class Assert::Test
 
   end
 
+  class WithSetupTest < Test::Unit::TestCase
+    include TestBelt
+
+    context "a Test that runs and has assertions that depend on a setup block"
+    
+    setup do
+      Assert::Context.setup do # should probably create it's own context class
+        @needed = true
+      end
+      subject.run
+    end
+    
+    subject do
+      Assert::Test.new("assert setup has run", ::Proc.new do
+        assert(@needed)
+      end, Assert::Context)
+    end
+
+    should "have 1 total result" do
+      assert_equal 1, subject.result_count
+    end
+
+    should "have 1 pass result" do
+      assert_equal 1, subject.result_count(:pass)
+    end
+
+  end
+  
+  class WithTeardownTest < Test::Unit::TestCase
+    include TestBelt
+
+    context "a Test that runs and has assertions that depend on a teardown block"
+    
+    setup do
+      Assert::Context.teardown do # should probably create it's own context class
+        raise("Teardown failed!")
+      end
+      subject.run
+    end
+    
+    subject do
+      Assert::Test.new("assert setup has run", ::Proc.new do
+        # nothing needed
+      end, Assert::Context)
+    end
+
+    should "have 1 total result" do
+      assert_equal 1, subject.result_count
+    end
+
+    should "have 1 error result" do
+      assert_equal 1, subject.result_count(:error)
+    end
+
+  end
+
 
 
 end
