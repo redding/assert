@@ -237,6 +237,34 @@ class Assert::Context
 
 
 
+  class SubjectTest < BasicTest
+
+    setup do
+      subject = @subject = "SUBJECT!"
+      subject_block = @subject_block = lambda{ subject }
+      @context_class = Class.new(Assert::Context) do
+        subject(&subject_block)
+      end
+    end
+
+    subject{ @context_class.new }
+
+    should have_class_methods :subject, :_assert_subject
+
+    should have_instance_methods :subject
+
+    should "store the subject block on the class" do
+      assert_equal(@subject_block, subject.class._assert_subject)
+    end
+
+    should "return the subject defined when called on the instance" do
+      assert_equal(@subject, subject.subject)
+    end
+
+  end
+
+
+
   class AssertionsTest < BasicTest
 
     should have_instance_methods :assert_block

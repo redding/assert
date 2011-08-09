@@ -59,6 +59,15 @@ module Assert
         end
         (descs || []) + (@_assert_desc || [])
       end
+      
+      def subject(&block)
+        raise ArgumentError, "please provide a subject block" unless block_given?
+        @_assert_subject = block
+      end
+      
+      def _assert_subject
+        @_assert_subject
+      end
 
     end
 
@@ -96,6 +105,12 @@ module Assert
       raise Result::Fail, (fail_message(fail_msg) { }).call
     end
     alias_method :flunk, :fail
+    
+    def subject
+      if subject_block = self.class._assert_subject
+        instance_eval(&subject_block)
+      end
+    end
 
     protected
 
