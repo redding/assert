@@ -1,3 +1,4 @@
+require 'assert/suite'
 require 'assert/assertions'
 require 'assert/result'
 
@@ -26,7 +27,7 @@ module Assert
       end
       alias_method :before, :setup
 
-      def teardown
+      def teardown(&block)
         raise ArgumentError, "please provide a teardown block" unless block_given?
         @_assert_teardowns ||= []
         @_assert_teardowns << block

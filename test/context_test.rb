@@ -125,14 +125,66 @@ class Assert::Context
 
   class SetupAndTeardownTest < BasicTest
 
+    subject{ Assert::Context.new }
+
+    should have_class_methods :setup, :teardown, :_assert_setups, :_assert_teardowns
+    should have_class_methods :before, :after
+
+    should "add the setup block to the context's collection of setup blocks" do
+      setup_block = lambda{ @something = true }
+      subject.class.setup(&setup_block)
+      assert(subject.class._assert_setups.include?(setup_block))
+    end
+
+    should "add the teardown block to the context's collection of teardown blocks" do
+      teardown_block = lambda{ @something = false }
+      subject.class.teardown(&teardown_block)
+      assert(subject.class._assert_teardowns.include?(teardown_block))
+    end
+
+  end
+
+
+
+  class NestedSetupTest < BasicTest
+
+    subject do
+      @base_block = lambda{ @nested_something = true }
+      Assert::Context.setup(&@base_block)
+      class NestedSetupTestContext < Assert::Context
+        setup{ @not_nested = true }
+      end
+      NestedSetupTestContext
+    end
+    
+    should "return the parent's setup block in the context's setup blocks" do
+      assert(subject._assert_setups.include?(@base_block))
+    end
+
+  end
+  
+  
+  
+  class NestedTeardownTest < BasicTest
+
+    subject do
+      @base_block = lambda{ @nested_something = true }
+      Assert::Context.teardown(&@base_block)
+      class NestedTeardownTestContext < Assert::Context
+        teardown{ @not_nested = true }
+      end
+      NestedTeardownTestContext
+    end
+    
+    should "return the parent's teardown block in the context's teardown blocks" do
+      assert(subject._assert_teardowns.include?(@base_block))
+    end
+
   end
 
 
 
   class AssertionsTest < BasicTest
-
-    should have_class_methods :setup, :teardown, :_assert_setups, :_assert_teardowns
-    should have_class_methods :before, :after
 
     should have_instance_methods :assert_block
     should have_instance_methods :assert_raises, :assert_raise
