@@ -1,6 +1,6 @@
 require 'test_belt'
 
-require 'assert/view'
+require 'assert/view/base'
 require 'assert/suite'
 
 module Assert::View

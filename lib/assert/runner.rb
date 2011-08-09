@@ -1,4 +1,4 @@
-require 'assert/view'
+require 'assert/view/terminal'
 
 module Assert
   class Runner
