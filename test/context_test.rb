@@ -123,6 +123,84 @@ class Assert::Context
   end
 
 
+  class SetupAndTeardownTest < BasicTest
+
+    subject{ Assert::Context.new }
+
+    should have_class_methods :setup, :teardown, :_assert_setups, :_assert_teardowns
+    should have_class_methods :before, :after
+
+    should "add the setup block to the context's collection of setup blocks" do
+      setup_block = lambda{ @something = true }
+      subject.class.setup(&setup_block)
+      assert(subject.class._assert_setups.include?(setup_block))
+    end
+
+    should "add the teardown block to the context's collection of teardown blocks" do
+      teardown_block = lambda{ @something = false }
+      subject.class.teardown(&teardown_block)
+      assert(subject.class._assert_teardowns.include?(teardown_block))
+    end
+
+  end
+
+
+
+  class NestedSetupTest < BasicTest
+    
+    setup do
+      @base_block = lambda{ @nested_something = true }
+      Assert::Context.setup(&@base_block)
+      class NestedSetupTestContext < Assert::Context
+        setup{ @not_nested = true }
+      end
+    end
+
+    subject{ NestedSetupTestContext }
+    
+    should "return the parent's setup block in the context's setup blocks" do
+      assert(subject._assert_setups.include?(@base_block))
+    end
+    should "have the parent's setup block as the first in the collection" do
+      assert(subject._assert_setups.size > 1) # make sure it's not the only setup block
+      assert_equal(@base_block, subject._assert_setups.first)
+    end
+
+    teardown do
+      Assert.suite.delete(NestedSetupTestContext)
+    end
+
+  end
+  
+  
+  
+  class NestedTeardownTest < BasicTest
+    
+    setup do
+      @base_block = lambda{ @nested_something = true }
+      Assert::Context.teardown(&@base_block)
+      class NestedTeardownTestContext < Assert::Context
+        teardown{ @not_nested = true }
+      end
+    end
+
+    subject{ NestedTeardownTestContext }
+    
+    should "return the parent's teardown block in the context's teardown blocks" do
+      assert(subject._assert_teardowns.include?(@base_block))
+    end
+    should "have the parent's teardown block as the last in the collection" do
+      assert(subject._assert_teardowns.size > 1) # make sure it's not the only setup block
+      assert_equal(@base_block, subject._assert_teardowns.last)
+    end
+    
+    teardown do
+      Assert.suite.delete(NestedTeardownTestContext)
+    end
+
+  end
+
+
 
   class AssertionsTest < BasicTest
 

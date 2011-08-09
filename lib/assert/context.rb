@@ -1,3 +1,4 @@
+require 'assert/suite'
 require 'assert/assertions'
 require 'assert/result'
 
@@ -18,6 +19,34 @@ module Assert
 
     # put all logic here to keep context instances pure for running tests
     class << self
+
+      def setup(&block)
+        raise ArgumentError, "please provide a setup block" unless block_given?
+        @_assert_setups ||= []
+        @_assert_setups << block
+      end
+      alias_method :before, :setup
+
+      def teardown(&block)
+        raise ArgumentError, "please provide a teardown block" unless block_given?
+        @_assert_teardowns ||= []
+        @_assert_teardowns << block
+      end
+      alias_method :after, :teardown
+
+      def _assert_setups
+        setups = if superclass.respond_to?(:_assert_setups)
+          superclass._assert_setups
+        end
+        (setups || []) + (@_assert_setups || [])
+      end
+
+      def _assert_teardowns
+        teardowns = if superclass.respond_to?(:_assert_teardowns)
+          superclass._assert_teardowns
+        end
+        (@_assert_teardowns || []) + (teardowns || [])
+      end
 
     end
 
