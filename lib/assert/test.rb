@@ -76,7 +76,6 @@ module Assert
         @results.size
       end
     end
-    alias_method :assert_count, :result_count
 
     def <=>(other_test)
       self.name <=> other_test.name

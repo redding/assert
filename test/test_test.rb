@@ -16,7 +16,7 @@ class Assert::Test
 
     should have_readers :name, :code, :context
     should have_accessor :results
-    should have_instance_methods :run, :result_count, :assert_count, :assertion_result
+    should have_instance_methods :run, :result_count, :assertion_result
 
     should "know its name" do
       assert_equal "should do stuff", subject.name
@@ -312,14 +312,14 @@ class Assert::Test
     include TestBelt
 
     context "a Test that runs and has assertions that depend on a setup block"
-    
+
     setup do
       Assert::Context.setup do # should probably create it's own context class
         @needed = true
       end
       subject.run
     end
-    
+
     subject do
       Assert::Test.new("assert setup has run", ::Proc.new do
         assert(@needed)
@@ -335,19 +335,19 @@ class Assert::Test
     end
 
   end
-  
+
   class WithTeardownTest < Test::Unit::TestCase
     include TestBelt
 
     context "a Test that runs and has assertions that depend on a teardown block"
-    
+
     setup do
       Assert::Context.teardown do # should probably create it's own context class
         raise("Teardown failed!")
       end
       subject.run
     end
-    
+
     subject do
       Assert::Test.new("assert setup has run", ::Proc.new do
         # nothing needed

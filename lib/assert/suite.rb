@@ -18,27 +18,25 @@ module Assert
       self[context_klass] ||= []
     end
 
+    def contexts
+      self.keys.sort{|a,b| a.to_s <=> b.to_s}
+    end
+
     def tests
       prep
       self.values.flatten
     end
 
-    def count(thing)
-      case thing
-      when :tests
-        test_count
-      when :assertions
-        assert_count
-      when :passed, :pass
-        assert_count(:pass)
-      when :failed, :fail
-        assert_count(:fail)
-      when :skipped, :skip
-        assert_count(:skip)
-      when :errored, :error
-        assert_count(:error)
-      else
-        0
+    def ordered_tests(klass=nil)
+      prep
+      (klass.nil? ? self.contexts : [klass]).inject([]) do |tests, klass|
+        tests += (self[klass] || [])
+      end
+    end
+
+    def ordered_results(klass=nil)
+      ordered_tests(klass).inject([]) do |results, test|
+        results += test.results
       end
     end
 
@@ -47,9 +45,28 @@ module Assert
       count_tests(klass.nil? ? self.values : [self[klass]])
     end
 
-    def assert_count(type=nil)
+    def result_count(type=nil)
       prep
-      count_asserts(self.values, type)
+      count_results(self.values, type)
+    end
+
+    def count(thing)
+      case thing
+      when :tests
+        test_count
+      when :results
+        result_count
+      when :passed, :pass
+        result_count(:pass)
+      when :failed, :fail
+        result_count(:fail)
+      when :skipped, :skip
+        result_count(:skip)
+      when :errored, :error
+        result_count(:error)
+      else
+        0
+      end
     end
 
     protected
@@ -68,8 +85,8 @@ module Assert
       test_sets.inject(0) {|count, tests| count += tests.size}
     end
 
-    def count_asserts(test_sets, type)
-      self.values.flatten.inject(0){|count, test| count += test.assert_count(type) }
+    def count_results(test_sets, type)
+      self.values.flatten.inject(0){|count, test| count += test.result_count(type) }
     end
 
     def prep

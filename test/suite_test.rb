@@ -15,8 +15,9 @@ class Assert::Suite
     context "an basic suite"
     subject { Assert::Suite.new }
 
-    should have_instance_methods :<<, :tests
-    should have_instance_methods :count, :test_count, :assert_count
+    should have_instance_methods :<<
+    should have_instance_methods :contexts, :tests, :ordered_tests, :ordered_results
+    should have_instance_methods :count, :test_count, :result_count
     should have_accessors :start_time, :end_time
     should have_instance_method :run_time
 
@@ -81,24 +82,32 @@ class Assert::Suite
       assert_equal 5, subject.test_count
     end
 
+    should "know its ordered tests" do
+      assert_equal subject.test_count, subject.ordered_tests.size
+    end
+
     should "know how many assertions it has" do
-      assert_equal 6, subject.assert_count
+      assert_equal 6, subject.result_count
+    end
+
+    should "know its ordered results" do
+      assert_equal subject.test_count, subject.ordered_tests.size
     end
 
     should "know how many pass assertions it has" do
-      assert_equal 2, subject.assert_count(:pass)
+      assert_equal 2, subject.result_count(:pass)
     end
 
     should "know how many fail assertions it has" do
-      assert_equal 2, subject.assert_count(:fail)
+      assert_equal 2, subject.result_count(:fail)
     end
 
     should "know how many skip assertions it has" do
-      assert_equal 1, subject.assert_count(:skip)
+      assert_equal 1, subject.result_count(:skip)
     end
 
     should "know how many error assertions it has" do
-      assert_equal 1, subject.assert_count(:error)
+      assert_equal 1, subject.result_count(:error)
     end
 
   end
@@ -109,28 +118,28 @@ class Assert::Suite
       assert_equal subject.test_count, subject.count(:tests)
     end
 
-    should "count its assertions" do
-      assert_equal subject.assert_count, subject.count(:assertions)
+    should "count its results" do
+      assert_equal subject.result_count, subject.count(:results)
     end
 
     should "count its passed assertions" do
-      assert_equal subject.assert_count(:pass), subject.count(:passed)
-      assert_equal subject.assert_count(:pass), subject.count(:pass)
+      assert_equal subject.result_count(:pass), subject.count(:passed)
+      assert_equal subject.result_count(:pass), subject.count(:pass)
     end
 
     should "count its failed assertions" do
-      assert_equal subject.assert_count(:fail), subject.count(:failed)
-      assert_equal subject.assert_count(:fail), subject.count(:fail)
+      assert_equal subject.result_count(:fail), subject.count(:failed)
+      assert_equal subject.result_count(:fail), subject.count(:fail)
     end
 
     should "count its skipped assertions" do
-      assert_equal subject.assert_count(:skip), subject.count(:skipped)
-      assert_equal subject.assert_count(:skip), subject.count(:skip)
+      assert_equal subject.result_count(:skip), subject.count(:skipped)
+      assert_equal subject.result_count(:skip), subject.count(:skip)
     end
 
     should "count its errored assertions" do
-      assert_equal subject.assert_count(:error), subject.count(:errored)
-      assert_equal subject.assert_count(:error), subject.count(:error)
+      assert_equal subject.result_count(:error), subject.count(:errored)
+      assert_equal subject.result_count(:error), subject.count(:error)
     end
 
   end
@@ -141,12 +150,6 @@ class Assert::Suite
     should "build test instances to run" do
       assert_kind_of Assert::Test, subject.tests.first
     end
-
-=begin TODO: not needed?
-    should "build the same number of context instances as its tests" do
-      assert_equal subject.count(:tests), subject.contexts.size
-    end
-=end
 
   end
 

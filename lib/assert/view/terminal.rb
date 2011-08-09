@@ -43,8 +43,7 @@ module Assert::View
 
       if count(:tests) > 0
         block.call if block
-        #self.io_puts(:details)
-        #self.io_puts(:summary)
+        self.io_puts(:detailed_results)
       end
 
       self.io_puts(:results_stmt)
@@ -61,8 +60,15 @@ module Assert::View
       "\nLoaded suite (#{tcount} #{tplur})  "
     end
 
+    def detailed_results
+      @suite.tests
+      "\n\n" + @suite.ordered_results.each do |result|
+        result_io_msg(result.to_s, result.to_sym)
+      end.inspect#join("\n\n")
+    end
+
     def results_stmt
-      rplur = (rcount = count(:assertions)) == 1 ? "result" : "results"
+      rplur = (rcount = count(:results)) == 1 ? "result" : "results"
       [ "\n",
         "#{rcount} test #{rplur}: ", results_breakdown, "\n\n",
         "(#{run_time} seconds)"
@@ -81,12 +87,13 @@ module Assert::View
       end
     end
 
-    def result_io_msg(msg, result_s)
-      io_msg(msg, :term_styles => self.result_styles[result_s])
+    def result_io_msg(msg, result_sym)
+      io_msg(msg, :term_styles => self.result_styles[result_sym])
     end
 
     def io_msg(msg, opts={})
       val = super
+      puts caller.inspect if val.kind_of?(::Array)
       if color = term_style(*opts[:term_styles])
         val = color + val + term_style(:reset)
       else
@@ -101,7 +108,5 @@ module Assert::View
     end
 
   end
-
-
 
 end
