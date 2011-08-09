@@ -312,16 +312,16 @@ class Assert::Test
     include TestBelt
 
     context "a Test that runs and has assertions that depend on a setup block"
-    
+
     setup do
       Assert::Context.setup do # should probably create it's own context class
         @needed = true
       end
       subject.run
     end
-    
+
     subject do
-      Assert::Test.new("assert setup has run", ::Proc.new do
+      Assert::Test.new("test with setup", ::Proc.new do
         assert(@needed)
       end, Assert::Context)
     end
@@ -335,21 +335,21 @@ class Assert::Test
     end
 
   end
-  
+
   class WithTeardownTest < Test::Unit::TestCase
     include TestBelt
 
     context "a Test that runs and has assertions that depend on a teardown block"
-    
+
     setup do
       Assert::Context.teardown do # should probably create it's own context class
         raise("Teardown failed!")
       end
       subject.run
     end
-    
+
     subject do
-      Assert::Test.new("assert setup has run", ::Proc.new do
+      Assert::Test.new("test with teardown", ::Proc.new do
         # nothing needed
       end, Assert::Context)
     end
@@ -360,6 +360,30 @@ class Assert::Test
 
     should "have 1 error result" do
       assert_equal 1, subject.result_count(:error)
+    end
+
+  end
+
+  class WithDescTest < Test::Unit::TestCase
+    include TestBelt
+
+    context "a Test that's context has a description"
+
+    setup do
+      @description = "something amazing"
+      Assert::Context.desc(@description)
+      @test_name = "is really amazing"
+    end
+
+    subject do
+      Assert::Test.new(@test_name, ::Proc.new do
+        # nothing needed
+      end, Assert::Context)
+    end
+    
+    should "have a name that is the context's descriptions and the name passed" do
+      expected = [ @description, @test_name ].join(" ")
+      assert_equal(expected, subject.name)
     end
 
   end

@@ -48,6 +48,18 @@ module Assert
         (@_assert_teardowns || []) + (teardowns || [])
       end
 
+      def desc(description)
+        raise ArgumentError, "no context description provided" if description.nil?
+        @_assert_desc ||= [ description ]
+      end
+
+      def _assert_descs
+        descs = if superclass.respond_to?(:_assert_descs)
+          superclass._assert_descs
+        end
+        (descs || []) + (@_assert_desc || [])
+      end
+
     end
 
     def initialize(running_test = nil)

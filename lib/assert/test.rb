@@ -10,9 +10,9 @@ module Assert
     attr_accessor :results
 
     def initialize(name, code, context)
-      @name = name
-      @code = code
       @context = context
+      @name = name_from_context(name)
+      @code = code
       @results = ResultSet.new
     end
 
@@ -83,6 +83,10 @@ module Assert
     end
 
     protected
+
+    def name_from_context(name)
+      (@context._assert_descs + [ name ]).join(" ")
+    end
 
     def capture_results(view=nil, &block)
       begin
