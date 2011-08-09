@@ -1,3 +1,5 @@
+require 'assert/result_set'
+
 module Assert
   class Test
 
@@ -11,11 +13,12 @@ module Assert
       @name = name
       @code = code
       @context = context
-      @results = []
+      @results = ResultSet.new
     end
 
-    def run
-      begin
+    def run(view=nil)
+      @results.view = view
+      capture_results do
         run_scope = @context.new(self)
         # TODO: setups
         if @code.kind_of?(::Proc)
@@ -24,12 +27,12 @@ module Assert
           run_scope.send(@code.to_s)
         end
         # TODO: teardowns
-      rescue Result::Base => err
-        @results << err
-      rescue Exception => err
-        @results << Result::Error.new(err)
       end
+      @results.view = nil
+      @results
     end
+
+
 
     # capture a pass or fail result from a given block and return it
     # pass and fail results are captured here to not break test execution.
@@ -67,6 +70,19 @@ module Assert
 
     def <=>(other_test)
       self.name <=> other_test.name
+    end
+
+    protected
+
+    def capture_results(view=nil, &block)
+      begin
+        block.call if block
+      rescue Result::Base => err
+        @results << err
+      rescue Exception => exp
+        err = Result::Error.new(exp)
+        @results << err
+      end
     end
 
   end
