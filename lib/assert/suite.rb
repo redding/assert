@@ -18,16 +18,9 @@ module Assert
       self[context_klass] ||= []
     end
 
-    def contexts
+    def tests
       prep
-
-      # collect the set of context instances for the suite and return
-      # this is the set of things a runner needs to run
-      contexts = []
-      self.each do |klass, tests|
-        tests.each {|test| contexts << klass.new(test)}
-      end
-      contexts
+      self.values.flatten
     end
 
     def count(thing)
@@ -84,9 +77,9 @@ module Assert
     def prep
       if @prepared != true
         # look for local public methods starting with 'test_'and add
-        self.each do |klass, tests|
-          local_public_test_methods(klass).each do |meth|
-            tests << Test.new(meth.to_s, meth)
+        self.each do |context, tests|
+          local_public_test_methods(context).each do |meth|
+            tests << Test.new(meth.to_s, meth, context)
           end
           tests.uniq
         end

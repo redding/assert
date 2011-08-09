@@ -21,25 +21,8 @@ module Assert
 
     end
 
-    def initialize(test=nil)
-      return if test.nil? || !test.kind_of?(Test)
-      @_test = test
-    end
-
-    def run
-      begin
-        # TODO: setups
-        if @_test.code.kind_of?(::Proc)
-          instance_eval(&@_test.code)
-        elsif self.respond_to?(@_test.code.to_s)
-          self.send(@_test.code.to_s)
-        end
-        # TODO: teardowns
-      rescue Result::Base => err
-        @_test.results << err
-      rescue Exception => err
-        @_test.results << Result::Error.new(err)
-      end
+    def initialize(running_test = nil)
+      @__running_test__ = running_test
     end
 
     # raise Result::Fail if the assertion is false or nil
@@ -75,20 +58,10 @@ module Assert
 
     protected
 
-    # capture a pass or fail result from a given block and return it
-    # handles adding any fail_msg to fail results.
-    def assertion_result
-      begin
-        yield if block_given?
-      rescue Result::Pass => err
-        @_test.results << err
-        err
-      rescue Result::Fail => err
-        @_test.results << err
-        err
-      else
-        raise RuntimeError, "no pass or fail result captured"
-      end
+    # ask the running test to handle the result of the assertion and decide how to store
+    # that result
+    def assertion_result(&block)
+      @__running_test__.assertion_result(&block)
     end
 
     # Returns a Proc that will output a custom message along with the default fail message.

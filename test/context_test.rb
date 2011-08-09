@@ -12,7 +12,9 @@ class Assert::Context
 
     context "a context"
     subject do
-      Assert::Context.new(Assert::Test.new("something", ::Proc.new {}))
+      context_klass = Assert::Context
+      test = Assert::Test.new("something", ::Proc.new {}, context_klass)
+      context_klass.new(test)
     end
 
     should have_instance_methods :assert, :refute
