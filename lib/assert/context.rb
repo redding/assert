@@ -48,6 +48,27 @@ module Assert
         (@_assert_teardowns || []) + (teardowns || [])
       end
 
+      def desc(description)
+        raise ArgumentError, "no context description provided" if description.nil?
+        @_assert_desc ||= [ description ]
+      end
+
+      def _assert_descs
+        descs = if superclass.respond_to?(:_assert_descs)
+          superclass._assert_descs
+        end
+        (descs || []) + (@_assert_desc || [])
+      end
+      
+      def subject(&block)
+        raise ArgumentError, "please provide a subject block" unless block_given?
+        @_assert_subject = block
+      end
+      
+      def _assert_subject
+        @_assert_subject
+      end
+
     end
 
     def initialize(running_test = nil)
@@ -84,6 +105,12 @@ module Assert
       raise Result::Fail, (fail_message(fail_msg) { }).call
     end
     alias_method :flunk, :fail
+    
+    def subject
+      if subject_block = self.class._assert_subject
+        instance_eval(&subject_block)
+      end
+    end
 
     protected
 

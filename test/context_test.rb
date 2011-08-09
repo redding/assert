@@ -147,7 +147,7 @@ class Assert::Context
 
 
   class NestedSetupTest < BasicTest
-    
+
     setup do
       @base_block = lambda{ @nested_something = true }
       Assert::Context.setup(&@base_block)
@@ -157,7 +157,7 @@ class Assert::Context
     end
 
     subject{ NestedSetupTestContext }
-    
+
     should "return the parent's setup block in the context's setup blocks" do
       assert(subject._assert_setups.include?(@base_block))
     end
@@ -171,11 +171,11 @@ class Assert::Context
     end
 
   end
-  
-  
-  
+
+
+
   class NestedTeardownTest < BasicTest
-    
+
     setup do
       @base_block = lambda{ @nested_something = true }
       Assert::Context.teardown(&@base_block)
@@ -185,7 +185,7 @@ class Assert::Context
     end
 
     subject{ NestedTeardownTestContext }
-    
+
     should "return the parent's teardown block in the context's teardown blocks" do
       assert(subject._assert_teardowns.include?(@base_block))
     end
@@ -193,9 +193,72 @@ class Assert::Context
       assert(subject._assert_teardowns.size > 1) # make sure it's not the only setup block
       assert_equal(@base_block, subject._assert_teardowns.last)
     end
-    
+
     teardown do
       Assert.suite.delete(NestedTeardownTestContext)
+    end
+
+  end
+
+
+
+  class ContextDescTest < BasicTest
+
+    setup do
+      @parent_description = "assert context description"
+      Assert::Context.desc(@parent_description)
+      description = @description = "random context class description"
+      @context_class = Class.new(Assert::Context) do
+        desc description
+      end
+    end
+
+    subject{ @context_class.new }
+
+    should have_class_methods :desc, :_assert_descs
+
+    should "return the description with it's parent's descriptions" do
+      descriptions = subject.class._assert_descs
+      assert(descriptions.include?(@parent_description))
+      assert(descriptions.include?(@description))
+    end
+
+    should "return the descriptions in the correct order" do
+      descriptions = subject.class._assert_descs
+      assert_equal(@parent_description, descriptions.first)
+      assert_equal(@description, descriptions.last)
+    end
+
+    teardown do
+      Assert::Context.instance_variable_set("@_assert_desc", nil)
+    end
+
+  end
+
+
+
+  class SubjectTest < BasicTest
+
+    setup do
+      subject = @subject = "SUBJECT!"
+      subject_block = @subject_block = lambda{ subject }
+      @context_class = Class.new(Assert::Context) do
+        subject(&subject_block)
+      end
+    end
+
+    subject{ @context_class.new }
+
+    should have_class_methods :subject, :_assert_subject
+
+    should have_instance_methods :subject
+
+    should "store the subject block on the class" do
+      assert_equal(@subject_block, subject.class._assert_subject)
+    end
+
+    should "return the subject defined when called on the instance" do
+      assert_equal(@subject, subject.subject)
     end
 
   end
