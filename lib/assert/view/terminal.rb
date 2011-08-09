@@ -38,12 +38,11 @@ module Assert::View
       }.merge(opts[:result_styles] || {})
     end
 
-    def render(*args, &runner)
-      self.io_puts(self.load_stmt)
+    def render(*args, &block)
+      self.io_print(self.load_stmt)
 
       if count(:tests) > 0
-        # yield the output IO to the runner so it can add any result output
-        runner.call(@out) if runner
+        block.call if block
         #self.io_puts(:details)
         #self.io_puts(:summary)
       end
@@ -51,17 +50,21 @@ module Assert::View
       self.io_puts(:results_stmt)
     end
 
+    def print_result(result)
+      self.io_print(result_io_msg(result.abbrev, result.to_sym))
+    end
+
     protected
 
     def load_stmt
       tplur = (tcount = count(:tests)) == 1 ? "test": "tests"
-      "\nLoaded suite (#{tcount} #{tplur})"
+      "\nLoaded suite (#{tcount} #{tplur})  "
     end
 
     def results_stmt
-      rplur = (rcount = count(:assertions)) == 1 ? "result" : "result"
+      rplur = (rcount = count(:assertions)) == 1 ? "result" : "results"
       [ "\n",
-        "#{rcount} #{rplur}: ", results_breakdown, "\n\n",
+        "#{rcount} test #{rplur}: ", results_breakdown, "\n\n",
         "(#{run_time} seconds)"
       ].join('')
     end
@@ -70,14 +73,16 @@ module Assert::View
       if count(:passed) == count(:tests)
         result_io_msg("all passed", :passed)
       else
-        [:passed, :failed, :skipped, :errored].inject([]) do |results, result|
-          results << (result_io_msg("#{count(result)} #{result}", result) if count(result) > 0)
+        [:passed, :failed, :skipped, :errored].inject([]) do |results, result_sym|
+          results << (if count(result_sym) > 0
+            result_io_msg("#{count(result_sym)} #{result_sym}", result_sym)
+          end)
         end.compact.join(', ')
       end
     end
 
-    def result_io_msg(msg, result)
-      io_msg(msg, :term_styles => self.result_styles[result])
+    def result_io_msg(msg, result_s)
+      io_msg(msg, :term_styles => self.result_styles[result_s])
     end
 
     def io_msg(msg, opts={})

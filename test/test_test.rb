@@ -34,7 +34,7 @@ class Assert::Test
     context "that runs"
     before do
       Assert::Suite[{Assert::Context => [subject]}].tests.each do |test|
-        test.run
+        @test_run_results = test.run
       end
     end
   end
@@ -48,6 +48,7 @@ class Assert::Test
 
     should "have 0 results" do
       assert_equal 0, subject.result_count
+      assert_equal subject.result_count, @test_run_results.size
     end
 
   end
@@ -62,6 +63,7 @@ class Assert::Test
 
     should "have 1 result" do
       assert_equal 1, subject.result_count
+      assert_equal subject.result_count, @test_run_results.size
     end
 
     should "have a passing result" do
@@ -80,6 +82,7 @@ class Assert::Test
 
     should "have 1 result" do
       assert_equal 1, subject.result_count
+      assert_equal subject.result_count, @test_run_results.size
     end
 
     should "have a failing result" do
@@ -98,6 +101,7 @@ class Assert::Test
 
     should "have 1 result" do
       assert_equal 1, subject.result_count
+      assert_equal subject.result_count, @test_run_results.size
     end
 
     should "have a skipped result" do
@@ -115,6 +119,7 @@ class Assert::Test
 
     should "have 1 result" do
       assert_equal 1, subject.result_count
+      assert_equal subject.result_count, @test_run_results.size
     end
 
     should "have a errored result" do
@@ -133,6 +138,7 @@ class Assert::Test
 
     should "have 2 total results" do
       assert_equal 2, subject.result_count
+      assert_equal subject.result_count, @test_run_results.size
     end
 
     should "have 1 pass result" do
@@ -163,6 +169,7 @@ class Assert::Test
 
     should "have 2 total results" do
       assert_equal 2, subject.result_count
+      assert_equal subject.result_count, @test_run_results.size
     end
 
     should "have 1 pass result" do
@@ -195,6 +202,7 @@ class Assert::Test
 
     should "have 2 total results" do
       assert_equal 2, subject.result_count
+      assert_equal subject.result_count, @test_run_results.size
     end
 
     should "have 1 pass result" do
@@ -227,6 +235,7 @@ class Assert::Test
 
     should "have 2 total results" do
       assert_equal 2, subject.result_count
+      assert_equal subject.result_count, @test_run_results.size
     end
 
     should "have 2 pass results" do
@@ -256,6 +265,7 @@ class Assert::Test
 
     should "have 2 total results" do
       assert_equal 2, subject.result_count
+      assert_equal subject.result_count, @test_run_results.size
     end
 
     should "have 0 pass results" do
@@ -285,6 +295,7 @@ class Assert::Test
 
     should "have 2 total results" do
       assert_equal 2, subject.result_count
+      assert_equal subject.result_count, @test_run_results.size
     end
 
     should "have 0 pass results" do

@@ -12,6 +12,10 @@ module Assert::View
       raise NotImplementedError
     end
 
+    def print_result(result)
+      io_print(result.abbrev)
+    end
+
     protected
 
     def io_puts(msg, opts={})

@@ -11,7 +11,7 @@ module Assert::View
     context "the view base"
     subject { Assert::View::Base.new(Assert::Suite.new, StringIO.new("", "w+")) }
 
-    should have_instance_method :render
+    should have_instance_method :render, :print_result
 
     should "complain if you call its render method directly" do
       assert_raises NotImplementedError do
