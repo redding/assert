@@ -26,14 +26,14 @@ module Assert
     protected
 
     def tests_to_run
-      tests = @suite.contexts
+      tests = @suite.tests
 
       # order tests randomly
       max = tests.size
       srand
       seed = srand % 0xFFFF
       srand seed
-      #tests.sort.sort_by { rand max }
+      tests.sort.sort_by { rand max }
       tests
     end
 

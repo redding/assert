@@ -9,7 +9,7 @@ class Assert::Runner
   class BasicTest < Test::Unit::TestCase
     include TestBelt
 
-    context "an basic suite"
+    context "a basic runner"
     subject { Assert::Runner.new(Assert::Suite.new, StringIO.new("", "w+")) }
 
     should have_instance_method :run, :count
