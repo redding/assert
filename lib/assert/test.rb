@@ -18,7 +18,7 @@ module Assert
 
     def run(view=nil)
       @results.view = view
-      capture_results do
+      begin
         run_scope = @context.new(self)
         run_setup(run_scope)
         if @code.kind_of?(::Proc)
@@ -26,7 +26,16 @@ module Assert
         elsif run_scope.respond_to?(@code.to_s)
           run_scope.send(@code.to_s)
         end
-        run_teardown(run_scope)
+      rescue Result::TestSkipped => err
+        @results << Result::Skip.new(self.name, err)
+      rescue Exception => err
+        @results << Result::Error.new(self.name, err)
+      ensure
+        begin
+          run_teardown(run_scope) if run_scope
+        rescue Exception => teardown_err
+          @results << Result::Error.new(self.name, teardown_err)
+        end
       end
       @results.view = nil
       @results
@@ -75,16 +84,6 @@ module Assert
 
     def name_from_context(name)
       (@context._assert_descs + [ name ]).join(" ")
-    end
-
-    def capture_results(view=nil, &block)
-      begin
-        block.call if block
-      rescue Result::TestSkipped => err
-        @results << Result::Skip.new(self.name, err)
-      rescue Exception => err
-        @results << Result::Error.new(self.name, err)
-      end
     end
 
   end
