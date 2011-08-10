@@ -14,54 +14,29 @@ module Assert
 
 
 
-    def assert_raises(*args)
-      fail_desc = String === args.last ? args.pop : nil
-      exceptions = args
-      begin
-        yield
-      rescue Exception => exception
-      end
-      sentence = exceptions_sentence(exceptions)
-      assertion, what_failed_msg = if exception
-        test = exceptions.any? do |exp|
-          exp.instance_of?(Module) ? exception.kind_of?(exp) : exp == exception.class
-        end
-        details = exception_details(exception, "#{sentence} exception expected, not:")
-        [ test, details ]
-      else
-        [ false, "#{sentence} exception expected but nothing was raised." ]
-      end
-      fail_desc = "#{fail_desc}\n#{what_failed_msg}"
+    def assert_raises(*args, &block)
+      assertion, fail_desc = catch_exception_and_check(args, :raises, &block)
       assert(assertion, fail_desc, "")
     end
     alias_method :assert_raise, :assert_raises
 
-    def assert_nothing_raised(*args)
-      msg = String === args.last ? args.pop : nil
-      msg = msg.to_s + "\n" if msg
-      exceptions = args
-      begin
-        yield
-      rescue Exception => exception
-        details = "#{msg}#{exceptions_sentence(exceptions)} not expected, but was raised:"
-        fail = (exceptions.empty? || exceptions.any? do |exp|
-          exp.instance_of?(Module) ? exception.kind_of?(exp) : exp == exception.class
-        end)
-        assert(!fail, exception_details(exception, details))
-        exception
-      else
-        assertion_result{ pass }
-      end
+    def assert_nothing_raised(*args, &block)
+      assertion, fail_desc = catch_exception_and_check(args, :not_raises, &block)
+      assert(!assertion, fail_desc, "")
     end
     alias_method :assert_not_raises, :assert_nothing_raised
     alias_method :assert_not_raise, :assert_nothing_raised
+
+
 
     def assert_kind_of(klass, instance, fail_desc=nil)
       what_failed_msg = "Expected #{instance.inspect} to be a kind of #{klass}, not #{instance.class}"
       assert(instance.kind_of?(klass), fail_desc, what_failed_msg)
     end
 
-    def refute_kind_of
+    def assert_not_kind_of(klass, instance, fail_desc=nil)
+      what_failed_msg = "#{instance.inspect} was not expected to be a kind of #{klass}"
+      assert(!instance.kind_of?(klass), fail_desc, what_failed_msg)
     end
 
 
@@ -105,16 +80,50 @@ module Assert
 
     private
 
+    # common stuff from assert_raises and assert_nothing_raised
+    def catch_exception_and_check(args, which, &block)
+      fail_desc = String === args.last ? args.pop : nil
+      exceptions = args
+      begin
+        yield
+      rescue Exception => exception
+      end
+      assertion, what_failed_msg = if exception
+        test = exceptions.empty? || exceptions.any? do |exp|
+          exp.instance_of?(Module) ? exception.kind_of?(exp) : exp == exception.class
+        end
+        [ test, exception_details(exception, which) ]
+      else
+        [ false, exception_details(exception, which) ]
+      end
+      what_failed_msg = "#{exceptions_sentence(exceptions)} #{what_failed_msg}"
+      fail_desc = [ fail_desc, what_failed_msg ].compact.join("\n")
+      [ assertion, fail_desc ]
+    end
+
     # from minitest
     # TODO: without filtered backtrace
-    def exception_details(exception, what_failed_msg)
-      [ what_failed_msg,
-        "Class: <#{exception.class}>",
-        "Message: <#{exception.message.inspect}>",
-        "---Backtrace---",
-        exception.backtrace.join("\n"),
-        "---------------"
-      ].join("\n")
+    def exception_details(exception, which)
+      if exception
+        what_failed_msg = case(which)
+          when :raises
+            "exception expected, not:"
+          when :not_raises
+            "exception was not expected, but was raised:"
+        end
+        [ what_failed_msg,
+          "Class: <#{exception.class}>",
+          "Message: <#{exception.message.inspect}>",
+          "---Backtrace---",
+          exception.backtrace.join("\n"),
+          "---------------"
+        ].compact.join("\n")
+      else
+        case(which)
+        when :raises
+          "exception expected but nothing was raised."
+        end
+      end
     end
 
     def exceptions_sentence(exceptions)
