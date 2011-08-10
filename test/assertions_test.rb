@@ -44,6 +44,10 @@ module Assert::Assertions
     end
     subject{ @test }
 
+    should "have 2 total results" do
+      assert_equal 2, subject.result_count
+    end
+
     should "have 1 pass result" do
       assert_equal 1, subject.result_count(:pass)
     end
@@ -84,6 +88,10 @@ module Assert::Assertions
     end
 
     subject{ @test }
+
+    should "have 2 total results" do
+      assert_equal 2, subject.result_count
+    end
 
     should "have 1 pass result" do
       assert_equal 1, subject.result_count(:pass)
@@ -127,6 +135,10 @@ module Assert::Assertions
       @test.run
     end
     subject{ @test }
+
+    should "have 3 total results" do
+      assert_equal 3, subject.result_count
+    end
 
     should "have 1 pass result" do
       assert_equal 1, subject.result_count(:pass)
@@ -181,8 +193,11 @@ module Assert::Assertions
 
     subject{ @test }
 
+    should "have 4 total results" do
+      assert_equal 4, subject.result_count
+    end
+
     should "have 2 pass result" do
-      skip  # TODO: its calling assertion_result and creating an error result
       assert_equal 2, subject.result_count(:pass)
     end
 
@@ -230,6 +245,10 @@ module Assert::Assertions
     end
     subject{ @test }
 
+    should "have 2 total results" do
+      assert_equal 2, subject.result_count
+    end
+
     should "have 1 pass result" do
       assert_equal 1, subject.result_count(:pass)
     end
@@ -269,6 +288,10 @@ module Assert::Assertions
       @test.run
     end
     subject{ @test }
+
+    should "have 2 total results" do
+      assert_equal 2, subject.result_count
+    end
 
     should "have 1 pass result" do
       assert_equal 1, subject.result_count(:pass)
@@ -312,6 +335,10 @@ module Assert::Assertions
     end
     subject{ @test }
 
+    should "have 2 total results" do
+      assert_equal 2, subject.result_count
+    end
+
     should "have 1 pass result" do
       assert_equal 1, subject.result_count(:pass)
     end
@@ -351,6 +378,10 @@ module Assert::Assertions
       @test.run
     end
     subject{ @test }
+
+    should "have 2 total results" do
+      assert_equal 2, subject.result_count
+    end
 
     should "have 1 pass result" do
       assert_equal 1, subject.result_count(:pass)
@@ -394,6 +425,10 @@ module Assert::Assertions
     end
     subject{ @test }
 
+    should "have 2 total results" do
+      assert_equal 2, subject.result_count
+    end
+
     should "have 1 pass result" do
       assert_equal 1, subject.result_count(:pass)
     end
@@ -433,6 +468,10 @@ module Assert::Assertions
       @test.run
     end
     subject{ @test }
+
+    should "have 2 total results" do
+      assert_equal 2, subject.result_count
+    end
 
     should "have 1 pass result" do
       assert_equal 1, subject.result_count(:pass)
@@ -476,6 +515,10 @@ module Assert::Assertions
     end
     subject{ @test }
 
+    should "have 2 total results" do
+      assert_equal 2, subject.result_count
+    end
+
     should "have 1 pass result" do
       assert_equal 1, subject.result_count(:pass)
     end
@@ -518,6 +561,10 @@ module Assert::Assertions
       @test.run
     end
     subject{ @test }
+
+    should "have 2 total results" do
+      assert_equal 2, subject.result_count
+    end
 
     should "have 1 pass result" do
       assert_equal 1, subject.result_count(:pass)
@@ -563,6 +610,10 @@ module Assert::Assertions
     end
     subject{ @test }
 
+    should "have 2 total results" do
+      assert_equal 2, subject.result_count
+    end
+
     should "have 1 pass result" do
       assert_equal 1, subject.result_count(:pass)
     end
@@ -602,6 +653,10 @@ module Assert::Assertions
       @test.run
     end
     subject{ @test }
+
+    should "have 2 total results" do
+      assert_equal 2, subject.result_count
+    end
 
     should "have 1 pass result" do
       assert_equal 1, subject.result_count(:pass)
@@ -645,6 +700,10 @@ module Assert::Assertions
     end
     subject{ @test }
 
+    should "have 2 total results" do
+      assert_equal 2, subject.result_count
+    end
+
     should "have 1 pass result" do
       assert_equal 1, subject.result_count(:pass)
     end
@@ -684,6 +743,10 @@ module Assert::Assertions
       @test.run
     end
     subject{ @test }
+
+    should "have 2 total results" do
+      assert_equal 2, subject.result_count
+    end
 
     should "have 1 pass result" do
       assert_equal 1, subject.result_count(:pass)

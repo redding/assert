@@ -31,7 +31,7 @@ module Assert
 
     def assert_kind_of(klass, instance, fail_desc=nil)
       what_failed_msg = [
-        "Expected #{instance.inspect} to be a kind, ",
+        "Expected #{instance.inspect} to be a kind ",
         "of #{klass}, not #{instance.class}."
       ].join
       assert(instance.kind_of?(klass), fail_desc, what_failed_msg)
