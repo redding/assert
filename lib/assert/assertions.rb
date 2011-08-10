@@ -138,31 +138,58 @@ module Assert
 
 
 
-    # TODO: ???
-    def assert_empty
+    def assert_empty(collection, fail_desc=nil)
+      what_failed_msg = "Expected #{collection.inspect} to be empty."
+      assert(collection.empty?, fail_desc, what_failed_msg)
     end
 
-    def assert_includes
+    def assert_not_empty(collection, fail_desc=nil)
+      what_failed_msg = "Expected #{collection.inspect} to not be empty."
+      assert(!collection.empty?, fail_desc, what_failed_msg)
+    end
+    alias_method :refute_empty, :assert_not_empty
+
+
+
+    def assert_includes(collection, object, fail_desc=nil)
+      what_failed_msg = "Expected #{collection.inspect} to include #{object.inspect}."
+      assert(collection.includes?(object), fail_desc, what_failed_msg)
     end
 
-    def assert_nil
+    def assert_not_included(collection, object, fail_desc=nil)
+      what_failed_msg = "Expected #{collection.inspect} to not include #{object.inspect}."
+      assert(!collection.includes?(object), fail_desc, what_failed_msg)
     end
+    alias_method :refute_includes, :assert_not_included
 
-    def assert_throws
+
+
+    def assert_nil(object, fail_desc=nil)
+      what_failed_msg = "Expected #{object.inspect} to be nil."
+      assert(object.nil?, fail_desc, what_failed_msg)
     end
-
-    # TODO: Ignored
-
-    def assert_send
+    
+    def assert_not_nil(object, fail_desc=nil)
+      what_failed_msg = "Expected #{object.inspect} to not be nil."
+      assert(!object.nil?, fail_desc, what_failed_msg)
     end
+    alias_method :refute_nil, :assert_not_nil
+    
+    
 
-    def assert_operator
-    end
-
-    def assert_in_epsilon
-    end
-
-    def assert_in_delta
+    IGNORED_ASSERT_MACROS = [ :assert_throws, :assert_nothing_thrown, :assert_send, 
+      :assert_operator, :refute_operator, :assert_in_epsilon, :refute_in_epsilon,
+      :assert_in_delta, :refute_in_delta
+    ]
+    def method_missing(method, *args, &block)
+      if IGNORED_ASSERT_MACROS.include?(method.to_sym)
+        ignore([
+          "The assert macro '#{method}' is not supported. Please use ",
+          "another macro or the basic assert."
+        ].join)
+      else
+        super
+      end
     end
 
     private
