@@ -15,13 +15,13 @@ module Assert
 
 
     def assert_raises(*args, &block)
-      assertion, fail_desc = catch_exception_and_check(args, :raises, &block)
+      assertion, fail_desc = check_exception(args, :raises, &block)
       assert(assertion, fail_desc, "")
     end
     alias_method :assert_raise, :assert_raises
 
     def assert_nothing_raised(*args, &block)
-      assertion, fail_desc = catch_exception_and_check(args, :not_raises, &block)
+      assertion, fail_desc = check_exception(args, :not_raises, &block)
       assert(!assertion, fail_desc, "")
     end
     alias_method :assert_not_raises, :assert_nothing_raised
@@ -30,12 +30,18 @@ module Assert
 
 
     def assert_kind_of(klass, instance, fail_desc=nil)
-      what_failed_msg = "Expected #{instance.inspect} to be a kind of #{klass}, not #{instance.class}."
+      what_failed_msg = [
+        "Expected #{instance.inspect} to be a kind, ",
+        "of #{klass}, not #{instance.class}."
+      ].join
       assert(instance.kind_of?(klass), fail_desc, what_failed_msg)
     end
 
     def assert_not_kind_of(klass, instance, fail_desc=nil)
-      what_failed_msg = "#{instance.inspect} was not expected to be a kind of #{klass}."
+      what_failed_msg = [
+        "#{instance.inspect} was not expected to be a ",
+        "kind of #{klass}."
+      ].join
       assert(!instance.kind_of?(klass), fail_desc, what_failed_msg)
     end
     alias_method :refute_kind_of, :assert_not_kind_of
@@ -43,12 +49,18 @@ module Assert
 
 
     def assert_instance_of(klass, instance, fail_desc=nil)
-      what_failed_msg = "Expected #{instance.inspect} to be an instance of #{klass}, not #{instance.class}."
+      what_failed_msg = [
+        "Expected #{instance.inspect} to be an instance ",
+        "of #{klass}, not #{instance.class}."
+      ].join
       assert(instance.instance_of?(klass), fail_desc, what_failed_msg)
     end
 
     def assert_not_instance_of(klass, instance, fail_desc=nil)
-      what_failed_msg = "#{instance.inspect} was not expected to be an instance of #{klass}."
+      what_failed_msg = [
+        "#{instance.inspect} was not expected to be an ",
+        "instance of #{klass}."
+      ].join
       assert(!instance.instance_of?(klass), fail_desc, what_failed_msg)
     end
     alias_method :refute_instance_of, :assert_not_instance_of
@@ -56,12 +68,18 @@ module Assert
 
 
     def assert_respond_to(object, method, fail_desc=nil)
-      what_failed_msg = "Expected #{object.inspect} (#{object.class}) to respond to ##{method}."
+      what_failed_msg = [
+        "Expected #{object.inspect} (#{object.class}) to ",
+        "respond to ##{method}."
+      ].join
       assert(object.respond_to?(method), fail_desc, what_failed_msg)
     end
 
     def assert_not_respond_to(object, method, fail_desc=nil)
-      what_failed_msg = "#{object.inspect} (#{object.class}) not expected to respond to ##{method}."
+      what_failed_msg = [
+        "#{object.inspect} (#{object.class}) not expected to ",
+        "respond to ##{method}."
+      ].join
       assert(!object.respond_to?(method), fail_desc, what_failed_msg)
     end
     alias_method :refute_respond_to, :assert_not_respond_to
@@ -69,12 +87,18 @@ module Assert
 
 
     def assert_same(left, right, fail_desc=nil)
-      what_failed_msg = "Expected #{left} (#{left.object_id}) to be the same as #{right} (#{right.object_id})."
+      what_failed_msg = [
+        "Expected #{left} (#{left.object_id}) to be the same ",
+        "as #{right} (#{right.object_id})."
+      ].join
       assert(right.equal?(left), fail_desc, what_failed_msg)
     end
 
     def assert_not_same(left, right, fail_desc=nil)
-      what_failed_msg = "#{left} (#{left.object_id}) not expected to be the same as #{right} (#{right.object_id})."
+      what_failed_msg = [
+        "#{left} (#{left.object_id}) not expected to be the same ",
+        "as #{right} (#{right.object_id})."
+      ].join
       assert(!right.equal?(left), fail_desc, what_failed_msg)
     end
     alias_method :refute_same, :assert_not_same
@@ -87,7 +111,9 @@ module Assert
     end
 
     def assert_not_equal(left, right, fail_desc=nil)
-      what_failed_msg = "#{left.inspect} not expected to be equal to #{right.inspect}."
+      what_failed_msg = [
+        "#{left.inspect} not expected to be equal ", "to #{right.inspect}."
+      ].join
       assert(right != left, fail_desc, what_failed_msg)
     end
     alias_method :refute_equal, :assert_not_equal
@@ -101,7 +127,9 @@ module Assert
     end
 
     def assert_not_match(left, right, fail_desc=nil)
-      what_failed_msg = "#{left.inspect} not expected to match #{right.inspect}."
+      what_failed_msg = [
+        "#{left.inspect} not expected to ", "match #{right.inspect}."
+      ].join
       left = /#{Regexp.escape(left)}/ if String === left && String === right
       assert(left !~ right, fail_desc, what_failed_msg)
     end
@@ -139,8 +167,7 @@ module Assert
 
     private
 
-    # common stuff from assert_raises and assert_nothing_raised
-    def catch_exception_and_check(args, which, &block)
+    def check_exception(args, which, &block)
       fail_desc = String === args.last ? args.pop : nil
       exceptions = args
       begin
@@ -160,8 +187,7 @@ module Assert
       [ assertion, fail_desc ]
     end
 
-    # from minitest
-    # TODO: without filtered backtrace
+    # TODO: use filtered backtrace
     def exception_details(exception, which)
       if exception
         what_failed_msg = case(which)
