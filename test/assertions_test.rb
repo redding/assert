@@ -776,5 +776,34 @@ module Assert::Assertions
     end
 
   end
+  
+  class IgnoredTest < BasicTest
+    
+    setup do
+      @tests = Assert::Assertions::IGNORED_ASSERT_MACROS.collect do |macro|
+        Assert::Test.new("ignored #{macro} test", lambda do
+          self.send(macro, "doesn't matter")
+        end, @context_klass)
+      end
+      @expected_messages = Assert::Assertions::IGNORED_ASSERT_MACROS.collect do |macro|
+        [ "The assert macro '#{macro}' is not supported. Please use ",
+          "another macro or the basic assert."
+        ].join
+      end
+      @results = @tests.collect(&:run).flatten
+    end
+    subject{ @results }
+    
+    should "have an ignored result for each macro in the constant" do
+      subject.each do |result|
+        assert_kind_of Assert::Result::Ignore, result
+      end
+      assert_equal(Assert::Assertions::IGNORED_ASSERT_MACROS.size, subject.size)
+    end
+    should "have a custom ignore message for each macro in the constant" do
+      assert_equal(@expected_messages, subject.collect(&:message))
+    end
+    
+  end
 
 end

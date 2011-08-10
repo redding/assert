@@ -145,9 +145,10 @@ module Assert
     ]
     def method_missing(method, *args, &block)
       if IGNORED_ASSERT_MACROS.include?(method.to_sym)
-        # TODO:
-        # ignore with message
-        #   with the message offer alternatives
+        ignore([
+          "The assert macro '#{method}' is not supported. Please use ",
+          "another macro or the basic assert."
+        ].join)
       else
         super
       end
