@@ -89,15 +89,15 @@ module Assert
     alias_method :refute, :assert_not
 
     # adds a Skip result to the end of the test's results and breaks test execution
-    def skip
-      raise Result::TestSkipped
+    def skip(skip_msg=nil)
+      raise(Result::TestSkipped, skip_msg)
     end
 
     # adds a Pass result to the end of the test's results
     # does not break test execution
-    def pass
+    def pass(pass_msg=nil)
       capture_result do |test_name, backtrace|
-        Assert::Result::Pass.new(test_name, nil, backtrace)
+        Assert::Result::Pass.new(test_name, pass_msg, backtrace)
       end
     end
 
@@ -110,6 +110,14 @@ module Assert
       end
     end
     alias_method :flunk, :fail
+
+    # adds an Ignore result to the end of the test's results
+    # does not break test execution
+    def ignore(ignore_msg=nil)
+      capture_result do |test_name, backtrace|
+        Assert::Result::Ignore.new(test_name, ignore_msg, backtrace)
+      end
+    end
 
     def subject
       if subject_block = self.class._assert_subject

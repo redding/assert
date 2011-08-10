@@ -14,14 +14,14 @@ module Assert::Result
     should have_readers :test_name, :message, :abbrev, :caller
     should have_instance_methods :to_sym, :to_s, :trace
 
-    RESULTS = [:pass?, :fail?, :error?, :skip?]
-    should have_instance_methods *RESULTS
+    Assert::Result.types.keys.each do |type|
+      should have_instance_method "#{type}?"
 
-    RESULTS.each do |meth|
-      should "not be #{meth}" do
-        assert_equal false, subject.send(meth)
+      should "not be #{type}" do
+        assert_equal false, subject.send("#{type}?")
       end
     end
+
   end
 
   class ToStringTest < BaseTest
@@ -52,10 +52,9 @@ module Assert::Result
       assert_equal true, subject.pass?
     end
 
-    NOT_RESULTS = [:fail?, :error?, :skip?]
-    NOT_RESULTS.each do |meth|
-      should "not be #{meth}" do
-        assert_equal false, subject.send(meth)
+    Assert::Result.types.keys.reject{|k| k == :pass}.each do |type|
+      should "not be #{type}?" do
+        assert_equal false, subject.send("#{type}?")
       end
     end
 
@@ -82,10 +81,9 @@ module Assert::Result
       assert_equal true, subject.fail?
     end
 
-    NOT_RESULTS = [:pass?, :error?, :skip?]
-    NOT_RESULTS.each do |meth|
-      should "not be #{meth}" do
-        assert_equal false, subject.send(meth)
+    Assert::Result.types.keys.reject{|k| k == :fail}.each do |type|
+      should "not be #{type}?" do
+        assert_equal false, subject.send("#{type}?")
       end
     end
 
@@ -102,13 +100,32 @@ module Assert::Result
     end
   end
 
-  # TODO: ignored result
-
-  class SkippedRuntimeErrorTest < Test::Unit::TestCase
+  class IgnoreTest < Test::Unit::TestCase
     include TestBelt
 
-    should "be a runtime error" do
-      assert_kind_of RuntimeError, Assert::Result::TestSkipped.new
+    context "an ignore result"
+    subject { Assert::Result::Ignore.new("test", "ignored", []) }
+
+    should "be ignore?" do
+      assert_equal true, subject.ignore?
+    end
+
+    Assert::Result.types.keys.reject{|k| k == :ignore}.each do |type|
+      should "not be #{type}?" do
+        assert_equal false, subject.send("#{type}?")
+      end
+    end
+
+    should "show 'I' for its abbrev" do
+      assert_equal 'I', subject.abbrev
+    end
+
+    should "know its to_sym" do
+      assert_equal :ignored, subject.to_sym
+    end
+
+    should "include IGNORE in its to_s" do
+      assert subject.to_s.include?("IGNORE")
     end
   end
 
@@ -133,6 +150,14 @@ module Assert::Result
 
   end
 
+  class SkippedRuntimeErrorTest < Test::Unit::TestCase
+    include TestBelt
+
+    should "be a runtime error" do
+      assert_kind_of RuntimeError, Assert::Result::TestSkipped.new
+    end
+  end
+
   class SkipTest < FromExceptionTest
     context "a skip result"
     subject { Assert::Result::Skip.new("test", @exception) }
@@ -141,10 +166,9 @@ module Assert::Result
       assert_equal true, subject.skip?
     end
 
-    NOT_RESULTS = [:pass?, :fail?, :error?]
-    NOT_RESULTS.each do |meth|
-      should "not be #{meth}" do
-        assert_equal false, subject.send(meth)
+    Assert::Result.types.keys.reject{|k| k == :skip}.each do |type|
+      should "not be #{type}?" do
+        assert_equal false, subject.send("#{type}?")
       end
     end
 
@@ -171,10 +195,9 @@ module Assert::Result
       assert_equal true, subject.error?
     end
 
-    NOT_RESULTS = [:pass?, :fail?, :skip?]
-    NOT_RESULTS.each do |meth|
-      should "not be #{meth}" do
-        assert_equal false, subject.send(meth)
+    Assert::Result.types.keys.reject{|k| k == :error}.each do |type|
+      should "not be #{type}?" do
+        assert_equal false, subject.send("#{type}?")
       end
     end
 
