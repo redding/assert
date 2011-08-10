@@ -28,7 +28,7 @@ module Assert::View
 
     def io_msg(msg, opts={})
       if msg.kind_of?(::Symbol) && self.respond_to?(msg)
-        self.send(msg)#.to_s
+        self.send(msg).to_s
       else
         msg.to_s
       end

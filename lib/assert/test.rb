@@ -44,24 +44,6 @@ module Assert
       end
     end
 
-    # capture a pass or fail result from a given block and return it
-    # pass and fail results are captured here to not break test execution.
-    # skip or error results never get handled here b/c they break
-    # execution before this code runs.
-    def assertion_result
-      begin
-        yield if block_given?
-      rescue Result::Pass => err
-        @results << err
-        err
-      rescue Result::Fail => err
-        @results << err
-        err
-      else
-        raise RuntimeError, "no pass or fail result captured"
-      end
-    end
-
     def fail_results
       @results.select{|r| r.kind_of?(Result::Fail) }
     end
@@ -98,11 +80,10 @@ module Assert
     def capture_results(view=nil, &block)
       begin
         block.call if block
-      rescue Result::Base => err
-        @results << err
-      rescue Exception => exp
-        err = Result::Error.new(exp)
-        @results << err
+      rescue Result::TestSkipped => err
+        @results << Result::Skip.new(self.name, err)
+      rescue Exception => err
+        @results << Result::Error.new(self.name, err)
       end
     end
 

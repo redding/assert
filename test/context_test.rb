@@ -18,19 +18,6 @@ class Assert::Context
     end
 
     should have_instance_methods :assert, :assert_not, :refute
-
-    should "make assertions" do
-      assert_nothing_raised do
-        subject.assert(1==1)
-      end
-    end
-
-    should "make refutations" do
-      assert_nothing_raised do
-        subject.refute(1==0)
-      end
-    end
-
   end
 
 
@@ -40,7 +27,7 @@ class Assert::Context
     should have_instance_methods :skip
 
     should "skip a test with a method call" do
-      assert_raises Assert::Result::Skip do
+      assert_raises Assert::Result::TestSkipped do
         subject.skip
       end
     end
@@ -54,9 +41,7 @@ class Assert::Context
     should have_instance_methods :pass
 
     should "pass a test with a method call" do
-      assert_raises Assert::Result::Pass do
-        subject.pass
-      end
+      assert_kind_of Assert::Result::Pass, subject.pass
     end
 
     should "pass asserts that are not false or nil" do
@@ -81,31 +66,19 @@ class Assert::Context
     should have_instance_methods :fail, :flunk
 
     should "fail tests with a method call" do
-      assert_raises Assert::Result::Fail do
-        subject.fail
-      end
-    end
-
-    should "fail tests with a method call and custom message" do
-      begin
-        subject.fail("your test failed")
-      rescue Assert::Result::Fail => err
-        assert_equal "your test failed", err.message
-      end
+      assert_kind_of Assert::Result::Fail, subject.fail
     end
 
     should "flunk tests with a method call" do
-      assert_raises Assert::Result::Fail do
-        subject.flunk
-      end
+      assert_kind_of Assert::Result::Fail, subject.flunk
+    end
+
+    should "fail tests with a method call and custom message" do
+      assert_equal "your test failed", subject.fail("your test failed").message
     end
 
     should "flunk tests with a method call and custom message" do
-      begin
-        subject.flunk("your assertion flunked")
-      rescue Assert::Result::Fail => err
-        assert_equal "your assertion flunked", err.message
-      end
+      assert_equal "your test flunked", subject.flunk("your test flunked").message
     end
 
     should "fail asserts that are false" do

@@ -79,7 +79,7 @@ module Assert
     def assert(assertion, fail_desc=nil, what_failed_msg=nil)
       what_failed_msg ||= "Failed assert."
       msg = fail_message(fail_desc) { what_failed_msg }
-      assertion_result { assertion ? pass : fail(msg) }
+      assertion ? pass : fail(msg)
     end
 
     # the opposite of assert, raise Result::Fail if the assertion is not false or nil
@@ -88,22 +88,26 @@ module Assert
     end
     alias_method :refute, :assert_not
 
-    # call this method to break test execution at any point in the test
-    # adds a Skip result to the end of the test's results
+    # adds a Skip result to the end of the test's results and breaks test execution
     def skip
-      raise Result::Skip
+      raise Result::TestSkipped
     end
 
-    # call this method to break test execution at any point in the test
     # adds a Pass result to the end of the test's results
+    # does not break test execution
     def pass
-      raise Result::Pass
+      capture_result do |test_name, backtrace|
+        Assert::Result::Pass.new(test_name, nil, backtrace)
+      end
     end
 
-    # call this method to break test execution at any point in the test
     # adds a Fail result to the end of the test's results
+    # does not break test execution
     def fail(fail_msg=nil)
-      raise Result::Fail, (fail_message(fail_msg) { }).call
+      capture_result do |test_name, backtrace|
+        message = (fail_message(fail_msg) { }).call
+        Assert::Result::Fail.new(test_name, message, backtrace)
+      end
     end
     alias_method :flunk, :fail
 
@@ -115,10 +119,12 @@ module Assert
 
     protected
 
-    # ask the running test to handle the result of the assertion and decide how to store
-    # that result
-    def assertion_result(&block)
-      @__running_test__.assertion_result(&block)
+    def capture_result
+      if block_given?
+        result = yield @__running_test__.name, caller
+        @__running_test__.results << result
+        result
+      end
     end
 
     # Returns a Proc that will output a custom message along with the default fail message.
