@@ -47,9 +47,13 @@ module Assert
       assert(instance.instance_of?(klass), fail_desc, what_failed_msg)
     end
 
-    def refute_instance_of
+    def assert_not_instance_of(klass, instance, fail_desc=nil)
+      what_failed_msg = "#{instance.inspect} was not expected to be an instance of #{klass}."
+      assert(!instance.instance_of?(klass), fail_desc, what_failed_msg)
     end
-
+    alias_method :refute_instance_of, :assert_not_instance_of
+    
+    
 
     def assert_respond_to(object, method, fail_desc=nil)
       what_failed_msg = "Expected #{object.inspect} (#{object.class}) to respond to ##{method}."
