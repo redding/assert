@@ -1,3 +1,4 @@
+require 'assert/result'
 require 'assert/result_set'
 
 module Assert
@@ -44,24 +45,15 @@ module Assert
       end
     end
 
-    def fail_results
-      @results.select{|r| r.kind_of?(Result::Fail) }
-    end
-
-    def error_results
-      @results.select{|r| r.kind_of?(Result::Error) }
+    Assert::Result.types.each do |name, klass|
+      define_method "#{name}_results" do
+        @results.select{|r| r.kind_of?(klass) }
+      end
     end
 
     def result_count(type=nil)
-      case type
-      when :pass
-        @results.select{|r| r.kind_of?(Result::Pass)}.size
-      when :fail
-        fail_results.size
-      when :skip
-        @results.select{|r| r.kind_of?(Result::Skip)}.size
-      when :error
-        error_results.size
+      if Assert::Result.types.include?(type)
+        self.send("#{type}_results").size
       else
         @results.size
       end

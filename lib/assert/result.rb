@@ -1,6 +1,23 @@
 module Assert; end
 module Assert::Result
 
+  class Base; end
+  class Pass < Base; end
+  class Fail < Base; end
+  class FromException < Base; end
+  class Error < FromException; end
+  class Skip < FromException; end
+
+  class << self
+    def types
+      { :pass => Pass,
+        :fail => Fail,
+        :skip => Skip,
+        :error => Error
+      }
+    end
+  end
+
   class Base
 
     attr_reader :test_name, :message, :backtrace, :abbrev
@@ -12,8 +29,8 @@ module Assert::Result
       @message = message
     end
 
-    [:pass?, :fail?, :error?, :skip?].each do |meth|
-      define_method("#{meth}") { false }
+    Assert::Result.types.keys.each do |meth|
+      define_method("#{meth}?") { false }
     end
 
     def abbrev; nil; end

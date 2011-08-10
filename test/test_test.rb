@@ -1,6 +1,7 @@
 require 'test_belt'
 require 'assert/test'
 
+require 'assert/result'
 require 'assert/context'
 require 'assert/suite'
 
@@ -17,6 +18,10 @@ class Assert::Test
     should have_readers :name, :code, :context
     should have_accessor :results
     should have_instance_methods :run, :result_count
+
+    Assert::Result.types.keys.each do |type|
+      should have_instance_method "#{type}_results"
+    end
 
     should "know its name" do
       assert_equal "should do stuff", subject.name
@@ -178,6 +183,7 @@ class Assert::Test
 
     should "have 1 skip result" do
       assert_equal 1, subject.result_count(:skip)
+      assert_equal 1, subject.skip_results.size
     end
 
     should "have 0 fail results" do
@@ -211,6 +217,7 @@ class Assert::Test
 
     should "have 1 error result" do
       assert_equal 1, subject.result_count(:error)
+      assert_equal 1, subject.error_results.size
     end
 
     should "have 0 fail results" do
@@ -240,6 +247,7 @@ class Assert::Test
 
     should "have 2 pass results" do
       assert_equal 2, subject.result_count(:pass)
+      assert_equal 2, subject.pass_results.size
     end
 
     should "have 1 fail results" do
@@ -274,6 +282,7 @@ class Assert::Test
 
     should "have 2 fail results" do
       assert_equal 2, subject.result_count(:fail)
+      assert_equal 2, subject.fail_results.size
     end
 
   end
