@@ -165,7 +165,7 @@ module Assert
 
 
     def assert_nil(object, fail_desc=nil)
-      what_failed_msg = "Expected #{object.inspect} to be nil."
+      what_failed_msg = "Expected nil, not #{object.inspect}."
       assert(object.nil?, fail_desc, what_failed_msg)
     end
     

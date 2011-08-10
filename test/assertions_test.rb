@@ -1,7 +1,36 @@
-require 'test_belt'
-require 'assert/context'
-require 'assert/test'
+require 'test/helper'
 
+class Assert::Assertions::BasicTest < Assert::Context
+  setup do
+    @context = Factory.context.new
+  end
+  subject{ @context }
+
+  INSTANCE_METHODS = [ 
+    :assert_block, :assert_not_block, :refute_block
+  ]
+  #should "have instance methods #{INSTANCE_METHODS.join(", ")}" do
+  #  INSTANCE_METHODS.each do |method|
+  #    assert_respond_to subject, method
+  #  end
+  #end
+  def test_context_has_assertion_instance_methods
+    INSTANCE_METHODS.each do |method|
+      assert_respond_to subject, method
+    end
+  end
+
+  class AssertBlockTest < BasicTest
+    setup do
+
+    end
+
+
+  end
+
+end
+
+=begin
 module Assert::Assertions
 
   class BasicTest < Test::Unit::TestCase
@@ -776,9 +805,9 @@ module Assert::Assertions
     end
 
   end
-  
+
   class IgnoredTest < BasicTest
-    
+
     setup do
       @tests = Assert::Assertions::IGNORED_ASSERT_MACROS.collect do |macro|
         Assert::Test.new("ignored #{macro} test", lambda do
@@ -793,7 +822,7 @@ module Assert::Assertions
       @results = @tests.collect(&:run).flatten
     end
     subject{ @results }
-    
+
     should "have an ignored result for each macro in the constant" do
       subject.each do |result|
         assert_kind_of Assert::Result::Ignore, result
@@ -803,7 +832,8 @@ module Assert::Assertions
     should "have a custom ignore message for each macro in the constant" do
       assert_equal(@expected_messages, subject.collect(&:message))
     end
-    
+
   end
 
 end
+=end
