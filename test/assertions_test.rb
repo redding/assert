@@ -50,9 +50,15 @@ module Assert::Assertions
       assert_equal 1, subject.result_count(:fail)
     end
 
+=begin
     should "have the correct failure message" do
       fail_result = subject.fail_results.first
       assert_equal @expected_message, fail_result.message
+    end
+=end
+    
+    class MessagesTest < AssertBlockTest
+      
     end
 
   end
@@ -78,23 +84,29 @@ module Assert::Assertions
     should "have 1 fail result" do
       assert_equal 1, subject.result_count(:fail)
     end
-
+    
+    class MessagesTest < AssertNotBlockTest
+      
+    end
+=begin
     should "have the correct failure message" do
       fail_result = subject.fail_results.first
       assert_equal @expected_message, fail_result.message
     end
+=end
 
   end
 
-  # TODO: check message passing
   class AssertRaisesTest < BasicTest
 
     setup do
+      fail_desc = "raise what I want"
       @test = Assert::Test.new("assert raises test", lambda do
-        assert_raises(StandardError){ raise(StandardError) }  # pass
-        assert_raises(RuntimeError){ raise(StandardError) }   # fail
-        assert_raises{ true }                                 # fail
+        assert_raises(StandardError, RuntimeError){ raise(StandardError) }  # pass
+        assert_raises(RuntimeError, fail_desc){ raise(StandardError) }      # fail
+        assert_raises(fail_desc){ true }                                    # fail
       end, @context_klass)
+      @expected_message = "\n#{fail_desc}"
       @test.run
     end
 
@@ -104,9 +116,18 @@ module Assert::Assertions
       assert_equal 1, subject.result_count(:pass)
     end
 
-    should "have 2 fail result" do
+    should "have 2 fail results" do
       assert_equal 2, subject.result_count(:fail)
     end
+
+=begin
+    should "have the correct failure message" do
+      fail_result = subject.fail_results[0]
+      assert_equal @expected_message, fail_result.message
+      fail_result = subject.fail_results[1]
+      assert_equal @expected_message, fail_result.message
+    end
+=end
 
   end
 

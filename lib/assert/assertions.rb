@@ -12,29 +12,30 @@ module Assert
     end
     alias_method :refute_block, :assert_not_block
 
-    # TODO: skip exception handling, see minitest assertion
+
+
     def assert_raises(*args)
-      msg = String === args.last ? args.pop : nil
-      msg = msg.to_s + "\n" if msg
+      fail_desc = String === args.last ? args.pop : nil
       exceptions = args
       begin
         yield
       rescue Exception => exception
-        details = "#{msg}#{exceptions_sentence(exceptions)} exception expected, not:"
-        pass = exceptions.any? do |exp|
+      end
+      sentence = exceptions_sentence(exceptions)
+      assertion, what_failed_msg = if exception
+        test = exceptions.any? do |exp|
           exp.instance_of?(Module) ? exception.kind_of?(exp) : exp == exception.class
         end
-        assert(pass, exception_details(exception, details))
-        exception
+        details = exception_details(exception, "#{sentence} exception expected, not:")
+        [ test, details ]
       else
-        assertion_result do
-          fail("#{msg}#{exceptions_sentence(exceptions)} expected but nothing was raised.")
-        end
+        [ false, "#{sentence} exception expected but nothing was raised." ]
       end
+      fail_desc = "#{fail_desc}\n#{what_failed_msg}"
+      assert(assertion, fail_desc, "")
     end
     alias_method :assert_raise, :assert_raises
 
-    # TODO: not supported in minitest
     def assert_nothing_raised(*args)
       msg = String === args.last ? args.pop : nil
       msg = msg.to_s + "\n" if msg
@@ -106,8 +107,8 @@ module Assert
 
     # from minitest
     # TODO: without filtered backtrace
-    def exception_details(exception, msg)
-      [ msg,
+    def exception_details(exception, what_failed_msg)
+      [ what_failed_msg,
         "Class: <#{exception.class}>",
         "Message: <#{exception.message.inspect}>",
         "---Backtrace---",
@@ -117,8 +118,8 @@ module Assert
     end
 
     def exceptions_sentence(exceptions)
-      if exceptions.size == 1
-        exceptions.first.to_s
+      if exceptions.size <= 1
+        (exceptions.first || "An").to_s
       else
         "#{exceptions[0..-2].join(", ")} or #{exceptions[-1]}"
       end
