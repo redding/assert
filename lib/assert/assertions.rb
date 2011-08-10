@@ -137,7 +137,7 @@ module Assert
     alias_method :assert_no_match, :assert_not_match
 
 
-
+    
     IGNORED_ASSERT_MACROS = [ :assert_empty, :refute_empty, :assert_includes, :refute_includes,
       :assert_nil, :assert_not_nil, :refute_nil, :assert_throws, :assert_nothing_thrown, 
       :assert_send, :assert_operator, :refute_operator, :assert_in_epsilon, :refute_in_epsilon,
@@ -145,7 +145,9 @@ module Assert
     ]
     def method_missing(method, *args, &block)
       if IGNORED_ASSERT_MACROS.include?(method.to_sym)
-        # ignore the macro
+        # TODO:
+        # ignore with message
+        #   with the message offer alternatives
       else
         super
       end
