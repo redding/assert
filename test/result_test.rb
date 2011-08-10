@@ -3,6 +3,32 @@ require 'test_belt'
 require 'assert/result'
 
 module Assert::Result
+
+  class BacktraceTest < Test::Unit::TestCase
+    include TestBelt
+
+    context "a result backtrace"
+    subject { Backtrace.new(caller) }
+
+    should have_instance_methods :to_s, :filtered
+
+    should "be an Array" do
+      assert_kind_of ::Array, subject
+    end
+
+    should "render as a string by joining on the newline" do
+      assert_equal subject.join("\n"), subject.to_s
+    end
+
+    should "another backtrace when filtered" do
+      assert_kind_of Backtrace, subject
+    end
+
+    should "default itself when created from nil" do
+      assert_equal ["No backtrace"], Backtrace.new
+    end
+  end
+
   class BaseTest < Test::Unit::TestCase
     include TestBelt
 
@@ -22,9 +48,17 @@ module Assert::Result
       end
     end
 
+    should "nil out empty messages" do
+      assert_equal nil, Assert::Result::Base.new("a test name", "").message
+    end
+
   end
 
   class ToStringTest < BaseTest
+    should "include its test context name in the to_s" do
+      assert subject.to_s.include?(subject.test_name)
+    end
+
     should "include its test name in the to_s" do
       assert subject.to_s.include?(subject.test_name)
     end
@@ -37,8 +71,8 @@ module Assert::Result
       assert subject.to_s.include?(subject.trace)
     end
 
-    should "have a trace with the first non-assert-framework line of the backtrace" do
-      skip # TODO: test this
+    should "have a trace with the first filtered line of the backtrace" do
+      assert_equal subject.backtrace.filtered.first, subject.trace
     end
   end
 

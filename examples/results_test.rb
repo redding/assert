@@ -10,6 +10,10 @@ class ResultsTest < Assert::Context
     assert 1==0
   end
 
+  def test_that_ignores
+    ignore
+  end
+
   def test_that_skips
     skip
   end

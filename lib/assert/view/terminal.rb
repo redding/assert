@@ -1,4 +1,5 @@
 require 'assert/view/base'
+require 'assert/result'
 
 module Assert::View
 
@@ -33,6 +34,7 @@ module Assert::View
       @result_styles = {
         :passed  => :green,
         :failed  => :red,
+        :ignored  => :magenta,
         :skipped => :cyan,
         :errored  => :yellow
       }.merge(opts[:result_styles] || {})
@@ -62,9 +64,9 @@ module Assert::View
 
     def detailed_results
       @suite.tests
-      "\n\n" + @suite.ordered_results.each do |result|
+      "\n\n" + @suite.ordered_results.reverse.collect do |result|
         result_io_msg(result.to_s, result.to_sym)
-      end.inspect#join("\n\n")
+      end.join("\n\n")
     end
 
     def results_stmt
@@ -79,7 +81,7 @@ module Assert::View
       if count(:passed) == count(:tests)
         result_io_msg("all passed", :passed)
       else
-        [:passed, :failed, :skipped, :errored].inject([]) do |results, result_sym|
+        [:passed, :failed, :ignored, :skipped, :errored].inject([]) do |results, result_sym|
           results << (if count(result_sym) > 0
             result_io_msg("#{count(result_sym)} #{result_sym}", result_sym)
           end)
@@ -93,7 +95,6 @@ module Assert::View
 
     def io_msg(msg, opts={})
       val = super
-      puts caller.inspect if val.kind_of?(::Array)
       if color = term_style(*opts[:term_styles])
         val = color + val + term_style(:reset)
       else
