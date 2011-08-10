@@ -112,11 +112,30 @@ module Assert::Result
     end
   end
 
-  class SkipTest < Test::Unit::TestCase
+  class FromExceptionTest < Test::Unit::TestCase
     include TestBelt
 
+    before do
+      begin
+        raise Exception, "test error"
+      rescue Exception => err
+        @exception = err
+      end
+    end
+
+    subject do
+      Assert::Result::FromException.new("test", @exception)
+    end
+
+    should "have the same backtrace as the original exception it was created from" do
+      assert_equal @exception.backtrace, subject.backtrace
+    end
+
+  end
+
+  class SkipTest < FromExceptionTest
     context "a skip result"
-    subject { Assert::Result::Skip.new("test", "skipped", []) }
+    subject { Assert::Result::Skip.new("test", @exception) }
 
     should "be skip?" do
       assert_equal true, subject.skip?
@@ -142,20 +161,10 @@ module Assert::Result
     end
   end
 
-  class ErrorTest < Test::Unit::TestCase
-    include TestBelt
-
+  class ErrorTest < FromExceptionTest
     context "an error result"
-    before do
-      begin
-        raise Exception, "test error"
-      rescue Exception => err
-        @exception = err
-      end
-    end
     subject do
       Assert::Result::Error.new("test", @exception)
-
     end
 
     should "be error?" do
@@ -179,10 +188,6 @@ module Assert::Result
 
     should "include ERRORED in its to_s" do
       assert subject.to_s.include?("ERRORED")
-    end
-
-    should "have the same backtrace as the original exception it was created from" do
-      assert_equal @exception.backtrace, subject.backtrace
     end
 
     should "have a trace created from the original exception's unfiltered backtrace" do

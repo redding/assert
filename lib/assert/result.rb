@@ -53,10 +53,17 @@ module Assert::Result
 
   # TODO: Ignored result??
 
+  # Error and Skip results are built from exceptions being raised
+  class FromException < Base
+    def initialize(test_name, exception)
+      super(test_name, exception.message, exception.backtrace)
+    end
+  end
+
   # raised by the 'skip' context helper to break test execution
   class TestSkipped < RuntimeError; end
 
-  class Skip < Base
+  class Skip < FromException
     def skip?; true; end
     def abbrev; 'S'; end
     def to_sym; :skipped; end
@@ -66,12 +73,7 @@ module Assert::Result
     end
   end
 
-  class Error < Base
-
-    # Error results are built from Exceptions
-    def initialize(test_name, exception)
-      super(test_name, exception.message, exception.backtrace)
-    end
+  class Error < FromException
 
     def error?; true; end
     def abbrev; 'E'; end
