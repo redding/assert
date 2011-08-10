@@ -30,18 +30,20 @@ module Assert
 
 
     def assert_kind_of(klass, instance, fail_desc=nil)
-      what_failed_msg = "Expected #{instance.inspect} to be a kind of #{klass}, not #{instance.class}"
+      what_failed_msg = "Expected #{instance.inspect} to be a kind of #{klass}, not #{instance.class}."
       assert(instance.kind_of?(klass), fail_desc, what_failed_msg)
     end
 
     def assert_not_kind_of(klass, instance, fail_desc=nil)
-      what_failed_msg = "#{instance.inspect} was not expected to be a kind of #{klass}"
+      what_failed_msg = "#{instance.inspect} was not expected to be a kind of #{klass}."
       assert(!instance.kind_of?(klass), fail_desc, what_failed_msg)
     end
+    alias_method :refute_kind_of, :assert_not_kind_of
+
 
 
     def assert_instance_of(klass, instance, fail_desc=nil)
-      what_failed_msg = "Expected #{instance.inspect} to be an instance of #{klass}, not #{instance.class}"
+      what_failed_msg = "Expected #{instance.inspect} to be an instance of #{klass}, not #{instance.class}."
       assert(instance.instance_of?(klass), fail_desc, what_failed_msg)
     end
 
@@ -50,7 +52,7 @@ module Assert
 
 
     def assert_respond_to(object, method, fail_desc=nil)
-      what_failed_msg = "Expected #{object.inspect} (#{object.class}) to respond to ##{method}"
+      what_failed_msg = "Expected #{object.inspect} (#{object.class}) to respond to ##{method}."
       assert(object.respond_to?(method), fail_desc, what_failed_msg)
     end
 

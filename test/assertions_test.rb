@@ -28,6 +28,8 @@ module Assert::Assertions
 
   end
 
+
+
   class AssertBlockTest < BasicTest
 
     setup do
@@ -108,6 +110,8 @@ module Assert::Assertions
     end
 
   end
+
+
 
   class AssertRaisesTest < BasicTest
 
@@ -203,6 +207,88 @@ module Assert::Assertions
         subject.each_with_index do |message, n|
           assert(message.include?(@expected_message[n]))
         end
+      end
+
+    end
+
+  end
+
+
+
+  class AssertKindOfTest < BasicTest
+
+    setup do
+      @test = Assert::Test.new("assert kind of test", lambda do
+        assert_kind_of(String, "object")  # pass
+        assert_kind_of(Array, "object")   # fail
+      end, @context_klass)
+      @test.run
+    end
+    subject{ @test }
+
+    should "have 1 pass result" do
+      assert_equal 1, subject.result_count(:pass)
+    end
+
+    should "have 1 fail result" do
+      assert_equal 1, subject.result_count(:fail)
+    end
+
+    class MessagesTest < AssertKindOfTest
+
+      setup do
+        args = [ Array, "object", "assert kind of shouldn't fail!" ]
+        @test = Assert::Test.new("assert kind of message test", lambda do
+          assert_kind_of(*args)
+        end, @context_klass)
+        @expected_message = "Expected #{args[1].inspect} to be a kind of #{args[0]}, not #{args[1].class}.\n#{args[2]}"
+        @test.run
+        @message = @test.fail_results.first.message
+      end
+      subject{ @message }
+
+      should "have the correct failure message" do
+        assert_equal @expected_message, subject
+      end
+
+    end
+
+  end
+
+  class AssertNotKindOfTest < BasicTest
+
+    setup do
+      @test = Assert::Test.new("assert not kind of test", lambda do
+        assert_not_kind_of(String, "object")  # pass
+        assert_not_kind_of(Array, "object")   # fail
+      end, @context_klass)
+      @test.run
+    end
+    subject{ @test }
+
+    should "have 1 pass result" do
+      assert_equal 1, subject.result_count(:pass)
+    end
+
+    should "have 1 fail result" do
+      assert_equal 1, subject.result_count(:fail)
+    end
+
+    class MessagesTest < AssertNotKindOfTest
+
+      setup do
+        args = [ String, "object", "assert not kind of shouldn't fail!" ]
+        @test = Assert::Test.new("assert not kind of message test", lambda do
+          assert_not_kind_of(*args)
+        end, @context_klass)
+        @expected_message = "#{args[1].inspect} was not expected to be a kind of #{args[0]}.\n#{args[2]}"
+        @test.run
+        @message = @test.fail_results.first.message
+      end
+      subject{ @message }
+
+      should "have the correct failure message" do
+        assert_equal @expected_message, subject
       end
 
     end
