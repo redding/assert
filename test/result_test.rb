@@ -104,6 +104,14 @@ module Assert::Result
 
   # TODO: ignored result
 
+  class SkippedRuntimeErrorTest < Test::Unit::TestCase
+    include TestBelt
+
+    should "be a runtime error" do
+      assert_kind_of RuntimeError, Assert::Result::TestSkipped.new
+    end
+  end
+
   class SkipTest < Test::Unit::TestCase
     include TestBelt
 

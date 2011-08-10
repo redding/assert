@@ -53,6 +53,9 @@ module Assert::Result
 
   # TODO: Ignored result??
 
+  # raised by the 'skip' context helper to break test execution
+  class TestSkipped < RuntimeError; end
+
   class Skip < Base
     def skip?; true; end
     def abbrev; 'S'; end
