@@ -25,7 +25,9 @@ module Assert::Assertions
     should have_instance_methods :assert_not_kind_of, :refute_kind_of
     should have_instance_methods :assert_not_instance_of, :refute_instance_of
     should have_instance_methods :assert_not_respond_to, :refute_respond_to
-    should have_instance_methods :refute_same, :refute_equal, :refute_match
+    should have_instance_methods :assert_not_same, :refute_same
+    should have_instance_methods :assert_not_equal, :refute_equal
+    should have_instance_methods :assert_not_match, :assert_no_match, :refute_match
 
   end
 
@@ -447,6 +449,257 @@ module Assert::Assertions
           assert_not_respond_to(*args)
         end, @context_klass)
         @expected_message = "#{args[0].inspect} (#{args[0].class}) not expected to respond to ##{args[1]}.\n#{args[2]}"
+        @test.run
+        @message = @test.fail_results.first.message
+      end
+      subject{ @message }
+
+      should "have the correct failure message" do
+        assert_equal @expected_message, subject
+      end
+
+    end
+
+  end
+
+  class AssertSameTest < BasicTest
+
+    setup do
+      klass = Class.new
+      object = klass.new
+      @test = Assert::Test.new("assert same test", lambda do
+        assert_same(object, object)     # pass
+        assert_same(object, klass.new)  # fail
+      end, @context_klass)
+      @test.run
+    end
+    subject{ @test }
+
+    should "have 1 pass result" do
+      assert_equal 1, subject.result_count(:pass)
+    end
+
+    should "have 1 fail result" do
+      assert_equal 1, subject.result_count(:fail)
+    end
+
+    class MessagesTest < AssertSameTest
+
+      setup do
+        klass = Class.new
+        args = [ klass.new, klass.new, "assert same shoudn't fail!" ]
+        @test = Assert::Test.new("assert same message test", lambda do
+          assert_same(*args)
+        end, @context_klass)
+        @expected_message = "Expected #{args[0].inspect} (#{args[0].object_id}) to be the same as #{args[1]} (#{args[1].object_id}).\n#{args[2]}"
+        @test.run
+        @message = @test.fail_results.first.message
+      end
+      subject{ @message }
+
+      should "have the correct failure message" do
+        assert_equal @expected_message, subject
+      end
+
+    end
+
+  end
+
+  class AssertNotSameTest < BasicTest
+
+    setup do
+      klass = Class.new
+      object = klass.new
+      @test = Assert::Test.new("assert not same test", lambda do
+        assert_not_same(object, object)     # fail
+        assert_not_same(object, klass.new)  # pass
+      end, @context_klass)
+      @test.run
+    end
+    subject{ @test }
+
+    should "have 1 pass result" do
+      assert_equal 1, subject.result_count(:pass)
+    end
+
+    should "have 1 fail result" do
+      assert_equal 1, subject.result_count(:fail)
+    end
+
+    class MessagesTest < AssertNotSameTest
+
+      setup do
+        klass = Class.new
+        object = klass.new
+        args = [ object, object, "assert not same shoudn't fail!" ]
+        @test = Assert::Test.new("assert not same message test", lambda do
+          assert_not_same(*args)
+        end, @context_klass)
+        @expected_message = "#{args[0].inspect} (#{args[0].object_id}) not expected to be the same as #{args[1]} (#{args[1].object_id}).\n#{args[2]}"
+        @test.run
+        @message = @test.fail_results.first.message
+      end
+      subject{ @message }
+
+      should "have the correct failure message" do
+        assert_equal @expected_message, subject
+      end
+
+    end
+
+  end
+
+
+
+  class AssertEqualTest < BasicTest
+
+    setup do
+      @test = Assert::Test.new("assert equal test", lambda do
+        assert_equal(1, 1)  # pass
+        assert_equal(1, 2)  # fail
+      end, @context_klass)
+      @test.run
+    end
+    subject{ @test }
+
+    should "have 1 pass result" do
+      assert_equal 1, subject.result_count(:pass)
+    end
+
+    should "have 1 fail result" do
+      assert_equal 1, subject.result_count(:fail)
+    end
+
+    class MessagesTest < AssertEqualTest
+
+      setup do
+        args = [ 1, 2, "assert equal shoudn't fail!" ]
+        @test = Assert::Test.new("assert equal message test", lambda do
+          assert_equal(*args)
+        end, @context_klass)
+        @expected_message = "Expected #{args[0].inspect}, not #{args[1].inspect}.\n#{args[2]}"
+        @test.run
+        @message = @test.fail_results.first.message
+      end
+      subject{ @message }
+
+      should "have the correct failure message" do
+        assert_equal @expected_message, subject
+      end
+
+    end
+
+  end
+
+  class AssertNotEqualTest < BasicTest
+
+    setup do
+      @test = Assert::Test.new("assert not equal test", lambda do
+        assert_not_equal(1, 1)  # fail
+        assert_not_equal(1, 2)  # pass
+      end, @context_klass)
+      @test.run
+    end
+    subject{ @test }
+
+    should "have 1 pass result" do
+      assert_equal 1, subject.result_count(:pass)
+    end
+
+    should "have 1 fail result" do
+      assert_equal 1, subject.result_count(:fail)
+    end
+
+    class MessagesTest < AssertNotEqualTest
+
+      setup do
+        args = [ 1, 1, "assert not equal shoudn't fail!" ]
+        @test = Assert::Test.new("assert not equal message test", lambda do
+          assert_not_equal(*args)
+        end, @context_klass)
+        @expected_message = "#{args[0].inspect} not expected to be equal to #{args[1].inspect}.\n#{args[2]}"
+        @test.run
+        @message = @test.fail_results.first.message
+      end
+      subject{ @message }
+
+      should "have the correct failure message" do
+        assert_equal @expected_message, subject
+      end
+
+    end
+
+  end
+
+
+
+  class AssertMatchTest < BasicTest
+
+    setup do
+      @test = Assert::Test.new("assert match test", lambda do
+        assert_match("a string", /a/)     # pass
+        assert_match("a string", "not")   # fail
+      end, @context_klass)
+      @test.run
+    end
+    subject{ @test }
+
+    should "have 1 pass result" do
+      assert_equal 1, subject.result_count(:pass)
+    end
+
+    should "have 1 fail result" do
+      assert_equal 1, subject.result_count(:fail)
+    end
+
+    class MessagesTest < AssertMatchTest
+
+      setup do
+        args = [ "a string", "not", "assert match shoudn't fail!" ]
+        @test = Assert::Test.new("assert match message test", lambda do
+          assert_match(*args)
+        end, @context_klass)
+        @expected_message = "Expected #{args[0].inspect} to match #{args[1].inspect}.\n#{args[2]}"
+        @test.run
+        @message = @test.fail_results.first.message
+      end
+      subject{ @message }
+
+      should "have the correct failure message" do
+        assert_equal @expected_message, subject
+      end
+
+    end
+
+  end
+
+  class AssertNotMatchTest < BasicTest
+
+    setup do
+      @test = Assert::Test.new("assert not match test", lambda do
+        assert_not_match("a string", /a/)     # fail
+        assert_not_match("a string", "not")   # pass
+      end, @context_klass)
+      @test.run
+    end
+    subject{ @test }
+
+    should "have 1 pass result" do
+      assert_equal 1, subject.result_count(:pass)
+    end
+
+    should "have 1 fail result" do
+      assert_equal 1, subject.result_count(:fail)
+    end
+
+    class MessagesTest < AssertNotMatchTest
+
+      setup do
+        args = [ "a string", /a/, "assert not match shoudn't fail!" ]
+        @test = Assert::Test.new("assert not match message test", lambda do
+          assert_not_match(*args)
+        end, @context_klass)
+        @expected_message = "#{args[0].inspect} not expected to match #{args[1].inspect}.\n#{args[2]}"
         @test.run
         @message = @test.fail_results.first.message
       end

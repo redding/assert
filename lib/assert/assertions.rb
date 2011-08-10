@@ -68,24 +68,73 @@ module Assert
 
 
 
-    def assert_same
+    def assert_same(left, right, fail_desc=nil)
+      what_failed_msg = "Expected #{left} (#{left.object_id}) to be the same as #{right} (#{right.object_id})."
+      assert(right.equal?(left), fail_desc, what_failed_msg)
     end
 
-    def refute_same
+    def assert_not_same(left, right, fail_desc=nil)
+      what_failed_msg = "#{left} (#{left.object_id}) not expected to be the same as #{right} (#{right.object_id})."
+      assert(!right.equal?(left), fail_desc, what_failed_msg)
+    end
+    alias_method :refute_same, :assert_not_same
+
+
+
+    def assert_equal(left, right, fail_desc=nil)
+      what_failed_msg = "Expected #{left.inspect}, not #{right.inspect}."
+      assert(right == left, fail_desc, what_failed_msg)
     end
 
+    def assert_not_equal(left, right, fail_desc=nil)
+      what_failed_msg = "#{left.inspect} not expected to be equal to #{right.inspect}."
+      assert(right != left, fail_desc, what_failed_msg)
+    end
+    alias_method :refute_equal, :assert_not_equal
 
-    def assert_equal
+
+
+    def assert_match(left, right, fail_desc=nil)
+      what_failed_msg = "Expected #{left.inspect} to match #{right.inspect}."
+      left = /#{Regexp.escape(left)}/ if String === left && String === right
+      assert(left =~ right, fail_desc, what_failed_msg)
     end
 
-    def refute_equal
+    def assert_not_match(left, right, fail_desc=nil)
+      what_failed_msg = "#{left.inspect} not expected to match #{right.inspect}."
+      left = /#{Regexp.escape(left)}/ if String === left && String === right
+      assert(left !~ right, fail_desc, what_failed_msg)
+    end
+    alias_method :refute_match, :assert_not_match
+    alias_method :assert_no_match, :assert_not_match
+
+
+
+    # TODO: ???
+    def assert_empty
     end
 
-
-    def assert_match
+    def assert_includes
     end
 
-    def refute_match
+    def assert_nil
+    end
+
+    def assert_throws
+    end
+
+    # TODO: Ignored
+
+    def assert_send
+    end
+
+    def assert_operator
+    end
+
+    def assert_in_epsilon
+    end
+
+    def assert_in_delta
     end
 
     private
