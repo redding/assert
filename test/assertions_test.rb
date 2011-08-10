@@ -31,15 +31,12 @@ module Assert::Assertions
   class AssertBlockTest < BasicTest
 
     setup do
-      fail_desc = "shouldn't fail!"
       @test = Assert::Test.new("assert block test", lambda do
         assert_block{ true }
-        assert_block(fail_desc){ false }
+        assert_block{ false }
       end, @context_klass)
-      @expected_message = "Expected block to return true value.\n#{fail_desc}"
       @test.run
     end
-
     subject{ @test }
 
     should "have 1 pass result" do
@@ -50,15 +47,23 @@ module Assert::Assertions
       assert_equal 1, subject.result_count(:fail)
     end
 
-=begin
-    should "have the correct failure message" do
-      fail_result = subject.fail_results.first
-      assert_equal @expected_message, fail_result.message
-    end
-=end
-    
     class MessagesTest < AssertBlockTest
-      
+
+      setup do
+        fail_desc = "assert block shouldn't fail!"
+        @test = Assert::Test.new("assert block message test", lambda do
+          assert_block(fail_desc){ false }
+        end, @context_klass)
+        @expected_message = "Expected block to return true value.\n#{fail_desc}"
+        @test.run
+        @message = @test.fail_results.first.message
+      end
+      subject{ @message }
+
+      should "have the correct failure message" do
+        assert_equal @expected_message, subject
+      end
+
     end
 
   end
@@ -66,12 +71,10 @@ module Assert::Assertions
   class AssertNotBlockTest < BasicTest
 
     setup do
-      fail_desc = "shouldn't fail!"
       @test = Assert::Test.new("assert not block test", lambda do
-        assert_not_block(fail_desc){ true }
+        assert_not_block{ true }
         assert_not_block{ false }
       end, @context_klass)
-      @expected_message = "Expected block to return false value.\n#{fail_desc}"
       @test.run
     end
 
@@ -84,32 +87,38 @@ module Assert::Assertions
     should "have 1 fail result" do
       assert_equal 1, subject.result_count(:fail)
     end
-    
+
     class MessagesTest < AssertNotBlockTest
-      
+
+      setup do
+        fail_desc = "assert not block shouldn't fail!"
+        @test = Assert::Test.new("assert not block message test", lambda do
+          assert_not_block(fail_desc){ true }
+        end, @context_klass)
+        @expected_message = "Expected block to return false value.\n#{fail_desc}"
+        @test.run
+        @message = @test.fail_results.first.message
+      end
+      subject{ @message }
+
+      should "have the correct failure message" do
+        assert_equal @expected_message, subject
+      end
+
     end
-=begin
-    should "have the correct failure message" do
-      fail_result = subject.fail_results.first
-      assert_equal @expected_message, fail_result.message
-    end
-=end
 
   end
 
   class AssertRaisesTest < BasicTest
 
     setup do
-      fail_desc = "raise what I want"
       @test = Assert::Test.new("assert raises test", lambda do
         assert_raises(StandardError, RuntimeError){ raise(StandardError) }  # pass
-        assert_raises(RuntimeError, fail_desc){ raise(StandardError) }      # fail
-        assert_raises(fail_desc){ true }                                    # fail
+        assert_raises(RuntimeError){ raise(StandardError) }                 # fail
+        assert_raises{ true }                                               # fail
       end, @context_klass)
-      @expected_message = "\n#{fail_desc}"
       @test.run
     end
-
     subject{ @test }
 
     should "have 1 pass result" do
@@ -120,14 +129,34 @@ module Assert::Assertions
       assert_equal 2, subject.result_count(:fail)
     end
 
-=begin
-    should "have the correct failure message" do
-      fail_result = subject.fail_results[0]
-      assert_equal @expected_message, fail_result.message
-      fail_result = subject.fail_results[1]
-      assert_equal @expected_message, fail_result.message
+    class MessagesTest < AssertRaisesTest
+
+      setup do
+        fail_desc = "assert raises shouldn't fail"
+        @test = Assert::Test.new("assert raises message test", lambda do
+          assert_raises(StandardError, RuntimeError, fail_desc){ raise(Exception) }
+          assert_raises(RuntimeError, fail_desc){ raise(StandardError) }
+          assert_raises(RuntimeError, fail_desc){ true }
+          assert_raises(fail_desc){ true }
+        end, @context_klass)
+        @expected_message = [
+          "#{fail_desc}\nStandardError or RuntimeError exception expected, not:",
+          "#{fail_desc}\nRuntimeError exception expected, not:",
+          "#{fail_desc}\nRuntimeError exception expected but nothing was raised.",
+          "#{fail_desc}\nAn exception expected but nothing was raised."
+        ]
+        @test.run
+        @messages = @test.fail_results.collect(&:message)
+      end
+      subject{ @messages }
+      
+      should "have the correct failure messages" do
+        subject.each_with_index do |message, n|
+          assert(message.include?(@expected_message[n]))
+        end
+      end
+
     end
-=end
 
   end
 
