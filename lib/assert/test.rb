@@ -61,13 +61,17 @@ module Assert
         raise RuntimeError, "no pass or fail result captured"
       end
     end
+    
+    def fail_results
+      @results.select{|r| r.kind_of?(Result::Fail) }
+    end
 
     def result_count(type=nil)
       case type
       when :pass
         @results.select{|r| r.kind_of?(Result::Pass)}.size
       when :fail
-        @results.select{|r| r.kind_of?(Result::Fail)}.size
+        fail_results.size
       when :skip
         @results.select{|r| r.kind_of?(Result::Skip)}.size
       when :error

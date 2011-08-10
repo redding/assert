@@ -17,7 +17,7 @@ class Assert::Context
       context_klass.new(test)
     end
 
-    should have_instance_methods :assert, :refute
+    should have_instance_methods :assert, :assert_not, :refute
 
     should "make assertions" do
       assert_nothing_raised do
@@ -262,27 +262,5 @@ class Assert::Context
     end
 
   end
-
-
-
-  class AssertionsTest < BasicTest
-
-    should have_instance_methods :assert_block
-    should have_instance_methods :assert_raises, :assert_raise
-    should have_instance_methods :assert_nothing_raised
-    should have_instance_methods :assert_kind_of, :assert_instance_of
-    should have_instance_methods :assert_respond_to
-    should have_instance_methods :assert_same, :assert_equal, :assert_match
-
-    should have_instance_methods :refute_block
-    should have_instance_methods :refute_raises, :refute_raise
-    should have_instance_methods :refute_nothing_raised
-    should have_instance_methods :refute_kind_of, :refute_instance_of
-    should have_instance_methods :refute_respond_to
-    should have_instance_methods :refute_same, :refute_equal, :refute_match
-
-  end
-
-
 
 end
