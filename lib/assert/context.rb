@@ -59,12 +59,12 @@ module Assert
         end
         (descs || []) + (@_assert_desc || [])
       end
-      
+
       def subject(&block)
         raise ArgumentError, "please provide a subject block" unless block_given?
         @_assert_subject = block
       end
-      
+
       def _assert_subject
         @_assert_subject
       end
@@ -76,16 +76,17 @@ module Assert
     end
 
     # raise Result::Fail if the assertion is false or nil
-    def assert(assertion, fail_msg=nil)
-      msg = fail_message(fail_msg) { "Failed assert.  No message given." }
+    def assert(assertion, fail_desc=nil, what_failed_msg=nil)
+      what_failed_msg ||= "Failed assert."
+      msg = fail_message(fail_desc) { what_failed_msg }
       assertion_result { assertion ? pass : fail(msg) }
     end
 
     # the opposite of assert, raise Result::Fail if the assertion is not false or nil
-    def refute(assertion, fail_msg=nil)
-      msg = fail_message(fail_msg) { "Failed refute.  No message given." }
-      assertion_result { assertion ? fail(msg) : pass }
+    def assert_not(assertion, fail_desc=nil)
+      assert(!assertion, fail_desc, "Failed refute.")
     end
+    alias_method :refute, :assert_not
 
     # call this method to break test execution at any point in the test
     # adds a Skip result to the end of the test's results
@@ -105,7 +106,7 @@ module Assert
       raise Result::Fail, (fail_message(fail_msg) { }).call
     end
     alias_method :flunk, :fail
-    
+
     def subject
       if subject_block = self.class._assert_subject
         instance_eval(&subject_block)
