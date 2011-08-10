@@ -24,7 +24,7 @@ module Assert::Assertions
     should have_instance_methods :assert_nothing_raised, :assert_not_raises, :assert_not_raise
     should have_instance_methods :assert_not_kind_of, :refute_kind_of
     should have_instance_methods :assert_not_instance_of, :refute_instance_of
-    should have_instance_methods :refute_respond_to
+    should have_instance_methods :assert_not_respond_to, :refute_respond_to
     should have_instance_methods :refute_same, :refute_equal, :refute_match
 
   end
@@ -260,8 +260,8 @@ module Assert::Assertions
 
     setup do
       @test = Assert::Test.new("assert not kind of test", lambda do
-        assert_not_kind_of(String, "object")  # pass
-        assert_not_kind_of(Array, "object")   # fail
+        assert_not_kind_of(String, "object")  # fail
+        assert_not_kind_of(Array, "object")   # pass
       end, @context_klass)
       @test.run
     end
@@ -295,9 +295,9 @@ module Assert::Assertions
     end
 
   end
-  
-  
-  
+
+
+
   class AssertInstanceOfTest < BasicTest
 
     setup do
@@ -342,8 +342,8 @@ module Assert::Assertions
 
     setup do
       @test = Assert::Test.new("assert not instance of test", lambda do
-        assert_not_instance_of(String, "object")  # pass
-        assert_not_instance_of(Array, "object")   # fail
+        assert_not_instance_of(String, "object")  # fail
+        assert_not_instance_of(Array, "object")   # pass
       end, @context_klass)
       @test.run
     end
@@ -365,6 +365,88 @@ module Assert::Assertions
           assert_not_instance_of(*args)
         end, @context_klass)
         @expected_message = "#{args[1].inspect} was not expected to be an instance of #{args[0]}.\n#{args[2]}"
+        @test.run
+        @message = @test.fail_results.first.message
+      end
+      subject{ @message }
+
+      should "have the correct failure message" do
+        assert_equal @expected_message, subject
+      end
+
+    end
+
+  end
+
+
+
+  class AssertRespondToTest < BasicTest
+
+    setup do
+      @test = Assert::Test.new("assert respond to test", lambda do
+        assert_respond_to(1, :abs)      # pass
+        assert_respond_to("1", :abs)    # fail
+      end, @context_klass)
+      @test.run
+    end
+    subject{ @test }
+
+    should "have 1 pass result" do
+      assert_equal 1, subject.result_count(:pass)
+    end
+
+    should "have 1 fail result" do
+      assert_equal 1, subject.result_count(:fail)
+    end
+
+    class MessagesTest < AssertRespondToTest
+
+      setup do
+        args = [ "1", :abs, "assert respond to shouldn't fail!" ]
+        @test = Assert::Test.new("assert respond to message test", lambda do
+          assert_respond_to(*args)
+        end, @context_klass)
+        @expected_message = "Expected #{args[0].inspect} (#{args[0].class}) to respond to ##{args[1]}.\n#{args[2]}"
+        @test.run
+        @message = @test.fail_results.first.message
+      end
+      subject{ @message }
+
+      should "have the correct failure message" do
+        assert_equal @expected_message, subject
+      end
+
+    end
+
+  end
+
+  class AssertNotRespondToTest < BasicTest
+
+    setup do
+      @test = Assert::Test.new("assert not respond to test", lambda do
+        assert_not_respond_to(1, :abs)     # fail
+        assert_not_respond_to("1", :abs)   # pass
+      end, @context_klass)
+      @test.run
+    end
+    subject{ @test }
+
+    should "have 1 pass result" do
+      assert_equal 1, subject.result_count(:pass)
+    end
+
+    should "have 1 fail result" do
+      assert_equal 1, subject.result_count(:fail)
+    end
+
+    class MessagesTest < AssertNotRespondToTest
+
+      setup do
+        args = [ 1, :abs, "assert not respond to shouldn't fail!" ]
+        @test = Assert::Test.new("assert not respond to message test", lambda do
+          assert_not_respond_to(*args)
+        end, @context_klass)
+        @expected_message = "#{args[0].inspect} (#{args[0].class}) not expected to respond to ##{args[1]}.\n#{args[2]}"
         @test.run
         @message = @test.fail_results.first.message
       end

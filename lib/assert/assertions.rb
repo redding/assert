@@ -52,16 +52,20 @@ module Assert
       assert(!instance.instance_of?(klass), fail_desc, what_failed_msg)
     end
     alias_method :refute_instance_of, :assert_not_instance_of
-    
-    
+
+
 
     def assert_respond_to(object, method, fail_desc=nil)
       what_failed_msg = "Expected #{object.inspect} (#{object.class}) to respond to ##{method}."
       assert(object.respond_to?(method), fail_desc, what_failed_msg)
     end
 
-    def refute_respond_to
+    def assert_not_respond_to(object, method, fail_desc=nil)
+      what_failed_msg = "#{object.inspect} (#{object.class}) not expected to respond to ##{method}."
+      assert(!object.respond_to?(method), fail_desc, what_failed_msg)
     end
+    alias_method :refute_respond_to, :assert_not_respond_to
+
 
 
     def assert_same
