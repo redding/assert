@@ -111,6 +111,14 @@ module Assert
     end
     alias_method :flunk, :fail
 
+    # adds an Ignore result to the end of the test's results
+    # does not break test execution
+    def ignore
+      capture_result do |test_name, backtrace|
+        Assert::Result::Ignore.new(test_name, nil, backtrace)
+      end
+    end
+
     def subject
       if subject_block = self.class._assert_subject
         instance_eval(&subject_block)

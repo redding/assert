@@ -4,6 +4,7 @@ module Assert::Result
   class Base; end
   class Pass < Base; end
   class Fail < Base; end
+  class Ignore < Base; end
   class FromException < Base; end
   class Error < FromException; end
   class Skip < FromException; end
@@ -12,6 +13,7 @@ module Assert::Result
     def types
       { :pass => Pass,
         :fail => Fail,
+        :ignore => Ignore,
         :skip => Skip,
         :error => Error
       }
@@ -68,7 +70,15 @@ module Assert::Result
     end
   end
 
-  # TODO: Ignored result??
+  class Ignore < Base
+    def ignore?; true; end
+    def abbrev; 'I'; end
+    def to_sym; :ignored; end
+
+    def to_s
+      "IGNORE: #{super}"
+    end
+  end
 
   # Error and Skip results are built from exceptions being raised
   class FromException < Base

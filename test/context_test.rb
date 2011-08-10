@@ -36,6 +36,18 @@ class Assert::Context
 
 
 
+  class IgnoreTest < BasicTest
+
+    should have_instance_method :ignore
+
+    should "ignore a test with a method call" do
+      assert_kind_of Assert::Result::Ignore, subject.ignore
+    end
+
+  end
+
+
+
   class PassTest < BasicTest
 
     should have_instance_methods :pass
@@ -55,7 +67,6 @@ class Assert::Context
     should "pass refutes that are nil" do
       assert_kind_of Assert::Result::Pass, subject.refute(nil)
     end
-
 
   end
 
