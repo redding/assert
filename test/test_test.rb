@@ -350,25 +350,50 @@ class Assert::Test
 
     context "a Test that runs and has assertions that depend on a teardown block"
 
+    # quite complex, should probably be broken up into multiple tests...
     setup do
-      Assert::Context.teardown do # should probably create it's own context class
+      @fail_context_klass = Class.new(Assert::Context)
+      @fail_context_klass.teardown do
         raise("Teardown failed!")
       end
-      subject.run
+      win_context_klass = @win_context_klass = Class.new(Assert::Context) do
+        class << self; attr_accessor :teardown_worked; end
+      end
+      @win_context_klass.teardown do
+        win_context_klass.teardown_worked = true
+      end
+      @suite = Assert::Suite.new
+      @suite[@fail_context_klass] = [
+        Assert::Test.new("test with fail teardown", lambda do                # pass and error
+          assert(true)
+        end, @fail_context_klass),
+        Assert::Test.new("test with fail test and fail teardown", lambda do  # error and error
+          raise(RuntimeError)
+        end, @fail_context_klass)
+      ]
+      @suite[@win_context_klass] = [
+        Assert::Test.new("test with win teardown", lambda do                 # pass
+          assert(true)
+        end, @win_context_klass),
+        Assert::Test.new("test with fail test and win teardown", lambda do   # error
+          raise(RuntimeError)
+        end, @win_context_klass)
+      ]
+      @suite.tests.each(&:run)
     end
 
-    subject do
-      Assert::Test.new("test with teardown", ::Proc.new do
-        # nothing needed
-      end, Assert::Context)
+    subject{ @suite }
+
+    should "have 6 total results" do
+      assert_equal 6, subject.count(:results)
     end
 
-    should "have 1 total result" do
-      assert_equal 1, subject.result_count
+    should "have 4 error results" do
+      assert_equal 4, subject.count(:errored)
     end
-
-    should "have 1 error result" do
-      assert_equal 1, subject.result_count(:error)
+    
+    should "have 2 pass results" do
+      assert_equal 2, subject.count(:passed)
     end
 
   end

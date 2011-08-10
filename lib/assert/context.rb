@@ -128,9 +128,9 @@ module Assert
     end
 
     # Returns a Proc that will output a custom message along with the default fail message.
-    def fail_message(custom_msg=nil, &default_msg)
-      custom_msg.kind_of?(::Proc) ? custom_msg : Proc.new do
-        [ default_msg.call, custom_msg ].compact.join("\n")
+    def fail_message(fail_desc=nil, &what_failed)
+      fail_desc.kind_of?(::Proc) ? fail_desc : Proc.new do
+        [ what_failed.call, fail_desc ].compact.join("\n")
       end
     end
 
