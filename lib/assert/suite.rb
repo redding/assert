@@ -59,6 +59,8 @@ module Assert
         result_count(:pass)
       when :failed, :fail
         result_count(:fail)
+      when :ignored, :ignore
+        result_count(:ignore)
       when :skipped, :skip
         result_count(:skip)
       when :errored, :error
