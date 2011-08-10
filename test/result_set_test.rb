@@ -13,10 +13,10 @@ class Assert::ResultSet
     before {
       @view_s = ""
       subject.view = Assert::View::Base.new(nil, StringIO.new(@view_s, "w+"))
-      subject << Assert::Result::Pass.new
-      subject << Assert::Result::Fail.new
-      subject << Assert::Result::Skip.new
-      subject << Assert::Result::Error.new
+      subject << Assert::Result::Pass.new("test", "pass", [])
+      subject << Assert::Result::Fail.new("test", "fail", [])
+      subject << Assert::Result::Skip.new("test", RuntimeError.new)
+      subject << Assert::Result::Error.new("test", RuntimeError.new)
     }
 
     should have_accessor :view

@@ -16,7 +16,7 @@ class Assert::Test
 
     should have_readers :name, :code, :context
     should have_accessor :results
-    should have_instance_methods :run, :result_count, :assertion_result
+    should have_instance_methods :run, :result_count
 
     should "know its name" do
       assert_equal "should do stuff", subject.name
@@ -230,11 +230,11 @@ class Assert::Test
     end
 
     should "have a pass for its last result" do
-      assert_kind_of Assert::Result::Pass, subject.results.last
+      assert_kind_of Assert::Result::Fail, subject.results.last
     end
 
-    should "have 2 total results" do
-      assert_equal 2, subject.result_count
+    should "have 3 total results" do
+      assert_equal 3, subject.result_count
       assert_equal subject.result_count, @test_run_results.size
     end
 
@@ -242,8 +242,8 @@ class Assert::Test
       assert_equal 2, subject.result_count(:pass)
     end
 
-    should "have 0 fail results" do
-      assert_equal 0, subject.result_count(:fail)
+    should "have 1 fail results" do
+      assert_equal 1, subject.result_count(:fail)
     end
 
   end
@@ -260,16 +260,16 @@ class Assert::Test
     end
 
     should "have a fail for its last result" do
-      assert_kind_of Assert::Result::Fail, subject.results.last
+      assert_kind_of Assert::Result::Pass, subject.results.last
     end
 
-    should "have 2 total results" do
-      assert_equal 2, subject.result_count
+    should "have 3 total results" do
+      assert_equal 3, subject.result_count
       assert_equal subject.result_count, @test_run_results.size
     end
 
-    should "have 0 pass results" do
-      assert_equal 0, subject.result_count(:pass)
+    should "have 1 pass results" do
+      assert_equal 1, subject.result_count(:pass)
     end
 
     should "have 2 fail results" do
@@ -290,16 +290,16 @@ class Assert::Test
     end
 
     should "have a fail for its last result" do
-      assert_kind_of Assert::Result::Fail, subject.results.last
+      assert_kind_of Assert::Result::Pass, subject.results.last
     end
 
-    should "have 2 total results" do
-      assert_equal 2, subject.result_count
+    should "have 3 total results" do
+      assert_equal 3, subject.result_count
       assert_equal subject.result_count, @test_run_results.size
     end
 
-    should "have 0 pass results" do
-      assert_equal 0, subject.result_count(:pass)
+    should "have 1 pass results" do
+      assert_equal 1, subject.result_count(:pass)
     end
 
     should "have 2 fail results" do
@@ -380,7 +380,7 @@ class Assert::Test
         # nothing needed
       end, Assert::Context)
     end
-    
+
     should "have a name that is the context's descriptions and the name passed" do
       expected = [ @description, @test_name ].join(" ")
       assert_equal(expected, subject.name)

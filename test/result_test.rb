@@ -38,7 +38,7 @@ module Assert::Result
     end
 
     should "have a trace with the first non-assert-framework line of the backtrace" do
-      skip
+      skip # TODO: test this
     end
   end
 

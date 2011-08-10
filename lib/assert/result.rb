@@ -56,7 +56,7 @@ module Assert::Result
   # Error and Skip results are built from exceptions being raised
   class FromException < Base
     def initialize(test_name, exception)
-      super(test_name, exception.message, exception.backtrace)
+      super(test_name, exception.message, exception.backtrace || [])
     end
   end
 
