@@ -137,10 +137,48 @@ module Assert
     alias_method :assert_no_match, :assert_not_match
 
 
+
+    def assert_empty(collection, fail_desc=nil)
+      what_failed_msg = "Expected #{collection.inspect} to be empty."
+      assert(collection.empty?, fail_desc, what_failed_msg)
+    end
+
+    def assert_not_empty(collection, fail_desc=nil)
+      what_failed_msg = "Expected #{collection.inspect} to not be empty."
+      assert(!collection.empty?, fail_desc, what_failed_msg)
+    end
+    alias_method :refute_empty, :assert_not_empty
+
+
+
+    def assert_includes(collection, object, fail_desc=nil)
+      what_failed_msg = "Expected #{collection.inspect} to include #{object.inspect}."
+      assert(collection.includes?(object), fail_desc, what_failed_msg)
+    end
+
+    def assert_not_included(collection, object, fail_desc=nil)
+      what_failed_msg = "Expected #{collection.inspect} to not include #{object.inspect}."
+      assert(!collection.includes?(object), fail_desc, what_failed_msg)
+    end
+    alias_method :refute_includes, :assert_not_included
+
+
+
+    def assert_nil(object, fail_desc=nil)
+      what_failed_msg = "Expected #{object.inspect} to be nil."
+      assert(object.nil?, fail_desc, what_failed_msg)
+    end
     
-    IGNORED_ASSERT_MACROS = [ :assert_empty, :refute_empty, :assert_includes, :refute_includes,
-      :assert_nil, :assert_not_nil, :refute_nil, :assert_throws, :assert_nothing_thrown, 
-      :assert_send, :assert_operator, :refute_operator, :assert_in_epsilon, :refute_in_epsilon,
+    def assert_not_nil(object, fail_desc=nil)
+      what_failed_msg = "Expected #{object.inspect} to not be nil."
+      assert(!object.nil?, fail_desc, what_failed_msg)
+    end
+    alias_method :refute_nil, :assert_not_nil
+    
+    
+
+    IGNORED_ASSERT_MACROS = [ :assert_throws, :assert_nothing_thrown, :assert_send, 
+      :assert_operator, :refute_operator, :assert_in_epsilon, :refute_in_epsilon,
       :assert_in_delta, :refute_in_delta
     ]
     def method_missing(method, *args, &block)
@@ -153,7 +191,7 @@ module Assert
         super
       end
     end
-    
+
     private
 
     def check_exception(args, which, &block)
