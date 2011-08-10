@@ -20,15 +20,60 @@ module Assert::Result
     end
   end
 
+  class Backtrace < ::Array
+    # ripped from minitest...
+
+    file = File.expand_path __FILE__
+           # if RUBY_VERSION =~ /^1\.9/ then  # bt's expanded, but __FILE__ isn't :(
+           #    File.expand_path __FILE__
+           # elsif  __FILE__ =~ /^[^\.]/ then # assume both relative
+           #   require 'pathname'
+           #   pwd = Pathname.new Dir.pwd
+           #   pn = Pathname.new File.expand_path(__FILE__)
+           #   relpath = pn.relative_path_from(pwd) rescue pn
+           #   pn = File.join ".", relpath unless pn.relative?
+           #   pn.to_s
+           # else                             # assume both are expanded
+           #   __FILE__
+           # end
+
+    # './lib' in project dir, or '/usr/local/blahblah' if installed
+    ASSERT_DIR = File.dirname(File.dirname(file))
+
+    def initialize(value=nil)
+      super(value || ["No backtrace"])
+    end
+
+    def to_s
+      self.join("\n")
+    end
+
+    def filtered
+      new_bt = []
+
+      self.each do |line|
+        break if line.rindex ASSERT_DIR, 0
+        new_bt << line
+      end
+
+      new_bt = self.reject { |line| line.rindex ASSERT_DIR, 0 } if new_bt.empty?
+      new_bt = self.dup if new_bt.empty?
+
+      self.class.new(new_bt)
+    end
+  end
+
+
+  # Result classes...
+
   class Base
 
     attr_reader :test_name, :message, :backtrace, :abbrev
 
-    def initialize(test_name, message, backtrace)
-      raise ArgumentError unless backtrace.kind_of?(::Array)
-      @backtrace = backtrace
+    def initialize(test_name, message, backtrace=nil)
+      @backtrace = Backtrace.new(backtrace)
       @test_name = test_name
-      @message = message
+      @message = message && !message.empty? ? message : nil
     end
 
     Assert::Result.types.keys.each do |meth|
@@ -43,9 +88,7 @@ module Assert::Result
     end
 
     def trace
-      # TODO: filter?
-      # TODO: only show first item (should be the test line where the result happened)
-      self.backtrace.join("\n")
+      self.backtrace.filtered.first.to_s
     end
 
   end
@@ -112,7 +155,7 @@ module Assert::Result
 
     # override of the base, always show the full unfiltered backtrace for errors
     def trace
-      self.backtrace.join("\n")
+      self.backtrace.to_s
     end
   end
 
