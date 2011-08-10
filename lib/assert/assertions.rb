@@ -138,33 +138,19 @@ module Assert
 
 
 
-    # TODO: ???
-    def assert_empty
+    IGNORED_ASSERT_MACROS = [ :assert_empty, :refute_empty, :assert_includes, :refute_includes,
+      :assert_nil, :assert_not_nil, :refute_nil, :assert_throws, :assert_nothing_thrown, 
+      :assert_send, :assert_operator, :refute_operator, :assert_in_epsilon, :refute_in_epsilon,
+      :assert_in_delta, :refute_in_delta
+    ]
+    def method_missing(method, *args, &block)
+      if IGNORED_ASSERT_MACROS.include?(method.to_sym)
+        # ignore the macro
+      else
+        super
+      end
     end
-
-    def assert_includes
-    end
-
-    def assert_nil
-    end
-
-    def assert_throws
-    end
-
-    # TODO: Ignored
-
-    def assert_send
-    end
-
-    def assert_operator
-    end
-
-    def assert_in_epsilon
-    end
-
-    def assert_in_delta
-    end
-
+    
     private
 
     def check_exception(args, which, &block)
