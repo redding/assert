@@ -68,6 +68,17 @@ module Assert
       def _assert_subject
         @_assert_subject
       end
+      
+      def should(desc, &block)
+        raise ArgumentError, "please provide a test block" unless block_given?
+        method_name = "test_#{desc.gsub(/\s/, '_')}"
+        if method_defined?(method_name)
+          from = caller.first
+          puts "WARNING: should #{desc.inspect} redefining #{method_name}"
+          puts "  from: #{from}"
+        end
+        define_method(method_name, &block)
+      end
 
     end
 
