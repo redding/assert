@@ -13,8 +13,14 @@ module Assert
     end
 
     def run(*args)
+      @suite.setup_blocks.each do |setup| # TODO: tests!
+        setup.call
+      end
       @view.render do
         benchmark { run_suite }
+      end
+      @suite.teardown_blocks.each do |teardown| # TODO: tests!
+        teardown.call
       end
       count(:failed) + count(:errored)
     end
