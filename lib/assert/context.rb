@@ -74,7 +74,7 @@ module Assert
         method_name = "test_#{desc.gsub(/\s/, '_')}"
         if method_defined?(method_name)
           from = caller.first
-          puts "WARNING: should #{desc.inspect} redefining #{method_name}"
+          puts "WARNING: should #{desc.inspect} is redefining #{method_name}!"
           puts "  from: #{from}"
         end
         define_method(method_name, &block)

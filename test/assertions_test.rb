@@ -6,16 +6,12 @@ class Assert::Assertions::BasicTest < Assert::Context
   end
   subject{ @context }
 
-  INSTANCE_METHODS = [ 
-    :assert_block, :assert_not_block, :refute_block
+  INSTANCE_METHODS = [
+    :assert_block, :assert_not_block, :refute_block,
+    :assert_raises, :assert_raise, :assert_nothing_raised, :assert_not_raises, :assert_not_raise,
   ]
-  #should "have instance methods #{INSTANCE_METHODS.join(", ")}" do
-  #  INSTANCE_METHODS.each do |method|
-  #    assert_respond_to subject, method
-  #  end
-  #end
-  def test_context_has_assertion_instance_methods
-    INSTANCE_METHODS.each do |method|
+  INSTANCE_METHODS.each do |method|
+    should "respond to instance method #{method}" do
       assert_respond_to subject, method
     end
   end
