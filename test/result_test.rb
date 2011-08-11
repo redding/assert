@@ -37,7 +37,7 @@ module Assert::Result
       Assert::Result::Base.new("a test name", "a message", ["line 1", "line2"])
     end
 
-    should have_readers :test_name, :message, :abbrev, :caller
+    should have_readers :test_name, :message, :caller
     should have_instance_methods :to_sym, :to_s, :trace
 
     Assert::Result.types.keys.each do |type|
@@ -92,10 +92,6 @@ module Assert::Result
       end
     end
 
-    should "show '.' for its abbrev" do
-      assert_equal '.', subject.abbrev
-    end
-
     should "know its to_sym" do
       assert_equal :passed, subject.to_sym
     end
@@ -121,10 +117,6 @@ module Assert::Result
       end
     end
 
-    should "show 'F' for its abbrev" do
-      assert_equal 'F', subject.abbrev
-    end
-
     should "know its to_sym" do
       assert_equal :failed, subject.to_sym
     end
@@ -148,10 +140,6 @@ module Assert::Result
       should "not be #{type}?" do
         assert_equal false, subject.send("#{type}?")
       end
-    end
-
-    should "show 'I' for its abbrev" do
-      assert_equal 'I', subject.abbrev
     end
 
     should "know its to_sym" do
@@ -206,10 +194,6 @@ module Assert::Result
       end
     end
 
-    should "show 'S' for its abbrev" do
-      assert_equal 'S', subject.abbrev
-    end
-
     should "know its to_sym" do
       assert_equal :skipped, subject.to_sym
     end
@@ -233,10 +217,6 @@ module Assert::Result
       should "not be #{type}?" do
         assert_equal false, subject.send("#{type}?")
       end
-    end
-
-    should "show 'E' for its abbrev" do
-      assert_equal 'E', subject.abbrev
     end
 
     should "know its to_sym" do

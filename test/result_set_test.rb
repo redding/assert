@@ -20,10 +20,5 @@ class Assert::ResultSet
     }
 
     should have_accessor :view
-
-    should "write result abbrevs to the view when they are added to the set" do
-      assert_equal ".FSE", @view_s
-    end
-
   end
 end
