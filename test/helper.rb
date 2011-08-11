@@ -8,8 +8,16 @@ require 'assert'
 module Factory
   class << self
 
-    def context(*args, &block)
+    def context_class(*args, &block)
       Class.new(Assert::Context, &block)
+    end
+    
+    def test(*args, &block)
+      name = (args[0] || "a test").to_s
+      context_class = args[1] || self.context_class
+      block ||= lambda{ }
+      
+      Assert::Test.new(name, block, context_class)
     end
 
   end

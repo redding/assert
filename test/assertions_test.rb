@@ -1,8 +1,10 @@
 require 'test/helper'
 
 class Assert::Assertions::BasicTest < Assert::Context
+
   setup do
-    @context = Factory.context.new
+    @context_class = Factory.context_class
+    @context = @context_class.new
   end
   subject{ @context }
 
@@ -24,9 +26,23 @@ class Assert::Assertions::BasicTest < Assert::Context
 
   class AssertBlockTest < BasicTest
     setup do
-
+      @test = Factory.test("assert block tests", @context_class) do
+        assert_block{ true }
+        assert_block{ false }
+      end
+      @test.run
     end
+    subject{ @test }
 
+    should "have 2 total results" do
+      assert_equal 2, subject.result_count
+    end
+    should "have 1 pass result" do
+      assert_equal 1, subject.result_count(:pass)
+    end
+    should "have 1 fail result" do
+      assert_equal 1, subject.result_count(:fail)
+    end
 
   end
 
@@ -34,20 +50,6 @@ end
 
 =begin
 module Assert::Assertions
-
-  class BasicTest < Test::Unit::TestCase
-    include TestBelt
-
-    setup do
-      @context_klass = Class.new(Assert::Context)
-      @context = @context_klass.new
-    end
-
-    subject{ @context }
-
-  end
-
-
 
   class AssertBlockTest < BasicTest
 
