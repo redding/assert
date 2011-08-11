@@ -65,8 +65,8 @@ module Assert::View
     def detailed_results
       @suite.tests
       "\n\n" + @suite.ordered_results.reverse.collect do |result|
-        result_io_msg(result.to_s, result.to_sym)
-      end.join("\n\n")
+        result_io_msg(result.to_s, result.to_sym) if show_result_details?(result)
+      end.compact.join("\n\n")
     end
 
     def results_stmt
@@ -106,6 +106,11 @@ module Assert::View
       styles.collect do |style|
         TERM_STYLES.include?(style) ? "\e[#{TERM_STYLES[style]}m" : nil
       end.join('')
+    end
+
+    def show_result_details?(result)
+      ([:failed, :errored].include?(result.to_sym)) ||
+      ([:skipped, :ignored].include?(result.to_sym) && result.message)
     end
 
   end
