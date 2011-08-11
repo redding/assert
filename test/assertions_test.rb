@@ -9,6 +9,12 @@ class Assert::Assertions::BasicTest < Assert::Context
   INSTANCE_METHODS = [
     :assert_block, :assert_not_block, :refute_block,
     :assert_raises, :assert_raise, :assert_nothing_raised, :assert_not_raises, :assert_not_raise,
+    :assert_kind_of, :assert_not_kind_of, :refute_kind_of,
+    :assert_instance_of, :assert_not_instance_of, :refute_instance_of,
+    :assert_respond_to, :assert_not_respond_to, :refute_respond_to,
+    :assert_same, :assert_not_same, :refute_same,
+    :assert_equal, :assert_not_equal, :refute_equal,
+    :assert_match, :assert_not_match, :assert_no_match, :refute_match
   ]
   INSTANCE_METHODS.each do |method|
     should "respond to instance method #{method}" do
@@ -38,21 +44,6 @@ module Assert::Assertions
     end
 
     subject{ @context }
-
-    should have_instance_methods :assert_block
-    should have_instance_methods :assert_raises, :assert_raise
-    should have_instance_methods :assert_kind_of, :assert_instance_of
-    should have_instance_methods :assert_respond_to
-    should have_instance_methods :assert_same, :assert_equal, :assert_match
-
-    should have_instance_methods :assert_not_block, :refute_block
-    should have_instance_methods :assert_nothing_raised, :assert_not_raises, :assert_not_raise
-    should have_instance_methods :assert_not_kind_of, :refute_kind_of
-    should have_instance_methods :assert_not_instance_of, :refute_instance_of
-    should have_instance_methods :assert_not_respond_to, :refute_respond_to
-    should have_instance_methods :assert_not_same, :refute_same
-    should have_instance_methods :assert_not_equal, :refute_equal
-    should have_instance_methods :assert_not_match, :assert_no_match, :refute_match
 
   end
 
