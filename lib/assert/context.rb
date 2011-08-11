@@ -20,6 +20,18 @@ module Assert
     # put all logic here to keep context instances pure for running tests
     class << self
 
+      # TODO: tests!
+      def setup_once(&block)
+        Assert.suite.setup(&block)
+      end
+      alias_method :before_once, :setup_once
+
+      # TODO: tests!
+      def teardown_once(&block)
+        Assert.suite.teardown(&block)
+      end
+      alias_method :after_once, :teardown_once
+
       def setup(&block)
         raise ArgumentError, "please provide a setup block" unless block_given?
         @_assert_setups ||= []
