@@ -78,7 +78,10 @@ module Assert
         inherited_description = if superclass.respond_to?(:full_description)
           superclass.full_description
         end
-        [ inherited_description ].push(self.descriptions).flatten.compact.join(" ")
+        parts = [ inherited_description ].push(self.descriptions).flatten.reject do |part|
+         !part || part.to_s.empty?
+        end
+        parts.join(" ") if !parts.empty?
       end
 
       def subject(&block)

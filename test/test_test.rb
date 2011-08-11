@@ -1,423 +1,173 @@
-require 'test_belt'
-require 'assert/test'
+require 'test/helper'
 
-require 'assert/result'
-require 'assert/context'
-require 'assert/suite'
-
-class Assert::Test
-
-  class BasicTest < Test::Unit::TestCase
-    include TestBelt
-
-    context "a Test"
-    subject do
-      Assert::Test.new("should do stuff", ::Proc.new {}, Assert::Context)
+class Assert::Test::BasicTest < Assert::Context
+  desc "Assert test"
+  setup do
+    test_name = "test_.should do something amazing"
+    @test_code = lambda{ assert(true) }
+    context_desc = "context class"
+    @context_class = Factory.context_class do
+      desc context_desc
     end
-
-    should have_readers :name, :code, :context
-    should have_accessor :results
-    should have_instance_methods :run, :result_count
-
-    Assert::Result.types.keys.each do |type|
-      should have_instance_method "#{type}_results"
-    end
-
-    should "know its name" do
-      assert_equal "should do stuff", subject.name
-    end
-
-    should "have zero results before running" do
-      assert_equal 0, subject.result_count
-    end
-
+    @test = Factory.test(test_name, @context_class, @test_code)
+    @expected_name = [ context_desc, test_name.gsub(/^test_\.should/, "should") ].join(" ")
   end
+  subject{ @test }
 
-  class ResultTest < Test::Unit::TestCase
-    include TestBelt
-
-    context "that runs"
-    before do
-      Assert::Suite[{Assert::Context => [subject]}].tests.each do |test|
-        @test_run_results = test.run
-      end
+  INSTANCE_METHODS = [
+    :name, :code, :context_class,
+    :results, :results=,
+    :run, :run_setup, :run_teardown,
+    :result_count,
+    Assert::Result.types.keys.collect{|k| "#{k}_results".to_sym }
+  ].flatten
+  INSTANCE_METHODS.each do |method|
+    should "respond to the instance method ##{method}" do
+      assert_respond_to subject, method
     end
   end
 
-  class NothingTest < ResultTest
-    context "and does nothing"
-    subject do
-      Assert::Test.new("should assert stuff", ::Proc.new do
-      end, Assert::Context)
-    end
-
-    should "have 0 results" do
-      assert_equal 0, subject.result_count
-      assert_equal subject.result_count, @test_run_results.size
-    end
-
+  should "set it's test name to the context description with the passed in name cleaned" do
+    assert_equal @expected_name, subject.name
+  end
+  should "set it's context class and code from its initialize" do
+    assert_equal @context_class, subject.context_class
+    assert_equal @test_code, subject.code
+  end
+  should "have zero results before running" do
+    assert_equal 0, subject.result_count
   end
 
-  class PassTest < ResultTest
-    context "and passes a single assertion"
-    subject do
-      Assert::Test.new("should assert stuff", ::Proc.new do
-        assert(1 == 1)
-      end, Assert::Context)
-    end
-
-    should "have 1 result" do
-      assert_equal 1, subject.result_count
-      assert_equal subject.result_count, @test_run_results.size
-    end
-
-    should "have a passing result" do
-      assert_kind_of Assert::Result::Pass, subject.results.first
-    end
-
-  end
-
-  class FailTest < ResultTest
-    context "and fails a single assertion"
-    subject do
-      Assert::Test.new("should assert stuff", ::Proc.new do
-        assert(1 == 0)
-      end, Assert::Context)
-    end
-
-    should "have 1 result" do
-      assert_equal 1, subject.result_count
-      assert_equal subject.result_count, @test_run_results.size
-    end
-
-    should "have a failing result" do
-      assert_kind_of Assert::Result::Fail, subject.results.first
-    end
-
-  end
-
-  class SkipTest < ResultTest
-    context "and skips"
-    subject do
-      Assert::Test.new("should assert stuff", ::Proc.new do
-        skip
-      end, Assert::Context)
-    end
-
-    should "have 1 result" do
-      assert_equal 1, subject.result_count
-      assert_equal subject.result_count, @test_run_results.size
-    end
-
-    should "have a skipped result" do
-      assert_kind_of Assert::Result::Skip, subject.results.first
-    end
-  end
-
-  class ErrorTest < ResultTest
-    context "and fails"
-    subject do
-      Assert::Test.new("should assert stuff", ::Proc.new do
-        raise Exception
-      end, Assert::Context)
-    end
-
-    should "have 1 result" do
-      assert_equal 1, subject.result_count
-      assert_equal subject.result_count, @test_run_results.size
-    end
-
-    should "have a errored result" do
-      assert_kind_of Assert::Result::Error, subject.results.first
-    end
-  end
-
-  class MixedTest < ResultTest
-    context "and has 1 pass and 1 fail assertion"
-    subject do
-      Assert::Test.new("should assert stuff", ::Proc.new do
-        assert(1 == 1)
-        assert(1 == 0)
-      end, Assert::Context)
-    end
-
-    should "have 2 total results" do
-      assert_equal 2, subject.result_count
-      assert_equal subject.result_count, @test_run_results.size
-    end
-
-    should "have 1 pass result" do
-      assert_equal 1, subject.result_count(:pass)
-    end
-
-    should "have 1 fail result" do
-      assert_equal 1, subject.result_count(:fail)
-    end
-
+  teardown do
+    TEST_ASSERT_SUITE.clear
   end
 
 
 
-  class MixedSkipTest < ResultTest
-    context "and has 1 pass and 1 fail assertion with a skip call in between"
-    subject do
-      Assert::Test.new("should assert stuff", ::Proc.new do
-        assert(1 == 1)
-        skip
-        assert(1 == 0)
-      end, Assert::Context)
-    end
+  # testing <type>_results methods and result_count(<type>)
+  class ResultsTest < Assert::Test::BasicTest
+    desc "methods from Assert::Result.types"
 
-    should "have a skip for its last result" do
-      assert_kind_of Assert::Result::Skip, subject.results.last
-    end
-
-    should "have 2 total results" do
-      assert_equal 2, subject.result_count
-      assert_equal subject.result_count, @test_run_results.size
-    end
-
-    should "have 1 pass result" do
-      assert_equal 1, subject.result_count(:pass)
-    end
-
-    should "have 1 skip result" do
-      assert_equal 1, subject.result_count(:skip)
-      assert_equal 1, subject.skip_results.size
-    end
-
-    should "have 0 fail results" do
-      assert_equal 0, subject.result_count(:fail)
-    end
-  end
-
-
-  class MixedErrorTest < ResultTest
-    context "and has 1 pass and 1 fail assertion with an exception raised in between"
-    subject do
-      Assert::Test.new("should assert stuff", ::Proc.new do
-        assert(1 == 1)
-        raise Exception, "something errored"
-        assert(1 == 0)
-      end, Assert::Context)
-    end
-
-    should "have an error for its last result" do
-      assert_kind_of Assert::Result::Error, subject.results.last
-    end
-
-    should "have 2 total results" do
-      assert_equal 2, subject.result_count
-      assert_equal subject.result_count, @test_run_results.size
-    end
-
-    should "have 1 pass result" do
-      assert_equal 1, subject.result_count(:pass)
-    end
-
-    should "have 1 error result" do
-      assert_equal 1, subject.result_count(:error)
-      assert_equal 1, subject.error_results.size
-    end
-
-    should "have 0 fail results" do
-      assert_equal 0, subject.result_count(:fail)
-    end
-  end
-
-
-  class MixedPassTest < ResultTest
-    context "and has 1 pass and 1 fail assertion with a pass call in between"
-    subject do
-      Assert::Test.new("should assert stuff", ::Proc.new do
-        assert(1 == 1)
-        pass
-        assert(1 == 0)
-      end, Assert::Context)
-    end
-
-    should "have a pass for its last result" do
-      assert_kind_of Assert::Result::Fail, subject.results.last
-    end
-
-    should "have 3 total results" do
-      assert_equal 3, subject.result_count
-      assert_equal subject.result_count, @test_run_results.size
-    end
-
-    should "have 2 pass results" do
-      assert_equal 2, subject.result_count(:pass)
-      assert_equal 2, subject.pass_results.size
-    end
-
-    should "have 1 fail results" do
-      assert_equal 1, subject.result_count(:fail)
-    end
-
-  end
-
-
-  class MixedFailTest < ResultTest
-    context "and has 1 pass and 1 fail assertion with a fail call in between"
-    subject do
-      Assert::Test.new("should assert stuff", ::Proc.new do
-        assert(1 == 0)
-        fail
-        assert(1 == 1)
-      end, Assert::Context)
-    end
-
-    should "have a fail for its last result" do
-      assert_kind_of Assert::Result::Pass, subject.results.last
-    end
-
-    should "have 3 total results" do
-      assert_equal 3, subject.result_count
-      assert_equal subject.result_count, @test_run_results.size
-    end
-
-    should "have 1 pass results" do
-      assert_equal 1, subject.result_count(:pass)
-    end
-
-    should "have 2 fail results" do
-      assert_equal 2, subject.result_count(:fail)
-      assert_equal 2, subject.fail_results.size
-    end
-
-  end
-
-
-  class MixedFlunkTest < ResultTest
-    context "and has 1 pass and 1 fail assertion with a flunk call in between"
-    subject do
-      Assert::Test.new("should assert stuff", ::Proc.new do
-        assert(1 == 0)
-        flunk
-        assert(1 == 1)
-      end, Assert::Context)
-    end
-
-    should "have a fail for its last result" do
-      assert_kind_of Assert::Result::Pass, subject.results.last
-    end
-
-    should "have 3 total results" do
-      assert_equal 3, subject.result_count
-      assert_equal subject.result_count, @test_run_results.size
-    end
-
-    should "have 1 pass results" do
-      assert_equal 1, subject.result_count(:pass)
-    end
-
-    should "have 2 fail results" do
-      assert_equal 2, subject.result_count(:fail)
-    end
-
-  end
-
-  class WithSetupTest < Test::Unit::TestCase
-    include TestBelt
-
-    context "a Test that runs and has assertions that depend on a setup block"
-
-    setup do
-      Assert::Context.setup do # should probably create it's own context class
-        @needed = true
-      end
-      subject.run
-    end
-
-    subject do
-      Assert::Test.new("test with setup", ::Proc.new do
-        assert(@needed)
-      end, Assert::Context)
-    end
-
-    should "have 1 total result" do
-      assert_equal 1, subject.result_count
-    end
-
-    should "have 1 pass result" do
-      assert_equal 1, subject.result_count(:pass)
-    end
-
-  end
-
-  class WithTeardownTest < Test::Unit::TestCase
-    include TestBelt
-
-    context "a Test that runs and has assertions that depend on a teardown block"
-
-    # quite complex, should probably be broken up into multiple tests...
-    setup do
-      @fail_context_klass = Class.new(Assert::Context)
-      @fail_context_klass.teardown do
-        raise("Teardown failed!")
-      end
-      win_context_klass = @win_context_klass = Class.new(Assert::Context) do
-        class << self; attr_accessor :teardown_worked; end
-      end
-      @win_context_klass.teardown do
-        win_context_klass.teardown_worked = true
-      end
-      @suite = Assert::Suite.new
-      @suite[@fail_context_klass] = [
-        Assert::Test.new("test with fail teardown", lambda do                # pass and error
+    class PassFailIgnoreTest < ResultsTest
+      setup do
+        @test = Factory.test("pass fail ignore test", @context_class) do
+          ignore("something")
           assert(true)
-        end, @fail_context_klass),
-        Assert::Test.new("test with fail test and fail teardown", lambda do  # error and error
-          raise(RuntimeError)
-        end, @fail_context_klass)
-      ]
-      @suite[@win_context_klass] = [
-        Assert::Test.new("test with win teardown", lambda do                 # pass
-          assert(true)
-        end, @win_context_klass),
-        Assert::Test.new("test with fail test and win teardown", lambda do   # error
-          raise(RuntimeError)
-        end, @win_context_klass)
-      ]
-      @suite.tests.each(&:run)
+          assert(false)
+          ignore("something else")
+          assert(34)
+          assert(nil)
+        end
+        @test.run
+      end
+      subject{ @test }
+
+      should "return the pass results with #pass_results" do
+        assert_kind_of Array, subject.pass_results
+        assert_equal 2, subject.pass_results.size
+        subject.pass_results.each do |result|
+          assert_kind_of Assert::Result::Pass, result
+        end
+      end
+      should "return the size of #pass_results with #result_count(:pass)" do
+        assert_equal(subject.pass_results.size, subject.result_count(:pass))
+      end
+      should "return the fail results with #fail_results" do
+        assert_kind_of Array, subject.fail_results
+        assert_equal 2, subject.fail_results.size
+        subject.fail_results.each do |result|
+          assert_kind_of Assert::Result::Fail, result
+        end
+      end
+      should "return the size of #fail_results with #result_count(:fail)" do
+        assert_equal(subject.fail_results.size, subject.result_count(:fail))
+      end
+      should "return the ignore results with #ignore_results" do
+        assert_kind_of Array, subject.ignore_results
+        assert_equal 2, subject.ignore_results.size
+        subject.ignore_results.each do |result|
+          assert_kind_of Assert::Result::Ignore, result
+        end
+      end
+      should "return the size of #ignore_results with #result_count(:ignore)" do
+        assert_equal(subject.ignore_results.size, subject.result_count(:ignore))
+      end
+      should "return the total number of tests with #result_count" do
+        assert_equal(6, subject.result_count)
+      end
+
     end
 
-    subject{ @suite }
 
-    should "have 6 total results" do
-      assert_equal 6, subject.count(:results)
+
+    class SkipTest < ResultsTest
+      setup do
+        @test = Factory.test("skip test", @context_class) do
+          skip
+        end
+        @test.run
+      end
+      subject{ @test }
+
+      should "return the skip results with #skip_results" do
+        assert_kind_of Array, subject.skip_results
+        assert_equal 1, subject.skip_results.size
+        subject.skip_results.each do |result|
+          assert_kind_of Assert::Result::Skip, result
+        end
+      end
+      should "return the size of #skip_results with #result_count(:skip)" do
+        assert_equal(subject.skip_results.size, subject.result_count(:skip))
+      end
+
     end
 
-    should "have 4 error results" do
-      assert_equal 4, subject.count(:errored)
-    end
-    
-    should "have 2 pass results" do
-      assert_equal 2, subject.count(:passed)
+
+
+    class ErrorTest < ResultsTest
+      setup do
+        @test = Factory.test("error test", @context_class) do
+          raise StandardError, "WHAT"
+        end
+        @test.run
+      end
+      subject{ @test }
+
+      should "return the error results with #error_results" do
+        assert_kind_of Array, subject.error_results
+        assert_equal 1, subject.error_results.size
+        subject.error_results.each do |result|
+          assert_kind_of Assert::Result::Error, result
+        end
+      end
+      should "return the size of #error_results with #result_count(:error)" do
+        assert_equal(subject.error_results.size, subject.result_count(:error))
+      end
+
     end
 
   end
 
-  class WithDescTest < Test::Unit::TestCase
-    include TestBelt
 
-    context "a Test that's context has a description"
 
+  class ComparingTest < Assert::Test::BasicTest
+    desc "<=> another test"
     setup do
-      @description = "something amazing"
-      Assert::Context.desc(@description)
-      @test_name = "is really amazing"
+      @test = Factory.test("mmm")
     end
+    subject{ @test }
 
-    subject do
-      Assert::Test.new(@test_name, ::Proc.new do
-        # nothing needed
-      end, Assert::Context)
+    should "return 1 with a test named 'aaa' (greater than it)" do
+      result = @test <=> Factory.test("aaa")
+      assert_equal(1, result)
     end
-
-    should "have a name that is the context's descriptions and the name passed" do
-      expected = [ @description, @test_name ].join(" ")
-      assert_equal(expected, subject.name)
+    should "return 0 with named the same" do
+      result = @test <=> Factory.test(@test.name)
+      assert_equal(0, result)
+    end
+    should "return -1 with a test named 'zzz' (less than it)" do
+      result = @test <=> Factory.test("zzz")
+      assert_equal(-1, result)
     end
 
   end

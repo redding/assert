@@ -40,7 +40,7 @@ module Factory
     def test(*args, &block)
       name = (args[0] || "a test").to_s
       context_class = args[1] || self.context_class
-      block ||= lambda{ }
+      block ||= (args[2] || lambda{ })
 
       Assert::Test.new(name, context_class, &block)
     end

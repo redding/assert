@@ -75,8 +75,8 @@ module Assert
     protected
 
     def name_from_context(name)
-      name = name.gsub(/^test_\.should/, "should") # TODO: tests!
-      [ @context_class.full_description, name ].join(" ")
+      name = name.gsub(/^test_\.should/, "should")
+      [ @context_class.full_description, name ].compact.join(" ")
     end
 
   end
