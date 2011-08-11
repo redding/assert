@@ -69,6 +69,7 @@ module Assert
         @_assert_subject
       end
       
+      # TODO: tests!
       def should(desc, &block)
         raise ArgumentError, "please provide a test block" unless block_given?
         method_name = "test_#{desc.gsub(/\s/, '_')}"

@@ -138,6 +138,7 @@ module Assert
 
 
 
+    # TODO: tests!
     def assert_empty(collection, fail_desc=nil)
       what_failed_msg = "Expected #{collection.inspect} to be empty."
       assert(collection.empty?, fail_desc, what_failed_msg)
@@ -151,6 +152,7 @@ module Assert
 
 
 
+    # TODO: tests!
     def assert_includes(collection, object, fail_desc=nil)
       what_failed_msg = "Expected #{collection.inspect} to include #{object.inspect}."
       assert(collection.includes?(object), fail_desc, what_failed_msg)
@@ -164,6 +166,7 @@ module Assert
 
 
 
+    # TODO: tests!
     def assert_nil(object, fail_desc=nil)
       what_failed_msg = "Expected nil, not #{object.inspect}."
       assert(object.nil?, fail_desc, what_failed_msg)
