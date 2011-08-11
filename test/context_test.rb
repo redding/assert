@@ -31,7 +31,7 @@ class Assert::Context
         subject.skip
       end
     end
-    
+
     should "store a custom message passed to the method" do
       skip_msg = "custom skip message yo"
       begin
@@ -53,7 +53,7 @@ class Assert::Context
     should "ignore a test with a method call" do
       assert_kind_of Assert::Result::Ignore, subject.ignore
     end
-    
+
     should "add a custom message to the result when provided" do
       ignore_msg = "custom ignore message yo"
       result = subject.ignore(ignore_msg)
@@ -83,7 +83,7 @@ class Assert::Context
     should "pass refutes that are nil" do
       assert_kind_of Assert::Result::Pass, subject.refute(nil)
     end
-    
+
     should "add a custom message to the result when provided" do
       pass_msg = "custom pass message yo"
       result = subject.pass(pass_msg)
