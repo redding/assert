@@ -89,14 +89,14 @@ module Assert
 
     # raise Result::Fail if the assertion is false or nil
     def assert(assertion, fail_desc=nil, what_failed_msg=nil)
-      what_failed_msg ||= "Failed assert."
+      what_failed_msg ||= "Failed assert: assertion was '#{assertion.inspect}'."
       msg = fail_message(fail_desc) { what_failed_msg }
       assertion ? pass : fail(msg)
     end
 
     # the opposite of assert, raise Result::Fail if the assertion is not false or nil
     def assert_not(assertion, fail_desc=nil)
-      assert(!assertion, fail_desc, "Failed refute.")
+      assert(!assertion, fail_desc, "Failed assert_not: assertion was '#{assertion.inspect}'.")
     end
     alias_method :refute, :assert_not
 
