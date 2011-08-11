@@ -97,7 +97,7 @@ module Assert
       while (klass.superclass)
         methods -= (klass = klass.superclass).public_instance_methods
       end
-      methods.delete_if {|method_name| method_name !~ /^test_./}
+      methods.delete_if {|method_name| method_name !~ /^test_./ }
     end
 
     private

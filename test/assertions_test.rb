@@ -2,6 +2,7 @@ require 'test/helper'
 
 class Assert::Assertions::BasicTest < Assert::Context
 
+  desc "An assert context"
   setup do
     @context_class = Factory.context_class
     @context = @context_class.new
@@ -24,76 +25,10 @@ class Assert::Assertions::BasicTest < Assert::Context
     end
   end
 
-  class AssertBlockTest < BasicTest
-    setup do
-      @test = Factory.test("assert block tests", @context_class) do
-        assert_block{ true }
-        assert_block{ false }
-      end
-      @test.run
-    end
-    subject{ @test }
-
-    should "have 2 total results" do
-      assert_equal 2, subject.result_count
-    end
-    should "have 1 pass result" do
-      assert_equal 1, subject.result_count(:pass)
-    end
-    should "have 1 fail result" do
-      assert_equal 1, subject.result_count(:fail)
-    end
-
-  end
-
 end
 
 =begin
 module Assert::Assertions
-
-  class AssertBlockTest < BasicTest
-
-    setup do
-      @test = Assert::Test.new("assert block test", lambda do
-        assert_block{ true }
-        assert_block{ false }
-      end, @context_klass)
-      @test.run
-    end
-    subject{ @test }
-
-    should "have 2 total results" do
-      assert_equal 2, subject.result_count
-    end
-
-    should "have 1 pass result" do
-      assert_equal 1, subject.result_count(:pass)
-    end
-
-    should "have 1 fail result" do
-      assert_equal 1, subject.result_count(:fail)
-    end
-
-    class MessagesTest < AssertBlockTest
-
-      setup do
-        fail_desc = "assert block shouldn't fail!"
-        @test = Assert::Test.new("assert block message test", lambda do
-          assert_block(fail_desc){ false }
-        end, @context_klass)
-        @expected_message = "Expected block to return true value.\n#{fail_desc}"
-        @test.run
-        @message = @test.fail_results.first.message
-      end
-      subject{ @message }
-
-      should "have the correct failure message" do
-        assert_equal @expected_message, subject
-      end
-
-    end
-
-  end
 
   class AssertNotBlockTest < BasicTest
 

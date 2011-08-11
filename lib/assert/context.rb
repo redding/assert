@@ -84,7 +84,7 @@ module Assert
       # TODO: tests!
       def should(desc, &block)
         raise ArgumentError, "please provide a test block" unless block_given?
-        method_name = "test_#{desc.gsub(/\s/, '_')}"
+        method_name = "test_.should #{desc}"
         if method_defined?(method_name)
           from = caller.first
           puts "WARNING: should #{desc.inspect} is redefining #{method_name}!"
