@@ -20,7 +20,7 @@ class Assert::Assertions::BasicTest < Assert::Context
     :assert_match, :assert_not_match, :assert_no_match, :refute_match
   ]
   INSTANCE_METHODS.each do |method|
-    should "respond to instance method #{method}" do
+    should "respond to the instance method ##{method}" do
       assert_respond_to subject, method
     end
   end

@@ -155,12 +155,12 @@ module Assert
     # TODO: tests!
     def assert_includes(collection, object, fail_desc=nil)
       what_failed_msg = "Expected #{collection.inspect} to include #{object.inspect}."
-      assert(collection.includes?(object), fail_desc, what_failed_msg)
+      assert(collection.include?(object), fail_desc, what_failed_msg)
     end
 
     def assert_not_included(collection, object, fail_desc=nil)
       what_failed_msg = "Expected #{collection.inspect} to not include #{object.inspect}."
-      assert(!collection.includes?(object), fail_desc, what_failed_msg)
+      assert(!collection.include?(object), fail_desc, what_failed_msg)
     end
     alias_method :refute_includes, :assert_not_included
 
@@ -171,16 +171,16 @@ module Assert
       what_failed_msg = "Expected nil, not #{object.inspect}."
       assert(object.nil?, fail_desc, what_failed_msg)
     end
-    
+
     def assert_not_nil(object, fail_desc=nil)
       what_failed_msg = "Expected #{object.inspect} to not be nil."
       assert(!object.nil?, fail_desc, what_failed_msg)
     end
     alias_method :refute_nil, :assert_not_nil
-    
-    
 
-    IGNORED_ASSERT_MACROS = [ :assert_throws, :assert_nothing_thrown, :assert_send, 
+
+
+    IGNORED_ASSERT_MACROS = [ :assert_throws, :assert_nothing_thrown, :assert_send,
       :assert_operator, :refute_operator, :assert_in_epsilon, :refute_in_epsilon,
       :assert_in_delta, :refute_in_delta
     ]

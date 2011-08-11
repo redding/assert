@@ -97,7 +97,7 @@ module Assert
       while (klass.superclass)
         methods -= (klass = klass.superclass).public_instance_methods
       end
-      methods.delete_if {|method_name| method_name !~ /^test_./ }
+      methods.delete_if {|method_name| method_name !~ /^test./ }
     end
 
     private
@@ -113,9 +113,9 @@ module Assert
     def prep
       if @prepared != true
         # look for local public methods starting with 'test_'and add
-        self.each do |context, tests|
-          local_public_test_methods(context).each do |meth|
-            tests << Test.new(meth.to_s, meth, context)
+        self.each do |context_class, tests|
+          local_public_test_methods(context_class).each do |meth|
+            tests << Test.new(meth.to_s, context_class, meth)
           end
           tests.uniq
         end

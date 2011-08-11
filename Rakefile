@@ -11,6 +11,13 @@ Rake::TestTask.new do |t|
 end
 
 Rake::TestTask.new do |t|
+  t.name = "test:context"
+  t.libs << "."
+  t.test_files = FileList['test/context_test.rb', 'test/context/**/*_test.rb']
+  t.verbose = true
+end
+
+Rake::TestTask.new do |t|
   t.name = "test:assertions"
   t.libs << "."
   t.test_files = FileList['test/assertions_test.rb', 'test/assertions/**/*_test.rb']

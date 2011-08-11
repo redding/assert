@@ -7,20 +7,20 @@ module Assert
     # a Test is some code/method to run in the scope of a Context.  After a
     # a test runs, it should have some assertions which are its results.
 
-    attr_reader :name, :code, :context
+    attr_reader :name, :code, :context_class
     attr_accessor :results
 
-    def initialize(name, code, context)
-      @context = context
+    def initialize(name, context_class, code = nil, &block)
+      @context_class = context_class
       @name = name_from_context(name)
-      @code = code
+      @code = (code || block)
       @results = ResultSet.new
     end
 
     def run(view=nil)
       @results.view = view
       begin
-        run_scope = @context.new(self)
+        run_scope = @context_class.new(self)
         run_setup(run_scope)
         if @code.kind_of?(::Proc)
           run_scope.instance_eval(&@code)
@@ -43,13 +43,13 @@ module Assert
     end
 
     def run_setup(scope)
-      @context._assert_setups.each do |setup|
+      @context_class.all_setup_blocks.each do |setup|
         scope.instance_eval(&setup)
       end
     end
 
     def run_teardown(scope)
-      @context._assert_teardowns.each do |teardown|
+      @context_class.all_teardown_blocks.each do |teardown|
         scope.instance_eval(&teardown)
       end
     end
@@ -76,7 +76,7 @@ module Assert
 
     def name_from_context(name)
       name = name.gsub(/^test_\.should/, "should") # TODO: tests!
-      (@context._assert_descs + [ name ]).join(" ")
+      [ @context_class.full_description, name ].join(" ")
     end
 
   end

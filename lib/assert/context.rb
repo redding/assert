@@ -19,14 +19,13 @@ module Assert
 
     # put all logic here to keep context instances pure for running tests
     class << self
+      attr_accessor :subject_block
 
-      # TODO: tests!
       def setup_once(&block)
         Assert.suite.setup(&block)
       end
       alias_method :before_once, :setup_once
 
-      # TODO: tests!
       def teardown_once(&block)
         Assert.suite.teardown(&block)
       end
@@ -34,54 +33,65 @@ module Assert
 
       def setup(&block)
         raise ArgumentError, "please provide a setup block" unless block_given?
-        @_assert_setups ||= []
-        @_assert_setups << block
+        self.setup_blocks << block
       end
       alias_method :before, :setup
 
       def teardown(&block)
         raise ArgumentError, "please provide a teardown block" unless block_given?
-        @_assert_teardowns ||= []
-        @_assert_teardowns << block
+        self.teardown_blocks << block
       end
       alias_method :after, :teardown
 
-      def _assert_setups
-        setups = if superclass.respond_to?(:_assert_setups)
-          superclass._assert_setups
-        end
-        (setups || []) + (@_assert_setups || [])
+      def setup_blocks
+        @setup_blocks ||= []
       end
 
-      def _assert_teardowns
-        teardowns = if superclass.respond_to?(:_assert_teardowns)
-          superclass._assert_teardowns
-        end
-        (@_assert_teardowns || []) + (teardowns || [])
+      def teardown_blocks
+        @teardown_blocks ||= []
       end
 
-      def desc(description)
-        raise ArgumentError, "no context description provided" if description.nil?
-        @_assert_desc ||= [ description ]
+      def all_setup_blocks
+        inherited_blocks = if superclass.respond_to?(:all_setup_blocks)
+          superclass.all_setup_blocks
+        end
+        (inherited_blocks || []) + self.setup_blocks
       end
 
-      def _assert_descs
-        descs = if superclass.respond_to?(:_assert_descs)
-          superclass._assert_descs
+      def all_teardown_blocks
+        inherited_blocks = if superclass.respond_to?(:all_teardown_blocks)
+          superclass.all_teardown_blocks
         end
-        (descs || []) + (@_assert_desc || [])
+        (inherited_blocks || []) + self.teardown_blocks
+      end
+
+      def desc(text)
+        raise ArgumentError, "no context description provided" if text.nil?
+        self.descriptions << text
+      end
+
+      def descriptions
+        @descriptions ||= []
+      end
+
+      def full_description
+        inherited_description = if superclass.respond_to?(:full_description)
+          superclass.full_description
+        end
+        [ inherited_description ].push(self.descriptions).flatten.compact.join(" ")
       end
 
       def subject(&block)
         raise ArgumentError, "please provide a subject block" unless block_given?
-        @_assert_subject = block
+        self.subject_block = block
       end
 
-      def _assert_subject
-        @_assert_subject
+      def subject_block
+        @subject_block ||= if superclass.respond_to?(:subject_block)
+          superclass.subject_block
+        end
       end
 
-      # TODO: tests!
       def should(desc, &block)
         raise ArgumentError, "please provide a test block" unless block_given?
         method_name = "test_.should #{desc}"
@@ -99,16 +109,20 @@ module Assert
       @__running_test__ = running_test
     end
 
-    # raise Result::Fail if the assertion is false or nil
+    # check if the assertion is a truthy value, if so create a new pass result, otherwise
+    # create a new fail result with the desc and what failed msg.
+    # all other assertion helpers use this one in the end
     def assert(assertion, fail_desc=nil, what_failed_msg=nil)
       what_failed_msg ||= "Failed assert: assertion was <#{assertion.inspect}>."
       msg = fail_message(fail_desc) { what_failed_msg }
       assertion ? pass : fail(msg)
     end
 
-    # the opposite of assert, raise Result::Fail if the assertion is not false or nil
+    # the opposite of assert, check if the assertion is a false value, if so create a new pass
+    # result, otherwise create a new fail result with the desc and it's what failed msg
     def assert_not(assertion, fail_desc=nil)
-      assert(!assertion, fail_desc, "Failed assert_not: assertion was <#{assertion.inspect}>.")
+      what_failed_msg = "Failed assert_not: assertion was <#{assertion.inspect}>."
+      assert(!assertion, fail_desc, what_failed_msg)
     end
     alias_method :refute, :assert_not
 
@@ -144,9 +158,13 @@ module Assert
     end
 
     def subject
-      if subject_block = self.class._assert_subject
+      if subject_block = self.class.subject_block
         instance_eval(&subject_block)
       end
+    end
+
+    def inspect
+      "#<#{self.class}>"
     end
 
     protected
