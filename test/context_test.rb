@@ -23,8 +23,8 @@ class Assert::Context::BasicTest < Assert::Context
   teardown do
     TEST_ASSERT_SUITE.clear
   end
-  
-  
+
+
 
   class SkipTest < BasicTest
     desc "skip method"
@@ -133,6 +133,8 @@ class Assert::Context::BasicTest < Assert::Context
 
   end
 
+
+
   class FlunkTest < BasicTest
     desc "flunk method"
     setup do
@@ -150,28 +152,137 @@ class Assert::Context::BasicTest < Assert::Context
 
   end
 
-end
 
-=begin
 
-TODO: move to tests for hte assert method
-should "pass asserts that are not false or nil" do
-  assert_kind_of Assert::Result::Pass, subject.assert(34)
-end
-should "pass refutes that are false" do
-  assert_kind_of Assert::Result::Pass, subject.refute(false)
-end
-should "pass refutes that are nil" do
-  assert_kind_of Assert::Result::Pass, subject.refute(nil)
-end
-should "fail asserts that are false" do
-  assert_kind_of Assert::Result::Fail, subject.assert(false)
-end
-should "fail asserts that are nil" do
-  assert_kind_of Assert::Result::Fail, subject.assert(nil)
-end
-should "fail refutes that are not false or nil" do
-  assert_kind_of Assert::Result::Fail, subject.refute(34)
-end
+  class AssertTest < BasicTest
+    desc "assert method"
+    setup do
+      @fail_desc = "my fail desc"
+      @what_failed = "what failed"
+    end
 
-=end
+    class WithTruthyAssertionTest < AssertTest
+      desc "with a truthy assertion"
+      setup do
+        @result = @context.assert(true, @fail_desc, @what_failed)
+      end
+      subject{ @result }
+
+      should "return a pass result" do
+        assert_kind_of Assert::Result::Pass, subject
+        assert_nil subject.message
+      end
+
+    end
+
+    class WithFalseAssertionTest < AssertTest
+      desc "with a false assertion"
+      setup do
+        @result = @context.assert(false, @fail_desc, @what_failed)
+      end
+      subject{ @result }
+
+      should "return a fail result" do
+        assert_kind_of Assert::Result::Fail, subject
+        assert_equal "#{@what_failed}\n#{@fail_desc}", subject.message
+      end
+
+    end
+
+    # extras
+
+    should "return a pass result with a truthy (34) assertion" do
+      assert_kind_of Assert::Result::Pass, subject.assert(34)
+    end
+
+    should "return a fail result with a nil assertion" do
+      assert_kind_of Assert::Result::Fail, subject.assert(nil)
+    end
+
+  end
+
+
+
+  class AssertNotTest < BasicTest
+    desc "assert_not method"
+    setup do
+      @fail_desc = "my fail desc"
+    end
+
+    class WithTruthyAssertionTest < AssertNotTest
+      desc "with a truthy assertion"
+      setup do
+        @what_failed = "Failed assert_not: assertion was <true>."
+        @result = @context.assert_not(true, @fail_desc)
+      end
+      subject{ @result }
+
+      should "return a fail result" do
+        assert_kind_of Assert::Result::Fail, subject
+        assert_equal "#{@what_failed}\n#{@fail_desc}", subject.message
+      end
+
+    end
+
+    class WithFalseAssertionTest < AssertNotTest
+      desc "with a false assertion"
+      setup do
+        @result = @context.assert_not(false, @fail_desc)
+      end
+      subject{ @result }
+
+      should "return a pass result" do
+        assert_kind_of Assert::Result::Pass, subject
+        assert_nil subject.message
+      end
+
+    end
+
+    # extras
+
+    should "return a fail result with a truthy (34) assertion" do
+      assert_kind_of Assert::Result::Fail, subject.assert_not(34)
+    end
+
+    should "return a pass result with a nil assertion" do
+      assert_kind_of Assert::Result::Pass, subject.assert_not(nil)
+    end
+
+  end
+
+
+
+  class SubjectTest < BasicTest
+    desc "subject method"
+    setup do
+      expected = @expected = "amazing"
+      @context_class = Factory.context_class do
+        subject{ @something = expected }
+      end
+      @context = @context_class.new
+      @subject = @context.subject
+    end
+    subject{ @subject }
+
+    should "instance evaluate the block set with the class setup method" do
+      assert_equal @expected, subject
+    end
+
+  end
+
+
+
+  class InspectTest < BasicTest
+    desc "inspect method"
+    setup do
+      @expected = "#<#{@context.class}>"
+      @inspect = @context.inspect
+    end
+    subject{ @inspect }
+
+    should "just show the name of the class" do
+      assert_equal @expected, subject
+    end
+  end
+
+end
