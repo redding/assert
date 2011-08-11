@@ -64,9 +64,10 @@ module Assert::View
 
     def detailed_results
       @suite.tests
-      "\n\n" + @suite.ordered_results.reverse.collect do |result|
+      details = @suite.ordered_results.reverse.collect do |result|
         result_io_msg(result.to_s, result.to_sym) if show_result_details?(result)
-      end.compact.join("\n\n")
+      end.compact
+      "\n\n" + details.join("\n\n") if !details.empty?
     end
 
     def results_stmt
@@ -78,14 +79,29 @@ module Assert::View
     end
 
     def results_breakdown
-      if count(:passed) == count(:tests)
-        result_io_msg("all passed", :passed)
+      if count(:passed) == count(:results)
+        stmnt = if count(:results) < 1
+          "uhh..."
+        elsif count(:results) == 1
+          "it passed"
+        else
+          "all passed"
+        end
+        result_io_msg(stmnt, :passed)
       else
-        [:passed, :failed, :ignored, :skipped, :errored].inject([]) do |results, result_sym|
+        breakdowns = [:passed, :failed, :ignored, :skipped, :errored]
+        breakdowns = breakdowns.inject([]) do |results, result_sym|
           results << (if count(result_sym) > 0
             result_io_msg("#{count(result_sym)} #{result_sym}", result_sym)
           end)
-        end.compact.join(', ')
+        end.compact
+        if breakdowns.size < 2
+          breakdowns.join('')
+        elsif breakdowns.size == 2
+          breakdowns.join(" and ")
+        else
+          [breakdowns[0..-2].join(", "), breakdowns.last].join(", and ")
+        end
       end
     end
 

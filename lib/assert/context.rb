@@ -20,6 +20,18 @@ module Assert
     # put all logic here to keep context instances pure for running tests
     class << self
 
+      # TODO: tests!
+      def setup_once(&block)
+        Assert.suite.setup(&block)
+      end
+      alias_method :before_once, :setup_once
+
+      # TODO: tests!
+      def teardown_once(&block)
+        Assert.suite.teardown(&block)
+      end
+      alias_method :after_once, :teardown_once
+
       def setup(&block)
         raise ArgumentError, "please provide a setup block" unless block_given?
         @_assert_setups ||= []
@@ -68,7 +80,7 @@ module Assert
       def _assert_subject
         @_assert_subject
       end
-      
+
       # TODO: tests!
       def should(desc, &block)
         raise ArgumentError, "please provide a test block" unless block_given?
@@ -89,14 +101,14 @@ module Assert
 
     # raise Result::Fail if the assertion is false or nil
     def assert(assertion, fail_desc=nil, what_failed_msg=nil)
-      what_failed_msg ||= "Failed assert: assertion was '#{assertion.inspect}'."
+      what_failed_msg ||= "Failed assert: assertion was <#{assertion.inspect}>."
       msg = fail_message(fail_desc) { what_failed_msg }
       assertion ? pass : fail(msg)
     end
 
     # the opposite of assert, raise Result::Fail if the assertion is not false or nil
     def assert_not(assertion, fail_desc=nil)
-      assert(!assertion, fail_desc, "Failed assert_not: assertion was '#{assertion.inspect}'.")
+      assert(!assertion, fail_desc, "Failed assert_not: assertion was <#{assertion.inspect}>.")
     end
     alias_method :refute, :assert_not
 
