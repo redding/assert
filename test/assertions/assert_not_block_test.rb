@@ -1,12 +1,12 @@
 require 'test/helper'
 
-class AssertBlockTest < Assert::Context
-  desc "the assert_block helper run in a test"
+class AssertNotBlockTest < Assert::Context
+  desc "the assert_not_block helper run in a test"
   setup do
-    fail_desc = @fail_desc = "assert block fail desc"
+    fail_desc = @fail_desc = "assert not block fail desc"
     @test = Factory.test do
-      assert_block{ true }
-      assert_block(fail_desc){ false }
+      assert_not_block(fail_desc){ true }
+      assert_not_block{ false }
     end
     @test.run
   end
@@ -24,10 +24,10 @@ class AssertBlockTest < Assert::Context
 
 
 
-  class FailMessageTest < AssertBlockTest
+  class FailMessageTest < AssertNotBlockTest
     desc "with a failed result"
     setup do
-      @expected = [ "Expected block to return true value.", @fail_desc ].join("\n")
+      @expected = [ "Expected block to return false value.", @fail_desc ].join("\n")
       @fail_message = @test.fail_results.first.message
     end
     subject{ @fail_message }

@@ -30,53 +30,6 @@ end
 =begin
 module Assert::Assertions
 
-  class AssertNotBlockTest < BasicTest
-
-    setup do
-      @test = Assert::Test.new("assert not block test", lambda do
-        assert_not_block{ true }
-        assert_not_block{ false }
-      end, @context_klass)
-      @test.run
-    end
-
-    subject{ @test }
-
-    should "have 2 total results" do
-      assert_equal 2, subject.result_count
-    end
-
-    should "have 1 pass result" do
-      assert_equal 1, subject.result_count(:pass)
-    end
-
-    should "have 1 fail result" do
-      assert_equal 1, subject.result_count(:fail)
-    end
-
-    class MessagesTest < AssertNotBlockTest
-
-      setup do
-        fail_desc = "assert not block shouldn't fail!"
-        @test = Assert::Test.new("assert not block message test", lambda do
-          assert_not_block(fail_desc){ true }
-        end, @context_klass)
-        @expected_message = "Expected block to return false value.\n#{fail_desc}"
-        @test.run
-        @message = @test.fail_results.first.message
-      end
-      subject{ @message }
-
-      should "have the correct failure message" do
-        assert_equal @expected_message, subject
-      end
-
-    end
-
-  end
-
-
-
   class AssertRaisesTest < BasicTest
 
     setup do
