@@ -119,7 +119,7 @@ module Assert::View
 
     def io_msg(msg, opts={})
       val = super
-      if style = term_style(*opts[:term_styles])
+      if !(style = term_style(*opts[:term_styles])).empty?
         val = style + val + term_style(:reset)
       else
         val
