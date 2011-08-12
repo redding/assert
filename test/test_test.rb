@@ -41,6 +41,13 @@ class Assert::Test::BasicTest < Assert::Context
   should "have zero results before running" do
     assert_equal 0, subject.result_count
   end
+  should "have a custom inspect that only shows limited attributes" do
+    attributes_string = [ :name, :context_class, :results ].collect do |method|
+      "@#{method}=#{subject.send(method).inspect}"
+    end.join(" ")
+    expected = "#<#{subject.class} #{attributes_string}>"
+    assert_equal expected, subject.inspect
+  end
 
   teardown do
     TEST_ASSERT_SUITE.clear

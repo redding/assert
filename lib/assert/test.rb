@@ -71,6 +71,13 @@ module Assert
     def <=>(other_test)
       self.name <=> other_test.name
     end
+    
+    def inspect
+      attributes_string = ([ :name, :context_class, :results ].collect do |attr|
+        "@#{attr}=#{self.send(attr).inspect}"
+      end).join(" ")
+      "#<#{self.class} #{attributes_string}>"
+    end
 
     protected
 
