@@ -217,7 +217,6 @@ module Assert
       [ assertion, fail_desc ]
     end
 
-    # TODO: use filtered backtrace
     def exception_details(exception, which)
       if exception
         what_failed_msg = case(which)

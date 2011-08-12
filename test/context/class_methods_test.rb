@@ -253,7 +253,7 @@ class Assert::Context::ClassMethodsTest < Assert::Context
 
 
 
-  class SubjectBlockTest < BasicTest
+  class SubjectBlockTest < ClassMethodsTest
     desc "subject_block method"
     setup do
       parent_block = @parent_block = lambda{ @something }
@@ -271,7 +271,7 @@ class Assert::Context::ClassMethodsTest < Assert::Context
 
 
 
-  class ShouldTest < BasicTest
+  class ShouldTest < ClassMethodsTest
     desc "should method"
     setup do
       should_desc = "be true"
