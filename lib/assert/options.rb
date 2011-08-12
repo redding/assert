@@ -6,7 +6,11 @@ module Assert
         if args.empty?
           self.instance_variable_get("@#{method}")
         else
-          self.instance_variable_set("@#{method}", (args.size == 1 ? args.first : args))
+          value = args.size == 1 ? args.first : args
+          self.instance_variable_set("@#{method}", value)
+          if method.to_s =~ /^default_/
+            self.instance_variable_set("@#{$'}", value)
+          end
         end
       end
 

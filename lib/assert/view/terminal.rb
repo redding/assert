@@ -31,17 +31,17 @@ module Assert::View
 
     include Assert::Options
     options do
-      styled          false
-      passed_abbrev   '.'
-      failed_abbrev   'F'
-      ignored_abbrev  'I'
-      skipped_abbrev  'S'
-      errored_abbrev  'E'
-      passed_styles   :green
-      failed_styles   :red
-      ignored_styles  :magenta
-      skipped_styles  :cyan
-      errored_styles  :yellow
+      default_styled          false
+      default_passed_abbrev   '.'
+      default_failed_abbrev   'F'
+      default_ignored_abbrev  'I'
+      default_skipped_abbrev  'S'
+      default_errored_abbrev  'E'
+      default_passed_styles   :green
+      default_failed_styles   :red
+      default_ignored_styles  :magenta
+      default_skipped_styles  :cyan
+      default_errored_styles  :yellow
     end
 
     def render(*args, &block)
