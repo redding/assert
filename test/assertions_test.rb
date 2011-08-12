@@ -34,61 +34,6 @@ end
 =begin
 module Assert::Assertions
 
-  class AssertNothingRaisedTest < BasicTest
-
-    setup do
-      @test = Assert::Test.new("assert nothing raised test", lambda do
-        assert_nothing_raised(StandardError){ raise(StandardError) }  # fail
-        assert_nothing_raised(RuntimeError){ raise(StandardError) }   # pass
-        assert_nothing_raised{ raise(RuntimeError) }                  # fail
-        assert_nothing_raised{ true }                                 # pass
-      end, @context_klass)
-      @test.run
-    end
-
-    subject{ @test }
-
-    should "have 4 total results" do
-      assert_equal 4, subject.result_count
-    end
-
-    should "have 2 pass result" do
-      assert_equal 2, subject.result_count(:pass)
-    end
-
-    should "have 2 fail result" do
-      assert_equal 2, subject.result_count(:fail)
-    end
-
-    class MessagesTest < AssertRaisesTest
-
-      setup do
-        fail_desc = "assert nothing raised shouldn't fail"
-        @test = Assert::Test.new("assert nothing raised message test", lambda do
-          assert_nothing_raised(StandardError, RuntimeError, fail_desc){ raise(StandardError) }
-          assert_nothing_raised(fail_desc){ raise(RuntimeError) }
-        end, @context_klass)
-        @expected_message = [
-          "#{fail_desc}\nStandardError or RuntimeError exception was not expected, but was raised:",
-          "#{fail_desc}\nAn exception was not expected, but was raised:"
-        ]
-        @test.run
-        @messages = @test.fail_results.collect(&:message)
-      end
-      subject{ @messages }
-
-      should "have the correct failure messages" do
-        subject.each_with_index do |message, n|
-          assert(message.include?(@expected_message[n]))
-        end
-      end
-
-    end
-
-  end
-
-
-
   class AssertKindOfTest < BasicTest
 
     setup do
