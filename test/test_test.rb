@@ -7,7 +7,7 @@ require 'test/helper'
 class Assert::Test::BasicTest < Assert::Context
   desc "Assert test"
   setup do
-    test_name = "test: \"should do something amazing\""
+    test_name = "test: should do something amazing"
     @test_code = lambda{ assert(true) }
     context_desc = "context class"
     @context_class = Factory.context_class do

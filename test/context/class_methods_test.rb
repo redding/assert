@@ -279,7 +279,7 @@ class Assert::Context::ClassMethodsTest < Assert::Context
       @context_class = Factory.context_class do
         should(should_desc, &should_block)
       end
-      @method_name = "test: should #{should_desc.inspect}"
+      @method_name = "test: should #{should_desc}"
       @context = @context_class.new(Factory.test("something", @context_class))
     end
     subject{ @context }
@@ -289,6 +289,35 @@ class Assert::Context::ClassMethodsTest < Assert::Context
       assert_equal subject.instance_eval(&@should_block), subject.send(@method_name)
     end
 
+  end
+  
+  
+  
+  class ShouldEventuallyTest < ClassMethodsTest
+    desc "should_eventually method"
+    setup do
+      should_desc = @should_desc = "be true"
+      should_block = @should_block = lambda{ assert(true) }
+      @context_class = Factory.context_class do
+        should_eventually(should_desc, &should_block)
+      end
+      @method_name = "test: should #{@should_desc}"
+      @context = @context_class.new(Factory.test("something", @context_class))
+    end
+    subject{ @context }
+
+    should "define a test method named after the should desc that raises a test skipped" do
+      assert_respond_to subject, @method_name
+      assert_raises(Assert::Result::TestSkipped) do
+        begin
+          subject.send(@method_name)
+        rescue Exception => @exception
+          raise(@exception)
+        end
+      end
+      assert_equal "should eventually #{@should_desc.inspect}", @exception.message
+    end    
+    
   end
 
 end
