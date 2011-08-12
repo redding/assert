@@ -30,6 +30,16 @@ module Assert::Options
       assert_equal subject.a_value, subject.values
     end
 
+    should "write default values using the 'default_' prefix" do
+      assert_equal nil, subject.a_value
+      subject.default_a_value "def"
+      assert_equal "def", subject.default_a_value
+      assert_equal "def", subject.a_value
+      subject.a_value "changed"
+      assert_equal "def", subject.default_a_value
+      assert_equal "changed", subject.a_value
+    end
+
     should "be provided for the terminal view" do
       assert_respond_to Assert::View::Terminal, :options
       assert_respond_to Assert::View::Terminal.new("suite", "io"), :options
@@ -39,46 +49,34 @@ module Assert::Options
 
   class TerminalTest < BaseTest
     desc "for the terminal view"
-    setup{ ViewOptions.down } # turning view options off
     subject do
       Assert::View::Terminal.options
     end
-
-    teardown{ ViewOptions.up } # turning view options on
 
     should "be an Options::Base object" do
       assert_kind_of Assert::Options::Base, Assert::View::Terminal.options
     end
 
     should "default the styled option" do
-      assert_equal false, subject.styled
+      assert_equal false, subject.default_styled
     end
 
     should "default its result abbreviations" do
-      assert_equal '.',   subject.passed_abbrev
-      assert_equal 'F',   subject.failed_abbrev
-      assert_equal 'I',   subject.ignored_abbrev
-      assert_equal 'S',   subject.skipped_abbrev
-      assert_equal 'E',   subject.errored_abbrev
+      assert_equal '.',   subject.default_passed_abbrev
+      assert_equal 'F',   subject.default_failed_abbrev
+      assert_equal 'I',   subject.default_ignored_abbrev
+      assert_equal 'S',   subject.default_skipped_abbrev
+      assert_equal 'E',   subject.default_errored_abbrev
     end
 
     should "default its result styles" do
-      assert_equal :green,   subject.passed_styles
-      assert_equal :red,     subject.failed_styles
-      assert_equal :magenta, subject.ignored_styles
-      assert_equal :cyan,    subject.skipped_styles
-      assert_equal :yellow,  subject.errored_styles
+      assert_equal :green,   subject.default_passed_styles
+      assert_equal :red,     subject.default_failed_styles
+      assert_equal :magenta, subject.default_ignored_styles
+      assert_equal :cyan,    subject.default_skipped_styles
+      assert_equal :yellow,  subject.default_errored_styles
     end
 
   end
 
 end
-
-
-# .assert
-
-# Assert::View::Terminal.options do
-#   color nil
-#   pass_abbrev 'P'
-#   fail_styles :red, :bghite, :bold
-# end
