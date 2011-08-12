@@ -68,7 +68,7 @@ module Assert::Result
 
   class Base
 
-    attr_reader :test_name, :message, :backtrace, :abbrev
+    attr_reader :test_name, :message, :backtrace
 
     def initialize(test_name, message, backtrace=nil)
       @backtrace = Backtrace.new(backtrace)

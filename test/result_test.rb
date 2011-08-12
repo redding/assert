@@ -1,16 +1,26 @@
-require 'test_belt'
+root_path = File.expand_path("../..", __FILE__)
+if !$LOAD_PATH.include?(root_path)
+  $LOAD_PATH.unshift(root_path)
+end
+require 'test/helper'
 
 require 'assert/result'
 
 module Assert::Result
 
-  class BacktraceTest < Test::Unit::TestCase
-    include TestBelt
+  class BacktraceTest < Assert::Context
+    desc "a result backtrace"
+    setup{ @backtrace = Backtrace.new(caller) }
+    subject { @backtrace }
 
-    context "a result backtrace"
-    subject { Backtrace.new(caller) }
-
-    should have_instance_methods :to_s, :filtered
+    INSTANCE_METHODS = [
+      :to_s, :filtered
+    ]
+    INSTANCE_METHODS.each do |method|
+      should "respond to the instance method ##{method}" do
+        assert_respond_to subject, method
+      end
+    end
 
     should "be an Array" do
       assert_kind_of ::Array, subject
@@ -29,19 +39,26 @@ module Assert::Result
     end
   end
 
-  class BaseTest < Test::Unit::TestCase
-    include TestBelt
+  class BaseTest < Assert::Context
+    desc "a base result"
+    setup do
+      @result = Assert::Result::Base.new("a test name", "a message", ["line 1", "line2"])
+    end
+    subject{ @result }
 
-    context "a base result"
-    subject do
-      Assert::Result::Base.new("a test name", "a message", ["line 1", "line2"])
+    INSTANCE_METHODS = [
+      :test_name, :message, :backtrace, :to_sym, :to_s, :trace
+    ]
+    INSTANCE_METHODS.each do |method|
+      should "respond to the instance method ##{method}" do
+        assert_respond_to subject, method
+      end
     end
 
-    should have_readers :test_name, :message, :caller
-    should have_instance_methods :to_sym, :to_s, :trace
-
     Assert::Result.types.keys.each do |type|
-      should have_instance_method "#{type}?"
+      should "respond to the instance method ##{type}?" do
+        assert_respond_to subject, "#{type}?"
+      end
 
       should "not be #{type}" do
         assert_equal false, subject.send("#{type}?")
@@ -76,11 +93,12 @@ module Assert::Result
     end
   end
 
-  class PassTest < Test::Unit::TestCase
-    include TestBelt
-
-    context "a pass result"
-    subject { Assert::Result::Pass.new("test", "passed", []) }
+  class PassTest < Assert::Context
+    desc "a pass result"
+    setup do
+      @result = Assert::Result::Pass.new("test", "passed", [])
+    end
+    subject { @result }
 
     should "be pass?" do
       assert_equal true, subject.pass?
@@ -101,11 +119,12 @@ module Assert::Result
     end
   end
 
-  class FailTest < Test::Unit::TestCase
-    include TestBelt
-
-    context "a fail result"
-    subject { Assert::Result::Fail.new("test", "failed", []) }
+  class FailTest < Assert::Context
+    desc "a fail result"
+    setup do
+      @result = Assert::Result::Fail.new("test", "failed", [])
+    end
+    subject { @result }
 
     should "be fail?" do
       assert_equal true, subject.fail?
@@ -126,11 +145,12 @@ module Assert::Result
     end
   end
 
-  class IgnoreTest < Test::Unit::TestCase
-    include TestBelt
-
-    context "an ignore result"
-    subject { Assert::Result::Ignore.new("test", "ignored", []) }
+  class IgnoreTest < Assert::Context
+    desc "an ignore result"
+    setup do
+      @result = Assert::Result::Ignore.new("test", "ignored", [])
+    end
+    subject { @result }
 
     should "be ignore?" do
       assert_equal true, subject.ignore?
@@ -151,20 +171,16 @@ module Assert::Result
     end
   end
 
-  class FromExceptionTest < Test::Unit::TestCase
-    include TestBelt
-
+  class FromExceptionTest < Assert::Context
     before do
       begin
         raise Exception, "test error"
       rescue Exception => err
         @exception = err
       end
+      @result = Assert::Result::FromException.new("test", @exception)
     end
-
-    subject do
-      Assert::Result::FromException.new("test", @exception)
-    end
+    subject{ @result }
 
     should "have the same backtrace as the original exception it was created from" do
       assert_equal @exception.backtrace, subject.backtrace
@@ -172,17 +188,20 @@ module Assert::Result
 
   end
 
-  class SkippedRuntimeErrorTest < Test::Unit::TestCase
-    include TestBelt
+  class SkippedRuntimeErrorTest < Assert::Context
 
     should "be a runtime error" do
       assert_kind_of RuntimeError, Assert::Result::TestSkipped.new
     end
+
   end
 
   class SkipTest < FromExceptionTest
-    context "a skip result"
-    subject { Assert::Result::Skip.new("test", @exception) }
+    desc "a skip result"
+    setup do
+      @result = Assert::Result::Skip.new("test", @exception)
+    end
+    subject { @result }
 
     should "be skip?" do
       assert_equal true, subject.skip?
@@ -204,10 +223,11 @@ module Assert::Result
   end
 
   class ErrorTest < FromExceptionTest
-    context "an error result"
-    subject do
-      Assert::Result::Error.new("test", @exception)
+    desc "an error result"
+    setup do
+      @result = Assert::Result::Error.new("test", @exception)
     end
+    subject { @result }
 
     should "be error?" do
       assert_equal true, subject.error?
@@ -224,7 +244,7 @@ module Assert::Result
     end
 
     should "include ERRORED in its to_s" do
-      assert subject.to_s.include?("ERRORED")
+      assert subject.to_s.include?("ERROR")
     end
 
     should "have a trace created from the original exception's unfiltered backtrace" do
