@@ -5,6 +5,10 @@ lib_path = File.join(File.expand_path("../..", __FILE__), 'lib')
 $LOAD_PATH.unshift(lib_path) unless $LOAD_PATH.include?(lib_path)
 require 'assert'
 
+Assert::View::Terminal.options do
+  styled true
+end
+
 # This is the suite intended to be used in the tests, this is seperate from Assert.suite which is
 # the actual suite being used to run the tests, confused? Don't use Assert.suite in your tests,
 # use TEST_ASSERT_SUITE

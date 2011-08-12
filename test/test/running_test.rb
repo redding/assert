@@ -1,9 +1,11 @@
+root_path = File.expand_path("../../..", __FILE__)
+if !$LOAD_PATH.include?(root_path)
+  $LOAD_PATH.unshift(root_path)
+end
 require 'test/helper'
 
 class Assert::Test::RunningTest < Assert::Context
   desc "Assert tests that are run"
-
-
 
   class NothingTest < Assert::Test::RunningTest
     desc "and does nothing"
@@ -270,9 +272,9 @@ class Assert::Test::RunningTest < Assert::Context
     end
 
   end
-  
-  
-  
+
+
+
   class WithSetupTest < Assert::Test::RunningTest
     desc "a Test that runs and has assertions that depend on a setup block"
     setup do
@@ -294,9 +296,9 @@ class Assert::Test::RunningTest < Assert::Context
     end
 
   end
-  
-  
-  
+
+
+
   class WithTeardownTest < Assert::Test::RunningTest
     desc "a Test that runs and has assertions with a teardown block"
     setup do
@@ -313,7 +315,7 @@ class Assert::Test::RunningTest < Assert::Context
       @test.run
     end
     subject{ @test }
-    
+
     should "have 1 total result" do
       assert_equal 1, subject.result_count
     end

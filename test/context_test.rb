@@ -1,3 +1,7 @@
+root_path = File.expand_path("../..", __FILE__)
+if !$LOAD_PATH.include?(root_path)
+  $LOAD_PATH.unshift(root_path)
+end
 require 'test/helper'
 
 class Assert::Context::BasicTest < Assert::Context
@@ -102,7 +106,7 @@ class Assert::Context::BasicTest < Assert::Context
     end
     should "set the calling backtrace on the result" do
       assert_kind_of Array, subject.backtrace
-      assert_match /assert\/context\.rb/, subject.trace
+      assert_match /assert\/test\/context_test\.rb/, subject.trace
     end
 
     class StringMessageTest < FailTest
