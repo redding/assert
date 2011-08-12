@@ -580,27 +580,27 @@ module Assert::Assertions
   class IgnoredTest < BasicTest
 
     setup do
-      @tests = Assert::Assertions::IGNORED_ASSERT_MACROS.collect do |macro|
-        Assert::Test.new("ignored #{macro} test", lambda do
-          self.send(macro, "doesn't matter")
+      @tests = Assert::Assertions::IGNORED_ASSERTION_HELPERS.collect do |helper|
+        Assert::Test.new("ignored #{helper} test", lambda do
+          self.send(helper, "doesn't matter")
         end, @context_klass)
       end
-      @expected_messages = Assert::Assertions::IGNORED_ASSERT_MACROS.collect do |macro|
-        [ "The assert macro '#{macro}' is not supported. Please use ",
-          "another macro or the basic assert."
+      @expected_messages = Assert::Assertions::IGNORED_ASSERTION_HELPERS.collect do |helper|
+        [ "The assertion helper '#{helper}' is not supported. Please use ",
+          "another helper or the basic assert."
         ].join
       end
       @results = @tests.collect(&:run).flatten
     end
     subject{ @results }
 
-    should "have an ignored result for each macro in the constant" do
+    should "have an ignored result for each helper in the constant" do
       subject.each do |result|
         assert_kind_of Assert::Result::Ignore, result
       end
-      assert_equal(Assert::Assertions::IGNORED_ASSERT_MACROS.size, subject.size)
+      assert_equal(Assert::Assertions::IGNORED_ASSERTION_HELPERS.size, subject.size)
     end
-    should "have a custom ignore message for each macro in the constant" do
+    should "have a custom ignore message for each helper in the constant" do
       assert_equal(@expected_messages, subject.collect(&:message))
     end
 
