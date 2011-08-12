@@ -11,7 +11,8 @@ Rake::TestTask.new do |t|
     'test/context_test.rb', 'test/context/**/*_test.rb',
     'test/test_test.rb', 'test/test/**/*_test.rb',
     'test/assertions_test.rb', 'test/assertions/**/*_test.rb',
-    'test/result_set_test.rb', 'test/result_test.rb'
+    'test/result_set_test.rb', 'test/result_test.rb',
+    'test/runner_test.rb', 'test/view_test.rb'
   ]
   t.verbose = true
 end
