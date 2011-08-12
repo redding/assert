@@ -1,8 +1,4 @@
-root_path = File.expand_path("../../..", __FILE__)
-if !$LOAD_PATH.include?(root_path)
-  $LOAD_PATH.unshift(root_path)
-end
-require 'test/helper'
+require 'assert'
 
 class Assert::Assertions::AssertNothingRaisedTest < Assert::Context
   desc "the assert_nothing_raised helper run in a test"

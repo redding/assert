@@ -9,7 +9,6 @@ module Assert::View
 
     # override this to define how a view calls the runner and renders its results
     def render(*args, &runner)
-      raise NotImplementedError
     end
 
     def print_result(result)

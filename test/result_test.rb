@@ -1,8 +1,4 @@
-root_path = File.expand_path("../..", __FILE__)
-if !$LOAD_PATH.include?(root_path)
-  $LOAD_PATH.unshift(root_path)
-end
-require 'test/helper'
+require 'assert'
 
 require 'assert/result'
 
@@ -68,7 +64,7 @@ module Assert::Result
     should "nil out empty messages" do
       assert_equal nil, Assert::Result::Base.new("a test name", "").message
     end
-    
+
     should "show only its class and message when inspected" do
       assert_equal "#<#{subject.class} @message=#{subject.message.inspect}>", subject.inspect
     end
