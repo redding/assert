@@ -5,11 +5,10 @@ module Assert
 
     # a Runner runs a suite of tests.
 
-    def initialize(suite, output_io)
+    def initialize(suite, view)
       raise ArgumentError if !suite.kind_of?(Suite)
       @suite = suite
-      # TODO: specify other views
-      @view = View::Terminal.new(@suite, output_io)
+      @view = view
     end
 
     def run(*args)
