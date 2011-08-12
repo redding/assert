@@ -80,7 +80,6 @@ module Assert::Result
       define_method("#{meth}?") { false }
     end
 
-    def abbrev; nil; end
     def to_sym; nil; end
 
     def to_s
@@ -95,7 +94,6 @@ module Assert::Result
 
   class Pass < Base
     def pass?; true; end
-    def abbrev; '.'; end
     def to_sym; :passed; end
 
     def to_s
@@ -105,7 +103,6 @@ module Assert::Result
 
   class Fail < Base
     def fail?; true; end
-    def abbrev; 'F'; end
     def to_sym; :failed; end
 
     def to_s
@@ -115,7 +112,6 @@ module Assert::Result
 
   class Ignore < Base
     def ignore?; true; end
-    def abbrev; 'I'; end
     def to_sym; :ignored; end
 
     def to_s
@@ -135,7 +131,6 @@ module Assert::Result
 
   class Skip < FromException
     def skip?; true; end
-    def abbrev; 'S'; end
     def to_sym; :skipped; end
 
     def to_s
@@ -146,7 +141,6 @@ module Assert::Result
   class Error < FromException
 
     def error?; true; end
-    def abbrev; 'E'; end
     def to_sym; :errored; end
 
     def to_s

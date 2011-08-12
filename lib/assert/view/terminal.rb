@@ -1,6 +1,8 @@
 require 'assert/view/base'
 require 'assert/result'
 
+require 'assert/options'
+
 module Assert::View
 
   class Terminal < Base
@@ -27,21 +29,23 @@ module Assert::View
       :bgwhite   => 47
     }
 
-    attr_reader :result_styles
-
-    def initialize(suite, output_io, opts={})
-      super(suite, output_io)
-      @result_styles = {
-        :passed  => :green,
-        :failed  => :red,
-        :ignored  => :magenta,
-        :skipped => :cyan,
-        :errored  => :yellow
-      }.merge(opts[:result_styles] || {})
+    include Assert::Options
+    options do
+      styled          false
+      passed_abbrev   '.'
+      failed_abbrev   'F'
+      ignored_abbrev  'I'
+      skipped_abbrev  'S'
+      errored_abbrev  'E'
+      passed_styles   :green
+      failed_styles   :red
+      ignored_styles  :magenta
+      skipped_styles  :cyan
+      errored_styles  :yellow
     end
 
     def render(*args, &block)
-      self.io_print(self.load_stmt)
+      self.io_print(:load_stmt)
 
       if count(:tests) > 0
         block.call if block
@@ -52,7 +56,8 @@ module Assert::View
     end
 
     def print_result(result)
-      self.io_print(result_io_msg(result.abbrev, result.to_sym))
+      sym = result.to_sym
+      self.io_print(result_io_msg(self.options.send("#{sym}_abbrev"), sym))
     end
 
     protected
@@ -106,13 +111,16 @@ module Assert::View
     end
 
     def result_io_msg(msg, result_sym)
-      io_msg(msg, :term_styles => self.result_styles[result_sym])
+      term_styles = if self.options.styled
+        self.options.send("#{result_sym}_styles")
+      end
+      io_msg(msg, :term_styles => term_styles)
     end
 
     def io_msg(msg, opts={})
       val = super
-      if color = term_style(*opts[:term_styles])
-        val = color + val + term_style(:reset)
+      if style = term_style(*opts[:term_styles])
+        val = style + val + term_style(:reset)
       else
         val
       end

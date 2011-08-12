@@ -69,27 +69,27 @@ module Assert
         0
       end
     end
-    
+
     def setup_blocks
       @setup_blocks ||= []
     end
-    
+
     def teardown_blocks
       @teardown_blocks ||= []
     end
-        
+
     # TODO: tests!
     def setup(&block)
       raise ArgumentError, "please provide a setup block" unless block_given?
       self.setup_blocks << block
     end
-    
+
     # TODO: tests!
     def teardown(&block)
       raise ArgumentError, "please provide a teardown block" unless block_given?
       self.teardown_blocks << block
     end
-    
+
     protected
 
     def local_public_test_methods(klass)
@@ -121,18 +121,6 @@ module Assert
         end
       end
       @prepared = true
-    end
-
-  end
-
-  # the set of contexts to run
-  @@suite = Suite.new
-
-  class << self
-
-    # access the suite
-    def suite
-      @@suite
     end
 
   end

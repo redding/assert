@@ -4,6 +4,20 @@ require 'assert/runner'
 
 module Assert
 
+  # the set of contexts to run
+  @@suite = Suite.new
+
+  # TODO: the view
+
+  class << self
+
+    # access the suite
+    def suite
+      @@suite
+    end
+
+  end
+
   # a flag to know if at_exit hook has been installed already
   @@at_exit_installed ||= false
 

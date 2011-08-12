@@ -13,7 +13,10 @@ module Assert::View
     end
 
     def print_result(result)
-      io_print(result.abbrev)
+      sym = result.to_sym
+      if self.respond_to?(:options)
+        io_print(self.options.send("#{sym}_abbrev"))
+      end
     end
 
     protected
