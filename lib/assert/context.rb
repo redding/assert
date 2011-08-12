@@ -108,9 +108,7 @@ module Assert
       end
       
       def should_eventually(desc, &block)
-        should(desc) do
-          skip("should eventually #{desc.inspect}")
-        end
+        should(desc){ skip }
       end
 
     end

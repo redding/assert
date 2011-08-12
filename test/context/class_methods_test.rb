@@ -290,9 +290,9 @@ class Assert::Context::ClassMethodsTest < Assert::Context
     end
 
   end
-  
-  
-  
+
+
+
   class ShouldEventuallyTest < ClassMethodsTest
     desc "should_eventually method"
     setup do
@@ -309,15 +309,10 @@ class Assert::Context::ClassMethodsTest < Assert::Context
     should "define a test method named after the should desc that raises a test skipped" do
       assert_respond_to subject, @method_name
       assert_raises(Assert::Result::TestSkipped) do
-        begin
-          subject.send(@method_name)
-        rescue Exception => @exception
-          raise(@exception)
-        end
+        subject.send(@method_name)
       end
-      assert_equal "should eventually #{@should_desc.inspect}", @exception.message
-    end    
-    
+    end
+
   end
 
 end
