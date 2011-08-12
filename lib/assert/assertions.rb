@@ -226,11 +226,12 @@ module Assert
           when :not_raises
             "exception was not expected, but was raised:"
         end
+        backtrace = Assert::Result::Backtrace.new(exception.backtrace)
         [ what_failed_msg,
           "Class: <#{exception.class}>",
           "Message: <#{exception.message.inspect}>",
           "---Backtrace---",
-          exception.backtrace.join("\n"),
+          backtrace.filtered.to_s,
           "---------------"
         ].compact.join("\n")
       else

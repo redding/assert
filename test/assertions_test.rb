@@ -34,61 +34,6 @@ end
 =begin
 module Assert::Assertions
 
-  class AssertRaisesTest < BasicTest
-
-    setup do
-      @test = Assert::Test.new("assert raises test", lambda do
-        assert_raises(StandardError, RuntimeError){ raise(StandardError) }  # pass
-        assert_raises(RuntimeError){ raise(StandardError) }                 # fail
-        assert_raises{ true }                                               # fail
-      end, @context_klass)
-      @test.run
-    end
-    subject{ @test }
-
-    should "have 3 total results" do
-      assert_equal 3, subject.result_count
-    end
-
-    should "have 1 pass result" do
-      assert_equal 1, subject.result_count(:pass)
-    end
-
-    should "have 2 fail results" do
-      assert_equal 2, subject.result_count(:fail)
-    end
-
-    class MessagesTest < AssertRaisesTest
-
-      setup do
-        fail_desc = "assert raises shouldn't fail"
-        @test = Assert::Test.new("assert raises message test", lambda do
-          assert_raises(StandardError, RuntimeError, fail_desc){ raise(Exception) }
-          assert_raises(RuntimeError, fail_desc){ raise(StandardError) }
-          assert_raises(RuntimeError, fail_desc){ true }
-          assert_raises(fail_desc){ true }
-        end, @context_klass)
-        @expected_message = [
-          "#{fail_desc}\nStandardError or RuntimeError exception expected, not:",
-          "#{fail_desc}\nRuntimeError exception expected, not:",
-          "#{fail_desc}\nRuntimeError exception expected but nothing was raised.",
-          "#{fail_desc}\nAn exception expected but nothing was raised."
-        ]
-        @test.run
-        @messages = @test.fail_results.collect(&:message)
-      end
-      subject{ @messages }
-
-      should "have the correct failure messages" do
-        subject.each_with_index do |message, n|
-          assert(message.include?(@expected_message[n]))
-        end
-      end
-
-    end
-
-  end
-
   class AssertNothingRaisedTest < BasicTest
 
     setup do

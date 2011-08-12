@@ -4,7 +4,7 @@ if !$LOAD_PATH.include?(root_path)
 end
 require 'test/helper'
 
-class AssertBlockTest < Assert::Context
+class Assert::Assertions::AssertBlockTest < Assert::Context
   desc "the assert_block helper run in a test"
   setup do
     fail_desc = @fail_desc = "assert block fail desc"
