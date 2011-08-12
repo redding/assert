@@ -1,8 +1,4 @@
-root_path = File.expand_path("../../..", __FILE__)
-if !$LOAD_PATH.include?(root_path)
-  $LOAD_PATH.unshift(root_path)
-end
-require 'test/helper'
+require 'assert'
 
 class Assert::Assertions::AssertNotKindOfTest < Assert::Context
   desc "the assert_not_kind_of helper run in a test"

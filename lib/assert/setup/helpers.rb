@@ -4,13 +4,13 @@ module Assert
     # when Assert is required it will automatically require in two helper files
     # if they exist:
     # * "./test/helper.rb - package-specific helpers
-    # * ~/.assert - user-specific helpers (options, view, etc...)
+    # * ~/.assert.rb - user-specific helpers (options, view, etc...)
     # the user-specific helper file will always be required in after the
     # package-specific one
 
     class << self
 
-      # assume the test dir path is ./test and look for helpers in ./test.helper.rb
+      # assume the test dir path is ./test and look for helpers in ./test/helper.rb
       PACKAGE_TEST_DIR = "test"
       PACKAGE_HELPER_FILE = "helper"
       TEST_REGEX = /^#{PACKAGE_TEST_DIR}$|^#{PACKAGE_TEST_DIR}\/|\/#{PACKAGE_TEST_DIR}\/|\/#{PACKAGE_TEST_DIR}$/
@@ -30,7 +30,7 @@ module Assert
         begin
           require File.expand_path(USER_TEST_HELPER)
         rescue LoadError => err
-          warn err.message
+          # do nothing
         end
       end
 
