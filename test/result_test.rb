@@ -68,6 +68,10 @@ module Assert::Result
     should "nil out empty messages" do
       assert_equal nil, Assert::Result::Base.new("a test name", "").message
     end
+    
+    should "show only its class and message when inspected" do
+      assert_equal "#<#{subject.class} @message=#{subject.message.inspect}>", subject.inspect
+    end
 
   end
 

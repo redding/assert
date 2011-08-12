@@ -93,6 +93,10 @@ module Assert::Result
     def ==(other)
       self.class == other.class && self.message == other.message
     end
+    
+    def inspect
+      "#<#{self.class} @message=#{self.message.inspect}>"
+    end
 
   end
 
