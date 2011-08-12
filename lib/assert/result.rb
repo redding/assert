@@ -89,6 +89,10 @@ module Assert::Result
     def trace
       self.backtrace.filtered.first.to_s
     end
+    
+    def ==(other)
+      self.class == other.class && self.message == other.message
+    end
 
   end
 

@@ -286,7 +286,6 @@ class Assert::Context::ClassMethodsTest < Assert::Context
 
     should "define a test_ method named after the should desc" do
       assert_respond_to subject, @method_name
-      skip("This needs a result to define an == operator.")
       assert_equal subject.instance_eval(&@should_block), subject.send(@method_name)
     end
 
