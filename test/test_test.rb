@@ -7,14 +7,14 @@ require 'test/helper'
 class Assert::Test::BasicTest < Assert::Context
   desc "Assert test"
   setup do
-    test_name = "test_.should do something amazing"
+    test_name = "test: \"should do something amazing\""
     @test_code = lambda{ assert(true) }
     context_desc = "context class"
     @context_class = Factory.context_class do
       desc context_desc
     end
     @test = Factory.test(test_name, @context_class, @test_code)
-    @expected_name = [ context_desc, test_name.gsub(/^test_\.should/, "should") ].join(" ")
+    @expected_name = [ context_desc, test_name.gsub(/^test:\s+should/, "should") ].join(" ")
   end
   subject{ @test }
 

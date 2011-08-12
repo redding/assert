@@ -98,7 +98,7 @@ module Assert
 
       def should(desc, &block)
         raise ArgumentError, "please provide a test block" unless block_given?
-        method_name = "test_.should #{desc}"
+        method_name = "test: should #{desc.inspect}"
         if method_defined?(method_name)
           from = caller.first
           puts "WARNING: should #{desc.inspect} is redefining #{method_name}!"

@@ -71,7 +71,7 @@ module Assert
     def <=>(other_test)
       self.name <=> other_test.name
     end
-    
+
     def inspect
       attributes_string = ([ :name, :context_class, :results ].collect do |attr|
         "@#{attr}=#{self.send(attr).inspect}"
@@ -82,7 +82,7 @@ module Assert
     protected
 
     def name_from_context(name)
-      name = name.gsub(/^test_\.should/, "should")
+      name = name.gsub(/^test:\s+should/, "should")
       [ @context_class.full_description, name ].compact.join(" ")
     end
 
