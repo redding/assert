@@ -29,6 +29,35 @@ class Assert::Assertions::BasicTest < Assert::Context
     end
   end
 
+  class IgnoredTest < BasicTest
+    desc "ignored assertions helpers"
+    setup do
+      @tests = Assert::Assertions::IGNORED_ASSERTION_HELPERS.collect do |helper|
+        Factory.test("ignored assertion helper #{helper}", @context_class) do
+          self.send(helper, "doesn't matter")
+        end
+      end
+      @expected_messages = Assert::Assertions::IGNORED_ASSERTION_HELPERS.collect do |helper|
+        [ "The assertion helper '#{helper}' is not supported. Please use ",
+          "another helper or the basic assert."
+        ].join
+      end
+      @results = @tests.collect(&:run).flatten
+    end
+    subject{ @results }
+
+    should "have an ignored result for each helper in the constant" do
+      subject.each do |result|
+        assert_kind_of Assert::Result::Ignore, result
+      end
+      assert_equal(Assert::Assertions::IGNORED_ASSERTION_HELPERS.size, subject.size)
+    end
+    should "have a custom ignore message for each helper in the constant" do
+      assert_equal(@expected_messages, subject.collect(&:message))
+    end
+
+  end
+
 end
 
 =begin
@@ -129,8 +158,6 @@ module Assert::Assertions
 
   end
 
-
-
   class AssertEqualTest < BasicTest
 
     setup do
@@ -219,8 +246,6 @@ module Assert::Assertions
 
   end
 
-
-
   class AssertMatchTest < BasicTest
 
     setup do
@@ -305,35 +330,6 @@ module Assert::Assertions
         assert_equal @expected_message, subject
       end
 
-    end
-
-  end
-
-  class IgnoredTest < BasicTest
-
-    setup do
-      @tests = Assert::Assertions::IGNORED_ASSERTION_HELPERS.collect do |helper|
-        Assert::Test.new("ignored #{helper} test", lambda do
-          self.send(helper, "doesn't matter")
-        end, @context_klass)
-      end
-      @expected_messages = Assert::Assertions::IGNORED_ASSERTION_HELPERS.collect do |helper|
-        [ "The assertion helper '#{helper}' is not supported. Please use ",
-          "another helper or the basic assert."
-        ].join
-      end
-      @results = @tests.collect(&:run).flatten
-    end
-    subject{ @results }
-
-    should "have an ignored result for each helper in the constant" do
-      subject.each do |result|
-        assert_kind_of Assert::Result::Ignore, result
-      end
-      assert_equal(Assert::Assertions::IGNORED_ASSERTION_HELPERS.size, subject.size)
-    end
-    should "have a custom ignore message for each helper in the constant" do
-      assert_equal(@expected_messages, subject.collect(&:message))
     end
 
   end

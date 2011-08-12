@@ -180,12 +180,12 @@ module Assert
 
 
 
-    IGNORED_ASSERT_MACROS = [ :assert_throws, :assert_nothing_thrown, :assert_send,
+    IGNORED_ASSERTION_HELPERS = [ :assert_throws, :assert_nothing_thrown, :assert_send,
       :assert_operator, :refute_operator, :assert_in_epsilon, :refute_in_epsilon,
       :assert_in_delta, :refute_in_delta
     ]
     def method_missing(method, *args, &block)
-      if IGNORED_ASSERT_MACROS.include?(method.to_sym)
+      if IGNORED_ASSERTION_HELPERS.include?(method.to_sym)
         ignore([
           "The assertion helper '#{method}' is not supported. Please use ",
           "another helper or the basic assert."
