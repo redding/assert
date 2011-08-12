@@ -15,6 +15,7 @@ class Assert::Assertions::AssertNotKindOfTest < Assert::Context
     end
     @test.run
   end
+  subject{ @test }
 
   should "have 2 total results" do
     assert_equal 2, subject.result_count
