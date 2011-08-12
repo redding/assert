@@ -35,9 +35,12 @@ module Assert::Options
 
   class TerminalTest < BaseTest
     desc "for the terminal view"
+    setup{ ViewOptions.down }
     subject do
       Assert::View::Terminal.options
     end
+
+    teardown{ ViewOptions.up }
 
     should "be an Options::Base object" do
       assert_kind_of Assert::Options::Base, Assert::View::Terminal.options

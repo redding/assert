@@ -1,35 +1,47 @@
-require 'test_belt'
+root_path = File.expand_path("../..", __FILE__)
+if !$LOAD_PATH.include?(root_path)
+  $LOAD_PATH.unshift(root_path)
+end
+require 'test/helper'
 
 require 'assert/suite'
 require 'assert/context'
 require 'assert/test'
-require 'fixtures/inherited_stuff'
-require 'fixtures/sample_context'
+require 'test/fixtures/inherited_stuff'
+require 'test/fixtures/sample_context'
 
 
 class Assert::Suite
 
-  class BasicTest < Test::Unit::TestCase
-    include TestBelt
+  class BasicTest < Assert::Context
+    desc "an basic suite"
+    setup do
+      @suite = Assert::Suite.new
+    end
+    subject { @suite }
 
-    context "an basic suite"
-    subject { Assert::Suite.new }
-
-    should have_instance_methods :<<
-    should have_instance_methods :contexts, :tests, :ordered_tests, :ordered_results
-    should have_instance_methods :count, :test_count, :result_count
-    should have_accessors :start_time, :end_time
-    should have_instance_method :run_time
+    INSTANCE_METHODS = [
+      :start_time, :end_time, :start_time=, :end_time=,
+      :<<,
+      :contexts, :tests, :ordered_tests, :ordered_results,
+      :count, :test_count, :result_count,
+      :run_time
+    ]
+    INSTANCE_METHODS.each do |method|
+      should "respond to the instance method ##{method}" do
+        assert_respond_to subject, method
+      end
+    end
 
     should "be a hash" do
       assert_kind_of ::Hash, subject
     end
 
     should "push contexts on itself" do
-      context = Assert::Context
-      subject << context.class
-      assert_equal true, subject.has_key?(context.class)
-      assert_equal [], subject[context.class]
+      context_class = Factory.context_class
+      subject << context_class
+      assert_equal true, subject.has_key?(context_class)
+      assert_equal [], subject[context_class]
     end
 
     should "determine a klass' local public test methods" do
@@ -45,44 +57,39 @@ class Assert::Suite
 
   end
 
-  class WithTestsTest < Test::Unit::TestCase
-    include TestBelt
-
-    context "an suite with tests"
-    subject do
-      # TODO: factories / fixtures ?
-      context_klass = Assert::Context
-      Assert::Suite[{
-        context_klass => [
-          Assert::Test.new("should do nothing", ::Proc.new do
-            # no assertions
-          end, context_klass),
-          Assert::Test.new("should pass", ::Proc.new do
-            assert(1==1)
-            refute(1==0)
-          end, context_klass),
-          Assert::Test.new("should fail", ::Proc.new do
-            ignore
-            assert(1==0)
-            refute(1==1)
-          end, context_klass),
-          Assert::Test.new("should be ignored", ::Proc.new do
-            ignore
-          end, context_klass),
-          Assert::Test.new("should skip", ::Proc.new do
-            skip
-            ignore
-            assert(1==1)
-          end, context_klass),
-          Assert::Test.new("should error", ::Proc.new do
-            raise Exception
-            ignore
-            assert(1==1)
-          end, context_klass)
-        ]
-      }]
+  class WithTestsTest < Assert::Context
+    desc "a suite with tests"
+    setup do
+      @suite = Assert::Suite.new
+      context_class = Factory.context_class
+      @suite[context_class] = [
+        Factory.test("should do nothing", context_class),
+        Factory.test("should pass", context_class) do
+          assert(1==1)
+          refute(1==0)
+        end,
+        Factory.test("should fail", context_class) do
+          ignore
+          assert(1==0)
+          refute(1==1)
+        end,
+        Factory.test("should be ignored", context_class) do
+          ignore
+        end,
+        Factory.test("should skip", context_class) do
+          skip
+          ignore
+          assert(1==1)
+        end,
+        Factory.test("should error", context_class) do
+          raise Exception
+          ignore
+          assert(1==1)
+        end
+      ]
+      @suite.tests.each(&:run)
     end
-    before { subject.tests.each {|c| c.run} }
+    subject{ @suite }
 
     should "know how many tests it has" do
       assert_equal 6, subject.test_count
@@ -169,16 +176,13 @@ class Assert::Suite
   end
 
 
-
-  class PrepTest < Test::Unit::TestCase
-    include TestBelt
-
-    context "a suite with a context with local public test meths"
-    subject do
-      Assert::Suite[{
-        TwoTests => []
-      }]
+  class PrepTest < Assert::Context
+    desc "a suite with a context with local public test meths"
+    setup do
+      @suite = Assert::Suite.new
+      @suite << TwoTests
     end
+    subject{ @suite }
 
     should "create tests from any local public test methods with a prep call" do
       subject.send(:prep)
@@ -196,6 +200,5 @@ class Assert::Suite
     end
 
   end
-
 
 end

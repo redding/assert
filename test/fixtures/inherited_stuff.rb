@@ -3,7 +3,7 @@ module MixinStuff
     "from mixin"
   end
 
-  def testmixednottestmeth
+  def mixednottestmeth
     "mixed in not test meth"
   end
 end
@@ -26,7 +26,7 @@ class SubStuff
     "from subclass"
   end
 
-  def testnottestmeth
+  def nottestmeth
     "not test meth"
   end
 

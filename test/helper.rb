@@ -7,9 +7,22 @@ lib_path = File.join(File.expand_path("../..", __FILE__), 'lib')
 $LOAD_PATH.unshift(lib_path) unless $LOAD_PATH.include?(lib_path)
 require 'assert'
 
-Assert::View::Terminal.options do
-  styled true
+# Testing assert with assert makes for some difficult things, in UP set the styles to what you want,
+# in DOWN set them back to what the defaults are supposed to be
+module ViewOptions
+  def self.up
+    Assert::View::Terminal.options do
+      styled true
+    end
+  end
+  
+  def self.down
+    Assert::View::Terminal.options do
+      styled false
+    end
+  end
 end
+ViewOptions.up
 
 # This is the suite intended to be used in the tests, this is seperate from Assert.suite which is
 # the actual suite being used to run the tests, confused? Don't use Assert.suite in your tests,
