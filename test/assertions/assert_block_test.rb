@@ -26,8 +26,6 @@ class Assert::Assertions::AssertBlockTest < Assert::Context
     assert_equal 1, subject.result_count(:fail)
   end
 
-
-
   class FailMessageTest < AssertBlockTest
     desc "with a failed result"
     setup do

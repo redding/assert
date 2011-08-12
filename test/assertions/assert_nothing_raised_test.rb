@@ -28,8 +28,6 @@ class Assert::Assertions::AssertNothingRaisedTest < Assert::Context
     assert_equal 2, subject.result_count(:fail)
   end
 
-
-
   class FailMessageTest < AssertNothingRaisedTest
     desc "with a failed result"
     setup do

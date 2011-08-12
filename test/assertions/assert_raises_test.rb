@@ -29,8 +29,6 @@ class Assert::Assertions::AssertRaisesTest < Assert::Context
     assert_equal 4, subject.result_count(:fail)
   end
 
-
-
   class FailMessageTest < AssertRaisesTest
     desc "with a failed result"
     setup do
