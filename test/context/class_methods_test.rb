@@ -16,7 +16,7 @@ class Assert::Context::ClassMethodsTest < Assert::Context
     :setup_once, :before_once, :teardown_once, :after_once,
     :setup, :before, :teardown, :after,
     :setup_blocks, :all_setup_blocks, :teardown_blocks, :all_teardown_blocks,
-    :desc, :descriptions, :full_description,
+    :desc, :description, :descriptions, :full_description,
     :subject,
     :should
   ]

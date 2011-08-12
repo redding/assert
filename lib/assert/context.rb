@@ -69,6 +69,7 @@ module Assert
         raise ArgumentError, "no context description provided" if text.nil?
         self.descriptions << text
       end
+      alias_method :description, :desc
 
       def descriptions
         @descriptions ||= []
