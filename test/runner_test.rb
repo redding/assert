@@ -1,18 +1,17 @@
-root_path = File.expand_path("../..", __FILE__)
-if !$LOAD_PATH.include?(root_path)
-  $LOAD_PATH.unshift(root_path)
-end
-require 'test/helper'
+require 'assert'
 
-require 'assert/runner'
 require 'assert/suite'
+require 'assert/view/base'
+require 'assert/runner'
 
 class Assert::Runner
 
   class BasicTest < Assert::Context
     desc "a basic runner"
     setup do
-      @runner = Assert::Runner.new(Assert::Suite.new, StringIO.new("", "w+"))
+      @suite  = Assert::Suite.new
+      @view   = Assert::View::Base.new(@suite, StringIO.new("", "w+"))
+      @runner = Assert::Runner.new(@suite, @view)
     end
     subject { @runner }
 
