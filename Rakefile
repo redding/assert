@@ -10,7 +10,8 @@ Rake::TestTask.new do |t|
   t.test_files = FileList[
     'test/context_test.rb', 'test/context/**/*_test.rb',
     'test/test_test.rb', 'test/test/**/*_test.rb',
-    'test/assertions_test.rb', 'test/assertions/**/*_test.rb'
+    'test/assertions_test.rb', 'test/assertions/**/*_test.rb',
+    'test/result_set_test.rb'
   ]
   t.verbose = true
 end
