@@ -1,31 +1,11 @@
 require 'assert/view/base'
 require 'assert/result'
 
+require 'ansi/code'
+
 module Assert::View
 
   class Terminal < Base
-
-    TERM_STYLES = {
-      :reset     => 0,
-      :bold      => 1,
-      :underline => 4,
-      :black     => 30,
-      :red       => 31,
-      :green     => 32,
-      :yellow    => 33,
-      :blue      => 34,
-      :magenta   => 35,
-      :cyan      => 36,
-      :white     => 37,
-      :bgblack   => 40,
-      :bgred     => 41,
-      :bggreen   => 42,
-      :bgyellow  => 43,
-      :bgblue    => 44,
-      :bgmagenta => 45,
-      :bgcyan    => 46,
-      :bgwhite   => 47
-    }
 
     options do
       default_styled          false
@@ -116,16 +96,14 @@ module Assert::View
     def io_msg(msg, opts={})
       val = super
       if !(style = term_style(*opts[:term_styles])).empty?
-        val = style + val + term_style(:reset)
+        val = style + val + ANSI.send(:reset)
       else
         val
       end
     end
 
-    def term_style(*styles)
-      styles.collect do |style|
-        TERM_STYLES.include?(style) ? "\e[#{TERM_STYLES[style]}m" : nil
-      end.join('')
+    def term_style(*ansi_codes)
+      ansi_codes.collect{|code| ANSI.send(code) rescue nil}.compact.join('')
     end
 
     def show_result_details?(result)
