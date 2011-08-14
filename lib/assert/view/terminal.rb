@@ -1,8 +1,6 @@
 require 'assert/view/base'
 require 'assert/result'
 
-require 'assert/options'
-
 module Assert::View
 
   class Terminal < Base
@@ -29,7 +27,6 @@ module Assert::View
       :bgwhite   => 47
     }
 
-    include Assert::Options
     options do
       default_styled          false
       default_passed_abbrev   '.'

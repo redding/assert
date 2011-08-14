@@ -1,6 +1,9 @@
+require 'assert/options'
+
 module Assert::View
 
   class Base
+    include Assert::Options
 
     attr_reader :suite
 
