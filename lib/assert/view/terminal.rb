@@ -55,7 +55,7 @@ module Assert::View
       self.io_puts(:results_stmt)
     end
 
-    def print_result(result)
+    def print_runtime_result(result)
       sym = result.to_sym
       self.io_print(result_io_msg(self.options.send("#{sym}_abbrev"), sym))
     end
@@ -68,8 +68,7 @@ module Assert::View
     end
 
     def detailed_results
-      @suite.tests
-      details = @suite.ordered_results.reverse.collect do |result|
+      details = self.suite.ordered_results.reverse.collect do |result|
         result_io_msg(result.to_s, result.to_sym) if show_result_details?(result)
       end.compact
       "\n\n" + details.join("\n\n") if !details.empty?

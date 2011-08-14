@@ -13,7 +13,7 @@ module Assert::View
     subject{ @view }
 
     INSTANCE_METHODS = [
-      :render, :print_result
+      :render, :print_runtime_result, :suite
     ]
     INSTANCE_METHODS.each do |method|
       should "respond to the instance method ##{method}" do

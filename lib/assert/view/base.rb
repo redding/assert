@@ -2,6 +2,8 @@ module Assert::View
 
   class Base
 
+    attr_reader :suite
+
     def initialize(suite, output_io)
       @suite = suite
       @out = output_io
@@ -11,7 +13,7 @@ module Assert::View
     def render(*args, &runner)
     end
 
-    def print_result(result)
+    def print_runtime_result(result)
       sym = result.to_sym
       if self.respond_to?(:options)
         io_print(self.options.send("#{sym}_abbrev"))
