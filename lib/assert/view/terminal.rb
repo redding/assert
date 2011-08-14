@@ -35,10 +35,10 @@ module Assert::View
       default_skipped_abbrev  'S'
       default_errored_abbrev  'E'
       default_passed_styles   :green
-      default_failed_styles   :red
-      default_ignored_styles  :magenta
+      default_failed_styles   :red, :bold
+      default_errored_styles  :yellow, :bold
       default_skipped_styles  :cyan
-      default_errored_styles  :yellow
+      default_ignored_styles  :magenta
     end
 
     def render(*args, &block)
