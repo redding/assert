@@ -12,6 +12,7 @@ class Assert::Test::RunningTest < Assert::Context
     subject{ @test }
 
     should "have 0 results" do
+      puts subject.inspect
       assert_equal 0, subject.result_count
     end
 
