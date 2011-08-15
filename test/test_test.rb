@@ -168,7 +168,7 @@ class Assert::Test::BasicTest < Assert::Context
       result = @test <=> Factory.test("aaa")
       assert_equal(1, result)
     end
-    should "return 0 with named the same" do
+    should "return 0 with a test named the same" do
       result = @test <=> Factory.test(@test.name)
       assert_equal(0, result)
     end

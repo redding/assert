@@ -65,26 +65,6 @@ module Assert
         (inherited_blocks || []) + self.teardown_blocks
       end
 
-      def desc(text)
-        raise ArgumentError, "no context description provided" if text.nil?
-        self.descriptions << text
-      end
-      alias_method :description, :desc
-
-      def descriptions
-        @descriptions ||= []
-      end
-
-      def full_description
-        inherited_description = if superclass.respond_to?(:full_description)
-          superclass.full_description
-        end
-        parts = [ inherited_description ].push(self.descriptions).flatten.reject do |part|
-         !part || part.to_s.empty?
-        end
-        parts.join(" ") if !parts.empty?
-      end
-
       def subject(&block)
         raise ArgumentError, "please provide a subject block" unless block_given?
         self.subject_block = block
@@ -106,9 +86,29 @@ module Assert
         end
         define_method(method_name, &block)
       end
-      
+
       def should_eventually(desc, &block)
         should(desc){ skip }
+      end
+
+      # Add a piece of description text or return the full description for the context
+      def description(text=nil)
+        if text
+          self.descriptions << text.to_s
+        else
+          parent = self.superclass.desc if self.superclass.respond_to?(:desc)
+          own = self.descriptions
+          [parent, *own].compact.reject do |p|
+            p.to_s.empty?
+          end.join(" ")
+        end
+      end
+      alias_method :desc, :description
+
+      protected
+
+      def descriptions
+        @descriptions ||= []
       end
 
     end

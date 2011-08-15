@@ -12,7 +12,7 @@ class Assert::Context::ClassMethodsTest < Assert::Context
     :setup_once, :before_once, :teardown_once, :after_once,
     :setup, :before, :teardown, :after,
     :setup_blocks, :all_setup_blocks, :teardown_blocks, :all_teardown_blocks,
-    :desc, :description, :descriptions, :full_description,
+    :desc, :description,
     :subject,
     :should
   ]
@@ -173,7 +173,7 @@ class Assert::Context::ClassMethodsTest < Assert::Context
 
 
   class DescTest < ClassMethodsTest
-    desc "desc method"
+    desc "desc method with an arg"
     setup do
       descs = @descs = [ "something amazing", "it really is" ]
       @context_class = Factory.context_class do
@@ -181,7 +181,7 @@ class Assert::Context::ClassMethodsTest < Assert::Context
           desc text
         end
       end
-      @descriptions = @context_class.descriptions
+      @descriptions = @context_class.send(:descriptions)
     end
     subject{ @descriptions }
 
@@ -191,18 +191,13 @@ class Assert::Context::ClassMethodsTest < Assert::Context
         assert_includes subject, text
       end
     end
-    should "raise an error when no description is provided" do
-      assert_raises ArgumentError do
-        @context_class.desc
-      end
-    end
 
   end
 
 
 
   class FullDescriptionTest < ClassMethodsTest
-    desc "full_description method"
+    desc "description method without an arg"
     setup do
       parent_text = @parent_desc = "parent description"
       @parent_class = Factory.context_class do
@@ -212,7 +207,7 @@ class Assert::Context::ClassMethodsTest < Assert::Context
       @context_class = Factory.context_class(@parent_class) do
         desc text
       end
-      @full_description = @context_class.full_description
+      @full_description = @context_class.description
     end
     subject{ @full_description }
 
