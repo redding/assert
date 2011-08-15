@@ -22,7 +22,6 @@ module Assert
 
         exit_code = nil
         at_exit { exit(false) if exit_code && exit_code != 0 }
-        # TODO: read options from a config for extentions??
         Runner.new(self.suite, self.view).run
       end unless @@at_exit_installed
       @@at_exit_installed = true
