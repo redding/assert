@@ -1,15 +1,14 @@
 require 'assert'
 
-class Assert::Assertions::AssertSameTest < Assert::Context
-  desc "the assert_same helper run in a test"
+class Assert::Assertions::AssertNotIncluded < Assert::Context
+  desc "the assert_not_included helper run in a test"
   setup do
-    klass = Class.new
-    object = klass.new
-    fail_desc = @fail_desc = "assert same fail desc"
-    fail_args = @fail_args = [ object, klass.new, fail_desc ]
+    
+    fail_desc = @fail_desc = "assert not included fail desc"
+    fail_args = @fail_args = [ [ 1 ], 1, fail_desc ]
     @test = Factory.test do
-      assert_same(object, object)     # pass
-      assert_same(*fail_args)         # fail
+      assert_not_included([ 1 ], 2)      # pass
+      assert_not_included(*fail_args)    # fail
     end
     @test.run
   end
@@ -25,12 +24,11 @@ class Assert::Assertions::AssertSameTest < Assert::Context
     assert_equal 1, subject.result_count(:fail)
   end
 
-  class FailMessageTest < AssertSameTest
+  class FailMessageTest < AssertNotIncluded
     desc "with a failed result"
     setup do
       @expected = [
-        "Expected #{@fail_args[0].inspect} (#{@fail_args[0].object_id}) to be the same as ",
-        "#{@fail_args[1].inspect} (#{@fail_args[1].object_id}).",
+        "Expected #{@fail_args[0].inspect} to not include #{@fail_args[1].inspect}.",
         "\n#{@fail_args[2]}"
       ].join
       @fail_message = @test.fail_results.first.message

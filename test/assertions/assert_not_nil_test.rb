@@ -1,15 +1,13 @@
 require 'assert'
 
-class Assert::Assertions::AssertSameTest < Assert::Context
-  desc "the assert_same helper run in a test"
+class Assert::Assertions::AssertNotNilTest < Assert::Context
+  desc "the assert_not_nil helper run in a test"
   setup do
-    klass = Class.new
-    object = klass.new
-    fail_desc = @fail_desc = "assert same fail desc"
-    fail_args = @fail_args = [ object, klass.new, fail_desc ]
+    fail_desc = @fail_desc = "assert not nil empty fail desc"
+    fail_args = @fail_args = [ nil, fail_desc ]
     @test = Factory.test do
-      assert_same(object, object)     # pass
-      assert_same(*fail_args)         # fail
+      assert_not_nil(1)             # pass
+      assert_not_nil(*fail_args)    # fail
     end
     @test.run
   end
@@ -25,13 +23,12 @@ class Assert::Assertions::AssertSameTest < Assert::Context
     assert_equal 1, subject.result_count(:fail)
   end
 
-  class FailMessageTest < AssertSameTest
+  class FailMessageTest < AssertNotNilTest
     desc "with a failed result"
     setup do
       @expected = [
-        "Expected #{@fail_args[0].inspect} (#{@fail_args[0].object_id}) to be the same as ",
-        "#{@fail_args[1].inspect} (#{@fail_args[1].object_id}).",
-        "\n#{@fail_args[2]}"
+        "Expected #{@fail_args[0].inspect} to not be nil.",
+        "\n#{@fail_args[1]}"
       ].join
       @fail_message = @test.fail_results.first.message
     end
