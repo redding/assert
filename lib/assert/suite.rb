@@ -6,7 +6,7 @@ module Assert
     # A suite is a set of tests to run.  When a test class subclasses
     # the Context class, that test class is pushed to the suite.
 
-    attr_accessor :start_time, :end_time, :setup_blocks, :teardown_blocks
+    attr_accessor :start_time, :end_time
 
     def run_time
       (@end_time || 0) - (@start_time || 0)
@@ -70,27 +70,34 @@ module Assert
       end
     end
 
-    def setup_blocks
-      @setup_blocks ||= []
-    end
-
-    def teardown_blocks
-      @teardown_blocks ||= []
-    end
-
     # TODO: tests!
     def setup(&block)
-      raise ArgumentError, "please provide a setup block" unless block_given?
-      self.setup_blocks << block
+      if block_given?
+        self.setups << block
+      else
+        self.setups.each{|setup| setup.call}
+      end
     end
+
 
     # TODO: tests!
     def teardown(&block)
-      raise ArgumentError, "please provide a teardown block" unless block_given?
-      self.teardown_blocks << block
+      if block_given?
+        self.teardowns << block
+      else
+        self.teardowns.each{|teardown| teardown.call}
+      end
     end
 
     protected
+
+    def setups
+      @setups ||= []
+    end
+
+    def teardowns
+      @teardowns ||= []
+    end
 
     def local_public_test_methods(klass)
       methods = klass.public_instance_methods
