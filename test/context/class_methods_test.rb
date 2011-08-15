@@ -31,7 +31,7 @@ class Assert::Context::ClassMethodsTest < Assert::Context
   class SetupOnceTest < ClassMethodsTest
     desc "setup_once method"
     setup do
-      setup_block = @setup_block = lambda{ something_once = true }
+      setup_block = @setup_block = ::Proc.new{ something_once = true }
       @context_class = Factory.context_class do
         setup_once(&setup_block)
       end
@@ -54,7 +54,7 @@ class Assert::Context::ClassMethodsTest < Assert::Context
   class TeardownOnceTest < ClassMethodsTest
     desc "teardown_once method"
     setup do
-      teardown_block = @teardown_block = lambda{ something_once = true }
+      teardown_block = @teardown_block = ::Proc.new{ something_once = true }
       @context_class = Factory.context_class do
         teardown_once(&teardown_block)
       end
@@ -77,7 +77,7 @@ class Assert::Context::ClassMethodsTest < Assert::Context
   class SetupTest < ClassMethodsTest
     desc "setup method"
     setup do
-      setup_block = @setup_block = lambda{ @something = true }
+      setup_block = @setup_block = ::Proc.new{ @something = true }
       @context_class = Factory.context_class do
         setup(&setup_block)
       end
@@ -96,7 +96,7 @@ class Assert::Context::ClassMethodsTest < Assert::Context
   class TeardownTest < ClassMethodsTest
     desc "teardown method"
     setup do
-      teardown_block = @teardown_block = lambda{ @something = false }
+      teardown_block = @teardown_block = ::Proc.new{ @something = false }
       @context_class = Factory.context_class do
         teardown(&teardown_block)
       end
@@ -115,11 +115,11 @@ class Assert::Context::ClassMethodsTest < Assert::Context
   # class AllSetupBlocksTest < ClassMethodsTest
   #   desc "all_setup_blocks method"
   #   setup do
-  #     parent_block = @parent_block = lambda{ @parent_something = true }
+  #     parent_block = @parent_block = ::Proc.new{ @parent_something = true }
   #     @parent_class = Factory.context_class do
   #       setup(&parent_block)
   #     end
-  #     setup_block = @setup_block = lambda{ @something = true }
+  #     setup_block = @setup_block = ::Proc.new{ @something = true }
   #     @context_class = Factory.context_class(@parent_class) do
   #       setup(&setup_block)
   #     end
@@ -141,11 +141,11 @@ class Assert::Context::ClassMethodsTest < Assert::Context
   # class AllTeardownBlocksTest < ClassMethodsTest
   #   desc "all_teardown_blocks method"
   #   setup do
-  #     parent_block = @parent_block = lambda{ @parent_something = false }
+  #     parent_block = @parent_block = ::Proc.new{ @parent_something = false }
   #     @parent_class = Factory.context_class do
   #       teardown(&parent_block)
   #     end
-  #     teardown_block = @teardown_block = lambda{ @something = false }
+  #     teardown_block = @teardown_block = ::Proc.new{ @something = false }
   #     @context_class = Factory.context_class(@parent_class) do
   #       teardown(&teardown_block)
   #     end
@@ -214,7 +214,7 @@ class Assert::Context::ClassMethodsTest < Assert::Context
   class SubjectFromLocalTest < ClassMethodsTest
     desc "subject method using local context"
     setup do
-      subject_block = @subject_block = lambda{ @something }
+      subject_block = @subject_block = ::Proc.new{ @something }
       @context_class = Factory.context_class do
         subject(&subject_block)
       end
@@ -232,7 +232,7 @@ class Assert::Context::ClassMethodsTest < Assert::Context
   class SubjectFromParentTest < ClassMethodsTest
     desc "subject method using parent context"
     setup do
-      parent_block = @parent_block = lambda{ @something }
+      parent_block = @parent_block = ::Proc.new{ @something }
       @parent_class = Factory.context_class do
         subject(&parent_block)
       end
@@ -251,7 +251,7 @@ class Assert::Context::ClassMethodsTest < Assert::Context
     desc "should method"
     setup do
       should_desc = "be true"
-      should_block = @should_block = lambda{ assert(true) }
+      should_block = @should_block = ::Proc.new{ assert(true) }
       @context_class = Factory.context_class do
         should(should_desc, &should_block)
       end
@@ -273,7 +273,7 @@ class Assert::Context::ClassMethodsTest < Assert::Context
     desc "should_eventually method"
     setup do
       should_desc = @should_desc = "be true"
-      should_block = @should_block = lambda{ assert(true) }
+      should_block = @should_block = ::Proc.new{ assert(true) }
       @context_class = Factory.context_class do
         should_eventually(should_desc, &should_block)
       end

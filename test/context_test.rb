@@ -121,7 +121,7 @@ class Assert::Context::BasicTest < Assert::Context
     class ProcMessageTest < FailTest
       desc "with a proc message"
       setup do
-        @fail_msg = lambda{ "Still didn't work" }
+        @fail_msg = ::Proc.new{ "Still didn't work" }
         @result = @context.fail(@fail_msg)
       end
 
