@@ -17,7 +17,7 @@ class Assert::Test::BasicTest < Assert::Context
   INSTANCE_METHODS = [
     :name, :code, :context_class,
     :results, :results=,
-    :run, :run_setup, :run_teardown,
+    :run,
     :result_count,
     Assert::Result.types.keys.collect{|k| "#{k}_results".to_sym }
   ].flatten
@@ -168,7 +168,7 @@ class Assert::Test::BasicTest < Assert::Context
       result = @test <=> Factory.test("aaa")
       assert_equal(1, result)
     end
-    should "return 0 with named the same" do
+    should "return 0 with a test named the same" do
       result = @test <=> Factory.test(@test.name)
       assert_equal(0, result)
     end

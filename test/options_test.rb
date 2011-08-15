@@ -58,19 +58,19 @@ module Assert::Options
     end
 
     should "default its result abbreviations" do
-      assert_equal '.',   subject.default_passed_abbrev
-      assert_equal 'F',   subject.default_failed_abbrev
-      assert_equal 'I',   subject.default_ignored_abbrev
-      assert_equal 'S',   subject.default_skipped_abbrev
-      assert_equal 'E',   subject.default_errored_abbrev
+      assert_equal '.', subject.default_passed_abbrev
+      assert_equal 'F', subject.default_failed_abbrev
+      assert_equal 'I', subject.default_ignored_abbrev
+      assert_equal 'S', subject.default_skipped_abbrev
+      assert_equal 'E', subject.default_errored_abbrev
     end
 
     should "default its result styles" do
-      assert_equal :green,   subject.default_passed_styles
-      assert_equal :red,     subject.default_failed_styles
+      assert_equal :green, subject.default_passed_styles
+      assert_equal [:red, :bold], subject.default_failed_styles
       assert_equal :magenta, subject.default_ignored_styles
-      assert_equal :cyan,    subject.default_skipped_styles
-      assert_equal :yellow,  subject.default_errored_styles
+      assert_equal :cyan, subject.default_skipped_styles
+      assert_equal [:yellow, :bold], subject.default_errored_styles
     end
 
   end

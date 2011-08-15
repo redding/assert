@@ -11,8 +11,8 @@ class Assert::Context::ClassMethodsTest < Assert::Context
   CLASS_METHODS = [
     :setup_once, :before_once, :teardown_once, :after_once,
     :setup, :before, :teardown, :after,
-    :setup_blocks, :all_setup_blocks, :teardown_blocks, :all_teardown_blocks,
-    :desc, :description, :descriptions, :full_description,
+    :setups, :teardowns,
+    :desc, :description,
     :subject,
     :should
   ]
@@ -81,17 +81,12 @@ class Assert::Context::ClassMethodsTest < Assert::Context
       @context_class = Factory.context_class do
         setup(&setup_block)
       end
-      @setup_blocks = @context_class.setup_blocks
+      @setup_blocks = @context_class.send(:setups)
     end
     subject{ @setup_blocks }
 
     should "add the block to the context's collection of setup blocks" do
       assert_includes subject, @setup_block
-    end
-    should "raise an ArgumentError when no block is passed" do
-      assert_raises ArgumentError do
-        @context_class.setup
-      end
     end
 
   end
@@ -105,75 +100,71 @@ class Assert::Context::ClassMethodsTest < Assert::Context
       @context_class = Factory.context_class do
         teardown(&teardown_block)
       end
-      @teardown_blocks = @context_class.teardown_blocks
+      @teardown_blocks = @context_class.send(:teardowns)
     end
     subject{ @teardown_blocks }
 
     should "add the block to the context's collection of teardown blocks" do
       assert_includes subject, @teardown_block
     end
-    should "raise an ArgumentError when no block is passed" do
-      assert_raises ArgumentError do
-        @context_class.teardown
-      end
-    end
 
   end
 
 
+  # TODO: give a dummy scope and verify exectution via contents and order
+  # class AllSetupBlocksTest < ClassMethodsTest
+  #   desc "all_setup_blocks method"
+  #   setup do
+  #     parent_block = @parent_block = lambda{ @parent_something = true }
+  #     @parent_class = Factory.context_class do
+  #       setup(&parent_block)
+  #     end
+  #     setup_block = @setup_block = lambda{ @something = true }
+  #     @context_class = Factory.context_class(@parent_class) do
+  #       setup(&setup_block)
+  #     end
+  #     @setup_blocks = @context_class.all_setup_blocks
+  #   end
+  #   subject{ @setup_blocks }
 
-  class AllSetupBlocksTest < ClassMethodsTest
-    desc "all_setup_blocks method"
-    setup do
-      parent_block = @parent_block = lambda{ @parent_something = true }
-      @parent_class = Factory.context_class do
-        setup(&parent_block)
-      end
-      setup_block = @setup_block = lambda{ @something = true }
-      @context_class = Factory.context_class(@parent_class) do
-        setup(&setup_block)
-      end
-      @setup_blocks = @context_class.all_setup_blocks
-    end
-    subject{ @setup_blocks }
+  #   should "return a collection containing both context's setup blocks" do
+  #     assert_kind_of Array, subject
+  #     assert_includes subject, @parent_block
+  #     assert_includes subject, @setup_block
+  #   end
 
-    should "return a collection containing both context's setup blocks" do
-      assert_kind_of Array, subject
-      assert_includes subject, @parent_block
-      assert_includes subject, @setup_block
-    end
-
-  end
+  # end
 
 
 
-  class AllTeardownBlocksTest < ClassMethodsTest
-    desc "all_teardown_blocks method"
-    setup do
-      parent_block = @parent_block = lambda{ @parent_something = false }
-      @parent_class = Factory.context_class do
-        teardown(&parent_block)
-      end
-      teardown_block = @teardown_block = lambda{ @something = false }
-      @context_class = Factory.context_class(@parent_class) do
-        teardown(&teardown_block)
-      end
-      @teardown_blocks = @context_class.all_teardown_blocks
-    end
-    subject{ @teardown_blocks }
+  # TODO: give a dummy scope and verify exectution via contents and order
+  # class AllTeardownBlocksTest < ClassMethodsTest
+  #   desc "all_teardown_blocks method"
+  #   setup do
+  #     parent_block = @parent_block = lambda{ @parent_something = false }
+  #     @parent_class = Factory.context_class do
+  #       teardown(&parent_block)
+  #     end
+  #     teardown_block = @teardown_block = lambda{ @something = false }
+  #     @context_class = Factory.context_class(@parent_class) do
+  #       teardown(&teardown_block)
+  #     end
+  #     @teardown_blocks = @context_class.all_teardown_blocks
+  #   end
+  #   subject{ @teardown_blocks }
 
-    should "return a collection containing both context's setup blocks" do
-      assert_kind_of Array, subject
-      assert_includes subject, @parent_block
-      assert_includes subject, @teardown_block
-    end
+  #   should "return a collection containing both context's setup blocks" do
+  #     assert_kind_of Array, subject
+  #     assert_includes subject, @parent_block
+  #     assert_includes subject, @teardown_block
+  #   end
 
-  end
+  # end
 
 
 
   class DescTest < ClassMethodsTest
-    desc "desc method"
+    desc "desc method with an arg"
     setup do
       descs = @descs = [ "something amazing", "it really is" ]
       @context_class = Factory.context_class do
@@ -181,19 +172,13 @@ class Assert::Context::ClassMethodsTest < Assert::Context
           desc text
         end
       end
-      @descriptions = @context_class.descriptions
     end
-    subject{ @descriptions }
+    subject{ @context_class.send(:descriptions) }
 
     should "return a collection containing any descriptions defined on the class" do
       assert_kind_of Array, subject
       @descs.each do |text|
         assert_includes subject, text
-      end
-    end
-    should "raise an error when no description is provided" do
-      assert_raises ArgumentError do
-        @context_class.desc
       end
     end
 
@@ -202,7 +187,7 @@ class Assert::Context::ClassMethodsTest < Assert::Context
 
 
   class FullDescriptionTest < ClassMethodsTest
-    desc "full_description method"
+    desc "description method without an arg"
     setup do
       parent_text = @parent_desc = "parent description"
       @parent_class = Factory.context_class do
@@ -212,7 +197,7 @@ class Assert::Context::ClassMethodsTest < Assert::Context
       @context_class = Factory.context_class(@parent_class) do
         desc text
       end
-      @full_description = @context_class.full_description
+      @full_description = @context_class.description
     end
     subject{ @full_description }
 
@@ -226,8 +211,8 @@ class Assert::Context::ClassMethodsTest < Assert::Context
 
 
 
-  class SubjectTest < ClassMethodsTest
-    desc "subject method"
+  class SubjectFromLocalTest < ClassMethodsTest
+    desc "subject method using local context"
     setup do
       subject_block = @subject_block = lambda{ @something }
       @context_class = Factory.context_class do
@@ -237,20 +222,15 @@ class Assert::Context::ClassMethodsTest < Assert::Context
     subject{ @subject_block }
 
     should "set the subject block on the context class" do
-      assert_equal subject, @context_class.subject_block
-    end
-    should "raise an ArgumentError when no block is passed" do
-      assert_raises ArgumentError do
-        @context_class.subject
-      end
+      assert_equal @context_class.subject, subject
     end
 
   end
 
 
 
-  class SubjectBlockTest < ClassMethodsTest
-    desc "subject_block method"
+  class SubjectFromParentTest < ClassMethodsTest
+    desc "subject method using parent context"
     setup do
       parent_block = @parent_block = lambda{ @something }
       @parent_class = Factory.context_class do
@@ -261,7 +241,7 @@ class Assert::Context::ClassMethodsTest < Assert::Context
     subject{ @parent_block }
 
     should "default to it's parents subject block" do
-      assert_equal subject, @context_class.subject_block
+      assert_equal subject, @context_class.subject
     end
   end
 
