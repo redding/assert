@@ -12,7 +12,7 @@ class FakeView < Assert::View::Base
     self.printed = []
   end
 
-  def print_result(result)
+  def print_runtime_result(result)
     self.printed.push(result)
   end
 

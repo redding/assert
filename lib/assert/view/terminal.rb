@@ -1,35 +1,12 @@
 require 'assert/view/base'
 require 'assert/result'
 
-require 'assert/options'
+require 'ansi/code'
 
 module Assert::View
 
   class Terminal < Base
 
-    TERM_STYLES = {
-      :reset     => 0,
-      :bold      => 1,
-      :underline => 4,
-      :black     => 30,
-      :red       => 31,
-      :green     => 32,
-      :yellow    => 33,
-      :blue      => 34,
-      :magenta   => 35,
-      :cyan      => 36,
-      :white     => 37,
-      :bgblack   => 40,
-      :bgred     => 41,
-      :bggreen   => 42,
-      :bgyellow  => 43,
-      :bgblue    => 44,
-      :bgmagenta => 45,
-      :bgcyan    => 46,
-      :bgwhite   => 47
-    }
-
-    include Assert::Options
     options do
       default_styled          false
       default_passed_abbrev   '.'
@@ -38,10 +15,10 @@ module Assert::View
       default_skipped_abbrev  'S'
       default_errored_abbrev  'E'
       default_passed_styles   :green
-      default_failed_styles   :red
-      default_ignored_styles  :magenta
+      default_failed_styles   :red, :bold
+      default_errored_styles  :yellow, :bold
       default_skipped_styles  :cyan
-      default_errored_styles  :yellow
+      default_ignored_styles  :magenta
     end
 
     def render(*args, &block)
@@ -55,7 +32,7 @@ module Assert::View
       self.io_puts(:results_stmt)
     end
 
-    def print_result(result)
+    def print_runtime_result(result)
       sym = result.to_sym
       self.io_print(result_io_msg(self.options.send("#{sym}_abbrev"), sym))
     end
@@ -68,8 +45,7 @@ module Assert::View
     end
 
     def detailed_results
-      @suite.tests
-      details = @suite.ordered_results.reverse.collect do |result|
+      details = self.suite.ordered_results.reverse.collect do |result|
         result_io_msg(result.to_s, result.to_sym) if show_result_details?(result)
       end.compact
       "\n\n" + details.join("\n\n") if !details.empty?
@@ -120,16 +96,14 @@ module Assert::View
     def io_msg(msg, opts={})
       val = super
       if !(style = term_style(*opts[:term_styles])).empty?
-        val = style + val + term_style(:reset)
+        val = style + val + ANSI.send(:reset)
       else
         val
       end
     end
 
-    def term_style(*styles)
-      styles.collect do |style|
-        TERM_STYLES.include?(style) ? "\e[#{TERM_STYLES[style]}m" : nil
-      end.join('')
+    def term_style(*ansi_codes)
+      ansi_codes.collect{|code| ANSI.send(code) rescue nil}.compact.join('')
     end
 
     def show_result_details?(result)

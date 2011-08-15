@@ -19,7 +19,6 @@ module Assert
 
     # put all logic here to keep context instances pure for running tests
     class << self
-      attr_accessor :subject_block
 
       def setup_once(&block)
         Assert.suite.setup(&block)
@@ -31,68 +30,51 @@ module Assert
       end
       alias_method :after_once, :teardown_once
 
-      def setup(&block)
-        raise ArgumentError, "please provide a setup block" unless block_given?
-        self.setup_blocks << block
+      # Add a setup block to run before each test or run the list of teardown blocks in given scope
+      def setup(scope=nil, &block)
+        if block_given?
+          self.setups << block
+        elsif scope
+          # setup parent before child
+          self.superclass.setup(scope) if self.superclass.respond_to?(:setup)
+          self.setups.each{|setup| scope.instance_eval(&setup)}
+        end
       end
       alias_method :before, :setup
 
-      def teardown(&block)
-        raise ArgumentError, "please provide a teardown block" unless block_given?
-        self.teardown_blocks << block
+      # Add a teardown block to run after each test or run the list of teardown blocks in given scope
+      def teardown(scope=nil, &block)
+        if block_given?
+          self.teardowns << block
+        elsif scope
+          # teardown child before parent
+          self.teardowns.each{|teardown| scope.instance_eval(&teardown)}
+          self.superclass.teardown(scope) if self.superclass.respond_to?(:teardown)
+        end
       end
       alias_method :after, :teardown
 
-      def setup_blocks
-        @setup_blocks ||= []
-      end
-
-      def teardown_blocks
-        @teardown_blocks ||= []
-      end
-
-      def all_setup_blocks
-        inherited_blocks = if superclass.respond_to?(:all_setup_blocks)
-          superclass.all_setup_blocks
+      # Add a piece of description text or return the full description for the context
+      def description(text=nil)
+        if text
+          self.descriptions << text.to_s
+        else
+          parent = self.superclass.desc if self.superclass.respond_to?(:desc)
+          own = self.descriptions
+          [parent, *own].compact.reject do |p|
+            p.to_s.empty?
+          end.join(" ")
         end
-        (inherited_blocks || []) + self.setup_blocks
       end
-
-      def all_teardown_blocks
-        inherited_blocks = if superclass.respond_to?(:all_teardown_blocks)
-          superclass.all_teardown_blocks
-        end
-        (inherited_blocks || []) + self.teardown_blocks
-      end
-
-      def desc(text)
-        raise ArgumentError, "no context description provided" if text.nil?
-        self.descriptions << text
-      end
-      alias_method :description, :desc
-
-      def descriptions
-        @descriptions ||= []
-      end
-
-      def full_description
-        inherited_description = if superclass.respond_to?(:full_description)
-          superclass.full_description
-        end
-        parts = [ inherited_description ].push(self.descriptions).flatten.reject do |part|
-         !part || part.to_s.empty?
-        end
-        parts.join(" ") if !parts.empty?
-      end
+      alias_method :desc, :description
 
       def subject(&block)
-        raise ArgumentError, "please provide a subject block" unless block_given?
-        self.subject_block = block
-      end
-
-      def subject_block
-        @subject_block ||= if superclass.respond_to?(:subject_block)
-          superclass.subject_block
+        if block_given?
+          @subject = block
+        else
+          @subject || if superclass.respond_to?(:subject)
+            superclass.subject
+          end
         end
       end
 
@@ -106,9 +88,23 @@ module Assert
         end
         define_method(method_name, &block)
       end
-      
+
       def should_eventually(desc, &block)
         should(desc){ skip }
+      end
+
+      protected
+
+      def descriptions
+        @descriptions ||= []
+      end
+
+      def setups
+        @setups ||= []
+      end
+
+      def teardowns
+        @teardowns ||= []
       end
 
     end
@@ -166,8 +162,8 @@ module Assert
     end
 
     def subject
-      if subject_block = self.class.subject_block
-        instance_eval(&subject_block)
+      if subj = self.class.subject
+        instance_eval(&subj)
       end
     end
 
