@@ -35,7 +35,7 @@ class Assert::Context::ClassMethodsTest < Assert::Context
       @context_class = Factory.context_class do
         setup_once(&setup_block)
       end
-      @setup_blocks = Assert.suite.setup_blocks
+      @setup_blocks = Assert.suite.send(:setups)
     end
     subject{ @setup_blocks }
 
@@ -44,7 +44,7 @@ class Assert::Context::ClassMethodsTest < Assert::Context
     end
 
     teardown do
-      Assert.suite.setup_blocks.reject!{|b| b == @setup_block }
+      Assert.suite.send(:setups).reject!{|b| b == @setup_block }
     end
 
   end
@@ -58,7 +58,7 @@ class Assert::Context::ClassMethodsTest < Assert::Context
       @context_class = Factory.context_class do
         teardown_once(&teardown_block)
       end
-      @teardown_blocks = Assert.suite.teardown_blocks
+      @teardown_blocks = Assert.suite.send(:teardowns)
     end
     subject{ @teardown_blocks }
 
@@ -67,7 +67,7 @@ class Assert::Context::ClassMethodsTest < Assert::Context
     end
 
     teardown do
-      Assert.suite.teardown_blocks.reject!{|b| b == @teardown_block }
+      Assert.suite.send(:teardowns).reject!{|b| b == @teardown_block }
     end
 
   end
