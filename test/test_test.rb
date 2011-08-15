@@ -17,7 +17,7 @@ class Assert::Test::BasicTest < Assert::Context
   INSTANCE_METHODS = [
     :name, :code, :context_class,
     :results, :results=,
-    :run, :run_setup, :run_teardown,
+    :run,
     :result_count,
     Assert::Result.types.keys.collect{|k| "#{k}_results".to_sym }
   ].flatten

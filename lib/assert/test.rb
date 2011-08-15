@@ -19,9 +19,9 @@ module Assert
 
     def run(view=nil)
       @results.view = view
+      run_scope = @context_class.new(self)
       begin
-        run_scope = @context_class.new(self)
-        run_setup(run_scope)
+        @context_class.setup(run_scope)
         if @code.kind_of?(::Proc)
           run_scope.instance_eval(&@code)
         elsif run_scope.respond_to?(@code.to_s)
@@ -33,25 +33,13 @@ module Assert
         @results << Result::Error.new(self.name, err)
       ensure
         begin
-          run_teardown(run_scope) if run_scope
+          @context_class.teardown(run_scope)
         rescue Exception => teardown_err
           @results << Result::Error.new(self.name, teardown_err)
         end
       end
       @results.view = nil
       @results
-    end
-
-    def run_setup(scope)
-      @context_class.all_setup_blocks.each do |setup|
-        scope.instance_eval(&setup)
-      end
-    end
-
-    def run_teardown(scope)
-      @context_class.all_teardown_blocks.each do |teardown|
-        scope.instance_eval(&teardown)
-      end
     end
 
     Assert::Result.types.each do |name, klass|
