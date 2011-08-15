@@ -3,6 +3,8 @@
 
 require 'stringio'
 
+$LOAD_PATH.unshift(File.expand_path("../..", __FILE__))
+
 # This is the suite intended to be used in the tests, this is seperate from Assert.suite which is
 # the actual suite being used to run the tests, confused? Don't use Assert.suite in your tests,
 # use TEST_ASSERT_SUITE
@@ -38,9 +40,9 @@ module Factory
     def test(*args, &block)
       name = (args[0] || "a test").to_s
       context_class = args[1] || self.context_class
-      block ||= (args[2] || lambda{ })
+      test_block = (block || args[2] || ::Proc.new{})
 
-      Assert::Test.new(name, context_class, &block)
+      Assert::Test.new(name, context_class, &test_block)
     end
 
     # Common interface for generating a new skip result

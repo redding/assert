@@ -43,7 +43,7 @@ class Assert::Suite
     should "determine a klass' local public test methods" do
       assert_equal(
         ["test_subclass_stuff", "test_mixin_stuff"].sort,
-        subject.send(:local_public_test_methods, SubStuff).sort
+        subject.send(:local_public_test_methods, SubStuff).sort.collect(&:to_s)
       )
     end
 
