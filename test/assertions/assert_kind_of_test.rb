@@ -27,9 +27,9 @@ class Assert::Assertions::AssertKindOfTest < Assert::Context
     desc "with a failed result"
     setup do
       @expected = [
-        "Expected #{@fail_args[1].inspect} to be a kind of #{@fail_args[0]},",
-        "not #{@fail_args[1].class}.\n#{@fail_args[2]}"
-      ].join(" ")
+        @fail_args[2],
+        "Expected #{@fail_args[1].inspect} to be a kind of #{@fail_args[0]}, not #{@fail_args[1].class}."
+      ].join("\n")
       @fail_message = @test.fail_results.first.message
     end
     subject{ @fail_message }

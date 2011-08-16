@@ -184,7 +184,7 @@ class Assert::Context::BasicTest < Assert::Context
 
       should "return a fail result" do
         assert_kind_of Assert::Result::Fail, subject
-        assert_equal "#{@what_failed}\n#{@fail_desc}", subject.message
+        assert_equal [@fail_desc, @what_failed].join("\n"), subject.message
       end
 
     end
@@ -219,7 +219,7 @@ class Assert::Context::BasicTest < Assert::Context
 
       should "return a fail result" do
         assert_kind_of Assert::Result::Fail, subject
-        assert_equal "#{@what_failed}\n#{@fail_desc}", subject.message
+        assert_equal [@fail_desc, @what_failed].join("\n"), subject.message
       end
 
     end

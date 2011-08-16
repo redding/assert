@@ -22,12 +22,12 @@ class Assert::Macro
   class InstanceMethodsTest < Assert::Context
     desc "an instance methods class"
     subject do
-      class InstanceMethodsTest
+      class ::Example
         (1..6).each do |i|
           define_method("method_#{i}") {}
         end
       end
-      InstanceMethodsTest.new
+      ::Example.new
     end
 
     should have_instance_method :method_1

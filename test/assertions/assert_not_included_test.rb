@@ -3,7 +3,7 @@ require 'assert'
 class Assert::Assertions::AssertNotIncluded < Assert::Context
   desc "the assert_not_included helper run in a test"
   setup do
-    
+
     fail_desc = @fail_desc = "assert not included fail desc"
     fail_args = @fail_args = [ [ 1 ], 1, fail_desc ]
     @test = Factory.test do
@@ -28,9 +28,9 @@ class Assert::Assertions::AssertNotIncluded < Assert::Context
     desc "with a failed result"
     setup do
       @expected = [
+        @fail_args[2],
         "Expected #{@fail_args[0].inspect} to not include #{@fail_args[1].inspect}.",
-        "\n#{@fail_args[2]}"
-      ].join
+      ].join("\n")
       @fail_message = @test.fail_results.first.message
     end
     subject{ @fail_message }
