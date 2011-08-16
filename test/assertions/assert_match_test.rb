@@ -22,14 +22,14 @@ class Assert::Assertions::AssertMatchTest < Assert::Context
   should "have 1 fail result" do
     assert_equal 1, subject.result_count(:fail)
   end
-  
+
   class FailMessageTest < AssertMatchTest
     desc "with a failed result"
     setup do
       @expected = [
+        @fail_args[2],
         "Expected #{@fail_args[0].inspect} to match #{@fail_args[1].inspect}.",
-        "\n#{@fail_args[2]}"
-      ].join
+      ].join("\n")
       @fail_message = @test.fail_results.first.message
     end
     subject{ @fail_message }

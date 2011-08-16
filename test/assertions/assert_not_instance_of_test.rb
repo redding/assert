@@ -22,14 +22,14 @@ class Assert::Assertions::AssertNotInstanceOfTest < Assert::Context
   should "have 1 fail result" do
     assert_equal 1, subject.result_count(:fail)
   end
-  
+
   class FailMessageTest < AssertNotInstanceOfTest
     desc "with a failed result"
     setup do
       @expected = [
+        @fail_args[2],
         "#{@fail_args[1].inspect} was not expected to be an instance of #{@fail_args[0]}.",
-        "\n#{@fail_args[2]}"
-      ].join
+      ].join("\n")
       @fail_message = @test.fail_results.first.message
     end
     subject{ @fail_message }

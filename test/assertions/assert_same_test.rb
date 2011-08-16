@@ -29,10 +29,9 @@ class Assert::Assertions::AssertSameTest < Assert::Context
     desc "with a failed result"
     setup do
       @expected = [
-        "Expected #{@fail_args[0].inspect} (#{@fail_args[0].object_id}) to be the same as ",
-        "#{@fail_args[1].inspect} (#{@fail_args[1].object_id}).",
-        "\n#{@fail_args[2]}"
-      ].join
+        @fail_args[2],
+        "Expected #{@fail_args[0].inspect} (#{@fail_args[0].object_id}) to be the same as #{@fail_args[1].inspect} (#{@fail_args[1].object_id}).",
+      ].join("\n")
       @fail_message = @test.fail_results.first.message
     end
     subject{ @fail_message }

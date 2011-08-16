@@ -25,7 +25,7 @@ class Assert::Assertions::AssertBlockTest < Assert::Context
   class FailMessageTest < AssertBlockTest
     desc "with a failed result"
     setup do
-      @expected = [ "Expected block to return true value.", @fail_desc ].join("\n")
+      @expected = [@fail_desc, "Expected block to return true value."].join("\n")
       @fail_message = @test.fail_results.first.message
     end
     subject{ @fail_message }

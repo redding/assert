@@ -1,10 +1,12 @@
 require 'assert/suite'
 require 'assert/assertions'
 require 'assert/result'
+require 'assert/macros/methods'
 
 module Assert
   class Context
     include Assert::Assertions
+    include Assert::Macros::Methods
 
     # a Context is a scope for tests to run in.  Contexts have setup and
     # teardown blocks, subjects, and descriptions.  Tests are run in the
@@ -78,20 +80,25 @@ module Assert
         end
       end
 
-      def should(desc, &block)
-        raise ArgumentError, "please provide a test block" unless block_given?
-        method_name = "test: should #{desc}"
-        if method_defined?(method_name)
-          from = caller.first
-          puts "WARNING: should #{desc.inspect} is redefining #{method_name}!"
-          puts "  from: #{from}"
+      def should(desc_or_macro, &block)
+        if desc_or_macro.kind_of?(Macro)
+          instance_eval(&desc_or_macro)
+        else
+          raise ArgumentError, "please provide a test block" unless block_given?
+          method_name = "test: should #{desc_or_macro}"
+          if method_defined?(method_name)
+            from = caller.first
+            puts "WARNING: should #{desc_or_macro.inspect} is redefining #{method_name}!"
+            puts "  from: #{from}"
+          end
+          define_method(method_name, &block)
         end
-        define_method(method_name, &block)
       end
 
       def should_eventually(desc, &block)
-        should(desc){ skip }
+        should(desc) { skip }
       end
+      alias_method :should_skip, :should_eventually
 
       protected
 
@@ -173,18 +180,20 @@ module Assert
 
     protected
 
+    # Returns a Proc that will output a custom message along with the default fail message.
+    def fail_message(fail_desc=nil, &what_failed)
+      fail_desc.kind_of?(::Proc) ? fail_desc : Proc.new do
+        [ fail_desc, what_failed.call ].compact.join("\n")
+      end
+    end
+
+    private
+
     def capture_result
       if block_given?
         result = yield @__running_test__.name, caller
         @__running_test__.results << result
         result
-      end
-    end
-
-    # Returns a Proc that will output a custom message along with the default fail message.
-    def fail_message(fail_desc=nil, &what_failed)
-      fail_desc.kind_of?(::Proc) ? fail_desc : Proc.new do
-        [ what_failed.call, fail_desc ].compact.join("\n")
       end
     end
 

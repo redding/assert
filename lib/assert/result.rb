@@ -39,6 +39,7 @@ module Assert::Result
 
     # './lib' in project dir, or '/usr/local/blahblah' if installed
     ASSERT_DIR = File.dirname(File.dirname(file))
+    MACROS_DIR = File.join(File.dirname(file), 'macros')
 
     def initialize(value=nil)
       super(value || ["No backtrace"])
@@ -52,15 +53,22 @@ module Assert::Result
       new_bt = []
 
       self.each do |line|
-        break if line.rindex ASSERT_DIR, 0
+        break if filter_out?(line)
         new_bt << line
       end
 
-      new_bt = self.reject { |line| line.rindex ASSERT_DIR, 0 } if new_bt.empty?
+      new_bt = self.reject { |line| filter_out?(line) } if new_bt.empty?
       new_bt = self.dup if new_bt.empty?
 
       self.class.new(new_bt)
     end
+
+    protected
+
+    def filter_out?(line)
+      line.rindex(ASSERT_DIR, 0) && !line.rindex(MACROS_DIR, 0)
+    end
+
   end
 
 
@@ -89,11 +97,11 @@ module Assert::Result
     def trace
       self.backtrace.filtered.first.to_s
     end
-    
+
     def ==(other)
       self.class == other.class && self.message == other.message
     end
-    
+
     def inspect
       "#<#{self.class} @message=#{self.message.inspect}>"
     end

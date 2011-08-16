@@ -29,10 +29,9 @@ class Assert::Assertions::AssertNotSameTest < Assert::Context
     desc "with a failed result"
     setup do
       @expected = [
-        "#{@fail_args[0].inspect} (#{@fail_args[0].object_id}) not expected to be the same as ",
-        "#{@fail_args[1].inspect} (#{@fail_args[1].object_id}).",
-        "\n#{@fail_args[2]}"
-      ].join
+        @fail_args[2],
+        "#{@fail_args[0].inspect} (#{@fail_args[0].object_id}) not expected to be the same as #{@fail_args[1].inspect} (#{@fail_args[1].object_id}).",
+      ].join("\n")
       @fail_message = @test.fail_results.first.message
     end
     subject{ @fail_message }

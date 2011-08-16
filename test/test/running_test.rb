@@ -1,15 +1,18 @@
 require 'assert'
 
-class Assert::Test::RunningTest < Assert::Context
-  desc "Assert tests that are run"
+class Assert::Test
 
-  class NothingTest < Assert::Test::RunningTest
+  class RunningTest < Assert::Context
+    desc "Assert tests that are run"
+    subject{ @test }
+  end
+
+  class NothingTest < RunningTest
     desc "and does nothing"
     setup do
       @test = Factory.test
       @test.run
     end
-    subject{ @test }
 
     should "have 0 results" do
       assert_equal 0, subject.result_count
@@ -19,13 +22,12 @@ class Assert::Test::RunningTest < Assert::Context
 
 
 
-  class PassTest < Assert::Test::RunningTest
+  class PassTest < RunningTest
     desc "and passes a single assertion"
     setup do
       @test = Factory.test{ assert(1 == 1) }
       @test.run
     end
-    subject{ @test }
 
     should "have 1 result" do
       assert_equal 1, subject.result_count
@@ -38,13 +40,12 @@ class Assert::Test::RunningTest < Assert::Context
 
 
 
-  class FailTest < Assert::Test::RunningTest
+  class FailTest < RunningTest
     desc "and fails a single assertion"
     setup do
       @test = Factory.test{ assert(1 == 0) }
       @test.run
     end
-    subject{ @test }
 
     should "have 1 result" do
       assert_equal 1, subject.result_count
@@ -57,13 +58,12 @@ class Assert::Test::RunningTest < Assert::Context
 
 
 
-  class SkipTest < Assert::Test::RunningTest
+  class SkipTest < RunningTest
     desc "and skips"
     setup do
       @test = Factory.test{ skip }
       @test.run
     end
-    subject{ @test }
 
     should "have 1 result" do
       assert_equal 1, subject.result_count
@@ -76,13 +76,12 @@ class Assert::Test::RunningTest < Assert::Context
 
 
 
-  class ErrorTest < Assert::Test::RunningTest
+  class ErrorTest < RunningTest
     desc "and errors"
     setup do
       @test = Factory.test{ raise("WHAT") }
       @test.run
     end
-    subject{ @test }
 
     should "have 1 result" do
       assert_equal 1, subject.result_count
@@ -95,7 +94,7 @@ class Assert::Test::RunningTest < Assert::Context
 
 
 
-  class MixedTest < Assert::Test::RunningTest
+  class MixedTest < RunningTest
     desc "and has 1 pass and 1 fail assertion"
     setup do
       @test = Factory.test do
@@ -104,7 +103,6 @@ class Assert::Test::RunningTest < Assert::Context
       end
       @test.run
     end
-    subject{ @test }
 
     should "have 2 total results" do
       assert_equal 2, subject.result_count
@@ -120,7 +118,7 @@ class Assert::Test::RunningTest < Assert::Context
 
 
 
-  class MixedSkipTest < Assert::Test::RunningTest
+  class MixedSkipTest < RunningTest
     desc "and has 1 pass and 1 fail assertion with a skip call in between"
     setup do
       @test = Factory.test do
@@ -130,7 +128,6 @@ class Assert::Test::RunningTest < Assert::Context
       end
       @test.run
     end
-    subject{ @test }
 
     should "have 2 total results" do
       assert_equal 2, subject.result_count
@@ -152,7 +149,7 @@ class Assert::Test::RunningTest < Assert::Context
 
 
 
-  class MixedErrorTest < Assert::Test::RunningTest
+  class MixedErrorTest < RunningTest
     desc "and has 1 pass and 1 fail assertion with an exception raised in between"
     setup do
       @test = Factory.test do
@@ -162,7 +159,6 @@ class Assert::Test::RunningTest < Assert::Context
       end
       @test.run
     end
-    subject{ @test }
 
     should "have an error for its last result" do
       assert_kind_of Assert::Result::Error, subject.results.last
@@ -184,7 +180,7 @@ class Assert::Test::RunningTest < Assert::Context
 
 
 
-  class MixedPassTest < Assert::Test::RunningTest
+  class MixedPassTest < RunningTest
     desc "and has 1 pass and 1 fail assertion with a pass call in between"
     setup do
       @test = Factory.test do
@@ -194,7 +190,6 @@ class Assert::Test::RunningTest < Assert::Context
       end
       @test.run
     end
-    subject{ @test }
 
     should "have a pass for its last result" do
       assert_kind_of Assert::Result::Fail, subject.results.last
@@ -213,7 +208,7 @@ class Assert::Test::RunningTest < Assert::Context
 
 
 
-  class MixedFailTest < Assert::Test::RunningTest
+  class MixedFailTest < RunningTest
     desc "and has 1 pass and 1 fail assertion with a fail call in between"
     setup do
       @test = Factory.test do
@@ -223,7 +218,6 @@ class Assert::Test::RunningTest < Assert::Context
       end
       @test.run
     end
-    subject{ @test }
 
     should "have a fail for its last result" do
       assert_kind_of Assert::Result::Pass, subject.results.last
@@ -242,7 +236,7 @@ class Assert::Test::RunningTest < Assert::Context
 
 
 
-  class MixedFlunkTest < Assert::Test::RunningTest
+  class MixedFlunkTest < RunningTest
     desc "and has 1 pass and 1 fail assertion with a flunk call in between"
     setup do
       @test = Factory.test do
@@ -252,7 +246,6 @@ class Assert::Test::RunningTest < Assert::Context
       end
       @test.run
     end
-    subject{ @test }
 
     should "have a fail for its last result" do
       assert_kind_of Assert::Result::Pass, subject.results.last
@@ -271,7 +264,7 @@ class Assert::Test::RunningTest < Assert::Context
 
 
 
-  class WithSetupTest < Assert::Test::RunningTest
+  class WithSetupTest < RunningTest
     desc "a Test that runs and has assertions that depend on a setup block"
     setup do
       @context_class = Factory.context_class do
@@ -282,7 +275,6 @@ class Assert::Test::RunningTest < Assert::Context
       end
       @test.run
     end
-    subject{ @test }
 
     should "have 1 total result" do
       assert_equal 1, subject.result_count
@@ -295,7 +287,7 @@ class Assert::Test::RunningTest < Assert::Context
 
 
 
-  class WithTeardownTest < Assert::Test::RunningTest
+  class WithTeardownTest < RunningTest
     desc "a Test that runs and has assertions with a teardown block"
     setup do
       new_message = @new_message = "HOLLA"
@@ -310,7 +302,6 @@ class Assert::Test::RunningTest < Assert::Context
       end
       @test.run
     end
-    subject{ @test }
 
     should "have 1 total result" do
       assert_equal 1, subject.result_count

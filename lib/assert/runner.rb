@@ -17,7 +17,7 @@ module Assert
         benchmark { run_suite }
       end
       @suite.teardown
-        count(:failed) + count(:errored)
+      count(:failed) + count(:errored)
     end
 
     def count(type)

@@ -27,9 +27,9 @@ class Assert::Assertions::AssertNilTest < Assert::Context
     desc "with a failed result"
     setup do
       @expected = [
+        @fail_args[1],
         "Expected nil, not #{@fail_args[0].inspect}.",
-        "\n#{@fail_args[1]}"
-      ].join
+      ].join("\n")
       @fail_message = @test.fail_results.first.message
     end
     subject{ @fail_message }

@@ -3,6 +3,7 @@
 
 require 'stringio'
 
+# test/.. (root dir for gem)
 $LOAD_PATH.unshift(File.expand_path("../..", __FILE__))
 
 # This is the suite intended to be used in the tests, this is seperate from Assert.suite which is

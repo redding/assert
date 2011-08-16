@@ -27,9 +27,9 @@ class Assert::Assertions::AssertNotEqualTest < Assert::Context
     desc "with a failed result"
     setup do
       @expected = [
+        @fail_args[2],
         "#{@fail_args[0]} not expected to be equal to #{@fail_args[1]}.",
-        "\n#{@fail_args[2]}"
-      ].join
+      ].join("\n")
       @fail_message = @test.fail_results.first.message
     end
     subject{ @fail_message }

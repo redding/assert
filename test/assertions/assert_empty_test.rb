@@ -27,9 +27,9 @@ class Assert::Assertions::AssertEmptyTest < Assert::Context
     desc "with a failed result"
     setup do
       @expected = [
-        "Expected #{@fail_args[0].inspect} to be empty.",
-        "\n#{@fail_args[1]}"
-      ].join
+        @fail_args[1],
+        "Expected #{@fail_args[0].inspect} to be empty."
+      ].join("\n")
       @fail_message = @test.fail_results.first.message
     end
     subject{ @fail_message }

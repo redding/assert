@@ -64,28 +64,31 @@ module Assert::RakeTasks
     def to_tasks(path)
       suite_name = File.basename(path)
 
-      # define a rake test task for all top-level test files at this path
+      # define a rake test task for all test files that have addional sub-folder tests
       if !Dir.glob(File.join(path, "**/*#{FILE_SUFFIX}")).empty?
         TestTask.new(suite_name.to_sym) do |t|
           file_location = suite_name == path ? '' : " for #{File.join(path.split(File::SEPARATOR)[1..-1])}"
           t.description = "Run all tests#{file_location}"
-          t.test_files = FileList["#{path}/**/*#{FILE_SUFFIX}"]
+          t.test_files = (File.exists?(p = (path+FILE_SUFFIX)) ? FileList[p] : []) + FileList["#{path}/**/*#{FILE_SUFFIX}"]
         end.to_task
       end
 
       namespace suite_name.to_s do
-        # define rake test tasks for each top-level test file individually
         Dir.glob(File.join(path, "*#{FILE_SUFFIX}")).each do |test_file|
           test_name = File.basename(test_file, FILE_SUFFIX)
-          TestTask.new(test_name.to_sym) do |t|
-            t.description = "Run tests for #{[path.split(File::SEPARATOR), test_name].flatten[1..-1].join(':')}"
-            t.test_files = FileList[test_file]
-          end.to_task
+
+          # define rake test task for all test files without sub-folder tests
+          if Dir.glob(File.join(path, test_name, "*#{FILE_SUFFIX}")).empty?
+            TestTask.new(test_name.to_sym) do |t|
+              t.description = "Run tests for #{[path.split(File::SEPARATOR), test_name].flatten[1..-1].join(':')}"
+              t.test_files = FileList[test_file]
+            end.to_task
+          end
         end
 
         # recursively define rake test tasks for each file
         # in each top-level directory
-        Dir.glob(File.join(path, "*/")).each do |test_dir|
+        Dir.glob(File.join(path, "*")).each do |test_dir|
           self.to_tasks(test_dir)
         end
       end
