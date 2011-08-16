@@ -20,20 +20,39 @@ class Assert::Macro
   end
 
   class InstanceMethodsTest < Assert::Context
-    desc "an instance methods class"
+    desc "a class with instance methods"
     subject do
-      class ::Example
+      class ::InstExample
         (1..6).each do |i|
           define_method("method_#{i}") {}
         end
       end
-      ::Example.new
+      ::InstExample.new
     end
 
     should have_instance_method :method_1
     should have_instance_method :method_2, :method_3
     should have_instance_methods :method_4
     should have_instance_methods :method_5, :method_6
+  end
+
+  class ClassMethodsTest < Assert::Context
+    desc "a class with class methods"
+    subject do
+      class ::ClassExample
+        class << self
+          (1..6).each do |i|
+            define_method("method_#{i}") {}
+          end
+        end
+      end
+      ::ClassExample.new
+    end
+
+    should have_class_method :method_1
+    should have_class_method :method_2, :method_3
+    should have_class_methods :method_4
+    should have_class_methods :method_5, :method_6
   end
 
 end
