@@ -3,7 +3,7 @@
 
 require 'stringio'
 
-$LOAD_PATH.unshift(File.expand_path("../..", __FILE__))
+$LOAD_PATH.unshift(File.expand_path(File.dirname(__FILE__)))
 
 # This is the suite intended to be used in the tests, this is seperate from Assert.suite which is
 # the actual suite being used to run the tests, confused? Don't use Assert.suite in your tests,
