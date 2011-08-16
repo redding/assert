@@ -1,10 +1,12 @@
 require 'assert/suite'
 require 'assert/assertions'
 require 'assert/result'
+require 'assert/macros/methods'
 
 module Assert
   class Context
     include Assert::Assertions
+    include Assert::Macros::Methods
 
     # a Context is a scope for tests to run in.  Contexts have setup and
     # teardown blocks, subjects, and descriptions.  Tests are run in the
@@ -78,8 +80,23 @@ module Assert
         end
       end
 
-      def should(desc, &block)
-        raise ArgumentError, "please provide a test block" unless block_given?
+      def should(desc_or_macro, &block)
+        if desc_or_macro.kind_of?(Macro)
+          should_macro(desc_or_macro)
+        else
+          raise ArgumentError, "please provide a test block" unless block_given?
+          should_test(desc_or_macro.to_s, &block)
+        end
+      end
+
+      def should_eventually(desc, &block)
+        should(desc) { skip }
+      end
+
+      protected
+
+      # define a test method named after the desc
+      def should_test(desc, &block)
         method_name = "test: should #{desc}"
         if method_defined?(method_name)
           from = caller.first
@@ -89,11 +106,10 @@ module Assert
         define_method(method_name, &block)
       end
 
-      def should_eventually(desc, &block)
-        should(desc){ skip }
+      # evaluate the macro in the Context
+      def should_macro(macro)
+        instance_eval(&macro)
       end
-
-      protected
 
       def descriptions
         @descriptions ||= []
