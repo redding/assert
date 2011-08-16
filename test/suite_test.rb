@@ -197,4 +197,68 @@ class Assert::Suite
 
   end
 
+
+
+  class SetupTest < Assert::Context
+    desc "a suite with a setup"
+    setup do
+      @setup_status = nil
+      @suite = Assert::Suite.new
+      @setup_block = ::Proc.new do
+        @setup_status = "has been run"
+      end
+      @suite.setup(&@setup_block)
+    end
+
+    should "set the variable when setup is called with no args" do
+      @suite.setup
+      assert_equal "has been run", @setup_status
+    end
+
+    class SetupsTest < SetupTest
+      desc "when calling the setups method"
+      setup do
+        @setups = @suite.send(:setups)
+      end
+      subject{ @setups }
+
+      should "include the setup we defined on the suite" do
+        assert_includes subject, @setup_block
+      end
+    end
+
+  end
+
+
+
+  class TeardownTest < Assert::Context
+    desc "a suite with a teardown"
+    setup do
+      @teardown_status = nil
+      @suite = Assert::Suite.new
+      @teardown_block = ::Proc.new do
+        @teardown_status = "has been run"
+      end
+      @suite.teardown(&@teardown_block)
+    end
+
+    should "set the constant when teardown is called with no args" do
+      @suite.teardown
+      assert_equal "has been run", @teardown_status
+    end
+
+    class TeardownsTest < TeardownTest
+      desc "when calling the setups method"
+      setup do
+        @teardowns = @suite.send(:teardowns)
+      end
+      subject{ @teardowns }
+
+      should "include the teardown we defined on the suite" do
+        assert_includes subject, @teardown_block
+      end
+    end
+
+  end
+
 end

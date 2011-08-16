@@ -70,7 +70,6 @@ module Assert
       end
     end
 
-    # TODO: tests!
     def setup(&block)
       if block_given?
         self.setups << block
@@ -79,8 +78,6 @@ module Assert
       end
     end
 
-
-    # TODO: tests!
     def teardown(&block)
       if block_given?
         self.teardowns << block
