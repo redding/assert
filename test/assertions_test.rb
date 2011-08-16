@@ -17,7 +17,11 @@ class Assert::Assertions::BasicTest < Assert::Context
     :assert_respond_to, :assert_not_respond_to, :refute_respond_to,
     :assert_same, :assert_not_same, :refute_same,
     :assert_equal, :assert_not_equal, :refute_equal,
-    :assert_match, :assert_not_match, :assert_no_match, :refute_match
+    :assert_match, :assert_not_match, :assert_no_match, :refute_match,
+    :assert_empty, :assert_not_empty, :refute_empty,
+    :assert_includes, :assert_included,
+    :assert_not_includes, :assert_not_included, :refute_includes, :refute_included,
+    :assert_nil, :assert_not_nil, :refute_nil
   ]
   INSTANCE_METHODS.each do |method|
     should "respond to the instance method ##{method}" do

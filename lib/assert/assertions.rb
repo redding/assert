@@ -155,12 +155,15 @@ module Assert
       what_failed_msg = "Expected #{collection.inspect} to include #{object.inspect}."
       assert(collection.include?(object), fail_desc, what_failed_msg)
     end
+    alias_method :assert_included, :assert_includes
 
-    def assert_not_included(collection, object, fail_desc=nil)
+    def assert_not_includes(collection, object, fail_desc=nil)
       what_failed_msg = "Expected #{collection.inspect} to not include #{object.inspect}."
       assert(!collection.include?(object), fail_desc, what_failed_msg)
     end
-    alias_method :refute_includes, :assert_not_included
+    alias_method :assert_not_included, :assert_not_includes
+    alias_method :refute_includes, :assert_not_includes
+    alias_method :refute_included, :assert_not_includes
 
 
 
