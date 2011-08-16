@@ -82,34 +82,25 @@ module Assert
 
       def should(desc_or_macro, &block)
         if desc_or_macro.kind_of?(Macro)
-          should_macro(desc_or_macro)
+          instance_eval(&desc_or_macro)
         else
           raise ArgumentError, "please provide a test block" unless block_given?
-          should_test(desc_or_macro.to_s, &block)
+          method_name = "test: should #{desc_or_macro}"
+          if method_defined?(method_name)
+            from = caller.first
+            puts "WARNING: should #{desc_or_macro.inspect} is redefining #{method_name}!"
+            puts "  from: #{from}"
+          end
+          define_method(method_name, &block)
         end
       end
 
       def should_eventually(desc, &block)
         should(desc) { skip }
       end
+      alias_method :should_skip, :should_eventually
 
       protected
-
-      # define a test method named after the desc
-      def should_test(desc, &block)
-        method_name = "test: should #{desc}"
-        if method_defined?(method_name)
-          from = caller.first
-          puts "WARNING: should #{desc.inspect} is redefining #{method_name}!"
-          puts "  from: #{from}"
-        end
-        define_method(method_name, &block)
-      end
-
-      # evaluate the macro in the Context
-      def should_macro(macro)
-        instance_eval(&macro)
-      end
 
       def descriptions
         @descriptions ||= []
@@ -189,18 +180,20 @@ module Assert
 
     protected
 
+    # Returns a Proc that will output a custom message along with the default fail message.
+    def fail_message(fail_desc=nil, &what_failed)
+      fail_desc.kind_of?(::Proc) ? fail_desc : Proc.new do
+        [ fail_desc, what_failed.call ].compact.join("\n")
+      end
+    end
+
+    private
+
     def capture_result
       if block_given?
         result = yield @__running_test__.name, caller
         @__running_test__.results << result
         result
-      end
-    end
-
-    # Returns a Proc that will output a custom message along with the default fail message.
-    def fail_message(fail_desc=nil, &what_failed)
-      fail_desc.kind_of?(::Proc) ? fail_desc : Proc.new do
-        [ fail_desc, what_failed.call ].compact.join("\n")
       end
     end
 

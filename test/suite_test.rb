@@ -16,18 +16,11 @@ class Assert::Suite
     end
     subject { @suite }
 
-    INSTANCE_METHODS = [
-      :start_time, :end_time, :start_time=, :end_time=,
-      :<<,
-      :contexts, :tests, :ordered_tests, :ordered_results,
-      :count, :test_count, :result_count,
-      :run_time
-    ]
-    INSTANCE_METHODS.each do |method|
-      should "respond to the instance method ##{method}" do
-        assert_respond_to subject, method
-      end
-    end
+    should have_accessors :start_time, :end_time
+    should have_instance_method  :<<
+    should have_instance_methods :contexts, :tests, :ordered_tests, :ordered_results
+    should have_instance_methods :count, :test_count, :result_count
+    should have_instance_method  :run_time
 
     should "be a hash" do
       assert_kind_of ::Hash, subject

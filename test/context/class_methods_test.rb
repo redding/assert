@@ -1,29 +1,21 @@
 require 'assert'
 
-class Assert::Context::ClassMethodsTest < Assert::Context
-  desc "Assert context class"
-  setup do
-    @test = Factory.test
-    @context_class = @test.context_class
-  end
-  subject{ @context_class }
+class Assert::Context
 
-  CLASS_METHODS = [
-    :setup_once, :before_once, :teardown_once, :after_once,
-    :setup, :before, :teardown, :after,
-    :setups, :teardowns,
-    :desc, :description,
-    :subject,
-    :should
-  ]
-  CLASS_METHODS.each do |class_method|
-    should "respond to the class method ##{class_method}" do
-      assert_respond_to subject, class_method
+  class ClassMethodsTest < Assert::Context
+    desc "Assert context class"
+    setup do
+      @test = Factory.test
+      @context_class = @test.context_class
     end
-  end
+    teardown do
+      TEST_ASSERT_SUITE.clear
+    end
+    subject{ @context_class }
 
-  teardown do
-    TEST_ASSERT_SUITE.clear
+    should have_instance_methods :setup_once, :before_once, :setup, :before, :setups
+    should have_instance_methods :teardown_once, :after_once, :teardown, :after, :teardowns
+    should have_instance_methods :description, :desc, :subject, :should, :should_eventually, :should_skip
   end
 
 
@@ -37,14 +29,13 @@ class Assert::Context::ClassMethodsTest < Assert::Context
       end
       @setup_blocks = Assert.suite.send(:setups)
     end
+    teardown do
+      Assert.suite.send(:setups).reject!{|b| b == @setup_block }
+    end
     subject{ @setup_blocks }
 
     should "add the block to the suite's collection of setup blocks" do
       assert_includes subject, @setup_block
-    end
-
-    teardown do
-      Assert.suite.send(:setups).reject!{|b| b == @setup_block }
     end
 
   end
@@ -60,14 +51,13 @@ class Assert::Context::ClassMethodsTest < Assert::Context
       end
       @teardown_blocks = Assert.suite.send(:teardowns)
     end
+    teardown do
+      Assert.suite.send(:teardowns).reject!{|b| b == @teardown_block }
+    end
     subject{ @teardown_blocks }
 
     should "add the block to the suite's collection of teardown blocks" do
       assert_includes subject, @teardown_block
-    end
-
-    teardown do
-      Assert.suite.send(:teardowns).reject!{|b| b == @teardown_block }
     end
 
   end

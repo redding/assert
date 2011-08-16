@@ -9,14 +9,7 @@ module Assert::Result
     setup{ @backtrace = Backtrace.new(caller) }
     subject { @backtrace }
 
-    INSTANCE_METHODS = [
-      :to_s, :filtered
-    ]
-    INSTANCE_METHODS.each do |method|
-      should "respond to the instance method ##{method}" do
-        assert_respond_to subject, method
-      end
-    end
+    should have_instance_methods :to_s, :filtered
 
     should "be an Array" do
       assert_kind_of ::Array, subject
@@ -42,14 +35,8 @@ module Assert::Result
     end
     subject{ @result }
 
-    INSTANCE_METHODS = [
-      :test_name, :message, :backtrace, :to_sym, :to_s, :trace
-    ]
-    INSTANCE_METHODS.each do |method|
-      should "respond to the instance method ##{method}" do
-        assert_respond_to subject, method
-      end
-    end
+    should have_readers :test_name, :message, :backtrace
+    should have_instance_methods :to_sym, :to_s, :trace
 
     Assert::Result.types.keys.each do |type|
       should "respond to the instance method ##{type}?" do

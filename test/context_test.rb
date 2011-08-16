@@ -1,27 +1,23 @@
 require 'assert'
 
-class Assert::Context::BasicTest < Assert::Context
-  desc "Assert context"
-  setup do
-    @test = Factory.test
-    @context_class = @test.context_class
-    @context = @context_class.new(@test)
-  end
-  subject{ @context }
+class Assert::Context
 
-  INSTANCE_METHODS = [
-    :assert, :assert_not, :refute,
-    :skip, :pass, :fail, :flunk, :ignore,
-    :subject
-  ]
-  INSTANCE_METHODS.each do |method|
-    should "respond to the instance method ##{method}" do
-      assert_respond_to subject, method
+  class BasicTest < Assert::Context
+    desc "Assert context"
+    setup do
+      @test = Factory.test
+      @context_class = @test.context_class
+      @context = @context_class.new(@test)
     end
-  end
+    teardown do
+      TEST_ASSERT_SUITE.clear
+    end
+    subject{ @context }
 
-  teardown do
-    TEST_ASSERT_SUITE.clear
+    should have_instance_methods :assert, :assert_not, :refute
+    should have_instance_methods :skip, :pass, :fail, :flunk, :ignore
+    should have_instance_methods :subject
+
   end
 
 
@@ -104,31 +100,30 @@ class Assert::Context::BasicTest < Assert::Context
       assert_kind_of Array, subject.backtrace
       assert_match /assert\/test\/context_test\.rb/, subject.trace
     end
+  end
 
-    class StringMessageTest < FailTest
-      desc "with a string message"
-      setup do
-        @fail_msg = "Didn't work"
-        @result = @context.fail(@fail_msg)
-      end
-
-      should "set the message passed to it on the result" do
-        assert_equal @fail_msg, subject.message
-      end
-
+  class StringMessageTest < FailTest
+    desc "with a string message"
+    setup do
+      @fail_msg = "Didn't work"
+      @result = @context.fail(@fail_msg)
     end
 
-    class ProcMessageTest < FailTest
-      desc "with a proc message"
-      setup do
-        @fail_msg = ::Proc.new{ "Still didn't work" }
-        @result = @context.fail(@fail_msg)
-      end
+    should "set the message passed to it on the result" do
+      assert_equal @fail_msg, subject.message
+    end
 
-      should "set the message passed to it on the result" do
-        assert_equal @fail_msg.call, subject.message
-      end
+  end
 
+  class ProcMessageTest < FailTest
+    desc "with a proc message"
+    setup do
+      @fail_msg = ::Proc.new{ "Still didn't work" }
+      @result = @context.fail(@fail_msg)
+    end
+
+    should "set the message passed to it on the result" do
+      assert_equal @fail_msg.call, subject.message
     end
 
   end

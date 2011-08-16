@@ -32,7 +32,7 @@ module Assert::View
       self.io_puts(:results_stmt)
     end
 
-    def print_runtime_result(result)
+    def handle_runtime_result(result)
       sym = result.to_sym
       self.io_print(result_io_msg(self.options.send("#{sym}_abbrev"), sym))
     end

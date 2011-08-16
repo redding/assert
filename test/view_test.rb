@@ -12,23 +12,9 @@ module Assert::View
     end
     subject{ @view }
 
-    INSTANCE_METHODS = [
-      :render, :print_runtime_result, :suite, :options
-    ]
-    INSTANCE_METHODS.each do |method|
-      should "respond to the instance method ##{method}" do
-        assert_respond_to subject, method
-      end
-    end
-
-    CLASS_METHODS = [
-      :options
-    ]
-    CLASS_METHODS.each do |method|
-      should "respond to the class method ##{method}" do
-        assert_respond_to subject.class, method
-      end
-    end
+    should have_reader :suite
+    should have_instance_methods :render, :handle_runtime_result, :options
+    should have_class_method :options
 
   end
 
