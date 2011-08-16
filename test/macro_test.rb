@@ -31,10 +31,6 @@ class Assert::Macro
     end
 
     should have_instance_method :method_1
-
-    should "meth 1" do
-      assert_respond_to subject, :method_1
-    end
     should have_instance_method :method_2, :method_3
     should have_instance_methods :method_4
     should have_instance_methods :method_5, :method_6
