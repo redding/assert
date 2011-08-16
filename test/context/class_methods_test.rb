@@ -83,6 +83,31 @@ class Assert::Context
 
 
 
+  class MultipleSetupsTest < ClassMethodsTest
+    desc "a context class with multiple setups"
+    setup do
+      @object = (Class.new{ attr_accessor :status }).new
+      setup_block = @setup_block = ::Proc.new{ self.status = "the setup" }
+      @parent_class = Factory.context_class do
+        setup(&setup_block)
+      end
+      setup_block = @setup_block = ::Proc.new{ self.status += " has been run" }
+      @context_class = Factory.context_class(@parent_class) do
+        setup(&setup_block)
+      end
+      @context_class.setup(@object)
+      @expected = "the setup has been run"
+    end
+    subject{ @object }
+
+    should "run it's parent and it's own setup blocks in the correct order" do
+      assert_equal @expected, subject.status
+    end
+
+  end
+
+
+
   class TeardownTest < ClassMethodsTest
     desc "teardown method"
     setup do
@@ -101,55 +126,29 @@ class Assert::Context
   end
 
 
-  # TODO: give a dummy scope and verify exectution via contents and order
-  # class AllSetupBlocksTest < ClassMethodsTest
-  #   desc "all_setup_blocks method"
-  #   setup do
-  #     parent_block = @parent_block = ::Proc.new{ @parent_something = true }
-  #     @parent_class = Factory.context_class do
-  #       setup(&parent_block)
-  #     end
-  #     setup_block = @setup_block = ::Proc.new{ @something = true }
-  #     @context_class = Factory.context_class(@parent_class) do
-  #       setup(&setup_block)
-  #     end
-  #     @setup_blocks = @context_class.all_setup_blocks
-  #   end
-  #   subject{ @setup_blocks }
 
-  #   should "return a collection containing both context's setup blocks" do
-  #     assert_kind_of Array, subject
-  #     assert_includes subject, @parent_block
-  #     assert_includes subject, @setup_block
-  #   end
+  class MultipleTeardownsTest < ClassMethodsTest
+    desc "a context class with multiple teardowns"
+    setup do
+      @object = (Class.new{ attr_accessor :status }).new
+      teardown_block = @teardown_block = ::Proc.new{ self.status += " has been run" }
+      @parent_class = Factory.context_class do
+        teardown(&teardown_block)
+      end
+      teardown_block = @teardown_block = ::Proc.new{ self.status = "the teardown" }
+      @context_class = Factory.context_class(@parent_class) do
+        teardown(&teardown_block)
+      end
+      @context_class.teardown(@object)
+      @expected = "the teardown has been run"
+    end
+    subject{ @object }
 
-  # end
+    should "run it's parent and it's own teardown blocks in the correct order" do
+      assert_equal @expected, subject.status
+    end
 
-
-
-  # TODO: give a dummy scope and verify exectution via contents and order
-  # class AllTeardownBlocksTest < ClassMethodsTest
-  #   desc "all_teardown_blocks method"
-  #   setup do
-  #     parent_block = @parent_block = ::Proc.new{ @parent_something = false }
-  #     @parent_class = Factory.context_class do
-  #       teardown(&parent_block)
-  #     end
-  #     teardown_block = @teardown_block = ::Proc.new{ @something = false }
-  #     @context_class = Factory.context_class(@parent_class) do
-  #       teardown(&teardown_block)
-  #     end
-  #     @teardown_blocks = @context_class.all_teardown_blocks
-  #   end
-  #   subject{ @teardown_blocks }
-
-  #   should "return a collection containing both context's setup blocks" do
-  #     assert_kind_of Array, subject
-  #     assert_includes subject, @parent_block
-  #     assert_includes subject, @teardown_block
-  #   end
-
-  # end
+  end
 
 
 

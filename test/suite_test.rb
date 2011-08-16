@@ -197,29 +197,37 @@ class Assert::Suite
     setup do
       @setup_status = nil
       @suite = Assert::Suite.new
-      @setup_block = ::Proc.new do
-        @setup_status = "has been run"
+      @setup_blocks = []
+      @setup_blocks << ::Proc.new{ @setup_status = "setup" }
+      @setup_blocks << ::Proc.new{ @setup_status += " has been run" }
+      @setup_blocks.each do |setup_block|
+        @suite.setup(&setup_block)
       end
-      @suite.setup(&@setup_block)
+      @expected = "setup has been run"
     end
+    subject{ @setup_status }
 
-    should "set the variable when setup is called with no args" do
+    should "set the setup status to the correct message" do
       @suite.setup
-      assert_equal "has been run", @setup_status
+      assert_equal @expected, subject
     end
 
-    class SetupsTest < SetupTest
-      desc "when calling the setups method"
-      setup do
-        @setups = @suite.send(:setups)
-      end
-      subject{ @setups }
+  end
 
-      should "include the setup we defined on the suite" do
-        assert_includes subject, @setup_block
+
+
+  class SetupsTest < SetupTest
+    desc "when calling the setups method"
+    setup do
+      @setups = @suite.send(:setups)
+    end
+    subject{ @setups }
+
+    should "include the setup we defined on the suite" do
+      @setup_blocks.each do |setup_block|
+        assert_includes subject, setup_block
       end
     end
-
   end
 
 
@@ -229,29 +237,36 @@ class Assert::Suite
     setup do
       @teardown_status = nil
       @suite = Assert::Suite.new
-      @teardown_block = ::Proc.new do
-        @teardown_status = "has been run"
+      @teardown_blocks = []
+      @teardown_blocks << ::Proc.new{ @teardown_status += " has been run" }
+      @teardown_blocks << ::Proc.new{ @teardown_status = "teardown" }
+      @teardown_blocks.each do |teardown_block|
+        @suite.teardown(&teardown_block)
       end
-      @suite.teardown(&@teardown_block)
+      @expected = "teardown has been run"
     end
 
-    should "set the constant when teardown is called with no args" do
+    should "set the teardown status to the correct message" do
       @suite.teardown
-      assert_equal "has been run", @teardown_status
+      assert_equal "teardown has been run", @teardown_status
     end
 
-    class TeardownsTest < TeardownTest
-      desc "when calling the setups method"
-      setup do
-        @teardowns = @suite.send(:teardowns)
-      end
-      subject{ @teardowns }
+  end
 
-      should "include the teardown we defined on the suite" do
-        assert_includes subject, @teardown_block
+
+
+  class TeardownsTest < TeardownTest
+    desc "when calling the teardowns method"
+    setup do
+      @teardowns = @suite.send(:teardowns)
+    end
+    subject{ @teardowns }
+
+    should "include the teardown we defined on the suite" do
+      @teardown_blocks.each do |teardown_block|
+        assert_includes subject, teardown_block
       end
     end
-
   end
 
 end

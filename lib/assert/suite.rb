@@ -82,7 +82,7 @@ module Assert
       if block_given?
         self.teardowns << block
       else
-        self.teardowns.each{|teardown| teardown.call}
+        self.teardowns.reverse.each{|teardown| teardown.call}
       end
     end
 
