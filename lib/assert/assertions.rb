@@ -86,52 +86,52 @@ module Assert
 
 
 
-    def assert_same(left, right, fail_desc=nil)
+    def assert_same(expected, actual, fail_desc=nil)
       what_failed_msg = [
-        "Expected #{left} (#{left.object_id}) to be the same ",
-        "as #{right} (#{right.object_id})."
+        "Expected #{expected} (#{expected.object_id}) to be the same ",
+        "as #{actual} (#{actual.object_id})."
       ].join
-      assert(right.equal?(left), fail_desc, what_failed_msg)
+      assert(actual.equal?(expected), fail_desc, what_failed_msg)
     end
 
-    def assert_not_same(left, right, fail_desc=nil)
+    def assert_not_same(expected, actual, fail_desc=nil)
       what_failed_msg = [
-        "#{left} (#{left.object_id}) not expected to be the same ",
-        "as #{right} (#{right.object_id})."
+        "#{expected} (#{expected.object_id}) not expected to be the same ",
+        "as #{actual} (#{actual.object_id})."
       ].join
-      assert(!right.equal?(left), fail_desc, what_failed_msg)
+      assert(!actual.equal?(expected), fail_desc, what_failed_msg)
     end
     alias_method :refute_same, :assert_not_same
 
 
 
-    def assert_equal(left, right, fail_desc=nil)
-      what_failed_msg = "Expected #{left.inspect}, not #{right.inspect}."
-      assert(right == left, fail_desc, what_failed_msg)
+    def assert_equal(expected, actual, fail_desc=nil)
+      what_failed_msg = "Expected #{expected.inspect}, not #{actual.inspect}."
+      assert(actual == expected, fail_desc, what_failed_msg)
     end
 
-    def assert_not_equal(left, right, fail_desc=nil)
+    def assert_not_equal(expected, actual, fail_desc=nil)
       what_failed_msg = [
-        "#{left.inspect} not expected to be equal ", "to #{right.inspect}."
+        "#{expected.inspect} not expected to be equal ", "to #{actual.inspect}."
       ].join
-      assert(right != left, fail_desc, what_failed_msg)
+      assert(actual != expected, fail_desc, what_failed_msg)
     end
     alias_method :refute_equal, :assert_not_equal
 
 
 
-    def assert_match(left, right, fail_desc=nil)
-      what_failed_msg = "Expected #{left.inspect} to match #{right.inspect}."
-      left = /#{Regexp.escape(left)}/ if String === left && String === right
-      assert(left =~ right, fail_desc, what_failed_msg)
+    def assert_match(expected, actual, fail_desc=nil)
+      what_failed_msg = "Expected #{expected.inspect} to match #{actual.inspect}."
+      expected = /#{Regexp.escape(expected)}/ if String === expected && String === actual
+      assert(expected =~ actual, fail_desc, what_failed_msg)
     end
 
-    def assert_not_match(left, right, fail_desc=nil)
+    def assert_not_match(expected, actual, fail_desc=nil)
       what_failed_msg = [
-        "#{left.inspect} not expected to ", "match #{right.inspect}."
+        "#{expected.inspect} not expected to ", "match #{actual.inspect}."
       ].join
-      left = /#{Regexp.escape(left)}/ if String === left && String === right
-      assert(left !~ right, fail_desc, what_failed_msg)
+      expected = /#{Regexp.escape(expected)}/ if String === expected && String === actual
+      assert(expected !~ actual, fail_desc, what_failed_msg)
     end
     alias_method :refute_match, :assert_not_match
     alias_method :assert_no_match, :assert_not_match
