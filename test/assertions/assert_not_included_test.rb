@@ -5,9 +5,9 @@ class Assert::Assertions::AssertNotIncluded < Assert::Context
   setup do
 
     fail_desc = @fail_desc = "assert not included fail desc"
-    fail_args = @fail_args = [ [ 1 ], 1, fail_desc ]
+    fail_args = @fail_args = [ 1, [ 1 ], fail_desc ]
     @test = Factory.test do
-      assert_not_included([ 1 ], 2)      # pass
+      assert_not_included(2, [ 1 ])      # pass
       assert_not_included(*fail_args)    # fail
     end
     @test.run
@@ -29,7 +29,7 @@ class Assert::Assertions::AssertNotIncluded < Assert::Context
     setup do
       @expected = [
         @fail_args[2],
-        "Expected #{@fail_args[0].inspect} to not include #{@fail_args[1].inspect}.",
+        "Expected #{@fail_args[1].inspect} to not include #{@fail_args[0].inspect}.",
       ].join("\n")
       @fail_message = @test.fail_results.first.message
     end

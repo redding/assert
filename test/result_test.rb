@@ -40,7 +40,7 @@ module Assert::Result
 
     Assert::Result.types.keys.each do |type|
       should "respond to the instance method ##{type}?" do
-        assert_respond_to subject, "#{type}?"
+        assert_respond_to "#{type}?", subject
       end
 
       should "not be #{type}" do

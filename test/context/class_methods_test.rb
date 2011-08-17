@@ -35,7 +35,7 @@ class Assert::Context
     subject{ @setup_blocks }
 
     should "add the block to the suite's collection of setup blocks" do
-      assert_includes subject, @setup_block
+      assert_includes @setup_block, subject
     end
 
   end
@@ -57,7 +57,7 @@ class Assert::Context
     subject{ @teardown_blocks }
 
     should "add the block to the suite's collection of teardown blocks" do
-      assert_includes subject, @teardown_block
+      assert_includes @teardown_block, subject
     end
 
   end
@@ -76,7 +76,7 @@ class Assert::Context
     subject{ @setup_blocks }
 
     should "add the block to the context's collection of setup blocks" do
-      assert_includes subject, @setup_block
+      assert_includes @setup_block, subject
     end
 
   end
@@ -120,7 +120,7 @@ class Assert::Context
     subject{ @teardown_blocks }
 
     should "add the block to the context's collection of teardown blocks" do
-      assert_includes subject, @teardown_block
+      assert_includes @teardown_block, subject
     end
 
   end
@@ -167,7 +167,7 @@ class Assert::Context
     should "return a collection containing any descriptions defined on the class" do
       assert_kind_of Array, subject
       @descs.each do |text|
-        assert_includes subject, text
+        assert_includes text, subject
       end
     end
 
@@ -250,7 +250,7 @@ class Assert::Context
     subject{ @context }
 
     should "define a test method named after the should desc" do
-      assert_respond_to subject, @method_name
+      assert_respond_to @method_name, subject
       assert_equal subject.instance_eval(&@should_block), subject.send(@method_name)
     end
 
@@ -272,7 +272,7 @@ class Assert::Context
     subject{ @context }
 
     should "define a test method named after the should desc that raises a test skipped" do
-      assert_respond_to subject, @method_name
+      assert_respond_to @method_name, subject
       assert_raises(Assert::Result::TestSkipped) do
         subject.send(@method_name)
       end

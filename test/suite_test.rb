@@ -225,7 +225,7 @@ class Assert::Suite
 
     should "include the setup we defined on the suite" do
       @setup_blocks.each do |setup_block|
-        assert_includes subject, setup_block
+        assert_includes setup_block, subject
       end
     end
   end
@@ -264,7 +264,7 @@ class Assert::Suite
 
     should "include the teardown we defined on the suite" do
       @teardown_blocks.each do |teardown_block|
-        assert_includes subject, teardown_block
+        assert_includes teardown_block, subject
       end
     end
   end

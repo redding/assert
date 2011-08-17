@@ -37,8 +37,8 @@ module Assert::Options
     end
 
     should "be provided for the terminal view" do
-      assert_respond_to Assert::View::Terminal, :options
-      assert_respond_to Assert::View::Terminal.new("suite", "io"), :options
+      assert_respond_to :options, Assert::View::Terminal
+      assert_respond_to :options, Assert::View::Terminal.new("suite", "io")
     end
 
   end

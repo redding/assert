@@ -4,10 +4,10 @@ class Assert::Assertions::AssertNotRespondToTest < Assert::Context
   desc "the assert_not_respond_to helper run in a test"
   setup do
     fail_desc = @fail_desc = "assert not respond to fail desc"
-    fail_args = @fail_args = [ 1, :abs, fail_desc ]
+    fail_args = @fail_args = [ :abs, 1, fail_desc ]
     @test = Factory.test do
       assert_not_respond_to(*fail_args)  # fail
-      assert_not_respond_to("1", :abs)   # pass
+      assert_not_respond_to(:abs, "1")   # pass
     end
     @test.run
   end
@@ -28,7 +28,7 @@ class Assert::Assertions::AssertNotRespondToTest < Assert::Context
     setup do
       @expected = [
         @fail_args[2],
-        "#{@fail_args[0].inspect} (#{@fail_args[0].class}) not expected to respond to ##{@fail_args[1]}."
+        "#{@fail_args[1].inspect} (#{@fail_args[1].class}) not expected to respond to ##{@fail_args[0]}."
       ].join("\n")
       @fail_message = @test.fail_results.first.message
     end

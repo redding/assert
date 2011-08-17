@@ -4,9 +4,9 @@ class Assert::Assertions::AssertRespondToTest < Assert::Context
   desc "the assert_respond_to helper run in a test"
   setup do
     fail_desc = @fail_desc = "assert respond to fail desc"
-    fail_args = @fail_args = [ "1", :abs, fail_desc ]
+    fail_args = @fail_args = [ :abs, "1", fail_desc ]
     @test = Factory.test do
-      assert_respond_to(1, :abs)      # pass
+      assert_respond_to(:abs, 1)      # pass
       assert_respond_to(*fail_args)   # fail
     end
     @test.run
@@ -28,7 +28,7 @@ class Assert::Assertions::AssertRespondToTest < Assert::Context
     setup do
       @expected = [
         @fail_args[2],
-        "Expected #{@fail_args[0].inspect} (#{@fail_args[0].class}) to respond to ##{@fail_args[1]}."
+        "Expected #{@fail_args[1].inspect} (#{@fail_args[1].class}) to respond to ##{@fail_args[0]}."
       ].join("\n")
       @fail_message = @test.fail_results.first.message
     end

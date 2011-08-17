@@ -67,7 +67,7 @@ module Assert
 
 
 
-    def assert_respond_to(object, method, fail_desc=nil)
+    def assert_respond_to(method, object, fail_desc=nil)
       what_failed_msg = [
         "Expected #{object.inspect} (#{object.class}) to ",
         "respond to ##{method}."
@@ -75,7 +75,7 @@ module Assert
       assert(object.respond_to?(method), fail_desc, what_failed_msg)
     end
 
-    def assert_not_respond_to(object, method, fail_desc=nil)
+    def assert_not_respond_to(method, object, fail_desc=nil)
       what_failed_msg = [
         "#{object.inspect} (#{object.class}) not expected to ",
         "respond to ##{method}."
@@ -121,17 +121,17 @@ module Assert
 
 
     def assert_match(expected, actual, fail_desc=nil)
-      what_failed_msg = "Expected #{expected.inspect} to match #{actual.inspect}."
+      what_failed_msg = "Expected #{actual.inspect} to match #{expected.inspect}."
       expected = /#{Regexp.escape(expected)}/ if String === expected && String === actual
-      assert(expected =~ actual, fail_desc, what_failed_msg)
+      assert(actual =~ expected, fail_desc, what_failed_msg)
     end
 
     def assert_not_match(expected, actual, fail_desc=nil)
       what_failed_msg = [
-        "#{expected.inspect} not expected to ", "match #{actual.inspect}."
+        "#{actual.inspect} not expected to ", "match #{expected.inspect}."
       ].join
       expected = /#{Regexp.escape(expected)}/ if String === expected && String === actual
-      assert(expected !~ actual, fail_desc, what_failed_msg)
+      assert(actual !~ expected, fail_desc, what_failed_msg)
     end
     alias_method :refute_match, :assert_not_match
     alias_method :assert_no_match, :assert_not_match
@@ -151,13 +151,13 @@ module Assert
 
 
 
-    def assert_includes(collection, object, fail_desc=nil)
+    def assert_includes(object, collection, fail_desc=nil)
       what_failed_msg = "Expected #{collection.inspect} to include #{object.inspect}."
       assert(collection.include?(object), fail_desc, what_failed_msg)
     end
     alias_method :assert_included, :assert_includes
 
-    def assert_not_includes(collection, object, fail_desc=nil)
+    def assert_not_includes(object, collection, fail_desc=nil)
       what_failed_msg = "Expected #{collection.inspect} to not include #{object.inspect}."
       assert(!collection.include?(object), fail_desc, what_failed_msg)
     end

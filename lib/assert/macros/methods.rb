@@ -13,7 +13,7 @@ module Assert::Macros
         Assert::Macro.new do
           methods.each do |method|
             should "respond to instance method ##{method}" do
-              assert_respond_to subject, method, "#{subject.class.name} does not have instance method ##{method}"
+              assert_respond_to method, subject, "#{subject.class.name} does not have instance method ##{method}"
             end
           end
         end
@@ -24,7 +24,7 @@ module Assert::Macros
         Assert::Macro.new do
           methods.each do |method|
             should "respond to class method ##{method}" do
-              assert_respond_to subject.class, method, "#{subject.class.name} does not have class method ##{method}"
+              assert_respond_to method, subject.class, "#{subject.class.name} does not have class method ##{method}"
             end
           end
         end

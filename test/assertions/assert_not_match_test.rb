@@ -4,10 +4,10 @@ class Assert::Assertions::AssertNotMatchTest < Assert::Context
   desc "the assert_not_match helper run in a test"
   setup do
     fail_desc = @fail_desc = "assert not match fail desc"
-    fail_args = @fail_args = [ "a string", /a/, fail_desc ]
+    fail_args = @fail_args = [ /a/, "a string", fail_desc ]
     @test = Factory.test do
       assert_not_match(*fail_args)     # fail
-      assert_not_match("a string", "not")   # pass
+      assert_not_match("not", "a string")   # pass
     end
     @test.run
   end
@@ -28,7 +28,7 @@ class Assert::Assertions::AssertNotMatchTest < Assert::Context
     setup do
       @expected = [
         @fail_args[2],
-        "#{@fail_args[0].inspect} not expected to match #{@fail_args[1].inspect}.",
+        "#{@fail_args[1].inspect} not expected to match #{@fail_args[0].inspect}.",
       ].join("\n")
       @fail_message = @test.fail_results.first.message
     end
