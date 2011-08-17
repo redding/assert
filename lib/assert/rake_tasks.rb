@@ -6,6 +6,26 @@ module Assert::RakeTasks
 
   FILE_SUFFIX = "_test.rb"
 
+  # Setup the rake tasks for testing
+  # * add 'include Assert::RakeTasks' to your Rakefile
+  def self.included(receiver)
+    # get rid of rake warnings
+    if defined?(::Rake::DSL)
+      receiver.send :include, ::Rake::DSL
+    end
+
+    # auto-build rake tasks for the ./test files (if defined in ./test)
+    self.for(:test) if File.exists?(File.expand_path('./test', Dir.pwd))
+  end
+
+  def self.for(test_namespace = :test)
+    self.irb_task(test_namespace.to_s)
+    self.to_tasks(test_namespace.to_s)
+  end
+
+
+
+
   class TestTask < Rake::TaskLib
     attr_accessor :name, :description, :test_files
 
@@ -46,11 +66,6 @@ module Assert::RakeTasks
   end
 
   class << self
-    def for(test_namespace = :test)
-      self.irb_task(test_namespace.to_s)
-      self.to_tasks(test_namespace.to_s)
-    end
-
     def irb_task(path)
       irb_file = File.join(path, "irb.rb")
       if File.exist?(irb_file)
