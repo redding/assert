@@ -22,7 +22,7 @@ module Assert::View
     end
 
     def render(*args, &block)
-      self.io_print(:load_stmt)
+      self.io_puts(:load_stmt)
 
       if count(:tests) > 0
         block.call if block
@@ -41,7 +41,7 @@ module Assert::View
 
     def load_stmt
       tplur = (tcount = count(:tests)) == 1 ? "test": "tests"
-      "\nLoaded suite (#{tcount} #{tplur})  "
+      "\nLoaded suite (#{tcount} #{tplur})"
     end
 
     def detailed_results
