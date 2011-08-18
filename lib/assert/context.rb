@@ -86,11 +86,17 @@ module Assert
         else
           raise ArgumentError, "please provide a test block" unless block_given?
           method_name = "test: should #{desc_or_macro}"
-          if method_defined?(method_name)
+
+          # instead of using the typical 'method_defined?' pattern (which) checks
+          # all parent contexts, we really just need to make sure the method_name
+          # is not part of self's local_pulic_test_methods for this check
+          if Assert.suite.send(:local_public_test_methods, self).include?(method_name)
             from = caller.first
             puts "WARNING: should #{desc_or_macro.inspect} is redefining #{method_name}!"
             puts "  from: #{from}"
+            puts "  self: #{self.inspect}"
           end
+
           define_method(method_name, &block)
         end
       end
