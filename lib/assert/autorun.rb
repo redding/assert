@@ -1,3 +1,4 @@
+require 'assert/setup'
 require 'assert/runner'
 
 module Assert

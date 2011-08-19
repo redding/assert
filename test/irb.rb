@@ -1,7 +1,6 @@
-require 'assert'
+# require in any test helper and load user settings
+require 'assert/setup'
+Assert::Helpers.load(caller)
 
 # this file is required in when the 'irb' rake test is run.
-# b/c 'assert' is required above, the test helper will be
-# required in.
-
 # put any IRB setup code here

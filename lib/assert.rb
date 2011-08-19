@@ -1,8 +1,5 @@
-require 'assert/setup/suite'
-require 'assert/setup/view'
-
-require 'assert/setup/helpers'
-require 'assert/setup/autorun'
+require 'assert/setup'
+require 'assert/autorun'
 
 Assert::Helpers.load(caller)
 Assert.autorun
