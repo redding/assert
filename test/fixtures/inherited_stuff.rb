@@ -17,9 +17,17 @@ class SuperStuff
     "super not test meth"
   end
 
+  def test_from_super
+    "test from the super"
+  end
+
+  def test_repeated
+    "repeated test from super"
+  end
+
 end
 
-class SubStuff
+class SubStuff < SuperStuff
   include MixinStuff
 
   def test_subclass_stuff
@@ -33,4 +41,9 @@ class SubStuff
   def more_other_stuff
     "more other stuff"
   end
+
+  def test_repeated
+    "repeated test from sub"
+  end
+
 end

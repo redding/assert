@@ -97,11 +97,20 @@ module Assert
     end
 
     def local_public_test_methods(klass)
+      # start with all public meths, store off the local ones
       methods = klass.public_instance_methods
+      local_methods = klass.public_instance_methods(false)
+
+      # remove any from the superclass
       while (klass.superclass)
         methods -= (klass = klass.superclass).public_instance_methods
       end
-      methods.delete_if {|method_name| method_name !~ /^test./ }
+
+      # add back in the local ones (to work around super having the same methods)
+      methods += local_methods
+
+      # uniq and remove any that don't start with 'test'
+      methods.uniq.delete_if {|method_name| method_name !~ /^test./ }
     end
 
     private
