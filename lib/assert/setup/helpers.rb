@@ -15,7 +15,7 @@ module Assert
       PACKAGE_HELPER_FILE = "helper"
       TEST_REGEX = /^#{PACKAGE_TEST_DIR}$|^#{PACKAGE_TEST_DIR}\/|\/#{PACKAGE_TEST_DIR}\/|\/#{PACKAGE_TEST_DIR}$/
 
-      USER_TEST_HELPER = "~/.assert"
+      USER_TEST_HELPER = "~/.assert/options"
 
       def load(caller_info)
         if (crp = caller_root_path(caller_info))
