@@ -3,17 +3,13 @@ require 'rake/tasklib'
 
 module Assert; end
 module Assert::RakeTasks
+  include Rake::DSL if defined? Rake::DSL
 
   FILE_SUFFIX = "_test.rb"
 
   # Setup the rake tasks for testing
   # * add 'include Assert::RakeTasks' to your Rakefile
   def self.included(receiver)
-    # get rid of rake warnings
-    if defined?(::Rake::DSL)
-      receiver.send :include, ::Rake::DSL
-    end
-
     # auto-build rake tasks for the ./test files (if defined in ./test)
     self.for(:test) if File.exists?(File.expand_path('./test', Dir.pwd))
   end
