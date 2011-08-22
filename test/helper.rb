@@ -1,4 +1,4 @@
-# this file is automatically required in when you require 'test_belt'
+# this file is automatically required in when you require 'assert'
 # put test helpers here
 
 require 'stringio'
