@@ -1,41 +1,51 @@
 require 'assert/result'
 require 'assert/result_set'
+require 'assert/options'
+
+require 'stringio'
 
 module Assert
   class Test
+    include Assert::Options
+    options do
+      default_capture_out true
+    end
 
     # a Test is some code/method to run in the scope of a Context.  After a
     # a test runs, it should have some assertions which are its results.
 
     attr_reader :name, :code, :context_class
-    attr_accessor :results
+    attr_accessor :results, :output
 
     def initialize(name, context_class, code = nil, &block)
       @context_class = context_class
       @name = name_from_context(name)
       @code = (code || block)
       @results = ResultSet.new
+      @output = ""
     end
 
     def run(view=nil)
       @results.view = view
       run_scope = @context_class.new(self)
-      begin
-        @context_class.setup(run_scope)
-        if @code.kind_of?(::Proc)
-          run_scope.instance_eval(&@code)
-        elsif run_scope.respond_to?(@code.to_s)
-          run_scope.send(@code.to_s)
-        end
-      rescue Result::TestSkipped => err
-        @results << Result::Skip.new(self.name, err)
-      rescue Exception => err
-        @results << Result::Error.new(self.name, err)
-      ensure
+      capture_out(StringIO.new(@output, "w+")) do
         begin
-          @context_class.teardown(run_scope)
-        rescue Exception => teardown_err
-          @results << Result::Error.new(self.name, teardown_err)
+          @context_class.setup(run_scope)
+          if @code.kind_of?(::Proc)
+            run_scope.instance_eval(&@code)
+          elsif run_scope.respond_to?(@code.to_s)
+            run_scope.send(@code.to_s)
+          end
+        rescue Result::TestSkipped => err
+          @results << Result::Skip.new(self.name, err)
+        rescue Exception => err
+          @results << Result::Error.new(self.name, err)
+        ensure
+          begin
+            @context_class.teardown(run_scope)
+          rescue Exception => teardown_err
+            @results << Result::Error.new(self.name, teardown_err)
+          end
         end
       end
       @results.view = nil
@@ -68,6 +78,17 @@ module Assert
     end
 
     protected
+
+    def capture_out(io, &block)
+      if self.class.options.capture_out && io
+        orig_stdout = $stdout.clone
+        $stdout = io
+        block.call
+        $stdout = orig_stdout
+      else
+        block.call
+      end
+    end
 
     def name_from_context(name)
       [ @context_class.description,

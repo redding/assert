@@ -20,7 +20,7 @@ class Assert::Test
     subject{ @test }
 
     should have_readers :name, :code, :context_class
-    should have_accessor :results
+    should have_accessor :results, :output
     should have_instance_methods :run, :result_count
     should have_instance_methods *Assert::Result.types.keys.collect{|k| "#{k}_results".to_sym }
 
@@ -181,6 +181,64 @@ class Assert::Test
       assert_equal(-1, result)
     end
 
+  end
+
+  class CaptureOutTest < BasicTest
+    desc "when capturing std out"
+    setup {
+      @test = Factory.test("stdout") {
+        puts "std out from the test"
+        assert true
+      }
+      @orig_capture = @test.class.options.capture_out
+      @test.class.options.capture_out(true)
+      @test.run
+    }
+    teardown {
+      @test.class.options.capture_out(@orig_capture)
+    }
+
+    should "capture any io from the test" do
+      assert_equal "std out from the test\n", @test.output
+    end
+
+  end
+
+
+
+  class FullOutputCaptureTest < BasicTest
+    desc "when collecting std out across setup, teardown, and meth calls"
+    setup do
+      puts "in setup"
+      @test = Factory.test("fullstdouttest") {
+        puts "std out from the test"
+        assert a_method_an_assert_calls.inspect
+      }
+      @test.context_class.setup { puts "std out from the setup" }
+      @test.context_class.teardown { puts "std out from the teardown" }
+      @test.context_class.send(:define_method, "a_method_an_assert_calls") do
+        puts "std out from a method an assert called"
+        true
+      end
+
+      @orig_capture = @test.class.options.capture_out
+      @test.class.options.capture_out(true)
+      @test.run
+    end
+    teardown {
+      puts "in teardown"
+      @test.class.options.capture_out(@orig_capture)
+    }
+
+    should "collect it on itself in the output accessor" do
+      puts "in test"
+      assert_equal([
+        "std out from the setup",
+        "std out from the test",
+        "std out from a method an assert called",
+        "std out from the teardown\n"
+      ].join("\n"), @test.output)
+    end
   end
 
 end
