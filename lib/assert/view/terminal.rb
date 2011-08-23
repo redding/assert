@@ -100,7 +100,12 @@ module Assert::View
     end
 
     def output_io_msg(output)
-      io_msg(output)
+      if output && !output.empty?
+        [ "--- stdout ---",
+          io_msg(output),
+          "--------------"
+        ].collect{|i| i.strip}.join("\n")
+      end
     end
 
     def io_msg(msg, opts={})

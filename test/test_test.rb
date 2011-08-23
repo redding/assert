@@ -209,7 +209,6 @@ class Assert::Test
   class FullOutputCaptureTest < BasicTest
     desc "when collecting std out across setup, teardown, and meth calls"
     setup do
-      puts "in setup"
       @test = Factory.test("fullstdouttest") {
         puts "std out from the test"
         assert a_method_an_assert_calls.inspect
@@ -226,12 +225,10 @@ class Assert::Test
       @test.run
     end
     teardown {
-      puts "in teardown"
       @test.class.options.capture_out(@orig_capture)
     }
 
     should "collect it on itself in the output accessor" do
-      puts "in test"
       assert_equal([
         "std out from the setup",
         "std out from the test",
