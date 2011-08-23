@@ -15,7 +15,9 @@ class Assert::Context
 
     should have_instance_methods :setup_once, :before_once, :setup, :before, :setups
     should have_instance_methods :teardown_once, :after_once, :teardown, :after, :teardowns
-    should have_instance_methods :description, :desc, :subject, :should, :should_eventually, :should_skip
+    should have_instance_methods :description, :desc, :subject
+    should have_instance_methods :test, :test_eventually, :test_skip
+    should have_instance_methods :should, :should_eventually, :should_skip
   end
 
 
@@ -232,6 +234,50 @@ class Assert::Context
     should "default to it's parents subject block" do
       assert_equal subject, @context_class.subject
     end
+  end
+
+
+
+  class TestMethTest < ClassMethodsTest
+    desc "test method"
+    setup do
+      should_desc = "be true"
+      should_block = @should_block = ::Proc.new{ assert(true) }
+      @context_class = Factory.context_class do
+        test(should_desc, &should_block)
+      end
+      @method_name = "test: #{should_desc}"
+      @context = @context_class.new(Factory.test("something", @context_class))
+    end
+    subject{ @context }
+
+    should "define a test method named after the should desc" do
+      assert_respond_to @method_name, subject
+      assert_equal subject.instance_eval(&@should_block), subject.send(@method_name)
+    end
+
+  end
+
+  class TestEventuallyTest < ClassMethodsTest
+    desc "test_eventually method"
+    setup do
+      should_desc = @should_desc = "be true"
+      should_block = @should_block = ::Proc.new{ assert(true) }
+      @context_class = Factory.context_class do
+        test_eventually(should_desc, &should_block)
+      end
+      @method_name = "test: #{@should_desc}"
+      @context = @context_class.new(Factory.test("something", @context_class))
+    end
+    subject{ @context }
+
+    should "define a test method named after the should desc that raises a test skipped" do
+      assert_respond_to @method_name, subject
+      assert_raises(Assert::Result::TestSkipped) do
+        subject.send(@method_name)
+      end
+    end
+
   end
 
 

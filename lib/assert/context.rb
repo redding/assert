@@ -80,12 +80,12 @@ module Assert
         end
       end
 
-      def should(desc_or_macro, &block)
+      def test(desc_or_macro, &block)
         if desc_or_macro.kind_of?(Macro)
           instance_eval(&desc_or_macro)
         else
           raise ArgumentError, "please provide a test block" unless block_given?
-          method_name = "test: should #{desc_or_macro}"
+          method_name = "test: #{desc_or_macro}"
 
           # instead of using the typical 'method_defined?' pattern (which) checks
           # all parent contexts, we really just need to make sure the method_name
@@ -100,6 +100,18 @@ module Assert
           define_method(method_name, &block)
         end
       end
+
+      def should(desc_or_macro, &block)
+        if !desc_or_macro.kind_of?(Macro)
+          desc_or_macro = "should #{desc_or_macro}"
+        end
+        test(desc_or_macro, &block)
+      end
+
+      def test_eventually(desc, &block)
+        test(desc) { skip }
+      end
+      alias_method :test_skip, :test_eventually
 
       def should_eventually(desc, &block)
         should(desc) { skip }
