@@ -45,9 +45,15 @@ module Assert::View
     end
 
     def detailed_results
-      details = self.suite.ordered_results.reverse.collect do |result|
-        result_io_msg(result.to_s, result.to_sym) if show_result_details?(result)
-      end.compact
+      details = self.suite.ordered_tests.reverse.collect do |test|
+        test.results.collect do |result|
+          if show_result_details?(result)
+            [ result_io_msg(result.to_s, result.to_sym),
+              output_io_msg(test.output.to_s)
+            ].join("\n")
+          end
+        end
+      end.flatten.compact
       "\n\n" + details.join("\n\n") if !details.empty?
     end
 
@@ -91,6 +97,10 @@ module Assert::View
         self.options.send("#{result_sym}_styles")
       end
       io_msg(msg, :term_styles => term_styles)
+    end
+
+    def output_io_msg(output)
+      io_msg(output)
     end
 
     def io_msg(msg, opts={})
