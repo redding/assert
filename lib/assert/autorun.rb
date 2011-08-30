@@ -1,5 +1,4 @@
 require 'assert/setup'
-require 'assert/runner'
 
 module Assert
 
@@ -23,7 +22,7 @@ module Assert
 
         exit_code = nil
         at_exit { exit(false) if exit_code && exit_code != 0 }
-        Runner.new(self.suite, self.view).run
+        self.runner.new(self.suite, self.view).run
       end unless @@at_exit_installed
       @@at_exit_installed = true
     end

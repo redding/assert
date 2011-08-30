@@ -80,7 +80,7 @@ These are all tools that use and extend Assert.  If you write your own, share it
 Assert::View (https://github.com/teaminsight/assert-view) is a collection of views that can be used with Assert.  Specify what view you want to use in your ~/.assert/options.rb settings file, ie:
 
     # default is Assert::View::Terminal.new(Assert.suite, $stdout)
-    Assert.options.view = Assert::View::DifferentView.new(Assert.suite, $stdout)
+    Assert.options.view Assert::View::DifferentView.new(Assert.suite, $stdout)
 
 
 
