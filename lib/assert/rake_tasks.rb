@@ -3,7 +3,6 @@ require 'rake/tasklib'
 
 module Assert; end
 module Assert::RakeTasks
-  include Rake::DSL if defined? Rake::DSL
 
   FILE_SUFFIX = "_test.rb"
 
@@ -23,6 +22,7 @@ module Assert::RakeTasks
 
 
   class TestTask < Rake::TaskLib
+
     attr_accessor :name, :description, :test_files
 
     # Create a testing task.
@@ -62,6 +62,8 @@ module Assert::RakeTasks
   end
 
   class << self
+    include Rake::DSL if defined? Rake::DSL
+
     def irb_task(path)
       irb_file = File.join(path, "irb.rb")
       if File.exist?(irb_file)
