@@ -8,7 +8,7 @@ module Assert
   class Test
     include Assert::Options
     options do
-      default_capture_out true
+      default_capture_output false
     end
 
     # a Test is some code/method to run in the scope of a Context.  After a
@@ -28,7 +28,7 @@ module Assert
     def run(view=nil)
       @results.view = view
       run_scope = @context_class.new(self)
-      capture_out(StringIO.new(@output, "w+")) do
+      capture_output(StringIO.new(@output, "w+")) do
         begin
           @context_class.setup(run_scope)
           if @code.kind_of?(::Proc)
@@ -79,8 +79,8 @@ module Assert
 
     protected
 
-    def capture_out(io, &block)
-      if self.class.options.capture_out && io
+    def capture_output(io, &block)
+      if self.class.options.capture_output && io
         orig_stdout = $stdout.clone
         $stdout = io
         block.call

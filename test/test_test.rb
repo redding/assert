@@ -190,12 +190,12 @@ class Assert::Test
         puts "std out from the test"
         assert true
       }
-      @orig_capture = @test.class.options.capture_out
-      @test.class.options.capture_out(true)
+      @orig_capture = @test.class.options.capture_output
+      @test.class.options.capture_output(true)
       @test.run
     }
     teardown {
-      @test.class.options.capture_out(@orig_capture)
+      @test.class.options.capture_output(@orig_capture)
     }
 
     should "capture any io from the test" do
@@ -220,12 +220,12 @@ class Assert::Test
         true
       end
 
-      @orig_capture = @test.class.options.capture_out
-      @test.class.options.capture_out(true)
+      @orig_capture = @test.class.options.capture_output
+      @test.class.options.capture_output(true)
       @test.run
     end
     teardown {
-      @test.class.options.capture_out(@orig_capture)
+      @test.class.options.capture_output(@orig_capture)
     }
 
     should "collect it on itself in the output accessor" do
