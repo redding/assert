@@ -3,7 +3,9 @@ require 'assert/runner'
 
 module Assert
   # Setup the default global runner for running tests
-  options.default_runner Runner
+  options do
+    default_runner Runner
+  end
 
   class << self
     def runner; self.options.runner; end
