@@ -1,5 +1,4 @@
 require 'assert'
-
 require 'assert/options'
 
 module Assert::Options
@@ -43,7 +42,21 @@ module Assert::Options
 
   end
 
-  class TerminalTest < BaseTest
+  class AssertOptionsTest < Assert::Context
+    desc "for the lib"
+    subject { Assert.options }
+
+    should "be an Options::Base object" do
+      assert_kind_of Assert::Options::Base, Assert::View::Terminal.options
+    end
+
+    should "default the view option" do
+      assert_kind_of Assert::View::Terminal, subject.default_view
+    end
+
+  end
+
+  class TerminalTest < Assert::Context
     desc "for the terminal view"
     subject do
       Assert::View::Terminal.options
