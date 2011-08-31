@@ -84,8 +84,10 @@ module Assert
         if desc_or_macro.kind_of?(Macro)
           instance_eval(&desc_or_macro)
         else
-          raise ArgumentError, "please provide a test block" unless block_given?
           method_name = "test: #{desc_or_macro}"
+
+          # if no block given, create a test that just skips
+          method_block = block_given? ? block : (Proc.new { skip })
 
           # instead of using the typical 'method_defined?' pattern (which) checks
           # all parent contexts, we really just need to make sure the method_name
@@ -97,9 +99,14 @@ module Assert
             puts "  self: #{self.inspect}"
           end
 
-          define_method(method_name, &block)
+          define_method(method_name, &method_block)
         end
       end
+
+      def test_eventually(desc, &block)
+        test(desc)
+      end
+      alias_method :test_skip, :test_eventually
 
       def should(desc_or_macro, &block)
         if !desc_or_macro.kind_of?(Macro)
@@ -108,13 +115,8 @@ module Assert
         test(desc_or_macro, &block)
       end
 
-      def test_eventually(desc, &block)
-        test(desc) { skip }
-      end
-      alias_method :test_skip, :test_eventually
-
       def should_eventually(desc, &block)
-        should(desc) { skip }
+        should(desc)
       end
       alias_method :should_skip, :should_eventually
 

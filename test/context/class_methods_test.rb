@@ -241,12 +241,12 @@ class Assert::Context
   class TestMethTest < ClassMethodsTest
     desc "test method"
     setup do
-      should_desc = "be true"
-      should_block = @should_block = ::Proc.new{ assert(true) }
-      @context_class = Factory.context_class do
-        test(should_desc, &should_block)
-      end
-      @method_name = "test: #{should_desc}"
+      @should_desc = "be true"
+      @should_block = ::Proc.new{ assert(true) }
+      @method_name = "test: #{@should_desc}"
+
+      d, b = @should_desc, @should_block
+      @context_class = Factory.context_class { test(d, &b) }
       @context = @context_class.new(Factory.test("something", @context_class))
     end
     subject{ @context }
@@ -258,15 +258,30 @@ class Assert::Context
 
   end
 
-  class TestEventuallyTest < ClassMethodsTest
+  class NoBlockTestMethTest < TestMethTest
+    desc "called with no block"
+    setup do
+      d = @should_desc
+      @context_class = Factory.context_class { test(d) }
+      @context = @context_class.new(Factory.test("something", @context_class))
+    end
+    subject{ @context }
+
+    should "define a test method named after the should desc that raises a test skipped" do
+      assert_raises(Assert::Result::TestSkipped) do
+        subject.send(@method_name)
+      end
+    end
+
+  end
+
+  class TestEventuallyTest < TestMethTest
     desc "test_eventually method"
     setup do
-      should_desc = @should_desc = "be true"
-      should_block = @should_block = ::Proc.new{ assert(true) }
+      d, b = @should_desc, @should_block
       @context_class = Factory.context_class do
-        test_eventually(should_desc, &should_block)
+        test_eventually(d, &b)
       end
-      @method_name = "test: #{@should_desc}"
       @context = @context_class.new(Factory.test("something", @context_class))
     end
     subject{ @context }
@@ -283,14 +298,14 @@ class Assert::Context
 
 
   class ShouldTest < ClassMethodsTest
-    desc "should method"
+    desc "'should' method"
     setup do
-      should_desc = "be true"
-      should_block = @should_block = ::Proc.new{ assert(true) }
-      @context_class = Factory.context_class do
-        should(should_desc, &should_block)
-      end
-      @method_name = "test: should #{should_desc}"
+      @should_desc = "be true"
+      @should_block = ::Proc.new{ assert(true) }
+      @method_name = "test: should #{@should_desc}"
+
+      d, b = @should_desc, @should_block
+      @context_class = Factory.context_class { should(d, &b) }
       @context = @context_class.new(Factory.test("something", @context_class))
     end
     subject{ @context }
@@ -302,17 +317,28 @@ class Assert::Context
 
   end
 
+  class NoBlockShouldTest < ShouldTest
+    desc "called with no block"
+    setup do
+      d = @should_desc
+      @context_class = Factory.context_class { should(d) }
+      @context = @context_class.new(Factory.test("something", @context_class))
+    end
+    subject{ @context }
 
+    should "define a test method named after the should desc that raises a test skipped" do
+      assert_raises(Assert::Result::TestSkipped) do
+        subject.send(@method_name)
+      end
+    end
 
-  class ShouldEventuallyTest < ClassMethodsTest
+  end
+
+  class ShouldEventuallyTest < ShouldTest
     desc "should_eventually method"
     setup do
-      should_desc = @should_desc = "be true"
-      should_block = @should_block = ::Proc.new{ assert(true) }
-      @context_class = Factory.context_class do
-        should_eventually(should_desc, &should_block)
-      end
-      @method_name = "test: should #{@should_desc}"
+      d, b = @should_desc, @should_block
+      @context_class = Factory.context_class { should_eventually(d, &b) }
       @context = @context_class.new(Factory.test("something", @context_class))
     end
     subject{ @context }
