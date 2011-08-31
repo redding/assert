@@ -33,7 +33,6 @@ module Assert
       seed = srand % 0xFFFF
       srand seed
       tests.sort.sort_by { rand max }
-      tests
     end
 
     private
