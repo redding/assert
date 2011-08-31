@@ -12,6 +12,13 @@ module Assert
       (@end_time || 0) - (@start_time || 0)
     end
 
+    def runner_seed
+      @run_seed ||= (ENV["runner_seed"] || begin
+        srand
+        srand % 0xFFFF
+      end).to_i
+    end
+
     def <<(context_klass)
       # gsub off any trailing 'Test'
       self[context_klass] ||= []
