@@ -22,6 +22,13 @@ module Assert
       @suite.count(type)
     end
 
+    def run_seed
+      @run_seed ||= begin
+        srand
+        srand % 0xFFFF
+      end
+    end
+
     protected
 
     def tests_to_run
@@ -29,9 +36,7 @@ module Assert
 
       # order tests randomly
       max = tests.size
-      srand
-      seed = srand % 0xFFFF
-      srand seed
+      srand self.run_seed
       tests.sort.sort_by { rand max }
     end
 
