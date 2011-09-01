@@ -82,9 +82,9 @@ class Assert::Context
     end
 
   end
-  
-  
-  
+
+
+
   class SetupWithMethodNameTest < ClassMethodsTest
     desc "setup with method name"
     setup do
@@ -95,7 +95,7 @@ class Assert::Context
       @setups = @context_class.send(:setups)
     end
     subject{ @setups }
-    
+
     should "add the method name to the context setups" do
       assert_includes @method_name, subject
     end
@@ -107,9 +107,9 @@ class Assert::Context
     desc "a context class with multiple setups"
     setup do
       method_name = :setup_something_amazing
-      klass = Class.new do 
+      klass = Class.new do
         attr_accessor :status
-      
+
         define_method(method_name) do
           self.status += " with something amazing"
         end
@@ -156,20 +156,47 @@ class Assert::Context
 
 
 
+  class TeardownWithMethodNameTest < ClassMethodsTest
+    desc "teardown with method name"
+    setup do
+      method_name = @method_name = "teardown_something_amazing"
+      @context_class = Factory.context_class do
+        teardown(method_name)
+      end
+      @teardowns = @context_class.send(:teardowns)
+    end
+    subject{ @teardowns }
+
+    should "add the method name to the context teardowns" do
+      assert_includes @method_name, subject
+    end
+  end
+
+
+
   class MultipleTeardownsTest < ClassMethodsTest
     desc "a context class with multiple teardowns"
     setup do
-      @object = (Class.new{ attr_accessor :status }).new
+      method_name = :teardown_something_amazing
+      klass = Class.new do
+        attr_accessor :status
+
+        define_method(method_name) do
+          self.status += " with something amazing"
+        end
+      end
+      @object = klass.new
       teardown_block = @teardown_block = ::Proc.new{ self.status += " has been run" }
       @parent_class = Factory.context_class do
         teardown(&teardown_block)
+        teardown(method_name)
       end
       teardown_block = @teardown_block = ::Proc.new{ self.status = "the teardown" }
       @context_class = Factory.context_class(@parent_class) do
         teardown(&teardown_block)
       end
       @context_class.teardown(@object)
-      @expected = "the teardown has been run"
+      @expected = "the teardown has been run with something amazing"
     end
     subject{ @object }
 
