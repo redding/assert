@@ -82,13 +82,39 @@ class Assert::Context
     end
 
   end
+  
+  
+  
+  class SetupWithMethodNameTest < ClassMethodsTest
+    desc "setup with method name"
+    setup do
+      method_name = @method_name = :setup_something_amazing
+      @context_class = Factory.context_class do
+        setup(method_name)
+      end
+      @setups = @context_class.send(:setups)
+    end
+    subject{ @setups }
+    
+    should "add the method name to the context setups" do
+      assert_includes @method_name, subject
+    end
+  end
 
 
 
   class MultipleSetupsTest < ClassMethodsTest
     desc "a context class with multiple setups"
     setup do
-      @object = (Class.new{ attr_accessor :status }).new
+      method_name = :setup_something_amazing
+      klass = Class.new do 
+        attr_accessor :status
+      
+        define_method(method_name) do
+          self.status += " with something amazing"
+        end
+      end
+      @object = klass.new
       setup_block = @setup_block = ::Proc.new{ self.status = "the setup" }
       @parent_class = Factory.context_class do
         setup(&setup_block)
@@ -96,9 +122,10 @@ class Assert::Context
       setup_block = @setup_block = ::Proc.new{ self.status += " has been run" }
       @context_class = Factory.context_class(@parent_class) do
         setup(&setup_block)
+        setup(method_name)
       end
       @context_class.setup(@object)
-      @expected = "the setup has been run"
+      @expected = "the setup has been run with something amazing"
     end
     subject{ @object }
 
