@@ -34,10 +34,11 @@ module Assert
 
       # Add a setup block to run before each test or run the list of teardown blocks in given scope
       def setup(scope_or_method_name = nil, &block)
-        scope, method_name = self.determine_scope_and_method_name(scope_or_method_name)
-        if block_given? || method_name
-          self.setups << (block || method_name)
-        elsif scope
+        is_method = scope_or_method_name.kind_of?(String) || scope_or_method_name.kind_of?(Symbol)
+        if block_given? || is_method
+          self.setups << (block || scope_or_method_name)
+        elsif !is_method
+          scope = scope_or_method_name
           # setup parent before child
           self.superclass.setup(scope) if self.superclass.respond_to?(:setup)
           self.setups.each do |setup|
@@ -49,10 +50,11 @@ module Assert
 
       # Add a teardown block to run after each test or run the list of teardown blocks in given scope
       def teardown(scope_or_method_name = nil, &block)
-        scope, method_name = self.determine_scope_and_method_name(scope_or_method_name)
-        if block_given? || method_name
-          self.teardowns << (block || method_name)
-        elsif scope
+        is_method = scope_or_method_name.kind_of?(String) || scope_or_method_name.kind_of?(Symbol)
+        if block_given? || is_method
+          self.teardowns << (block || scope_or_method_name)
+        elsif !is_method
+          scope = scope_or_method_name
           # teardown child before parent
           self.teardowns.each do |teardown|
             teardown.kind_of?(::Proc) ? scope.instance_eval(&teardown) : scope.send(teardown)
@@ -138,15 +140,6 @@ module Assert
 
       def teardowns
         @teardowns ||= []
-      end
-
-      def determine_scope_and_method_name(arg)
-        case(arg)
-        when String, Symbol
-          [ nil, arg ]
-        else
-          [ arg, nil ]
-        end
       end
 
     end
