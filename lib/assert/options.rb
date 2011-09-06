@@ -41,3 +41,8 @@ module Assert
 
   end
 end
+
+module Assert
+  include Assert::Options
+  options {}
+end
