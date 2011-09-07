@@ -1,4 +1,3 @@
-require 'assert/options'
 require 'assert/setup'
 require 'assert/autorun'
 

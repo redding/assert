@@ -1,4 +1,3 @@
-require 'assert/setup/suite'
-require 'assert/setup/view'
-require 'assert/setup/runner'
-require 'assert/setup/helpers'
+require 'assert/setup/all'
+
+Assert::Helpers.load(caller)
