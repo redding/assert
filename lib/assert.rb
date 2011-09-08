@@ -1,11 +1,4 @@
-require 'assert/options'
-
-module Assert
-  include Assert::Options
-  options {}
-end
-
-require 'assert/setup'
+require 'assert/setup/all'
 require 'assert/autorun'
 
 Assert::Helpers.load(caller)
