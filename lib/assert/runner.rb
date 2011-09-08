@@ -9,11 +9,18 @@ module Assert
       @view = view
     end
 
-    def run(*args)
+    def run(render=true)
       @suite.setup
-      @view.render do
+
+      if render
+        # render the view, passing it a callback block to run the test suite
+        @view.render do
+          benchmark { run_suite }
+        end
+      else
         benchmark { run_suite }
       end
+
       @suite.teardown
       count(:failed) + count(:errored)
     end
