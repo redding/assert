@@ -10,12 +10,18 @@ module Assert
 
     class << self
 
-      # assume the test dir path is ./test and look for helpers in ./test/helper.rb
-      PACKAGE_TEST_DIR = "test"
-      PACKAGE_HELPER_FILE = "helper"
-      TEST_REGEX = /^#{PACKAGE_TEST_DIR}$|^#{PACKAGE_TEST_DIR}\/|\/#{PACKAGE_TEST_DIR}\/|\/#{PACKAGE_TEST_DIR}$/
-
       USER_TEST_HELPER = "~/.assert/options"
+      
+      # assume the test dir path is ./test and look for helpers in ./test/helper.rb
+      def package_test_dir
+        "test"
+      end
+      def package_helper_name
+        "helper"
+      end
+      def package_test_helper_regex
+        /^#{package_test_dir}$|^#{package_test_dir}\/|\/#{package_test_dir}\/|\/#{package_test_dir}$/
+      end
 
       def load(caller_info)
         if (crp = caller_root_path(caller_info))
@@ -44,7 +50,7 @@ module Assert
       end
 
       def package_helper_file(root_path)
-        File.join(root_path, PACKAGE_TEST_DIR, PACKAGE_HELPER_FILE+'.rb')
+        File.join(root_path, package_test_dir, package_helper_name + '.rb')
       end
 
       # this method inspects the caller info and finds the caller's root path
@@ -52,7 +58,7 @@ module Assert
       # parent dir of caller named TEST_DIR
       def caller_root_path(caller_info)
         caller_dirname = File.expand_path(File.dirname(caller_info[0]))
-        test_dir_pos = caller_dirname.index(TEST_REGEX)
+        test_dir_pos = caller_dirname.index(package_test_helper_regex)
         if test_dir_pos && (test_dir_pos > 0)
           caller_dirname[0..(test_dir_pos-1)]
         end

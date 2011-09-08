@@ -33,24 +33,32 @@ module Assert
       alias_method :after_once, :teardown_once
 
       # Add a setup block to run before each test or run the list of teardown blocks in given scope
-      def setup(scope=nil, &block)
-        if block_given?
-          self.setups << block
-        elsif scope
+      def setup(scope_or_method_name = nil, &block)
+        is_method = scope_or_method_name.kind_of?(String) || scope_or_method_name.kind_of?(Symbol)
+        if block_given? || is_method
+          self.setups << (block || scope_or_method_name)
+        elsif !is_method
+          scope = scope_or_method_name
           # setup parent before child
           self.superclass.setup(scope) if self.superclass.respond_to?(:setup)
-          self.setups.each{|setup| scope.instance_eval(&setup)}
+          self.setups.each do |setup|
+            setup.kind_of?(::Proc) ? scope.instance_eval(&setup) : scope.send(setup)
+          end
         end
       end
       alias_method :before, :setup
 
       # Add a teardown block to run after each test or run the list of teardown blocks in given scope
-      def teardown(scope=nil, &block)
-        if block_given?
-          self.teardowns << block
-        elsif scope
+      def teardown(scope_or_method_name = nil, &block)
+        is_method = scope_or_method_name.kind_of?(String) || scope_or_method_name.kind_of?(Symbol)
+        if block_given? || is_method
+          self.teardowns << (block || scope_or_method_name)
+        elsif !is_method
+          scope = scope_or_method_name
           # teardown child before parent
-          self.teardowns.each{|teardown| scope.instance_eval(&teardown)}
+          self.teardowns.each do |teardown|
+            teardown.kind_of?(::Proc) ? scope.instance_eval(&teardown) : scope.send(teardown)
+          end
           self.superclass.teardown(scope) if self.superclass.respond_to?(:teardown)
         end
       end
