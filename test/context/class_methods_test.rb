@@ -104,7 +104,6 @@ class Assert::Context
   end
 
 
-
   class MultipleSetupsTest < ClassMethodsTest
     desc "a context class with multiple setups"
     setup do

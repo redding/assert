@@ -38,11 +38,15 @@ module Assert
       def setup(scope_or_method_name = nil, &block)
         is_method = scope_or_method_name.kind_of?(String) || scope_or_method_name.kind_of?(Symbol)
         if block_given? || is_method
+          # arg is a block or method that needs to be stored as a setup
           self.setups << (block || scope_or_method_name)
         elsif !is_method
+          # arg is an instance of this class (the scope for a test),
+          # run the setups for this context in the scope
           scope = scope_or_method_name
-          # setup parent before child
+          # setup parent...
           self.superclass.setup(scope) if self.superclass.respond_to?(:setup)
+          # ... before child
           self.setups.each do |setup|
             setup.kind_of?(::Proc) ? scope.instance_eval(&setup) : scope.send(setup)
           end
@@ -54,13 +58,17 @@ module Assert
       def teardown(scope_or_method_name = nil, &block)
         is_method = scope_or_method_name.kind_of?(String) || scope_or_method_name.kind_of?(Symbol)
         if block_given? || is_method
+          # arg is a block or method that needs to be stored as a teardown
           self.teardowns << (block || scope_or_method_name)
         elsif !is_method
+          # arg is an instance of this class (the scope for a test),
+          # run the setups for this context in the scope
           scope = scope_or_method_name
-          # teardown child before parent
+          # teardown child...
           self.teardowns.each do |teardown|
             teardown.kind_of?(::Proc) ? scope.instance_eval(&teardown) : scope.send(teardown)
           end
+          # ... before parent
           self.superclass.teardown(scope) if self.superclass.respond_to?(:teardown)
         end
       end

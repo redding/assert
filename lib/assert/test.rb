@@ -30,7 +30,14 @@ module Assert
       run_scope = @context_class.new(self)
       capture_output(StringIO.new(@output, "w+")) do
         begin
+          # run any assert style 'setup do' setups
           @context_class.setup(run_scope)
+          # run any classic test/unit style 'def setup' setups
+          if run_scope.respond_to?(:setup)
+            run_scope.setup
+          end
+
+          # run the actual test code
           if @code.kind_of?(::Proc)
             run_scope.instance_eval(&@code)
           elsif run_scope.respond_to?(@code.to_s)
@@ -42,6 +49,11 @@ module Assert
           @results << Result::Error.new(self.name, err)
         ensure
           begin
+            # run any classic test/unit style 'def teardown' teardowns
+            if run_scope.respond_to?(:teardown)
+              run_scope.teardown
+            end
+            # run any assert style 'teardown do' teardowns
             @context_class.teardown(run_scope)
           rescue Exception => teardown_err
             @results << Result::Error.new(self.name, teardown_err)
