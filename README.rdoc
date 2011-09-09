@@ -5,9 +5,9 @@ Test::Unit style testing framework, just better than Test::Unit.
 == What Assert is
 
 * *Framework*: you define tests and the context they run in - Assert runs them.  Everything is pure ruby so use any 3rd party testing tools you like.  Create 3rd party tools that extend Assert behavior.
-* *First Class*: everything is a first class object and can be extended to your liking (and should be)
+* *First* *Class*: everything is a first class object and can be extended to your liking (and should be)
 * *MVC*: tests and how they are defined (M) and executed (C) are distinct from how you view the test results (V).
-* *Backwards compatible*: (assuming a few minor tweaks) with Test::Unit test suites
+* *Backwards* *compatible*: (assuming a few minor tweaks) with Test::Unit test suites
 
 == What Assert is not
 
@@ -125,8 +125,8 @@ These are all tools that use and extend Assert.  If you write your own, share it
 === assert-view
 Assert::View (https://github.com/teaminsight/assert-view) is a collection of views that can be used with Assert.  Specify what view you want to use in your ~/.assert/options.rb settings file, ie:
 
-    # default is Assert::View::Terminal.new(Assert.suite, $stdout)
-    Assert.options.view Assert::View::DifferentView.new(Assert.suite, $stdout)
+    # default is Assert::View::DefaultView on $stdout
+    Assert.options.view Assert::View::SuperCoolView.new($stdout)
 
 
 

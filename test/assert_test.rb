@@ -1,7 +1,7 @@
 require 'assert'
 
 require 'assert/options'
-require 'assert/view/terminal'
+require 'assert/view/default_view'
 require 'assert/runner'
 require 'assert/suite'
 
@@ -15,7 +15,7 @@ module Assert
     end
 
     should "default the view option" do
-      assert_kind_of Assert::View::Terminal, subject.default_view
+      assert_kind_of Assert::View::DefaultView, subject.default_view
     end
 
     should "default the suite option" do

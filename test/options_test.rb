@@ -35,11 +35,6 @@ module Assert::Options
       assert_equal "changed", subject.a_value
     end
 
-    should "be provided for the terminal view" do
-      assert_respond_to :options, Assert::View::Terminal
-      assert_respond_to :options, Assert::View::Terminal.new("suite", "io")
-    end
-
   end
 
 end
