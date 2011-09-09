@@ -265,22 +265,44 @@ class Assert::Test
 
 
   class WithSetupTest < RunningTest
-    desc "a Test that runs and has assertions that depend on a setup block"
+    desc "a Test that runs and has assertions that depend on setups"
     setup do
+      assert_style_msg = @asm = "set by assert style setup"
+      testunit_style_msg = @tusm = "set by test/unit style setup"
       @context_class = Factory.context_class do
-        setup{ @needed = true }
+        # assert style setup
+        setup do
+          # get msgs into test scope
+          @assert_style_msg = assert_style_msg
+          @testunit_style_msg = testunit_style_msg
+
+          @setup_asm = @assert_style_msg
+        end
+        # classic test/unit style setup
+        def setup; @setup_tusm = @testunit_style_msg; end
       end
       @test = Factory.test("something", @context_class) do
-        assert(@needed)
+        assert @assert_style_msg
+        assert @testunit_style_msg
+
+        @__running_test__.pass_results.first.
+          instance_variable_set("@message", @setup_asm)
+
+        @__running_test__.pass_results.last.
+          instance_variable_set("@message", @setup_tusm)
       end
       @test.run
     end
 
-    should "have 1 total result" do
-      assert_equal 1, subject.result_count
+    should "have a passing result for each setup type" do
+      assert_equal 2, subject.result_count
+      assert_equal 2, subject.result_count(:pass)
     end
-    should "have 1 pass result" do
-      assert_equal 1, subject.result_count(:pass)
+    should "have run the assert style setup" do
+      assert_equal @asm, subject.pass_results.first.message
+    end
+    should "have run the test/unit style setup" do
+      assert_equal @tusm, subject.pass_results.last.message
     end
 
   end
@@ -288,29 +310,44 @@ class Assert::Test
 
 
   class WithTeardownTest < RunningTest
-    desc "a Test that runs and has assertions with a teardown block"
+    desc "a Test that runs and has assertions with teardowns"
     setup do
-      new_message = @new_message = "HOLLA"
+      assert_style_msg = @asm = "set by assert style teardown"
+      testunit_style_msg = @tusm = "set by test/unit style teardown"
       @context_class = Factory.context_class do
+        setup do
+          # get msgs into test scope
+          @assert_style_msg = assert_style_msg
+          @testunit_style_msg = testunit_style_msg
+        end
+        # assert style teardown
         teardown do
-          pass_result = @__running_test__.pass_results.first
-          pass_result.instance_variable_set("@message", new_message)
+          @__running_test__.pass_results.first.
+            instance_variable_set("@message", @assert_style_msg)
+        end
+        # classic test/unit style teardown
+        def teardown
+          @__running_test__.pass_results.last.
+            instance_variable_set("@message", @testunit_style_msg)
         end
       end
       @test = Factory.test("something amazing", @context_class) do
-        assert(true)
+        assert(true) # first pass result
+        assert(true) # last pass result
       end
       @test.run
     end
 
-    should "have 1 total result" do
-      assert_equal 1, subject.result_count
+    should "have a passing result for each teardown type" do
+      puts subject.results.inspect
+      assert_equal 2, subject.result_count
+      assert_equal 2, subject.result_count(:pass)
     end
-    should "have 1 pass result" do
-      assert_equal 1, subject.result_count(:pass)
+    should "have run the assert style teardown" do
+      assert_equal @asm, subject.pass_results.first.message
     end
-    should "have modifed the message" do
-      assert_equal @new_message, subject.pass_results.first.message
+    should "have run test/unit style teardown" do
+      assert_equal @tusm, subject.pass_results.last.message
     end
 
   end

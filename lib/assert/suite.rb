@@ -84,6 +84,7 @@ module Assert
         self.setups.each{|setup| setup.call}
       end
     end
+    alias_method :startup, :setup
 
     def teardown(&block)
       if block_given?
@@ -92,6 +93,7 @@ module Assert
         self.teardowns.reverse.each{|teardown| teardown.call}
       end
     end
+    alias_method :shutdown, :teardown
 
     protected
 
