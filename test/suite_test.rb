@@ -19,6 +19,7 @@ class Assert::Suite
     should have_instance_method  :<<
     should have_instance_methods :contexts, :tests, :ordered_tests, :ordered_results
     should have_instance_methods :count, :test_count, :result_count
+    should have_instance_methods :setup, :startup, :teardown, :shutdown
 
     should have_accessors :start_time, :end_time
     should have_instance_method  :run_time, :runner_seed

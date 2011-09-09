@@ -26,11 +26,13 @@ module Assert
         Assert.suite.setup(&block)
       end
       alias_method :before_once, :setup_once
+      alias_method :startup, :setup_once
 
       def teardown_once(&block)
         Assert.suite.teardown(&block)
       end
       alias_method :after_once, :teardown_once
+      alias_method :shutdown, :teardown_once
 
       # Add a setup block to run before each test or run the list of teardown blocks in given scope
       def setup(scope_or_method_name = nil, &block)
