@@ -15,7 +15,7 @@ class Assert::Context
 
     should have_instance_methods :setup_once, :before_once, :setup, :before, :setups
     should have_instance_methods :teardown_once, :after_once, :teardown, :after, :teardowns
-    should have_instance_methods :description, :desc, :subject
+    should have_instance_methods :description, :desc, :describe, :subject
     should have_instance_methods :test, :test_eventually, :test_skip
     should have_instance_methods :should, :should_eventually, :should_skip
   end

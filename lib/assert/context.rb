@@ -77,6 +77,7 @@ module Assert
         end
       end
       alias_method :desc, :description
+      alias_method :describe, :description
 
       def subject(&block)
         if block_given?
