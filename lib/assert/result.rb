@@ -94,6 +94,10 @@ module Assert::Result
       [self.test_name, self.message, self.trace].compact.join("\n")
     end
 
+    def name
+      ""
+    end
+
     def trace
       self.backtrace.filtered.first.to_s
     end
@@ -112,6 +116,10 @@ module Assert::Result
     def pass?; true; end
     def to_sym; :passed; end
 
+    def name
+      "Pass"
+    end
+
     def to_s
       "PASS: #{super}"
     end
@@ -121,6 +129,10 @@ module Assert::Result
     def fail?; true; end
     def to_sym; :failed; end
 
+    def name
+      "Failure"
+    end
+
     def to_s
       "FAIL: #{super}"
     end
@@ -129,6 +141,10 @@ module Assert::Result
   class Ignore < Base
     def ignore?; true; end
     def to_sym; :ignored; end
+
+    def name
+      "Ignore"
+    end
 
     def to_s
       "IGNORE: #{super}"
@@ -149,6 +165,10 @@ module Assert::Result
     def skip?; true; end
     def to_sym; :skipped; end
 
+    def name
+      "Skip"
+    end
+
     def to_s
       "SKIP: #{super}"
     end
@@ -158,6 +178,10 @@ module Assert::Result
 
     def error?; true; end
     def to_sym; :errored; end
+
+    def name
+      "Error"
+    end
 
     def to_s
       "ERROR: #{super}"

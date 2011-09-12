@@ -36,7 +36,7 @@ module Assert::Result
     subject{ @result }
 
     should have_readers :test_name, :message, :backtrace
-    should have_instance_methods :to_sym, :to_s, :trace
+    should have_instance_methods :name, :to_sym, :to_s, :trace
 
     Assert::Result.types.keys.each do |type|
       should "respond to the instance method ##{type}?" do
@@ -101,6 +101,10 @@ module Assert::Result
       assert_equal :passed, subject.to_sym
     end
 
+    should "know its name" do
+      assert_equal "Pass", subject.name
+    end
+
     should "include PASS in its to_s" do
       assert subject.to_s.include?("PASS")
     end
@@ -127,6 +131,10 @@ module Assert::Result
       assert_equal :failed, subject.to_sym
     end
 
+    should "know its name" do
+      assert_equal "Failure", subject.name
+    end
+
     should "include FAIL in its to_s" do
       assert subject.to_s.include?("FAIL")
     end
@@ -151,6 +159,10 @@ module Assert::Result
 
     should "know its to_sym" do
       assert_equal :ignored, subject.to_sym
+    end
+
+    should "know its name" do
+      assert_equal "Ignore", subject.name
     end
 
     should "include IGNORE in its to_s" do
@@ -204,6 +216,10 @@ module Assert::Result
       assert_equal :skipped, subject.to_sym
     end
 
+    should "know its name" do
+      assert_equal "Skip", subject.name
+    end
+
     should "include SKIP in its to_s" do
       assert subject.to_s.include?("SKIP")
     end
@@ -228,6 +244,10 @@ module Assert::Result
 
     should "know its to_sym" do
       assert_equal :errored, subject.to_sym
+    end
+
+    should "know its name" do
+      assert_equal "Error", subject.name
     end
 
     should "include ERRORED in its to_s" do
