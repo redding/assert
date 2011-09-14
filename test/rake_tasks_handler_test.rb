@@ -1,0 +1,51 @@
+require 'assert'
+
+require 'assert/rake_tasks/handler'
+
+module Assert::RakeTasks
+
+  class BasicTests < Assert::Context
+    desc "the basic rake tasks handler"
+    setup do
+      @handler = Assert::RakeTasks::Handler
+    end
+    subject { @handler }
+
+    should have_instance_methods :irb
+
+  end
+
+  class IrbTests < BasicTests
+    desc "the irb task handler"
+    setup do
+      @root_path = :test
+      @handler = Assert::RakeTasks::Handler.irb(@root_path)
+    end
+
+    should have_class_method :file_name
+    should have_instance_methods :file_path, :exists?, :description, :cmd
+
+    should "know the irb helper file name" do
+      assert_equal "irb.rb", subject.class.file_name
+    end
+
+    should "know the irb helper file path" do
+      assert_equal File.join(@root_path.to_s, subject.class.file_name), subject.file_path
+    end
+
+    should "know if the irb helper exists" do
+      # this is true b/c assert has a test/helper.rb file defined
+      assert_equal true, subject.exists?
+    end
+
+    should "know the description of the irb task" do
+      assert_equal "Open irb preloaded with #{subject.file_path}", subject.description
+    end
+
+    should "know the shell command to run the irb task" do
+      assert_equal "irb -rubygems -r ./#{subject.file_path}", subject.cmd
+    end
+
+  end
+
+end
