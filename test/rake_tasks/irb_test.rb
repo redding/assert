@@ -1,26 +1,16 @@
 require 'assert'
 
-require 'assert/rake_tasks/handler'
+require 'assert/rake_tasks/irb'
 
 module Assert::RakeTasks
 
-  class BasicTests < Assert::Context
-    desc "the basic rake tasks handler"
-    setup do
-      @handler = Assert::RakeTasks::Handler
-    end
-    subject { @handler }
-
-    should have_instance_methods :irb
-
-  end
-
-  class IrbTests < BasicTests
+  class IrbTests < Assert::Context
     desc "the irb task handler"
     setup do
       @root_path = :test
-      @handler = Assert::RakeTasks::Handler.irb(@root_path)
+      @handler = Assert::RakeTasks::Irb.new(@root_path)
     end
+    subject { @handler }
 
     should have_class_method :task_name, :file_name
     should have_instance_methods :file_path, :helper_exists?, :description, :cmd
