@@ -22,8 +22,12 @@ module Assert::RakeTasks
       @handler = Assert::RakeTasks::Handler.irb(@root_path)
     end
 
-    should have_class_method :file_name
-    should have_instance_methods :file_path, :exists?, :description, :cmd
+    should have_class_method :task_name, :file_name
+    should have_instance_methods :file_path, :helper_exists?, :description, :cmd
+
+    should "know its rake task name" do
+      assert_equal :irb, subject.class.task_name
+    end
 
     should "know the irb helper file name" do
       assert_equal "irb.rb", subject.class.file_name
@@ -35,7 +39,7 @@ module Assert::RakeTasks
 
     should "know if the irb helper exists" do
       # this is true b/c assert has a test/helper.rb file defined
-      assert_equal true, subject.exists?
+      assert_equal true, subject.helper_exists?
     end
 
     should "know the description of the irb task" do

@@ -5,6 +5,10 @@ module Assert::RakeTasks
       "irb.rb"
     end
 
+    def self.task_name
+      :irb
+    end
+
     def initialize(test_root)
       @test_root = test_root
     end
@@ -13,7 +17,7 @@ module Assert::RakeTasks
       File.join(@test_root.to_s, self.class.file_name)
     end
 
-    def exists?
+    def helper_exists?
       File.exists?(self.file_path)
     end
 
