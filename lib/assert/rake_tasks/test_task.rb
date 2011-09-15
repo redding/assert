@@ -1,4 +1,3 @@
-require 'bundler'
 require 'assert/rake_tasks/scope'
 
 module Assert::RakeTasks
