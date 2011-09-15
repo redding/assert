@@ -45,7 +45,7 @@ module Assert
         begin
           require package_helper_file(root_path)
         rescue LoadError => err
-          warn err.message
+          # do nothing
         end
       end
 
