@@ -34,7 +34,8 @@ module Assert::RakeTasks
     end
 
     def ruby_args
-      [ "\"#{self.rake_loader}\"",
+      [ "-rrubygems",
+        "\"#{self.rake_loader}\"",
         self.file_list
       ].compact.join(" ")
     end
