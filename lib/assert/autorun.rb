@@ -1,4 +1,4 @@
-require 'assert/setup'
+require 'assert/setup/all'
 
 module Assert
 

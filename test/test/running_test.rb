@@ -339,7 +339,6 @@ class Assert::Test
     end
 
     should "have a passing result for each teardown type" do
-      puts subject.results.inspect
       assert_equal 2, subject.result_count
       assert_equal 2, subject.result_count(:pass)
     end
