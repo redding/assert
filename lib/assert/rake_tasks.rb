@@ -1,5 +1,8 @@
 require 'rake'
-require 'rake/tasklib'
+
+require 'assert/rake_tasks/irb'
+require 'assert/rake_tasks/scope'
+require 'assert/rake_tasks/test_task'
 
 module Assert; end
 module Assert::RakeTasks
@@ -10,101 +13,52 @@ module Assert::RakeTasks
   # * add 'include Assert::RakeTasks' to your Rakefile
   def self.included(receiver)
     # auto-build rake tasks for the ./test files (if defined in ./test)
-    self.for(:test) if File.exists?(File.expand_path('./test', Dir.pwd))
+    self.for('test') if File.exists?(File.expand_path('./test', Dir.pwd))
   end
 
-  def self.for(test_namespace = :test)
-    self.irb_task(test_namespace.to_s)
-    self.to_tasks(test_namespace.to_s)
-  end
-
-
-
-
-  class TestTask < Rake::TaskLib
-
-    attr_accessor :name, :description, :test_files
-
-    # Create a testing task.
-    def initialize(name=:test)
-      @name = name
-      @description = "Run tests" + (@name==:test ? "" : " for #{@name}")
-      @test_files = []
-      yield self if block_given?
-    end
-
-    # Define the rake task to run this test suite
-    def to_task
-      desc @description
-      task @name do
-        RakeFileUtils.verbose(true) { ruby "\"#{rake_loader}\" " + file_list }
-      end
-    end
-
-    def file_list # :nodoc:
-      @test_files.collect{|f| "\"#{f}\""}.join(' ')
-    end
-
-    protected
-
-    def rake_loader # :nodoc:
-      find_file('rake/rake_test_loader') or
-        fail "unable to find rake test loader"
-    end
-
-    def find_file(fn) # :nodoc:
-      $LOAD_PATH.each do |path|
-        file_path = File.join(path, "#{fn}.rb")
-        return file_path if File.exist? file_path
-      end
-      nil
-    end
+  def self.for(test_root='test')
+    self.irb_task(Assert::RakeTasks::Irb.new(test_root.to_s))
+    self.to_tasks(Assert::RakeTasks::Scope.new(test_root.to_s))
   end
 
   class << self
     include Rake::DSL if defined? Rake::DSL
 
-    def irb_task(path)
-      irb_file = File.join(path, "irb.rb")
-      if File.exist?(irb_file)
-        desc "Open irb preloaded with #{irb_file}"
-        task :irb do
-          sh "irb -rubygems -r ./#{irb_file}"
+    def irb_task(irb)
+      if irb.helper_exists?
+        desc irb.description
+        task irb.class.task_name do
+          sh irb.cmd
         end
       end
     end
 
-    def to_tasks(path)
-      suite_name = File.basename(path)
-
-      # define a rake test task for all test files that have addional sub-folder tests
-      if !Dir.glob(File.join(path, "**/*#{FILE_SUFFIX}")).empty?
-        TestTask.new(suite_name.to_sym) do |t|
-          file_location = suite_name == path ? '' : " for #{File.join(path.split(File::SEPARATOR)[1..-1])}"
-          t.description = "Run all tests#{file_location}"
-          t.test_files = (File.exists?(p = (path+FILE_SUFFIX)) ? FileList[p] : []) + FileList["#{path}/**/*#{FILE_SUFFIX}"]
-        end.to_task
+    def to_tasks(scope)
+      # if there is a test task for the scope
+      if (scope_tt = scope.to_test_task)
+        # create a rake task to run it
+        desc scope_tt.description
+        task scope_tt.name do
+          RakeFileUtils.verbose(true) { ruby scope_tt.ruby_args }
+        end
       end
 
-      namespace suite_name.to_s do
-        Dir.glob(File.join(path, "*#{FILE_SUFFIX}")).each do |test_file|
-          test_name = File.basename(test_file, FILE_SUFFIX)
-
-          # define rake test task for all test files without sub-folder tests
-          if Dir.glob(File.join(path, test_name, "*#{FILE_SUFFIX}")).empty?
-            TestTask.new(test_name.to_sym) do |t|
-              t.description = "Run tests for #{[path.split(File::SEPARATOR), test_name].flatten[1..-1].join(':')}"
-              t.test_files = FileList[test_file]
-            end.to_task
+      # create a namespace for the scope
+      namespace scope.namespace do
+        # for each test task in the scope, create a rake task to run it
+        scope.test_tasks.each do |test_file_tt|
+          desc test_file_tt.description
+          task test_file_tt.name do
+            RakeFileUtils.verbose(true) { ruby test_file_tt.ruby_args }
           end
         end
 
-        # recursively define rake test tasks for each file
-        # in each top-level directory
-        Dir.glob(File.join(path, "*")).each do |test_dir|
-          self.to_tasks(test_dir)
+        # recusively generate rake tasks for each sub-scope in the scope
+        scope.scopes.each do |sub_scope|
+          self.to_tasks(sub_scope)
         end
       end
+
     end
   end
 
