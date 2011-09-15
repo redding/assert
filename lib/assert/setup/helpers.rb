@@ -11,7 +11,7 @@ module Assert
     class << self
 
       USER_TEST_HELPER = "~/.assert/options"
-      
+
       # assume the test dir path is ./test and look for helpers in ./test/helper.rb
       def package_test_dir
         "test"
@@ -57,7 +57,8 @@ module Assert
       # this expects the caller's root path to be the parent dir of the first
       # parent dir of caller named TEST_DIR
       def caller_root_path(caller_info)
-        caller_dirname = File.expand_path(File.dirname(caller_info[0]))
+        non_custom_require_caller_info = caller_info.reject{|i| i =~ /rubygems\/custom_require.rb/}
+        caller_dirname = File.expand_path(File.dirname(non_custom_require_caller_info[0]))
         test_dir_pos = caller_dirname.index(package_test_helper_regex)
         if test_dir_pos && (test_dir_pos > 0)
           caller_dirname[0..(test_dir_pos-1)]
