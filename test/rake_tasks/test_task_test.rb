@@ -47,8 +47,7 @@ module Assert::RakeTasks
 
     should "know its ruby args" do
       subject.files = ["test_one_test.rb", "test_two_test.rb"]
-      # no -rrubygems arg added b/c we are running in bundler
-      assert_equal "\"#{subject.send(:rake_loader)}\" #{subject.file_list}", subject.ruby_args
+      assert_equal "-rrubygems \"#{subject.send(:rake_loader)}\" #{subject.file_list}", subject.ruby_args
     end
 
   end

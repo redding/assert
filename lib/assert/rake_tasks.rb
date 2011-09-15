@@ -1,10 +1,12 @@
 require 'rake'
 
+module Assert; end
+module Assert::RakeTasks; end
+
 require 'assert/rake_tasks/irb'
 require 'assert/rake_tasks/scope'
 require 'assert/rake_tasks/test_task'
 
-module Assert; end
 module Assert::RakeTasks
 
   FILE_SUFFIX = "_test.rb"
