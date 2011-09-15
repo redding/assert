@@ -1,3 +1,5 @@
+require 'assert/rake_tasks/scope'
+
 module Assert::RakeTasks
 
   class TestTask
@@ -23,20 +25,16 @@ module Assert::RakeTasks
       "Run all tests#{scope_description}"
     end
 
-    # def to_task
-    #   desc @description
-    #   task @name do
-    #     RakeFileUtils.verbose(true) { ruby self.ruby_args }
-    #   end
-    # end
+    def name
+      File.basename(@path, Scope.test_file_suffix).to_sym
+    end
 
     def file_list # :nodoc:
       self.files.collect{|f| "\"#{f}\""}.join(' ')
     end
 
     def ruby_args
-      [ ("-rrubygems" if !self.bundler_detected?),
-        "\"#{self.rake_loader}\"",
+      [ "\"#{self.rake_loader}\"",
         self.file_list
       ].compact.join(" ")
     end
@@ -55,14 +53,6 @@ module Assert::RakeTasks
       nil
     end
 
-    def bundler_detected?
-      begin
-        ::Bundler
-        true
-      rescue NameError => err
-        false
-      end
-    end
   end
 
 end

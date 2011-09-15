@@ -13,7 +13,7 @@ module Assert::RakeTasks
     subject { @task }
 
     should have_accessors :path, :files
-    should have_instance_methods :relative_path, :scope_description, :description
+    should have_instance_methods :relative_path, :scope_description, :description, :name
     should have_instance_methods :file_list, :ruby_args
 
     should "default with empty files collection" do
@@ -33,6 +33,11 @@ module Assert::RakeTasks
     should "know its task description" do
       assert_equal "Run all tests", subject.description
       assert_equal "Run all tests for some/thing", @some_thing.description
+    end
+
+    should "know its name" do
+      assert_equal :thing, @task.name
+      assert_equal :thing, @some_thing.name
     end
 
     should "build a file list string" do
