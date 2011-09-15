@@ -2,35 +2,45 @@ require 'rake/tasklib'
 
 module Assert::RakeTasks
 
-  class TestTask < Rake::TaskLib
+  class TestTask# < Rake::TaskLib
 
-    attr_accessor :name, :description, :test_files
+    attr_accessor :name, :path, :files
 
-    # Create a testing task.
-    def initialize(name=:test)
+    # Create a testing task
+    def initialize(name, path='')
       @name = name
-      @description = "Run tests" + (@name==:test ? "" : " for #{@name}")
-      @test_files = []
-      yield self if block_given?
+      @path = path
+      @files = []
     end
 
-    # Define the rake task to run this test suite
+    def relative_path
+      File.join(@path.to_s.split(File::SEPARATOR)[1..-1])
+    end
+
+    def scope_description
+      relative_path.empty? ? "" : " for #{relative_path}"
+    end
+
+    def description
+      "Run all tests#{scope_description}"
+    end
+
+    # def to_task
+    #   desc @description
+    #   task @name do
+    #     RakeFileUtils.verbose(true) { ruby self.ruby_args }
+    #   end
+    # end
+
+    def file_list # :nodoc:
+      self.files.collect{|f| "\"#{f}\""}.join(' ')
+    end
+
     def ruby_args
       [ ("-rrubygems" if !self.bundler_detected?),
         "\"#{self.rake_loader}\"",
         self.file_list
       ].compact.join(" ")
-    end
-
-    def to_task
-      desc @description
-      task @name do
-        RakeFileUtils.verbose(true) { ruby self.ruby_args }
-      end
-    end
-
-    def file_list # :nodoc:
-      @test_files.collect{|f| "\"#{f}\""}.join(' ')
     end
 
     protected
