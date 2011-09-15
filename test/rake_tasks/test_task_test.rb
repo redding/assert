@@ -7,12 +7,12 @@ module Assert::RakeTasks
   class TestTaskTests < Assert::Context
     desc "the test task"
     setup do
-      @task = Assert::RakeTasks::TestTask.new('thing', 'thing')
-      @some_thing = Assert::RakeTasks::TestTask.new('thing', 'test/some/thing')
+      @task = Assert::RakeTasks::TestTask.new('thing')
+      @some_thing = Assert::RakeTasks::TestTask.new('test/some/thing')
     end
     subject { @task }
 
-    should have_accessors :name, :path, :files
+    should have_accessors :path, :files
     should have_instance_methods :relative_path, :scope_description, :description
     should have_instance_methods :file_list, :ruby_args
 

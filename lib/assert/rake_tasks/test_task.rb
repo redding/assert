@@ -1,16 +1,14 @@
-require 'rake/tasklib'
-
 module Assert::RakeTasks
 
-  class TestTask# < Rake::TaskLib
+  class TestTask
 
     attr_accessor :name, :path, :files
 
     # Create a testing task
-    def initialize(name, path='')
-      @name = name
+    def initialize(path)
       @path = path
       @files = []
+      yield self if block_given?
     end
 
     def relative_path
@@ -45,9 +43,8 @@ module Assert::RakeTasks
 
     protected
 
-    def rake_loader # :nodoc:
-      find_file('rake/rake_test_loader') or
-        fail "unable to find rake test loader"
+    def rake_loader
+      find_file('rake/rake_test_loader')
     end
 
     def find_file(fn) # :nodoc:
