@@ -185,6 +185,14 @@ module Assert::Result
       assert_equal @exception.backtrace, subject.backtrace
     end
 
+    should "include the exceptiion message in the result message" do
+      assert_includes @exception.message, subject.message
+    end
+
+    should "include the exception class in the result message" do
+      assert_includes @exception.class.name, subject.message
+    end
+
   end
 
   class SkippedRuntimeErrorTest < Assert::Context
