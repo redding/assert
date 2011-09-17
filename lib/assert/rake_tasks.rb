@@ -41,7 +41,7 @@ module Assert::RakeTasks
         # create a rake task to run it
         desc scope_tt.description
         task scope_tt.name do
-          RakeFileUtils.verbose(true) { ruby scope_tt.ruby_args }
+          RakeFileUtils.verbose(scope_tt.show_loaded_files?) { ruby scope_tt.ruby_args }
         end
       end
 
@@ -51,7 +51,7 @@ module Assert::RakeTasks
         scope.test_tasks.each do |test_file_tt|
           desc test_file_tt.description
           task test_file_tt.name do
-            RakeFileUtils.verbose(true) { ruby test_file_tt.ruby_args }
+            RakeFileUtils.verbose(test_file_tt.show_loaded_files?) { ruby test_file_tt.ruby_args }
           end
         end
 
