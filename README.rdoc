@@ -110,6 +110,10 @@ This would generate following rake tasks:
     rake test:complex:fast            # Run tests for assertions:assert_block
     rake test:complex:slow            # Run tests for assertions:assert_empty
 
+By default, the rake tasks do not show which test files are being loaded.  If you want to see this output from the rake tasks, set a "show_loaded_files" environment variable at the rake command line:
+
+    $ rake test show_loaded_files=true  # run the tests showing which files were loaded
+
 === IRB with your environment loaded
 Assert provides a rake task for running irb with your test environment loaded.  Create an irb.rb file in your test file directory and have it require 'assert/setup'.  See https://github.com/teaminsight/assert/blob/master/test/irb.rb for an example.  Here's how you could use it:
 

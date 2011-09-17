@@ -40,6 +40,10 @@ module Assert::RakeTasks
       ].compact.join(" ")
     end
 
+    def show_loaded_files?
+      ENV["show_loaded_files"] == 'true'
+    end
+
     protected
 
     def rake_loader

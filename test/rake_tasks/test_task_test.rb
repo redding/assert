@@ -14,7 +14,7 @@ module Assert::RakeTasks
 
     should have_accessors :path, :files
     should have_instance_methods :relative_path, :scope_description, :description, :name
-    should have_instance_methods :file_list, :ruby_args
+    should have_instance_methods :file_list, :ruby_args, :show_loaded_files?
 
     should "default with empty files collection" do
       assert_equal [], subject.files
@@ -50,6 +50,31 @@ module Assert::RakeTasks
       assert_equal "-rrubygems \"#{subject.send(:rake_loader)}\" #{subject.file_list}", subject.ruby_args
     end
 
+  end
+
+  class VerboseTests < TestTaskTests
+    setup do
+      @orig_env_setting = ENV["show_loaded_files"]
+      ENV["show_loaded_files"] = 'false'
+    end
+    teardown do
+      ENV["show_loaded_files"] = @orig_env_setting
+    end
+
+    should "not show loaded files by default" do
+      assert_equal false, subject.show_loaded_files?
+    end
+  end
+
+  class EnvVerboseTests < VerboseTests
+    desc "if the show_loaded_files env setting is true"
+    setup do
+      ENV["show_loaded_files"] = 'true'
+    end
+
+    should "show loaded files" do
+      assert_equal true, subject.show_loaded_files?
+    end
   end
 
 end
