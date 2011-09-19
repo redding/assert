@@ -91,7 +91,10 @@ module Assert::Result
     def to_sym; nil; end
 
     def to_s
-      [self.test_name, self.message, self.trace].compact.join("\n")
+      [ "#{self.name.upcase}: #{self.test_name}",
+        self.message,
+        self.trace
+      ].compact.join("\n")
     end
 
     def name
@@ -114,40 +117,28 @@ module Assert::Result
 
   class Pass < Base
     def pass?; true; end
-    def to_sym; :passed; end
+    def to_sym; :pass; end
 
     def name
       "Pass"
-    end
-
-    def to_s
-      "PASS: #{super}"
     end
   end
 
   class Fail < Base
     def fail?; true; end
-    def to_sym; :failed; end
+    def to_sym; :fail; end
 
     def name
-      "Failure"
-    end
-
-    def to_s
-      "FAIL: #{super}"
+      "Fail"
     end
   end
 
   class Ignore < Base
     def ignore?; true; end
-    def to_sym; :ignored; end
+    def to_sym; :ignore; end
 
     def name
       "Ignore"
-    end
-
-    def to_s
-      "IGNORE: #{super}"
     end
   end
 
@@ -165,7 +156,6 @@ module Assert::Result
     def initialize(test_name, exception)
       super(test_name, self.class.exception_result_msg(exception), exception.backtrace || [])
     end
-
   end
 
   # raised by the 'skip' context helper to break test execution
@@ -173,28 +163,20 @@ module Assert::Result
 
   class Skip < FromException
     def skip?; true; end
-    def to_sym; :skipped; end
+    def to_sym; :skip; end
 
     def name
       "Skip"
-    end
-
-    def to_s
-      "SKIP: #{super}"
     end
   end
 
   class Error < FromException
 
     def error?; true; end
-    def to_sym; :errored; end
+    def to_sym; :error; end
 
     def name
       "Error"
-    end
-
-    def to_s
-      "ERROR: #{super}"
     end
 
     # override of the base, always show the full unfiltered backtrace for errors
