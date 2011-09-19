@@ -153,9 +153,19 @@ module Assert::Result
 
   # Error and Skip results are built from exceptions being raised
   class FromException < Base
-    def initialize(test_name, exception)
-      super(test_name, exception.message, exception.backtrace || [])
+
+    def self.exception_result_msg(exception)
+      if [ Assert::Result::TestSkipped ].include?(exception.class)
+        exception.message
+      else
+        "#{exception.message} (#{exception.class.name})"
+      end
     end
+
+    def initialize(test_name, exception)
+      super(test_name, self.class.exception_result_msg(exception), exception.backtrace || [])
+    end
+
   end
 
   # raised by the 'skip' context helper to break test execution
