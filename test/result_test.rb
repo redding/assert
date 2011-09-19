@@ -98,7 +98,7 @@ module Assert::Result
     end
 
     should "know its to_sym" do
-      assert_equal :passed, subject.to_sym
+      assert_equal :pass, subject.to_sym
     end
 
     should "know its name" do
@@ -128,11 +128,11 @@ module Assert::Result
     end
 
     should "know its to_sym" do
-      assert_equal :failed, subject.to_sym
+      assert_equal :fail, subject.to_sym
     end
 
     should "know its name" do
-      assert_equal "Failure", subject.name
+      assert_equal "Fail", subject.name
     end
 
     should "include FAIL in its to_s" do
@@ -158,7 +158,7 @@ module Assert::Result
     end
 
     should "know its to_sym" do
-      assert_equal :ignored, subject.to_sym
+      assert_equal :ignore, subject.to_sym
     end
 
     should "know its name" do
@@ -221,7 +221,7 @@ module Assert::Result
     end
 
     should "know its to_sym" do
-      assert_equal :skipped, subject.to_sym
+      assert_equal :skip, subject.to_sym
     end
 
     should "know its name" do
@@ -251,7 +251,7 @@ module Assert::Result
     end
 
     should "know its to_sym" do
-      assert_equal :errored, subject.to_sym
+      assert_equal :error, subject.to_sym
     end
 
     should "know its name" do
