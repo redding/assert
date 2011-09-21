@@ -34,7 +34,9 @@ module Assert
 
       def require_user_test_helper
         begin
-          require File.expand_path(USER_TEST_HELPER)
+          if ENV['HOME']
+            require File.expand_path(USER_TEST_HELPER)
+          end
         rescue LoadError => err
           # do nothing
         end
