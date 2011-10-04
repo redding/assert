@@ -176,11 +176,6 @@ module Assert
     end
     alias_method :refute, :assert_not
 
-    # adds a Skip result to the end of the test's results and breaks test execution
-    def skip(skip_msg=nil)
-      raise(Result::TestSkipped, skip_msg || "")
-    end
-
     # adds a Pass result to the end of the test's results
     # does not break test execution
     def pass(pass_msg=nil)
@@ -189,22 +184,31 @@ module Assert
       end
     end
 
-    # adds a Fail result to the end of the test's results
-    # does not break test execution
-    def fail(fail_msg=nil)
-      capture_result do |test_name, backtrace|
-        message = (fail_message(fail_msg) { }).call
-        Assert::Result::Fail.new(test_name, message, backtrace)
-      end
-    end
-    alias_method :flunk, :fail
-
     # adds an Ignore result to the end of the test's results
     # does not break test execution
     def ignore(ignore_msg=nil)
       capture_result do |test_name, backtrace|
         Assert::Result::Ignore.new(test_name, ignore_msg, backtrace)
       end
+    end
+
+    # adds a Fail result to the end of the test's results
+    # does not break test execution
+    def fail(fail_msg=nil)
+      message = (fail_message(fail_msg) { }).call
+      if Assert::Test.halt_on_fail?
+        raise(Result::TestFailure, message)
+      else
+        capture_result do |test_name, backtrace|
+          Assert::Result::Fail.new(test_name, message, backtrace)
+        end
+      end
+    end
+    alias_method :flunk, :fail
+
+    # adds a Skip result to the end of the test's results and breaks test execution
+    def skip(skip_msg=nil)
+      raise(Result::TestSkipped, skip_msg || "")
     end
 
     def subject

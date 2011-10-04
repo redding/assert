@@ -110,36 +110,6 @@ module Assert::Result
     end
   end
 
-  class FailTest < Assert::Context
-    desc "a fail result"
-    setup do
-      @result = Assert::Result::Fail.new("test", "failed", [])
-    end
-    subject { @result }
-
-    should "be fail?" do
-      assert_equal true, subject.fail?
-    end
-
-    Assert::Result.types.keys.reject{|k| k == :fail}.each do |type|
-      should "not be #{type}?" do
-        assert_equal false, subject.send("#{type}?")
-      end
-    end
-
-    should "know its to_sym" do
-      assert_equal :fail, subject.to_sym
-    end
-
-    should "know its name" do
-      assert_equal "Fail", subject.name
-    end
-
-    should "include FAIL in its to_s" do
-      assert subject.to_s.include?("FAIL")
-    end
-  end
-
   class IgnoreTest < Assert::Context
     desc "an ignore result"
     setup do
@@ -170,29 +140,42 @@ module Assert::Result
     end
   end
 
-  class FromExceptionTest < Assert::Context
-    before do
-      begin
-        raise Exception, "test error"
-      rescue Exception => err
-        @exception = err
+  class FailureRuntimeErrorTest < Assert::Context
+
+    should "be a runtime error" do
+      assert_kind_of RuntimeError, Assert::Result::TestFailure.new
+    end
+
+  end
+
+  class FailTest < Assert::Context
+    desc "a fail result"
+    setup do
+      @result = Assert::Result::Fail.new("test", "failed", [])
+    end
+    subject { @result }
+
+    should "be fail?" do
+      assert_equal true, subject.fail?
+    end
+
+    Assert::Result.types.keys.reject{|k| k == :fail}.each do |type|
+      should "not be #{type}?" do
+        assert_equal false, subject.send("#{type}?")
       end
-      @result = Assert::Result::FromException.new("test", @exception)
-    end
-    subject{ @result }
-
-    should "have the same backtrace as the original exception it was created from" do
-      assert_equal @exception.backtrace, subject.backtrace
     end
 
-    should "include the exceptiion message in the result message" do
-      assert_includes @exception.message, subject.message
+    should "know its to_sym" do
+      assert_equal :fail, subject.to_sym
     end
 
-    should "include the exception class in the result message" do
-      assert_includes @exception.class.name, subject.message
+    should "know its name" do
+      assert_equal "Fail", subject.name
     end
 
+    should "include FAIL in its to_s" do
+      assert subject.to_s.include?("FAIL")
+    end
   end
 
   class SkippedRuntimeErrorTest < Assert::Context
@@ -203,9 +186,15 @@ module Assert::Result
 
   end
 
-  class SkipTest < FromExceptionTest
+  class SkipTest < Assert::Context
     desc "a skip result"
     setup do
+      @exception = nil
+      begin
+        raise TestSkipped, "test ski["
+      rescue Exception => err
+        @exception = err
+      end
       @result = Assert::Result::Skip.new("test", @exception)
     end
     subject { @result }
@@ -233,9 +222,15 @@ module Assert::Result
     end
   end
 
-  class ErrorTest < FromExceptionTest
+  class ErrorTest < Assert::Context
     desc "an error result"
     setup do
+      @exception = nil
+      begin
+        raise Exception, "test error"
+      rescue Exception => err
+        @exception = err
+      end
       @result = Assert::Result::Error.new("test", @exception)
     end
     subject { @result }

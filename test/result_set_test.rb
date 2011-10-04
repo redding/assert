@@ -41,7 +41,7 @@ class Assert::ResultSet
       @result_set << @pass_result
       @fail_result = Assert::Result::Fail.new("test", "fail", [])
       @result_set << @fail_result
-      @skip_result = Assert::Result::Skip.new("test", RuntimeError.new)
+      @skip_result = Assert::Result::Skip.new("test", Assert::Result::TestSkipped.new)
       @result_set << @skip_result
       @error_result = Assert::Result::Error.new("test", RuntimeError.new)
       @result_set << @error_result
