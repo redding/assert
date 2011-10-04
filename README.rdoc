@@ -65,7 +65,7 @@ Result defines the data related to a test result.  There are a few kinds of test
 * Skip
 * Ignore
 
-Tests produce results as they are executed.  Every assert statement produces a result.  Some results, like Error and Skip, will halt execution.  Pass and Ignore results do not halt execution.  Fail results, by default, halt execution buy there is an option to have them not halt execution.  Therefore, tests can have many results of varying types.
+Tests produce results as they are executed.  Every assert statement produces a result.  Some results, like Error and Skip, will halt execution.  Pass and Ignore results do not halt execution.  Fail results, by default, halt execution but there is an option to have them not halt execution.  Therefore, tests can have many results of varying types.
 
 === Macro
 Macros are procs that define sets of test code and make it available for easy reuse.  Macros work nicely with the 'should' and 'test' context methods.
