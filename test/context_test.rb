@@ -86,35 +86,7 @@ class Assert::Context
 
 
 
-  class SaveRestoreHaltOnFailTests < BasicTest
-    desc "when not halting on fails"
-    setup do
-      @prev_halt_option = Assert::Test.options.halt_on_fail
-      @prev_halt_envvar = ENV['halt_on_fail']
-    end
-    teardown do
-      Assert::Test.options.halt_on_fail @prev_halt_option
-      ENV['halt_on_fail'] = @prev_halt_envvar
-    end
-  end
-
-  class DontHaltOnFailTests < SaveRestoreHaltOnFailTests
-    setup do
-      ENV['halt_on_fail'] = 'false'
-      Assert::Test.options.halt_on_fail false
-    end
-  end
-
-  class HaltOnFailTests < SaveRestoreHaltOnFailTests
-    setup do
-      ENV['halt_on_fail'] = 'true'
-      Assert::Test.options.halt_on_fail true
-    end
-  end
-
-
-
-  class DontHaltFailTests < DontHaltOnFailTests
+  class FailTests < BasicTest
     desc "fail method"
     setup do
       @result = @context.fail
@@ -130,7 +102,7 @@ class Assert::Context
     end
   end
 
-  class DontHaltFlunkTest < DontHaltOnFailTests
+  class FlunkTest < BasicTest
     desc "flunk method"
     setup do
       @flunk_msg = "It flunked."
@@ -145,6 +117,56 @@ class Assert::Context
       assert_equal @flunk_msg, subject.message
     end
 
+  end
+
+  class StringMessageTests < FailTests
+    desc "with a string message"
+    setup do
+      @fail_msg = "Didn't work"
+      @result = @context.fail(@fail_msg)
+    end
+
+    should "set the message passed to it on the result" do
+      assert_equal @fail_msg, subject.message
+    end
+
+  end
+
+  class ProcMessageTests < FailTests
+    desc "with a proc message"
+    setup do
+      @fail_msg = ::Proc.new{ "Still didn't work" }
+      @result = @context.fail(@fail_msg)
+    end
+
+    should "set the message passed to it on the result" do
+      assert_equal @fail_msg.call, subject.message
+    end
+
+  end
+
+
+
+
+
+
+  class SaveRestoreHaltOnFailTests < BasicTest
+    desc "when not halting on fails"
+    setup do
+      @prev_halt_option = Assert::Test.options.halt_on_fail
+      @prev_halt_envvar = ENV['halt_on_fail']
+    end
+    teardown do
+      Assert::Test.options.halt_on_fail @prev_halt_option
+      ENV['halt_on_fail'] = @prev_halt_envvar
+    end
+  end
+
+  class HaltOnFailTests < SaveRestoreHaltOnFailTests
+    setup do
+      ENV['halt_on_fail'] = 'true'
+      Assert::Test.options.halt_on_fail true
+    end
   end
 
   class HaltFailTests < HaltOnFailTests
@@ -174,36 +196,7 @@ class Assert::Context
 
 
 
-
-  class StringMessageTests < DontHaltFailTests
-    desc "with a string message"
-    setup do
-      @fail_msg = "Didn't work"
-      @result = @context.fail(@fail_msg)
-    end
-
-    should "set the message passed to it on the result" do
-      assert_equal @fail_msg, subject.message
-    end
-
-  end
-
-  class ProcMessageTests < DontHaltFailTests
-    desc "with a proc message"
-    setup do
-      @fail_msg = ::Proc.new{ "Still didn't work" }
-      @result = @context.fail(@fail_msg)
-    end
-
-    should "set the message passed to it on the result" do
-      assert_equal @fail_msg.call, subject.message
-    end
-
-  end
-
-
-
-  class AssertTest < DontHaltOnFailTests
+  class AssertTest < BasicTest
     desc "assert method"
     setup do
       @fail_desc = "my fail desc"
@@ -252,7 +245,7 @@ class Assert::Context
 
 
 
-  class AssertNotTest < DontHaltOnFailTests
+  class AssertNotTest < BasicTest
     desc "assert_not method"
     setup do
       @fail_desc = "my fail desc"
