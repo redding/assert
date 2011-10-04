@@ -107,7 +107,7 @@ class Assert::Context
 
   class HaltOnFailTests < SaveRestoreHaltOnFailTests
     setup do
-      ENV['halt_on_fail'] = true
+      ENV['halt_on_fail'] = 'true'
       Assert::Test.options.halt_on_fail true
     end
   end
@@ -146,6 +146,34 @@ class Assert::Context
     end
 
   end
+
+  class HaltFailTests < HaltOnFailTests
+    desc "fail method"
+    setup do
+      @fail_msg = "something failed"
+      begin
+        @context.fail @fail_msg
+      rescue Exception => @exception
+      end
+      @result = Assert::Result::Fail.new("something", @exception)
+    end
+    subject{ @result }
+
+    should "raise a test failure exception when called" do
+      assert_kind_of Assert::Result::TestFailure, @exception
+    end
+    should "raise the exception with the message passed to it" do
+      assert_equal @fail_msg, @exception.message
+    end
+    should "set the message passed to it on the result" do
+      assert_equal @fail_msg, subject.message
+    end
+
+  end
+
+
+
+
 
   class StringMessageTests < DontHaltFailTests
     desc "with a string message"
