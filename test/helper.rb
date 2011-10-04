@@ -22,12 +22,8 @@ end
 
 # force tests to run without halting on fail (needed for tests to run)
 # anywhere we test halt on fail behavior, we take care of it in the specific context
-class Assert::Context
-  setup do
-    ENV['halt_on_fail'] = 'false'
-    Assert::Test.options.halt_on_fail false
-  end
-end
+ENV['halt_on_fail'] = 'false'
+Assert::Test.options.halt_on_fail false
 
 module Factory
   class << self
