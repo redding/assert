@@ -1,0 +1,14 @@
+== Assert Changes
+
+* changelog tracking
+* removed past tense from Result model #to_sym (#75)
+* showing exception class in Error result message (#64)
+* don't show verbose loading statement when running rake tasks (#72)
+* forced loading rubygems when running rake tasks (#65)
+* removed warning if no test/helper present (#66)
+* fix to not load helpers twice (#67)
+* overhaul to how the rake tasks are generated and handled (#69)
+* added name attr to Result model (#61)
+
+=== v0.6.0
+* everything prior to changelog tracking...
