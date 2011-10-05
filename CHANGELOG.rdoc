@@ -1,6 +1,8 @@
 == Assert Changes
 
-* changelog tracking
+* default halt on failed assertions (#68)
+* fixed for setup error when no $HOME env var (#76)
+* changelog tracking (#79)
 * removed past tense from Result model #to_sym (#75)
 * showing exception class in Error result message (#64)
 * don't show verbose loading statement when running rake tasks (#72)
