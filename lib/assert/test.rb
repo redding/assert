@@ -9,6 +9,11 @@ module Assert
     include Assert::Options
     options do
       default_capture_output false
+      default_halt_on_fail   true
+    end
+
+    def self.halt_on_fail?
+      ENV['halt_on_fail'] == 'true' || self.options.halt_on_fail
     end
 
     # a Test is some code/method to run in the scope of a Context.  After a
@@ -43,6 +48,8 @@ module Assert
           elsif run_scope.respond_to?(@code.to_s)
             run_scope.send(@code.to_s)
           end
+        rescue Result::TestFailure => err
+          @results << Result::Fail.new(self.name, err)
         rescue Result::TestSkipped => err
           @results << Result::Skip.new(self.name, err)
         rescue Exception => err

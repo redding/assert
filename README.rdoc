@@ -65,10 +65,15 @@ Result defines the data related to a test result.  There are a few kinds of test
 * Skip
 * Ignore
 
-Tests can have many results of varying types.
+Tests produce results as they are executed.  Every assert statement produces a result.  Some results, like Error and Skip, will halt execution.  Pass and Ignore results do not halt execution.  Fail results, by default, halt execution but there is an option to have them not halt execution.  Therefore, tests can have many results of varying types.
 
 === Macro
 Macros are procs that define sets of test code and make it available for easy reuse.  Macros work nicely with the 'should' and 'test' context methods.
+
+
+
+== User Options and Helpers
+Assert provides ways for setting user-specfic options and helpers.  When Assert is setting itself up, the last setup step is to look for and require the file ~/.assert/options.rb.  This file is essentially a user level test helper file.  Use it to set options, configure assert extensions, setup or define how to view test results, etc.
 
 
 
@@ -83,6 +88,14 @@ The default Runner object runs tests in random order and the default Terminal vi
 
     $ rake test   # run tests in random order
     $ rake test runner_seed=1234  # run tests seeding with '1234'
+
+=== Failure Handling
+Assert, by default, will halt test execution when a test produces a Fail result.  However, Assert provides an option to not halt when Fail results are produced.  You can control how assert handles fails by either setting an option (in your user .assert/options.rb file) or by setting an env variable:
+
+    Assert::Test.options.halt_on_fail false   # force not halting on fail results
+
+    $ rake test halt_on_fail=true             # force halt on failure using an env var
+
 
 === Rake Tasks
 Assert provides some rake task helpers that will scan your test folder and recursively generate rake tasks for each one of your test folders or files ending in '_test'.  Use this as an alternative to running ruby on each one of your test files individually.
