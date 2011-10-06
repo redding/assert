@@ -3,12 +3,25 @@ require 'assert/test'
 module Assert
   class Suite < ::Hash
 
+    class ContextInfo
+
+      attr_reader :klass, :file
+
+      def initialize(klass, caller_info=nil)
+        @klass = klass
+        @file = if caller_info
+          caller_info.first.gsub(/\:[0-9]+$/, '')
+        end
+      end
+
+    end
+
     TEST_METHOD_REGEX = /^test./
 
     # A suite is a set of tests to run.  When a test class subclasses
     # the Context class, that test class is pushed to the suite.
 
-    attr_accessor :start_time, :end_time, :test_map
+    attr_accessor :start_time, :end_time, :current_caller_info
 
     def run_time
       (@end_time || 0) - (@start_time || 0)
@@ -30,12 +43,10 @@ module Assert
     end
 
     def tests
-      prep
       self.values.flatten
     end
 
     def ordered_tests(klass=nil)
-      prep
       (klass.nil? ? self.contexts : [klass]).inject([]) do |tests, klass|
         tests += (self[klass] || [])
       end
@@ -48,12 +59,10 @@ module Assert
     end
 
     def test_count(klass=nil)
-      prep
       count_tests(klass.nil? ? self.values : [self[klass]])
     end
 
     def result_count(type=nil)
-      prep
       count_results(self.values, type)
     end
 
@@ -131,20 +140,6 @@ module Assert
 
     def count_results(test_sets, type)
       self.values.flatten.inject(0){|count, test| count += test.result_count(type) }
-    end
-
-    def prep
-      if @prepared != true
-        self.test_map ||= Suite::TestMap.new
-        # look for local public methods starting with 'test'and add
-        self.each do |context_class, tests|
-          local_public_test_methods(context_class).each do |meth|
-            tests << Test.new(meth.to_s, self.test_map.context_info(context_class, meth), meth)
-          end
-          tests.uniq
-        end
-      end
-      @prepared = true
     end
 
   end

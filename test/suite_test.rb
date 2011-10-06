@@ -21,7 +21,7 @@ class Assert::Suite
     should have_instance_methods :count, :test_count, :result_count
     should have_instance_methods :setup, :startup, :teardown, :shutdown
 
-    should have_accessors :start_time, :end_time
+    should have_accessors :start_time, :end_time, :current_caller_info
     should have_instance_method  :run_time, :runner_seed
 
     should "be a hash" do
@@ -162,32 +162,6 @@ class Assert::Suite
 
     should "build test instances to run" do
       assert_kind_of Assert::Test, subject.tests.first
-    end
-
-  end
-
-
-  class PrepTest < Assert::Context
-    desc "a suite with a context with local public test meths"
-    setup do
-      @suite = Assert::Suite.new
-      @suite << TwoTests
-    end
-    subject{ @suite }
-
-    should "create tests from any local public test methods with a prep call" do
-      subject.send(:prep)
-      assert_equal 2, subject.test_count(TwoTests)
-    end
-
-    should "not double count local public test methods with multiple prep calls" do
-      subject.send(:prep)
-      subject.send(:prep)
-      assert_equal 2, subject.test_count(TwoTests)
-    end
-
-    should "create tests from any local public test methods with a test_count call" do
-      assert_equal 2, subject.test_count(TwoTests)
     end
 
   end

@@ -1,7 +1,5 @@
 require 'assert'
 
-require 'assert/suite/context_info'
-
 class Assert::Suite::ContextInfo
 
   class BasicTests < Assert::Context

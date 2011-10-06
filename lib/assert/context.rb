@@ -1,5 +1,4 @@
 require 'assert/suite'
-require 'assert/suite/test_map'
 require 'assert/assertions'
 require 'assert/result'
 require 'assert/macros/methods'
@@ -15,16 +14,20 @@ module Assert
     # minimal base logic/methods/instance_vars.  The instance should remain
     # pure to not pollute test scopes.
 
-    # if a class subclasses Context, add it to the suite
+    # if a class subclasses Context, capture the caller info
     def self.inherited(klass)
-      Assert.suite.test_map ||= Suite::TestMap.new
-      Assert.suite.test_map.caller_info = caller
+      Assert.suite.current_caller_info = caller
       Assert.suite << klass
     end
 
-    def self.method_added(meth_name)
-      if meth_name.to_s =~ Assert::Suite::TEST_METHOD_REGEX
-        Assert.suite.test_map.map(self, meth_name)
+    # if a test method is added to a context:
+    # capture any context info, build a test obj, and add it to the suite
+    def self.method_added(meth)
+      if meth.to_s =~ Suite::TEST_METHOD_REGEX
+        ci = Suite::ContextInfo.new(self, Assert.suite.current_caller_info)
+        if Assert.suite[self]
+          Assert.suite[self] << Test.new(meth.to_s, ci, meth)
+        end
       end
     end
 
