@@ -17,7 +17,6 @@ module Assert
     # if a class subclasses Context, capture the caller info
     def self.inherited(klass)
       Assert.suite.current_caller_info = caller
-      Assert.suite << klass
     end
 
     # if a test method is added to a context:
@@ -25,9 +24,7 @@ module Assert
     def self.method_added(meth)
       if meth.to_s =~ Suite::TEST_METHOD_REGEX
         ci = Suite::ContextInfo.new(self, Assert.suite.current_caller_info)
-        if Assert.suite[self]
-          Assert.suite[self] << Test.new(meth.to_s, ci, meth)
-        end
+        Assert.suite.tests << Test.new(meth.to_s, ci, meth)
       end
     end
 

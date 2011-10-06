@@ -9,7 +9,7 @@ class Assert::Context
       @context_class = @test.context_class
     end
     teardown do
-      TEST_ASSERT_SUITE.clear
+      TEST_ASSERT_SUITE.tests.clear
     end
     subject{ @context_class }
 

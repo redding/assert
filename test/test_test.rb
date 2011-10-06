@@ -16,7 +16,7 @@ class Assert::Test
       @expected_name = [ context_desc, test_name.gsub(/^test:\s+should/, "should") ].join(" ")
     end
     teardown do
-      TEST_ASSERT_SUITE.clear
+      TEST_ASSERT_SUITE.tests.clear
     end
     subject{ @test }
 

@@ -16,7 +16,14 @@ TEST_ASSERT_SUITE = Assert::Suite.new
 # onto the the suite running the tests.
 class TestContext < Assert::Context
   def self.inherited(klass)
-    TEST_ASSERT_SUITE << klass
+    TEST_ASSERT_SUITE.current_caller_info = caller
+  end
+
+  def self.method_added(meth)
+    if meth.to_s =~ Assert::Suite::TEST_METHOD_REGEX
+      ci = Assert::Suite::ContextInfo.new(self, Assert.suite.current_caller_info)
+      TEST_ASSERT_SUITE.tests << Assert::Test.new(meth.to_s, ci, meth)
+    end
   end
 end
 

@@ -1,7 +1,7 @@
 require 'assert/test'
 
 module Assert
-  class Suite < ::Hash
+  class Suite
 
     class ContextInfo
 
@@ -21,10 +21,17 @@ module Assert
     # A suite is a set of tests to run.  When a test class subclasses
     # the Context class, that test class is pushed to the suite.
 
-    attr_accessor :start_time, :end_time, :current_caller_info
+    attr_accessor :tests, :start_time, :end_time, :current_caller_info
+
+    def initialize
+      @tests = []
+      @start_time = 0
+      @end_time = 0
+      @current_caller_info = nil
+    end
 
     def run_time
-      (@end_time || 0) - (@start_time || 0)
+      @end_time - @start_time
     end
 
     def runner_seed
@@ -34,37 +41,12 @@ module Assert
       end).to_i
     end
 
-    def <<(context_klass)
-      self[context_klass] ||= []
-    end
+    alias_method :ordered_tests, :tests
 
-    def contexts
-      self.keys.sort{|a,b| a.to_s <=> b.to_s}
+    def results
+      tests.inject([]) {|results, test| results += test.results}
     end
-
-    def tests
-      self.values.flatten
-    end
-
-    def ordered_tests(klass=nil)
-      (klass.nil? ? self.contexts : [klass]).inject([]) do |tests, klass|
-        tests += (self[klass] || [])
-      end
-    end
-
-    def ordered_results(klass=nil)
-      ordered_tests(klass).inject([]) do |results, test|
-        results += test.results
-      end
-    end
-
-    def test_count(klass=nil)
-      count_tests(klass.nil? ? self.values : [self[klass]])
-    end
-
-    def result_count(type=nil)
-      count_results(self.values, type)
-    end
+    alias_method :ordered_results, :results
 
     def count(thing)
       case thing
@@ -84,6 +66,20 @@ module Assert
         result_count(:error)
       else
         0
+      end
+    end
+
+    def test_count
+      self.tests.size
+    end
+
+    def result_count(type=nil)
+      if type
+        self.tests.inject(0) do |count, test|
+          count += test.result_count(type)
+        end
+      else
+        self.results.size
       end
     end
 
@@ -130,16 +126,6 @@ module Assert
 
       # uniq and remove any that don't start with 'test'
       methods.uniq.delete_if {|method_name| method_name !~ TEST_METHOD_REGEX }
-    end
-
-    private
-
-    def count_tests(test_sets)
-      test_sets.inject(0) {|count, tests| count += tests.size}
-    end
-
-    def count_results(test_sets, type)
-      self.values.flatten.inject(0){|count, test| count += test.result_count(type) }
     end
 
   end
