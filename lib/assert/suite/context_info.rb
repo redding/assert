@@ -4,9 +4,11 @@ class Assert::Suite
 
     attr_reader :klass, :file
 
-    def initialize(klass, caller_info)
+    def initialize(klass, caller_info=nil)
       @klass = klass
-      @file = caller_info.first.gsub(/\:[0-9]+$/, '')
+      @file = if caller_info
+        caller_info.first.gsub(/\:[0-9]+$/, '')
+      end
     end
 
   end

@@ -25,4 +25,16 @@ class Assert::Suite::ContextInfo
 
   end
 
+  class KlassOnlyTests < BasicTests
+    desc "w/ only klass information"
+    setup do
+      @info = Assert::Suite::ContextInfo.new(@klass)
+    end
+
+    should "not have any file info" do
+      assert_nil subject.file
+    end
+
+  end
+
 end

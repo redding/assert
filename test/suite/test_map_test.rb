@@ -15,21 +15,27 @@ class Assert::Suite::TestMap
     end
     subject { @map }
 
-    should have_instance_method :<<, :context_info
-
-    should "not have context info for test names that haven't been mapped" do
-      assert_nil @map.context_info(@klass, 'test: has not been mapped')
-    end
+    should have_accessor :caller_info
+    should have_instance_methods :map, :context_info
 
     should "map a test name to context info" do
-      @map.context(@klass, @caller)
-      @map << 'test: should do something'
+      @map.caller_info = @caller
+      @map.map(@klass, 'test: should do something')
 
       mapped_context_info = @map.context_info(@klass, 'test: should do something')
 
       assert_kind_of Assert::Suite::ContextInfo, mapped_context_info
       assert_equal @context_info.klass, mapped_context_info.klass
       assert_equal @context_info.file, mapped_context_info.file
+    end
+
+    should "return context info w/ just the klass if no mapped info found" do
+      klass_only_context_info = Assert::Suite::ContextInfo.new(@klass)
+      mapped_context_info = @map.context_info(@klass, 'test: has not been mapped')
+
+      assert_kind_of Assert::Suite::ContextInfo, mapped_context_info
+      assert_equal klass_only_context_info.klass, mapped_context_info.klass
+      assert_equal klass_only_context_info.file, mapped_context_info.file
     end
 
   end
