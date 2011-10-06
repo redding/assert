@@ -3,10 +3,12 @@ require 'assert/test'
 module Assert
   class Suite < ::Hash
 
+    TEST_METHOD_REGEX = /^test./
+
     # A suite is a set of tests to run.  When a test class subclasses
     # the Context class, that test class is pushed to the suite.
 
-    attr_accessor :start_time, :end_time
+    attr_accessor :start_time, :end_time, :test_map
 
     def run_time
       (@end_time || 0) - (@start_time || 0)
@@ -20,7 +22,6 @@ module Assert
     end
 
     def <<(context_klass)
-      # gsub off any trailing 'Test'
       self[context_klass] ||= []
     end
 
@@ -119,7 +120,7 @@ module Assert
       methods += local_methods
 
       # uniq and remove any that don't start with 'test'
-      methods.uniq.delete_if {|method_name| method_name !~ /^test./ }
+      methods.uniq.delete_if {|method_name| method_name !~ TEST_METHOD_REGEX }
     end
 
     private
@@ -134,7 +135,7 @@ module Assert
 
     def prep
       if @prepared != true
-        # look for local public methods starting with 'test_'and add
+        # look for local public methods starting with 'test'and add
         self.each do |context_class, tests|
           local_public_test_methods(context_class).each do |meth|
             tests << Test.new(meth.to_s, context_class, meth)
