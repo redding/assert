@@ -16,11 +16,17 @@ class Assert::Suite
     end
 
     def <<(test_name)
-      @test_name_map[test_name.to_s] = @context_info.last
+      @test_name_map[map_key(@context_info.last.klass, test_name)] = @context_info.last
     end
 
-    def context_info(test_name)
-      @test_name_map[test_name.to_s]
+    def context_info(test_klass, test_name)
+      @test_name_map[map_key(test_klass, test_name)]
+    end
+
+    private
+
+    def map_key(klass, test_name)
+      "#{klass}##{test_name}"
     end
 
   end
