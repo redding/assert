@@ -28,6 +28,9 @@ Assert::Test.options.halt_on_fail false
 module Factory
   class << self
 
+    def context_info(context_class)
+      Assert::Suite::ContextInfo.new(context_class, ["/path/to_file.rb:1234"])
+    end
     # Generates an anonymous class inherited from whatever you pass or TextContext by default. This
     # provides a common interface for all context classes to be generated in the tests.
     def context_class(inherit_from = nil, &block)
@@ -45,10 +48,10 @@ module Factory
     # if you need a no-op test.
     def test(*args, &block)
       name = (args[0] || "a test").to_s
-      context_class = args[1] || self.context_class
+      context_info = args[1] || self.context_info(self.context_class)
       test_block = (block || args[2] || ::Proc.new{})
 
-      Assert::Test.new(name, context_class, &test_block)
+      Assert::Test.new(name, context_info, &test_block)
     end
 
     # Common interface for generating a new skip result

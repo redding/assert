@@ -135,10 +135,11 @@ module Assert
 
     def prep
       if @prepared != true
+        self.test_map ||= Suite::TestMap.new
         # look for local public methods starting with 'test'and add
         self.each do |context_class, tests|
           local_public_test_methods(context_class).each do |meth|
-            tests << Test.new(meth.to_s, context_class, meth)
+            tests << Test.new(meth.to_s, self.test_map.context_info(context_class, meth), meth)
           end
           tests.uniq
         end

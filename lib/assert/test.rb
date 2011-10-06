@@ -19,24 +19,28 @@ module Assert
     # a Test is some code/method to run in the scope of a Context.  After a
     # a test runs, it should have some assertions which are its results.
 
-    attr_reader :name, :code, :context_class
+    attr_reader :name, :code, :context_info
     attr_accessor :results, :output
 
-    def initialize(name, context_class, code = nil, &block)
-      @context_class = context_class
+    def initialize(name, suite_context_info, code = nil, &block)
+      @context_info = suite_context_info
       @name = name_from_context(name)
       @code = (code || block)
       @results = ResultSet.new
       @output = ""
     end
 
+    def context_class
+      self.context_info.klass
+    end
+
     def run(view=nil)
       @results.view = view
-      run_scope = @context_class.new(self)
+      run_scope = self.context_class.new(self)
       capture_output(StringIO.new(@output, "w+")) do
         begin
           # run any assert style 'setup do' setups
-          @context_class.setup(run_scope)
+          self.context_class.setup(run_scope)
           # run any classic test/unit style 'def setup' setups
           if run_scope.respond_to?(:setup)
             run_scope.setup
@@ -61,7 +65,7 @@ module Assert
               run_scope.teardown
             end
             # run any assert style 'teardown do' teardowns
-            @context_class.teardown(run_scope)
+            self.context_class.teardown(run_scope)
           rescue Exception => teardown_err
             @results << Result::Error.new(self.name, teardown_err)
           end
@@ -110,7 +114,7 @@ module Assert
     end
 
     def name_from_context(name)
-      [ @context_class.description,
+      [ self.context_class.description,
         name.gsub(/^test:\s+should/, "should")
       ].compact.reject{|p| p.empty?}.join(" ")
     end

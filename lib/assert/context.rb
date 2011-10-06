@@ -18,13 +18,13 @@ module Assert
     # if a class subclasses Context, add it to the suite
     def self.inherited(klass)
       Assert.suite.test_map ||= Suite::TestMap.new
-      Assert.suite.test_map.context(klass, caller)
+      Assert.suite.test_map.caller_info = caller
       Assert.suite << klass
     end
 
     def self.method_added(meth_name)
       if meth_name.to_s =~ Assert::Suite::TEST_METHOD_REGEX
-        Assert.suite.test_map << meth_name
+        Assert.suite.test_map.map(self, meth_name)
       end
     end
 

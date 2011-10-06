@@ -302,7 +302,7 @@ class Assert::Context
 
       d, b = @should_desc, @should_block
       @context_class = Factory.context_class { test(d, &b) }
-      @context = @context_class.new(Factory.test("something", @context_class))
+      @context = @context_class.new(Factory.test("something", Factory.context_info(@context_class)))
     end
     subject{ @context }
 
@@ -318,7 +318,7 @@ class Assert::Context
     setup do
       d = @should_desc
       @context_class = Factory.context_class { test(d) }
-      @context = @context_class.new(Factory.test("something", @context_class))
+      @context = @context_class.new(Factory.test("something", Factory.context_info(@context_class)))
     end
     subject{ @context }
 
@@ -337,7 +337,7 @@ class Assert::Context
       @context_class = Factory.context_class do
         test_eventually(d, &b)
       end
-      @context = @context_class.new(Factory.test("something", @context_class))
+      @context = @context_class.new(Factory.test("something", Factory.context_info(@context_class)))
     end
     subject{ @context }
 
@@ -361,7 +361,7 @@ class Assert::Context
 
       d, b = @should_desc, @should_block
       @context_class = Factory.context_class { should(d, &b) }
-      @context = @context_class.new(Factory.test("something", @context_class))
+      @context = @context_class.new(Factory.test("something", Factory.context_info(@context_class)))
     end
     subject{ @context }
 
@@ -377,7 +377,7 @@ class Assert::Context
     setup do
       d = @should_desc
       @context_class = Factory.context_class { should(d) }
-      @context = @context_class.new(Factory.test("something", @context_class))
+      @context = @context_class.new(Factory.test("something", Factory.context_info(@context_class)))
     end
     subject{ @context }
 
@@ -394,7 +394,7 @@ class Assert::Context
     setup do
       d, b = @should_desc, @should_block
       @context_class = Factory.context_class { should_eventually(d, &b) }
-      @context = @context_class.new(Factory.test("something", @context_class))
+      @context = @context_class.new(Factory.test("something", Factory.context_info(@context_class)))
     end
     subject{ @context }
 

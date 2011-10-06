@@ -11,7 +11,8 @@ class Assert::Test
       @context_class = Factory.context_class do
         desc context_desc
       end
-      @test = Factory.test(test_name, @context_class, @test_code)
+      @context_info = Factory.context_info(@context_class)
+      @test = Factory.test(test_name, @context_info, @test_code)
       @expected_name = [ context_desc, test_name.gsub(/^test:\s+should/, "should") ].join(" ")
     end
     teardown do
@@ -19,9 +20,9 @@ class Assert::Test
     end
     subject{ @test }
 
-    should have_readers :name, :code, :context_class
+    should have_readers :name, :code, :context_info
     should have_accessor :results, :output
-    should have_instance_methods :run, :result_count
+    should have_instance_methods :run, :result_count, :context_class
     should have_instance_methods *Assert::Result.types.keys.collect{|k| "#{k}_results".to_sym }
 
     should "set it's test name to the context description with the passed in name cleaned" do
@@ -55,7 +56,7 @@ class Assert::Test
 
   class PassFailIgnoreTest < ResultsTest
     setup do
-      @test = Factory.test("pass fail ignore test", @context_class) do
+      @test = Factory.test("pass fail ignore test", @context_info) do
         ignore("something")
         assert(true)
         assert(false)
@@ -113,7 +114,7 @@ class Assert::Test
 
   class SkipHandlingTest < ResultsTest
     setup do
-      @test = Factory.test("skip test", @context_class) { skip }
+      @test = Factory.test("skip test", @context_info) { skip }
       @test.run
     end
     subject{ @test }
@@ -136,7 +137,7 @@ class Assert::Test
 
   class ErrorHandlingTest < ResultsTest
     setup do
-      @test = Factory.test("error test", @context_class) do
+      @test = Factory.test("error test", @context_info) do
         raise StandardError, "WHAT"
       end
       @test.run

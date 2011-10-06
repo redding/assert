@@ -54,25 +54,25 @@ class Assert::Suite
       @suite = Assert::Suite.new
       context_class = Factory.context_class
       @suite[context_class] = [
-        Factory.test("should do nothing", context_class),
-        Factory.test("should pass", context_class) do
+        Factory.test("should do nothing", Factory.context_info(context_class)),
+        Factory.test("should pass", Factory.context_info(context_class)) do
           assert(1==1)
           refute(1==0)
         end,
-        Factory.test("should fail", context_class) do
+        Factory.test("should fail", Factory.context_info(context_class)) do
           ignore
           assert(1==0)
           refute(1==1)
         end,
-        Factory.test("should be ignored", context_class) do
+        Factory.test("should be ignored", Factory.context_info(context_class)) do
           ignore
         end,
-        Factory.test("should skip", context_class) do
+        Factory.test("should skip", Factory.context_info(context_class)) do
           skip
           ignore
           assert(1==1)
         end,
-        Factory.test("should error", context_class) do
+        Factory.test("should error", Factory.context_info(context_class)) do
           raise Exception
           ignore
           assert(1==1)
