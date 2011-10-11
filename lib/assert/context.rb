@@ -128,20 +128,22 @@ module Assert
         end
       end
 
-      def test_eventually(*args, &block)
-        test(*args)
+      def test_eventually(desc_or_macro, called_from=nil, &block)
+        called_from ||= caller.first
+        test(desc_or_macro, called_from)
       end
       alias_method :test_skip, :test_eventually
 
       def should(desc_or_macro, called_from=nil, &block)
+        called_from ||= caller.first
         if !desc_or_macro.kind_of?(Macro)
           desc_or_macro = "should #{desc_or_macro}"
         end
         test(desc_or_macro, called_from, &block)
       end
 
-      def should_eventually(*args, &block)
-        should(*args)
+      def should_eventually(desc_or_macro, called_from=nil, &block)
+        should(desc_or_macro, called_from)
       end
       alias_method :should_skip, :should_eventually
 
@@ -185,16 +187,16 @@ module Assert
     # adds a Pass result to the end of the test's results
     # does not break test execution
     def pass(pass_msg=nil)
-      capture_result do |test_name, backtrace|
-        Assert::Result::Pass.new(test_name, pass_msg, backtrace)
+      capture_result do |test, backtrace|
+        Assert::Result::Pass.new(test, pass_msg, backtrace)
       end
     end
 
     # adds an Ignore result to the end of the test's results
     # does not break test execution
     def ignore(ignore_msg=nil)
-      capture_result do |test_name, backtrace|
-        Assert::Result::Ignore.new(test_name, ignore_msg, backtrace)
+      capture_result do |test, backtrace|
+        Assert::Result::Ignore.new(test, ignore_msg, backtrace)
       end
     end
 
@@ -205,8 +207,8 @@ module Assert
       if Assert::Test.halt_on_fail?
         raise(Result::TestFailure, message)
       else
-        capture_result do |test_name, backtrace|
-          Assert::Result::Fail.new(test_name, message, backtrace)
+        capture_result do |test, backtrace|
+          Assert::Result::Fail.new(test, message, backtrace)
         end
       end
     end
@@ -240,7 +242,7 @@ module Assert
 
     def capture_result
       if block_given?
-        result = yield @__running_test__.name, caller
+        result = yield @__running_test__, caller
         @__running_test__.results << result
         result
       end

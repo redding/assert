@@ -25,14 +25,22 @@ end
 
 # force tests to run without halting on fail (needed for tests to run)
 # anywhere we test halt on fail behavior, we take care of it in the specific context
-ENV['halt_on_fail'] = 'false'
-Assert::Test.options.halt_on_fail false
+class Assert::Context
+  def setup
+    ENV['halt_on_fail'] = 'false'
+    Assert::Test.options.halt_on_fail false
+  end
+end
 
 module Factory
   class << self
 
+    def context_info_called_from
+      "/path/to_file.rb:1234"
+    end
+
     def context_info(context_class)
-      Assert::Suite::ContextInfo.new(context_class, "/path/to_file.rb:1234")
+      Assert::Suite::ContextInfo.new(context_class, context_info_called_from)
     end
     # Generates an anonymous class inherited from whatever you pass or TextContext by default. This
     # provides a common interface for all context classes to be generated in the tests.
@@ -59,7 +67,7 @@ module Factory
 
     # Common interface for generating a new skip result
     def skip_result(name, exception)
-      Assert::Result::Skip.new(name, exception)
+      Assert::Result::Skip.new(Factory.test(name), exception)
     end
 
   end

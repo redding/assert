@@ -39,7 +39,7 @@ class Assert::Test
     end
 
     should "have a custom inspect that only shows limited attributes" do
-      attributes_string = [ :name, :context_class, :results ].collect do |method|
+      attributes_string = [ :name, :context_info, :results ].collect do |method|
         "@#{method}=#{subject.send(method).inspect}"
       end.join(" ")
       expected = "#<#{subject.class} #{attributes_string}>"

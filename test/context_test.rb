@@ -103,7 +103,7 @@ class Assert::Context
     end
     should "set the calling backtrace on the result" do
       assert_kind_of Array, subject.backtrace
-      assert_match /assert\/test\/context_test\.rb/, subject.trace
+      assert_equal Factory.context_info_called_from, subject.trace
     end
   end
 
@@ -182,7 +182,7 @@ class Assert::Context
         @context.fail @fail_msg
       rescue Exception => @exception
       end
-      @result = Assert::Result::Fail.new("something", @exception)
+      @result = Assert::Result::Fail.new(Factory.test("something"), @exception)
     end
     subject{ @result }
 

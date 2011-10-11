@@ -53,11 +53,11 @@ module Assert
             run_scope.send(@code.to_s)
           end
         rescue Result::TestFailure => err
-          @results << Result::Fail.new(self.name, err)
+          @results << Result::Fail.new(self, err)
         rescue Result::TestSkipped => err
-          @results << Result::Skip.new(self.name, err)
+          @results << Result::Skip.new(self, err)
         rescue Exception => err
-          @results << Result::Error.new(self.name, err)
+          @results << Result::Error.new(self, err)
         ensure
           begin
             # run any classic test/unit style 'def teardown' teardowns
@@ -94,7 +94,7 @@ module Assert
     end
 
     def inspect
-      attributes_string = ([ :name, :context_class, :results ].collect do |attr|
+      attributes_string = ([ :name, :context_info, :results ].collect do |attr|
         "@#{attr}=#{self.send(attr).inspect}"
       end).join(" ")
       "#<#{self.class} #{attributes_string}>"
