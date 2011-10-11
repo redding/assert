@@ -15,14 +15,14 @@ module Assert
 
 
     def assert_raises(*args, &block)
-      assertion, fail_desc = check_exception(args, :raises, &block)
-      assert(assertion, fail_desc, "")
+      assertion, what_failed_msg = check_exception(args, :raises, &block)
+      assert(assertion, nil, what_failed_msg)
     end
     alias_method :assert_raise, :assert_raises
 
     def assert_nothing_raised(*args, &block)
-      assertion, fail_desc = check_exception(args, :not_raises, &block)
-      assert(!assertion, fail_desc, "")
+      assertion, what_failed_msg = check_exception(args, :not_raises, &block)
+      assert(!assertion, nil, what_failed_msg)
     end
     alias_method :assert_not_raises, :assert_nothing_raised
     alias_method :assert_not_raise, :assert_nothing_raised
