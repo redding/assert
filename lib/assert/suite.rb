@@ -5,10 +5,11 @@ module Assert
 
     class ContextInfo
 
-      attr_reader :klass, :file
+      attr_reader :klass, :called_from, :file
 
       def initialize(klass, called_from=nil)
         @klass = klass
+        @called_from = called_from
         @file = if called_from
           called_from.gsub(/\:[0-9]+.*$/, '')
         end
