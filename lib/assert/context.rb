@@ -16,10 +16,20 @@ module Assert
 
     # if a test method is added to a context manually (not using a context helper):
     # capture any context info, build a test obj, and add it to the suite
-    def self.method_added(meth)
-      if meth.to_s =~ Suite::TEST_METHOD_REGEX
-        ci = Suite::ContextInfo.new(self, caller.first)
-        Assert.suite.tests << Test.new(meth.to_s, ci, meth)
+    def self.method_added(method_name)
+      if method_name.to_s =~ Suite::TEST_METHOD_REGEX
+        called_from = caller.first
+        klass_method_name = "#{self}##{method_name}"
+
+        if Assert.suite.test_methods.include?(klass_method_name)
+          puts "WARNING: redefining '#{klass_method_name}'"
+          puts "  from: #{called_from}"
+        else
+          Assert.suite.test_methods << klass_method_name
+        end
+
+        ci = Suite::ContextInfo.new(self, called_from)
+        Assert.suite.tests << Test.new(method_name.to_s, ci, method_name)
       end
     end
 
@@ -112,16 +122,6 @@ module Assert
 
           # if no block given, create a test that just skips
           method_block = block_given? ? block : (Proc.new { skip })
-
-          # instead of using the typical 'method_defined?' pattern (which) checks
-          # all parent contexts, we really just need to make sure the method_name
-          # is not part of self's local_pulic_test_methods for this check
-          if Assert.suite.send(:local_public_test_methods, self).include?(method_name)
-            from = caller.first
-            puts "WARNING: should #{desc_or_macro.inspect} is redefining #{method_name}!"
-            puts "  from: #{from}"
-            puts "  self: #{self.inspect}"
-          end
 
           ci = Suite::ContextInfo.new(self, called_from)
           Assert.suite.tests << Test.new(method_name, ci, &method_block)

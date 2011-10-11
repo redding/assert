@@ -20,7 +20,8 @@ class Assert::Suite
     should have_instance_methods :count, :test_count, :result_count
     should have_instance_methods :setup, :startup, :teardown, :shutdown
 
-    should have_accessors :tests, :start_time, :end_time, :current_caller_info
+    should have_accessors :tests, :test_methods
+    should have_accessors :start_time, :end_time
     should have_instance_method  :run_time, :runner_seed
 
     should "determine a klass' local public test methods" do
