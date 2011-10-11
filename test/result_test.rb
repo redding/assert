@@ -31,12 +31,13 @@ module Assert::Result
   class BaseTest < Assert::Context
     desc "a base result"
     setup do
-      @result = Assert::Result::Base.new("a test name", "a message", ["line 1", "line2"])
+      @test = Factory.test("a test name")
+      @result = Assert::Result::Base.new(@test, "a message", ["line 1", "line2"])
     end
     subject{ @result }
 
-    should have_readers :test_name, :message, :backtrace
-    should have_instance_methods :name, :to_sym, :to_s, :trace
+    should have_readers :test, :message, :backtrace
+    should have_instance_methods :test_name, :name, :to_sym, :to_s, :trace
 
     Assert::Result.types.keys.each do |type|
       should "respond to the instance method ##{type}?" do
@@ -48,8 +49,12 @@ module Assert::Result
       end
     end
 
+    should "know its test" do
+      assert_equal @test, subject.test
+    end
+
     should "nil out empty messages" do
-      assert_equal nil, Assert::Result::Base.new("a test name", "").message
+      assert_equal nil, Assert::Result::Base.new(@test, "").message
     end
 
     should "show only its class and message when inspected" do
@@ -83,7 +88,8 @@ module Assert::Result
   class PassTest < Assert::Context
     desc "a pass result"
     setup do
-      @result = Assert::Result::Pass.new("test", "passed", [])
+      @test = Factory.test("a test name")
+      @result = Assert::Result::Pass.new(@test, "passed", [])
     end
     subject { @result }
 
@@ -113,7 +119,8 @@ module Assert::Result
   class IgnoreTest < Assert::Context
     desc "an ignore result"
     setup do
-      @result = Assert::Result::Ignore.new("test", "ignored", [])
+      @test = Factory.test("a test name")
+      @result = Assert::Result::Ignore.new(@test, "ignored", [])
     end
     subject { @result }
 
@@ -151,7 +158,8 @@ module Assert::Result
   class FailTest < Assert::Context
     desc "a fail result"
     setup do
-      @result = Assert::Result::Fail.new("test", "failed", [])
+      @test = Factory.test("a test name")
+      @result = Assert::Result::Fail.new(@test, "failed", [])
     end
     subject { @result }
 
@@ -189,13 +197,14 @@ module Assert::Result
   class SkipTest < Assert::Context
     desc "a skip result"
     setup do
+      @test = Factory.test("a test name")
       @exception = nil
       begin
         raise TestSkipped, "test ski["
       rescue Exception => err
         @exception = err
       end
-      @result = Assert::Result::Skip.new("test", @exception)
+      @result = Assert::Result::Skip.new(@test, @exception)
     end
     subject { @result }
 
@@ -225,13 +234,14 @@ module Assert::Result
   class ErrorTest < Assert::Context
     desc "an error result"
     setup do
+      @test = Factory.test("a test name")
       @exception = nil
       begin
         raise Exception, "test error"
       rescue Exception => err
         @exception = err
       end
-      @result = Assert::Result::Error.new("test", @exception)
+      @result = Assert::Result::Error.new(@test, @exception)
     end
     subject { @result }
 

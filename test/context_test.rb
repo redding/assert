@@ -10,13 +10,18 @@ class Assert::Context
       @context = @context_class.new(@test)
     end
     teardown do
-      TEST_ASSERT_SUITE.clear
+      TEST_ASSERT_SUITE.tests.clear
     end
     subject{ @context }
 
     should have_instance_methods :assert, :assert_not, :refute
     should have_instance_methods :skip, :pass, :fail, :flunk, :ignore
     should have_instance_methods :subject
+
+    def test_should_collect_context_info
+      assert_match /test\/context_test.rb$/, @__running_test__.context_info.file
+      assert_equal self.class, @__running_test__.context_info.klass
+    end
 
   end
 
@@ -98,7 +103,7 @@ class Assert::Context
     end
     should "set the calling backtrace on the result" do
       assert_kind_of Array, subject.backtrace
-      assert_match /assert\/test\/context_test\.rb/, subject.trace
+      assert_equal Factory.context_info_called_from, subject.trace
     end
   end
 
@@ -177,7 +182,7 @@ class Assert::Context
         @context.fail @fail_msg
       rescue Exception => @exception
       end
-      @result = Assert::Result::Fail.new("something", @exception)
+      @result = Assert::Result::Fail.new(Factory.test("something"), @exception)
     end
     subject{ @result }
 

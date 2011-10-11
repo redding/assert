@@ -16,24 +16,13 @@ class Assert::Suite
     end
     subject { @suite }
 
-    should have_instance_method  :<<
-    should have_instance_methods :contexts, :tests, :ordered_tests, :ordered_results
+    should have_instance_methods :ordered_tests, :results, :ordered_results
     should have_instance_methods :count, :test_count, :result_count
     should have_instance_methods :setup, :startup, :teardown, :shutdown
 
+    should have_accessors :tests, :test_methods
     should have_accessors :start_time, :end_time
     should have_instance_method  :run_time, :runner_seed
-
-    should "be a hash" do
-      assert_kind_of ::Hash, subject
-    end
-
-    should "push contexts on itself" do
-      context_class = Factory.context_class
-      subject << context_class
-      assert_equal true, subject.has_key?(context_class)
-      assert_equal [], subject[context_class]
-    end
 
     should "determine a klass' local public test methods" do
       assert_equal(
@@ -53,26 +42,26 @@ class Assert::Suite
     setup do
       @suite = Assert::Suite.new
       context_class = Factory.context_class
-      @suite[context_class] = [
-        Factory.test("should do nothing", context_class),
-        Factory.test("should pass", context_class) do
+      @suite.tests = [
+        Factory.test("should do nothing", Factory.context_info(context_class)),
+        Factory.test("should pass", Factory.context_info(context_class)) do
           assert(1==1)
           refute(1==0)
         end,
-        Factory.test("should fail", context_class) do
+        Factory.test("should fail", Factory.context_info(context_class)) do
           ignore
           assert(1==0)
           refute(1==1)
         end,
-        Factory.test("should be ignored", context_class) do
+        Factory.test("should be ignored", Factory.context_info(context_class)) do
           ignore
         end,
-        Factory.test("should skip", context_class) do
+        Factory.test("should skip", Factory.context_info(context_class)) do
           skip
           ignore
           assert(1==1)
         end,
-        Factory.test("should error", context_class) do
+        Factory.test("should error", Factory.context_info(context_class)) do
           raise Exception
           ignore
           assert(1==1)
@@ -162,32 +151,6 @@ class Assert::Suite
 
     should "build test instances to run" do
       assert_kind_of Assert::Test, subject.tests.first
-    end
-
-  end
-
-
-  class PrepTest < Assert::Context
-    desc "a suite with a context with local public test meths"
-    setup do
-      @suite = Assert::Suite.new
-      @suite << TwoTests
-    end
-    subject{ @suite }
-
-    should "create tests from any local public test methods with a prep call" do
-      subject.send(:prep)
-      assert_equal 2, subject.test_count(TwoTests)
-    end
-
-    should "not double count local public test methods with multiple prep calls" do
-      subject.send(:prep)
-      subject.send(:prep)
-      assert_equal 2, subject.test_count(TwoTests)
-    end
-
-    should "create tests from any local public test methods with a test_count call" do
-      assert_equal 2, subject.test_count(TwoTests)
     end
 
   end

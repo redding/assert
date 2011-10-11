@@ -37,13 +37,13 @@ class Assert::ResultSet
       @view_s = ""
       @view = @result_set.view = FakeView.new(nil, StringIO.new(@view_s, "w+"))
 
-      @pass_result = Assert::Result::Pass.new("test", "pass", [])
+      @pass_result = Assert::Result::Pass.new(Factory.test("test"), "pass", [])
       @result_set << @pass_result
-      @fail_result = Assert::Result::Fail.new("test", "fail", [])
+      @fail_result = Assert::Result::Fail.new(Factory.test("test"), "fail", [])
       @result_set << @fail_result
-      @skip_result = Assert::Result::Skip.new("test", Assert::Result::TestSkipped.new)
+      @skip_result = Assert::Result::Skip.new(Factory.test("test"), Assert::Result::TestSkipped.new)
       @result_set << @skip_result
-      @error_result = Assert::Result::Error.new("test", RuntimeError.new)
+      @error_result = Assert::Result::Error.new(Factory.test("test"), RuntimeError.new)
       @result_set << @error_result
     end
     subject{ @view }
