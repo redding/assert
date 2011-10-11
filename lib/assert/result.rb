@@ -79,7 +79,6 @@ module Assert::Result
     def initialize(test, message, backtrace=nil)
       @test = test
       @backtrace = Backtrace.new(backtrace)
-      @test_name = test_name
       @message = message && !message.empty? ? message : nil
     end
 

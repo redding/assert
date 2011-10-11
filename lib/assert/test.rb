@@ -67,7 +67,7 @@ module Assert
             # run any assert style 'teardown do' teardowns
             self.context_class.teardown(run_scope)
           rescue Exception => teardown_err
-            @results << Result::Error.new(self.name, teardown_err)
+            @results << Result::Error.new(self, teardown_err)
           end
         end
       end
