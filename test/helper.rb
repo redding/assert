@@ -17,7 +17,7 @@ TEST_ASSERT_SUITE = Assert::Suite.new
 class TestContext < Assert::Context
   def self.method_added(meth)
     if meth.to_s =~ Assert::Suite::TEST_METHOD_REGEX
-      ci = Assert::Suite::ContextInfo.new(self, Assert.suite.current_caller_info)
+      ci = Assert::Suite::ContextInfo.new(self, Factory.context_info_called_from)
       TEST_ASSERT_SUITE.tests << Assert::Test.new(meth.to_s, ci, meth)
     end
   end
