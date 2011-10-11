@@ -7,10 +7,10 @@ module Assert
 
       attr_reader :klass, :file
 
-      def initialize(klass, caller_info=nil)
+      def initialize(klass, called_from=nil)
         @klass = klass
-        @file = if caller_info
-          caller_info.first.gsub(/\:[0-9]+$/, '')
+        @file = if called_from
+          called_from.gsub(/\:[0-9]+.*$/, '')
         end
       end
 

@@ -5,11 +5,14 @@ class Assert::Context
   class ClassMethodsTest < Assert::Context
     desc "Assert context class"
     setup do
+      @orig_assert_suite = Assert.suite
+      Assert.options.suite TEST_ASSERT_SUITE
       @test = Factory.test
       @context_class = @test.context_class
     end
     teardown do
       TEST_ASSERT_SUITE.tests.clear
+      Assert.options.suite @orig_assert_suite
     end
     subject{ @context_class }
 
@@ -296,6 +299,8 @@ class Assert::Context
   class TestMethTest < ClassMethodsTest
     desc "test method"
     setup do
+      @test_count_before = Assert.suite.tests.size
+
       @should_desc = "be true"
       @should_block = ::Proc.new{ assert(true) }
       @method_name = "test: #{@should_desc}"
@@ -307,8 +312,8 @@ class Assert::Context
     subject{ @context }
 
     should "define a test method named after the should desc" do
-      assert_respond_to @method_name, subject
-      assert_equal subject.instance_eval(&@should_block), subject.send(@method_name)
+      assert_equal @test_count_before+1, Assert.suite.tests.size
+      assert_equal @should_block, Assert.suite.tests.last.code
     end
 
   end
@@ -324,7 +329,7 @@ class Assert::Context
 
     should "define a test method named after the should desc that raises a test skipped" do
       assert_raises(Assert::Result::TestSkipped) do
-        subject.send(@method_name)
+        subject.instance_eval(&Assert.suite.tests.last.code)
       end
     end
 
@@ -342,9 +347,8 @@ class Assert::Context
     subject{ @context }
 
     should "define a test method named after the should desc that raises a test skipped" do
-      assert_respond_to @method_name, subject
       assert_raises(Assert::Result::TestSkipped) do
-        subject.send(@method_name)
+        subject.instance_eval(&Assert.suite.tests.last.code)
       end
     end
 
@@ -355,6 +359,8 @@ class Assert::Context
   class ShouldTest < ClassMethodsTest
     desc "'should' method"
     setup do
+      @test_count_before = Assert.suite.tests.size
+
       @should_desc = "be true"
       @should_block = ::Proc.new{ assert(true) }
       @method_name = "test: should #{@should_desc}"
@@ -366,8 +372,8 @@ class Assert::Context
     subject{ @context }
 
     should "define a test method named after the should desc" do
-      assert_respond_to @method_name, subject
-      assert_equal subject.instance_eval(&@should_block), subject.send(@method_name)
+      assert_equal @test_count_before+1, Assert.suite.tests.size
+      assert_equal @should_block, Assert.suite.tests.last.code
     end
 
   end
@@ -383,7 +389,7 @@ class Assert::Context
 
     should "define a test method named after the should desc that raises a test skipped" do
       assert_raises(Assert::Result::TestSkipped) do
-        subject.send(@method_name)
+        subject.instance_eval(&Assert.suite.tests.last.code)
       end
     end
 
@@ -399,9 +405,8 @@ class Assert::Context
     subject{ @context }
 
     should "define a test method named after the should desc that raises a test skipped" do
-      assert_respond_to @method_name, subject
       assert_raises(Assert::Result::TestSkipped) do
-        subject.send(@method_name)
+        subject.instance_eval(&Assert.suite.tests.last.code)
       end
     end
 

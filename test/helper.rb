@@ -15,10 +15,6 @@ TEST_ASSERT_SUITE = Assert::Suite.new
 # factory by default. This will ensure any contexts you define in your tests will not be shoved
 # onto the the suite running the tests.
 class TestContext < Assert::Context
-  def self.inherited(klass)
-    TEST_ASSERT_SUITE.current_caller_info = caller
-  end
-
   def self.method_added(meth)
     if meth.to_s =~ Assert::Suite::TEST_METHOD_REGEX
       ci = Assert::Suite::ContextInfo.new(self, Assert.suite.current_caller_info)
@@ -36,7 +32,7 @@ module Factory
   class << self
 
     def context_info(context_class)
-      Assert::Suite::ContextInfo.new(context_class, ["/path/to_file.rb:1234"])
+      Assert::Suite::ContextInfo.new(context_class, "/path/to_file.rb:1234")
     end
     # Generates an anonymous class inherited from whatever you pass or TextContext by default. This
     # provides a common interface for all context classes to be generated in the tests.

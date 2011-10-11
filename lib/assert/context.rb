@@ -14,16 +14,11 @@ module Assert
     # minimal base logic/methods/instance_vars.  The instance should remain
     # pure to not pollute test scopes.
 
-    # if a class subclasses Context, capture the caller info
-    def self.inherited(klass)
-      Assert.suite.current_caller_info = caller
-    end
-
-    # if a test method is added to a context:
+    # if a test method is added to a context manually (not using a context helper):
     # capture any context info, build a test obj, and add it to the suite
     def self.method_added(meth)
       if meth.to_s =~ Suite::TEST_METHOD_REGEX
-        ci = Suite::ContextInfo.new(self, Assert.suite.current_caller_info)
+        ci = Suite::ContextInfo.new(self, caller.first)
         Assert.suite.tests << Test.new(meth.to_s, ci, meth)
       end
     end
@@ -108,7 +103,8 @@ module Assert
         end
       end
 
-      def test(desc_or_macro, &block)
+      def test(desc_or_macro, called_from=nil, &block)
+        called_from ||= caller.first
         if desc_or_macro.kind_of?(Macro)
           instance_eval(&desc_or_macro)
         else
@@ -127,24 +123,25 @@ module Assert
             puts "  self: #{self.inspect}"
           end
 
-          define_method(method_name, &method_block)
+          ci = Suite::ContextInfo.new(self, called_from)
+          Assert.suite.tests << Test.new(method_name, ci, &method_block)
         end
       end
 
-      def test_eventually(desc, &block)
-        test(desc)
+      def test_eventually(*args, &block)
+        test(*args)
       end
       alias_method :test_skip, :test_eventually
 
-      def should(desc_or_macro, &block)
+      def should(desc_or_macro, called_from=nil, &block)
         if !desc_or_macro.kind_of?(Macro)
           desc_or_macro = "should #{desc_or_macro}"
         end
-        test(desc_or_macro, &block)
+        test(desc_or_macro, called_from, &block)
       end
 
-      def should_eventually(desc, &block)
-        should(desc)
+      def should_eventually(*args, &block)
+        should(*args)
       end
       alias_method :should_skip, :should_eventually
 

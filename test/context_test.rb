@@ -18,6 +18,11 @@ class Assert::Context
     should have_instance_methods :skip, :pass, :fail, :flunk, :ignore
     should have_instance_methods :subject
 
+    def test_should_collect_context_info
+      assert_match /test\/context_test.rb$/, @__running_test__.context_info.file
+      assert_equal self.class, @__running_test__.context_info.klass
+    end
+
   end
 
 

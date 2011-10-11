@@ -5,7 +5,7 @@ class Assert::Suite::ContextInfo
   class BasicTests < Assert::Context
     desc "a suite's context info"
     setup do
-      @caller = caller
+      @caller = caller.first
       @klass = Assert::Context
       @info = Assert::Suite::ContextInfo.new(@klass, @caller)
     end
@@ -18,7 +18,7 @@ class Assert::Suite::ContextInfo
     end
 
     should "set its file from caller info on init" do
-      assert_equal @caller.first.gsub(/\:[0-9]+$/, ''), subject.file
+      assert_equal @caller.first.gsub(/\:[0-9]+.*$/, ''), subject.file
     end
 
   end
