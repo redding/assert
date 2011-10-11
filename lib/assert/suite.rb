@@ -1,15 +1,38 @@
 require 'assert/test'
 
 module Assert
-  class Suite < ::Hash
+  class Suite
+
+    class ContextInfo
+
+      attr_reader :klass, :called_from, :file
+
+      def initialize(klass, called_from=nil)
+        @klass = klass
+        @called_from = called_from
+        @file = if called_from
+          called_from.gsub(/\:[0-9]+.*$/, '')
+        end
+      end
+
+    end
+
+    TEST_METHOD_REGEX = /^test./
 
     # A suite is a set of tests to run.  When a test class subclasses
     # the Context class, that test class is pushed to the suite.
 
-    attr_accessor :start_time, :end_time
+    attr_accessor :tests, :test_methods, :start_time, :end_time
+
+    def initialize
+      @tests = []
+      @test_methods = []
+      @start_time = 0
+      @end_time = 0
+    end
 
     def run_time
-      (@end_time || 0) - (@start_time || 0)
+      @end_time - @start_time
     end
 
     def runner_seed
@@ -19,42 +42,12 @@ module Assert
       end).to_i
     end
 
-    def <<(context_klass)
-      # gsub off any trailing 'Test'
-      self[context_klass] ||= []
-    end
+    alias_method :ordered_tests, :tests
 
-    def contexts
-      self.keys.sort{|a,b| a.to_s <=> b.to_s}
+    def results
+      tests.inject([]) {|results, test| results += test.results}
     end
-
-    def tests
-      prep
-      self.values.flatten
-    end
-
-    def ordered_tests(klass=nil)
-      prep
-      (klass.nil? ? self.contexts : [klass]).inject([]) do |tests, klass|
-        tests += (self[klass] || [])
-      end
-    end
-
-    def ordered_results(klass=nil)
-      ordered_tests(klass).inject([]) do |results, test|
-        results += test.results
-      end
-    end
-
-    def test_count(klass=nil)
-      prep
-      count_tests(klass.nil? ? self.values : [self[klass]])
-    end
-
-    def result_count(type=nil)
-      prep
-      count_results(self.values, type)
-    end
+    alias_method :ordered_results, :results
 
     def count(thing)
       case thing
@@ -74,6 +67,20 @@ module Assert
         result_count(:error)
       else
         0
+      end
+    end
+
+    def test_count
+      self.tests.size
+    end
+
+    def result_count(type=nil)
+      if type
+        self.tests.inject(0) do |count, test|
+          count += test.result_count(type)
+        end
+      else
+        self.results.size
       end
     end
 
@@ -119,30 +126,7 @@ module Assert
       methods += local_methods
 
       # uniq and remove any that don't start with 'test'
-      methods.uniq.delete_if {|method_name| method_name !~ /^test./ }
-    end
-
-    private
-
-    def count_tests(test_sets)
-      test_sets.inject(0) {|count, tests| count += tests.size}
-    end
-
-    def count_results(test_sets, type)
-      self.values.flatten.inject(0){|count, test| count += test.result_count(type) }
-    end
-
-    def prep
-      if @prepared != true
-        # look for local public methods starting with 'test_'and add
-        self.each do |context_class, tests|
-          local_public_test_methods(context_class).each do |meth|
-            tests << Test.new(meth.to_s, context_class, meth)
-          end
-          tests.uniq
-        end
-      end
-      @prepared = true
+      methods.uniq.delete_if {|method_name| method_name !~ TEST_METHOD_REGEX }
     end
 
   end

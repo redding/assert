@@ -28,7 +28,7 @@ module Assert::Assertions
     desc "ignored assertions helpers"
     setup do
       @tests = Assert::Assertions::IGNORED_ASSERTION_HELPERS.collect do |helper|
-        Factory.test("ignored assertion helper #{helper}", @context_class) do
+        Factory.test("ignored assertion helper #{helper}", Factory.context_info(@context_class)) do
           self.send(helper, "doesn't matter")
         end
       end

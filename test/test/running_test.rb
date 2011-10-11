@@ -281,7 +281,7 @@ class Assert::Test
         # classic test/unit style setup
         def setup; @setup_tusm = @testunit_style_msg; end
       end
-      @test = Factory.test("something", @context_class) do
+      @test = Factory.test("something", Factory.context_info(@context_class)) do
         assert @assert_style_msg
         assert @testunit_style_msg
 
@@ -331,7 +331,7 @@ class Assert::Test
             instance_variable_set("@message", @testunit_style_msg)
         end
       end
-      @test = Factory.test("something amazing", @context_class) do
+      @test = Factory.test("something amazing", Factory.context_info(@context_class)) do
         assert(true) # first pass result
         assert(true) # last pass result
       end

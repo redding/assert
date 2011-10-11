@@ -14,9 +14,23 @@ module Assert
     # minimal base logic/methods/instance_vars.  The instance should remain
     # pure to not pollute test scopes.
 
-    # if a class subclasses Context, add it to the suite
-    def self.inherited(klass)
-      Assert.suite << klass
+    # if a test method is added to a context manually (not using a context helper):
+    # capture any context info, build a test obj, and add it to the suite
+    def self.method_added(method_name)
+      if method_name.to_s =~ Suite::TEST_METHOD_REGEX
+        called_from = caller.first
+        klass_method_name = "#{self}##{method_name}"
+
+        if Assert.suite.test_methods.include?(klass_method_name)
+          puts "WARNING: redefining '#{klass_method_name}'"
+          puts "  from: #{called_from}"
+        else
+          Assert.suite.test_methods << klass_method_name
+        end
+
+        ci = Suite::ContextInfo.new(self, called_from)
+        Assert.suite.tests << Test.new(method_name.to_s, ci, method_name)
+      end
     end
 
     # put all logic here to keep context instances pure for running tests
@@ -99,7 +113,8 @@ module Assert
         end
       end
 
-      def test(desc_or_macro, &block)
+      def test(desc_or_macro, called_from=nil, &block)
+        called_from ||= caller.first
         if desc_or_macro.kind_of?(Macro)
           instance_eval(&desc_or_macro)
         else
@@ -108,34 +123,27 @@ module Assert
           # if no block given, create a test that just skips
           method_block = block_given? ? block : (Proc.new { skip })
 
-          # instead of using the typical 'method_defined?' pattern (which) checks
-          # all parent contexts, we really just need to make sure the method_name
-          # is not part of self's local_pulic_test_methods for this check
-          if Assert.suite.send(:local_public_test_methods, self).include?(method_name)
-            from = caller.first
-            puts "WARNING: should #{desc_or_macro.inspect} is redefining #{method_name}!"
-            puts "  from: #{from}"
-            puts "  self: #{self.inspect}"
-          end
-
-          define_method(method_name, &method_block)
+          ci = Suite::ContextInfo.new(self, called_from)
+          Assert.suite.tests << Test.new(method_name, ci, &method_block)
         end
       end
 
-      def test_eventually(desc, &block)
-        test(desc)
+      def test_eventually(desc_or_macro, called_from=nil, &block)
+        called_from ||= caller.first
+        test(desc_or_macro, called_from)
       end
       alias_method :test_skip, :test_eventually
 
-      def should(desc_or_macro, &block)
+      def should(desc_or_macro, called_from=nil, &block)
+        called_from ||= caller.first
         if !desc_or_macro.kind_of?(Macro)
           desc_or_macro = "should #{desc_or_macro}"
         end
-        test(desc_or_macro, &block)
+        test(desc_or_macro, called_from, &block)
       end
 
-      def should_eventually(desc, &block)
-        should(desc)
+      def should_eventually(desc_or_macro, called_from=nil, &block)
+        should(desc_or_macro, called_from)
       end
       alias_method :should_skip, :should_eventually
 
@@ -179,16 +187,16 @@ module Assert
     # adds a Pass result to the end of the test's results
     # does not break test execution
     def pass(pass_msg=nil)
-      capture_result do |test_name, backtrace|
-        Assert::Result::Pass.new(test_name, pass_msg, backtrace)
+      capture_result do |test, backtrace|
+        Assert::Result::Pass.new(test, pass_msg, backtrace)
       end
     end
 
     # adds an Ignore result to the end of the test's results
     # does not break test execution
     def ignore(ignore_msg=nil)
-      capture_result do |test_name, backtrace|
-        Assert::Result::Ignore.new(test_name, ignore_msg, backtrace)
+      capture_result do |test, backtrace|
+        Assert::Result::Ignore.new(test, ignore_msg, backtrace)
       end
     end
 
@@ -199,8 +207,8 @@ module Assert
       if Assert::Test.halt_on_fail?
         raise(Result::TestFailure, message)
       else
-        capture_result do |test_name, backtrace|
-          Assert::Result::Fail.new(test_name, message, backtrace)
+        capture_result do |test, backtrace|
+          Assert::Result::Fail.new(test, message, backtrace)
         end
       end
     end
@@ -234,7 +242,7 @@ module Assert
 
     def capture_result
       if block_given?
-        result = yield @__running_test__.name, caller
+        result = yield @__running_test__, caller
         @__running_test__.results << result
         result
       end
