@@ -1,5 +1,9 @@
 == Assert Changes
 
+* tests know context info (klass, called_from, file) (#62)
+* suites track tests ungrouped
+* fixed issue where method macros display incorrect fail traces
+* fixed bug where 'assert_raises' and 'assert_nothing_raised' generate fail messages with trailing newlines
 * default halt on failed assertions (#68)
 * fixed for setup error when no $HOME env var (#76)
 * changelog tracking (#79)
