@@ -5,13 +5,14 @@ module Assert
 
     class ContextInfo
 
-      attr_reader :klass, :called_from, :file
+      attr_reader :called_from, :first_caller, :klass, :file
 
-      def initialize(klass, called_from=nil)
-        @klass = klass
+      def initialize(klass, called_from=nil, first_caller=nil)
+        @first_caller = first_caller
         @called_from = called_from
-        @file = if called_from
-          called_from.gsub(/\:[0-9]+.*$/, '')
+        @klass = klass
+        @file = if (@called_from || @first_caller)
+          (@called_from || @first_caller).gsub(/\:[0-9]+.*$/, '')
         end
       end
 

@@ -165,7 +165,7 @@ module Assert::Result
 
     # override of the base, show the test's context info called_from
     def trace
-      self.test.context_info.called_from
+      self.test.context_info.called_from || super
     end
 
   end
