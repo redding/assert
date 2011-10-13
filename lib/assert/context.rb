@@ -18,7 +18,6 @@ module Assert
     # capture any context info, build a test obj, and add it to the suite
     def self.method_added(method_name)
       if method_name.to_s =~ Suite::TEST_METHOD_REGEX
-        called_from = caller.first
         klass_method_name = "#{self}##{method_name}"
 
         if Assert.suite.test_methods.include?(klass_method_name)
@@ -28,7 +27,7 @@ module Assert
           Assert.suite.test_methods << klass_method_name
         end
 
-        ci = Suite::ContextInfo.new(self, called_from)
+        ci = Suite::ContextInfo.new(self, nil, caller.first)
         Assert.suite.tests << Test.new(method_name.to_s, ci, method_name)
       end
     end
@@ -113,8 +112,7 @@ module Assert
         end
       end
 
-      def test(desc_or_macro, called_from=nil, &block)
-        called_from ||= caller.first
+      def test(desc_or_macro, called_from=nil, first_caller=nil, &block)
         if desc_or_macro.kind_of?(Macro)
           instance_eval(&desc_or_macro)
         else
@@ -123,27 +121,25 @@ module Assert
           # if no block given, create a test that just skips
           method_block = block_given? ? block : (Proc.new { skip })
 
-          ci = Suite::ContextInfo.new(self, called_from)
+          ci = Suite::ContextInfo.new(self, called_from, first_caller || caller.first)
           Assert.suite.tests << Test.new(method_name, ci, &method_block)
         end
       end
 
-      def test_eventually(desc_or_macro, called_from=nil, &block)
-        called_from ||= caller.first
-        test(desc_or_macro, called_from)
+      def test_eventually(desc_or_macro, called_from=nil, first_caller=nil, &block)
+        test(desc_or_macro, called_from, first_caller || caller.first)
       end
       alias_method :test_skip, :test_eventually
 
-      def should(desc_or_macro, called_from=nil, &block)
-        called_from ||= caller.first
+      def should(desc_or_macro, called_from=nil, first_caller=nil, &block)
         if !desc_or_macro.kind_of?(Macro)
           desc_or_macro = "should #{desc_or_macro}"
         end
-        test(desc_or_macro, called_from, &block)
+        test(desc_or_macro, called_from, first_caller || caller.first, &block)
       end
 
-      def should_eventually(desc_or_macro, called_from=nil, &block)
-        should(desc_or_macro, called_from)
+      def should_eventually(desc_or_macro, called_from=nil, first_caller=nil, &block)
+        should(desc_or_macro, called_from, first_caller || caller.first)
       end
       alias_method :should_skip, :should_eventually
 

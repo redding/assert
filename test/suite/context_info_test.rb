@@ -7,18 +7,18 @@ class Assert::Suite::ContextInfo
     setup do
       @caller = caller
       @klass = Assert::Context
-      @info = Assert::Suite::ContextInfo.new(@klass, @caller.first)
+      @info = Assert::Suite::ContextInfo.new(@klass, nil, @caller.first)
     end
     subject { @info }
 
-    should have_readers :klass, :called_from, :file
+    should have_readers :called_from, :first_caller, :klass, :file
 
     should "set its klass on init" do
       assert_equal @klass, subject.klass
     end
 
     should "set its called_from to the first caller on init" do
-      assert_equal @caller.first, subject.called_from
+      assert_equal @caller.first, subject.first_caller
     end
 
     should "set its file from caller info on init" do
