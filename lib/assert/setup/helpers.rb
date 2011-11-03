@@ -10,7 +10,7 @@ module Assert
 
     class << self
 
-      USER_TEST_HELPER = "~/.assert/options"
+      USER_TEST_HELPER = "./.assert/options"
 
       # assume the test dir path is ./test and look for helpers in ./test/helper.rb
       def package_test_dir
@@ -33,26 +33,24 @@ module Assert
       private
 
       def require_user_test_helper
-        begin
-          if ENV['HOME']
-            require File.expand_path(USER_TEST_HELPER)
-          end
-        rescue LoadError => err
-          # do nothing
+        if ENV['HOME']
+          safe_require File.expand_path(USER_TEST_HELPER, ENV['HOME'])
         end
       end
 
       # require the package's test/helper file if it exists
       def require_package_test_helper(root_path)
-        begin
-          require package_helper_file(root_path)
-        rescue LoadError => err
-          # do nothing
-        end
+        safe_require package_helper_file(root_path)
       end
 
       def package_helper_file(root_path)
-        File.join(root_path, package_test_dir, package_helper_name + '.rb')
+        File.join(root_path, package_test_dir, package_helper_name)
+      end
+
+      def safe_require(helper_file)
+        if File.exists?(helper_file+".rb")
+          require helper_file
+        end
       end
 
       # this method inspects the caller info and finds the caller's root path
