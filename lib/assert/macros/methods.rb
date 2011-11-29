@@ -11,7 +11,8 @@ module Assert::Macros
 
       def have_instance_method(*methods)
         called_from = (methods.last.kind_of?(Array) ? methods.pop : caller).first
-        Assert::Macro.new do
+        name = "have instance methods: #{methods.map{|m| "'#{m}'"}.join(', ')}"
+        Assert::Macro.new(name) do
           methods.each do |method|
             should "respond to instance method ##{method}", called_from do
               assert_respond_to method, subject, "#{subject.class.name} does not have instance method ##{method}"
@@ -23,7 +24,8 @@ module Assert::Macros
 
       def have_class_method(*methods)
         called_from = (methods.last.kind_of?(Array) ? methods.pop : caller).first
-        Assert::Macro.new do
+        name = "have class methods: #{methods.map{|m| "'#{m}'"}.join(', ')}"
+        Assert::Macro.new(name) do
           methods.each do |method|
             should "respond to class method ##{method}", called_from do
               assert_respond_to method, subject.class, "#{subject.class.name} does not have class method ##{method}"

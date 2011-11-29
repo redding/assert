@@ -115,7 +115,7 @@ module Assert
 
     def name_from_context(name)
       [ self.context_class.description,
-        name.gsub(/^test:\s+should/, "should")
+        name
       ].compact.reject{|p| p.empty?}.join(" ")
     end
 

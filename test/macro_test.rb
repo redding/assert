@@ -6,7 +6,21 @@ class Assert::Macro
 
   class BaseTest < Assert::Context
     desc "a macro"
-    subject { Assert::Macro.new {} }
+    setup { @macro = Assert::Macro.new {} }
+    subject { @macro }
+
+    should "have an accessor for its (optional) name" do
+      assert_respond_to :name, subject
+      assert_respond_to :name=, subject
+    end
+
+    should "default its name if no given" do
+      assert_equal "run this macro", (Assert::Macro.new {}).name
+    end
+
+    should "initialize with a given name" do
+      assert_equal "test", (Assert::Macro.new("test") {}).name
+    end
 
     should "be a Proc" do
       assert_kind_of ::Proc, subject
@@ -17,6 +31,7 @@ class Assert::Macro
         Assert::Macro.new
       end
     end
+
   end
 
   class InstanceMethodsTest < Assert::Context
