@@ -5,7 +5,7 @@ class Assert::Test
   class BasicTest < Assert::Context
     desc "Assert test"
     setup do
-      test_name = "test: should do something amazing"
+      test_name = "should do something amazing"
       @test_code = lambda{ assert(true) }
       context_desc = "context class"
       @context_class = Factory.context_class do
