@@ -116,13 +116,13 @@ module Assert
         if desc_or_macro.kind_of?(Macro)
           instance_eval(&desc_or_macro)
         else
-          method_name = "test: #{desc_or_macro}"
+          test_name = desc_or_macro
 
           # if no block given, create a test that just skips
-          method_block = block_given? ? block : (Proc.new { skip })
+          test_block = block_given? ? block : (Proc.new { skip })
 
           ci = Suite::ContextInfo.new(self, called_from, first_caller || caller.first)
-          Assert.suite.tests << Test.new(method_name, ci, &method_block)
+          Assert.suite.tests << Test.new(test_name, ci, &test_block)
         end
       end
 

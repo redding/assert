@@ -301,19 +301,24 @@ class Assert::Context
     setup do
       @test_count_before = Assert.suite.tests.size
 
-      @should_desc = "be true"
-      @should_block = ::Proc.new{ assert(true) }
-      @method_name = "test: #{@should_desc}"
+      @test_desc = "be true"
+      @test_block = ::Proc.new{ assert(true) }
+      @test_name = @test_desc
 
-      d, b = @should_desc, @should_block
+      d, b = @test_desc, @test_block
       @context_class = Factory.context_class { test(d, &b) }
       @context = @context_class.new(Factory.test("something", Factory.context_info(@context_class)))
     end
     subject{ @context }
 
-    should "define a test method named after the should desc" do
+    should "build a test with a given desc and code block" do
       assert_equal @test_count_before+1, Assert.suite.tests.size
-      assert_equal @should_block, Assert.suite.tests.last.code
+      built_test = Assert.suite.tests.last
+
+      assert_kind_of Assert::Test, built_test
+      assert_equal @test_name, built_test.name
+
+      assert_equal @test_block, built_test.code
     end
 
   end
@@ -321,13 +326,13 @@ class Assert::Context
   class NoBlockTestMethTest < TestMethTest
     desc "called with no block"
     setup do
-      d = @should_desc
+      d = @test_desc
       @context_class = Factory.context_class { test(d) }
       @context = @context_class.new(Factory.test("something", Factory.context_info(@context_class)))
     end
     subject{ @context }
 
-    should "define a test method named after the should desc that raises a test skipped" do
+    should "build a test that skips" do
       assert_raises(Assert::Result::TestSkipped) do
         subject.instance_eval(&Assert.suite.tests.last.code)
       end
@@ -338,7 +343,7 @@ class Assert::Context
   class TestEventuallyTest < TestMethTest
     desc "test_eventually method"
     setup do
-      d, b = @should_desc, @should_block
+      d, b = @test_desc, @test_block
       @context_class = Factory.context_class do
         test_eventually(d, &b)
       end
@@ -346,7 +351,7 @@ class Assert::Context
     end
     subject{ @context }
 
-    should "define a test method named after the should desc that raises a test skipped" do
+    should "build a test that skips" do
       assert_raises(Assert::Result::TestSkipped) do
         subject.instance_eval(&Assert.suite.tests.last.code)
       end
@@ -363,7 +368,7 @@ class Assert::Context
 
       @should_desc = "be true"
       @should_block = ::Proc.new{ assert(true) }
-      @method_name = "test: should #{@should_desc}"
+      @test_name = "should #{@should_desc}"
 
       d, b = @should_desc, @should_block
       @context_class = Factory.context_class { should(d, &b) }
@@ -371,9 +376,14 @@ class Assert::Context
     end
     subject{ @context }
 
-    should "define a test method named after the should desc" do
+    should "build a test with a given should desc and code block" do
       assert_equal @test_count_before+1, Assert.suite.tests.size
-      assert_equal @should_block, Assert.suite.tests.last.code
+      built_test = Assert.suite.tests.last
+
+      assert_kind_of Assert::Test, built_test
+      assert_equal @test_name, built_test.name
+
+      assert_equal @should_block, built_test.code
     end
 
   end
@@ -387,7 +397,7 @@ class Assert::Context
     end
     subject{ @context }
 
-    should "define a test method named after the should desc that raises a test skipped" do
+    should "build a test that skips" do
       assert_raises(Assert::Result::TestSkipped) do
         subject.instance_eval(&Assert.suite.tests.last.code)
       end
@@ -404,7 +414,7 @@ class Assert::Context
     end
     subject{ @context }
 
-    should "define a test method named after the should desc that raises a test skipped" do
+    should "build a test that skips" do
       assert_raises(Assert::Result::TestSkipped) do
         subject.instance_eval(&Assert.suite.tests.last.code)
       end
