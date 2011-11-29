@@ -115,19 +115,23 @@ module Assert
       def test(desc_or_macro, called_from=nil, first_caller=nil, &block)
         if desc_or_macro.kind_of?(Macro)
           instance_eval(&desc_or_macro)
-        else
+        elsif block_given?
+          ci = Suite::ContextInfo.new(self, called_from, first_caller || caller.first)
           test_name = desc_or_macro
 
-          # if no block given, create a test that just skips
-          test_block = block_given? ? block : (Proc.new { skip })
-
-          ci = Suite::ContextInfo.new(self, called_from, first_caller || caller.first)
-          Assert.suite.tests << Test.new(test_name, ci, &test_block)
+          # create a test from the given code block
+          Assert.suite.tests << Test.new(test_name, ci, &block)
+        else
+          test_eventually(desc_or_macro, called_from, first_caller, &block)
         end
       end
 
       def test_eventually(desc_or_macro, called_from=nil, first_caller=nil, &block)
-        test(desc_or_macro, called_from, first_caller || caller.first)
+        ci = Suite::ContextInfo.new(self, called_from, first_caller || caller.first)
+        test_name = desc_or_macro.kind_of?(Macro) ? desc_or_macro.name : desc_or_macro
+
+        # create a test from a proc that just skips
+        Assert.suite.tests << Test.new(test_name, ci, &(Proc.new { skip }))
       end
       alias_method :test_skip, :test_eventually
 
@@ -139,7 +143,10 @@ module Assert
       end
 
       def should_eventually(desc_or_macro, called_from=nil, first_caller=nil, &block)
-        should(desc_or_macro, called_from, first_caller || caller.first)
+        if !desc_or_macro.kind_of?(Macro)
+          desc_or_macro = "should #{desc_or_macro}"
+        end
+        test_eventually(desc_or_macro, called_from, first_caller || caller.first)
       end
       alias_method :should_skip, :should_eventually
 

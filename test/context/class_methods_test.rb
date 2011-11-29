@@ -323,9 +323,36 @@ class Assert::Context
 
   end
 
+  class TestMacroTest < TestMethTest
+    desc "on a macro"
+    setup do
+      @test_count_before = Assert.suite.tests.size
+      d, b = @test_desc, @test_block
+      m = Assert::Macro.new do
+        test(d, &b)
+        test(d, &b)
+      end
+      @context_class = Factory.context_class { test(m) }
+      @context = @context_class.new(Factory.test("something", Factory.context_info(@context_class)))
+    end
+    subject{ @context }
+
+    should "build tests from the macro" do
+      assert_equal @test_count_before+2, Assert.suite.tests.size
+      built_test = Assert.suite.tests.last
+
+      assert_kind_of Assert::Test, built_test
+      assert_equal @test_name, built_test.name
+
+      assert_equal @test_block, built_test.code
+    end
+
+  end
+
   class NoBlockTestMethTest < TestMethTest
     desc "called with no block"
     setup do
+      @test_count_before = Assert.suite.tests.size
       d = @test_desc
       @context_class = Factory.context_class { test(d) }
       @context = @context_class.new(Factory.test("something", Factory.context_info(@context_class)))
@@ -333,6 +360,7 @@ class Assert::Context
     subject{ @context }
 
     should "build a test that skips" do
+      assert_equal @test_count_before+1, Assert.suite.tests.size
       assert_raises(Assert::Result::TestSkipped) do
         subject.instance_eval(&Assert.suite.tests.last.code)
       end
@@ -341,8 +369,9 @@ class Assert::Context
   end
 
   class TestEventuallyTest < TestMethTest
-    desc "test_eventually method"
+    desc "called with '_eventually'"
     setup do
+      @test_count_before = Assert.suite.tests.size
       d, b = @test_desc, @test_block
       @context_class = Factory.context_class do
         test_eventually(d, &b)
@@ -352,6 +381,30 @@ class Assert::Context
     subject{ @context }
 
     should "build a test that skips" do
+      assert_equal @test_count_before+1, Assert.suite.tests.size
+      assert_raises(Assert::Result::TestSkipped) do
+        subject.instance_eval(&Assert.suite.tests.last.code)
+      end
+    end
+
+  end
+
+  class TestEventuallyMacroTest < TestEventuallyTest
+    desc "on a macro"
+    setup do
+      @test_count_before = Assert.suite.tests.size
+      d, b = @test_desc, @test_block
+      m = Assert::Macro.new do
+        test(d, &b)
+        test(d, &b)
+      end
+      @context_class = Factory.context_class { test_eventually(m) }
+      @context = @context_class.new(Factory.test("something", Factory.context_info(@context_class)))
+    end
+    subject{ @context }
+
+    should "build a test that skips" do
+      assert_equal @test_count_before+1, Assert.suite.tests.size
       assert_raises(Assert::Result::TestSkipped) do
         subject.instance_eval(&Assert.suite.tests.last.code)
       end
@@ -388,9 +441,36 @@ class Assert::Context
 
   end
 
+  class ShouldMacroTest < ShouldTest
+    desc "on a macro"
+    setup do
+      @test_count_before = Assert.suite.tests.size
+      d, b = @should_desc, @should_block
+      m = Assert::Macro.new do
+        should(d, &b)
+        should(d, &b)
+      end
+      @context_class = Factory.context_class { should m }
+      @context = @context_class.new(Factory.test("something", Factory.context_info(@context_class)))
+    end
+    subject{ @context }
+
+    should "build tests from the macro" do
+      assert_equal @test_count_before+2, Assert.suite.tests.size
+      built_test = Assert.suite.tests.last
+
+      assert_kind_of Assert::Test, built_test
+      assert_equal @test_name, built_test.name
+
+      assert_equal @should_block, built_test.code
+    end
+
+  end
+
   class NoBlockShouldTest < ShouldTest
     desc "called with no block"
     setup do
+      @test_count_before = Assert.suite.tests.size
       d = @should_desc
       @context_class = Factory.context_class { should(d) }
       @context = @context_class.new(Factory.test("something", Factory.context_info(@context_class)))
@@ -398,6 +478,7 @@ class Assert::Context
     subject{ @context }
 
     should "build a test that skips" do
+      assert_equal @test_count_before+1, Assert.suite.tests.size
       assert_raises(Assert::Result::TestSkipped) do
         subject.instance_eval(&Assert.suite.tests.last.code)
       end
@@ -406,8 +487,9 @@ class Assert::Context
   end
 
   class ShouldEventuallyTest < ShouldTest
-    desc "should_eventually method"
+    desc "called with '_eventually'"
     setup do
+      @test_count_before = Assert.suite.tests.size
       d, b = @should_desc, @should_block
       @context_class = Factory.context_class { should_eventually(d, &b) }
       @context = @context_class.new(Factory.test("something", Factory.context_info(@context_class)))
@@ -415,6 +497,30 @@ class Assert::Context
     subject{ @context }
 
     should "build a test that skips" do
+      assert_equal @test_count_before+1, Assert.suite.tests.size
+      assert_raises(Assert::Result::TestSkipped) do
+        subject.instance_eval(&Assert.suite.tests.last.code)
+      end
+    end
+
+  end
+
+  class ShouldEventuallyMacroTest < ShouldEventuallyTest
+    desc "on a macro"
+    setup do
+      @test_count_before = Assert.suite.tests.size
+      d, b = @should_desc, @should_block
+      m = Assert::Macro.new do
+        should(d, &b)
+        should(d, &b)
+      end
+      @context_class = Factory.context_class { should_eventually(m) }
+      @context = @context_class.new(Factory.test("something", Factory.context_info(@context_class)))
+    end
+    subject{ @context }
+
+    should "build a test that skips" do
+      assert_equal @test_count_before+1, Assert.suite.tests.size
       assert_raises(Assert::Result::TestSkipped) do
         subject.instance_eval(&Assert.suite.tests.last.code)
       end
