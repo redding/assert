@@ -5,8 +5,11 @@ module Assert
     # arguments.  When passed as an argument to the 'should' method, a macro
     # will be instance_eval'd in that Assert::Context.
 
-    def initialize(*args, &block)
+    attr_accessor :name
+
+    def initialize(name=nil, *args, &block)
       raise ArgumentError unless block_given?
+      @name = name || "run this macro"
       super()
     end
 
