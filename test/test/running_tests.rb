@@ -2,12 +2,12 @@ require 'assert'
 
 class Assert::Test
 
-  class RunningTest < Assert::Context
+  class RunningTests < Assert::Context
     desc "Assert tests that are run"
     subject{ @test }
   end
 
-  class NothingTest < RunningTest
+  class NothingTests < RunningTests
     desc "and does nothing"
     setup do
       @test = Factory.test
@@ -22,7 +22,7 @@ class Assert::Test
 
 
 
-  class PassTest < RunningTest
+  class PassTests < RunningTests
     desc "and passes a single assertion"
     setup do
       @test = Factory.test{ assert(1 == 1) }
@@ -40,7 +40,7 @@ class Assert::Test
 
 
 
-  class FailTest < RunningTest
+  class FailTests < RunningTests
     desc "and fails a single assertion"
     setup do
       @test = Factory.test{ assert(1 == 0) }
@@ -58,7 +58,7 @@ class Assert::Test
 
 
 
-  class SkipTest < RunningTest
+  class SkipTests < RunningTests
     desc "and skips"
     setup do
       @test = Factory.test{ skip }
@@ -76,7 +76,7 @@ class Assert::Test
 
 
 
-  class ErrorTest < RunningTest
+  class ErrorTests < RunningTests
     desc "and errors"
     setup do
       @test = Factory.test{ raise("WHAT") }
@@ -94,7 +94,7 @@ class Assert::Test
 
 
 
-  class MixedTest < RunningTest
+  class MixedTests < RunningTests
     desc "and has 1 pass and 1 fail assertion"
     setup do
       @test = Factory.test do
@@ -118,7 +118,7 @@ class Assert::Test
 
 
 
-  class MixedSkipTest < RunningTest
+  class MixedSkipTests < RunningTests
     desc "and has 1 pass and 1 fail assertion with a skip call in between"
     setup do
       @test = Factory.test do
@@ -149,7 +149,7 @@ class Assert::Test
 
 
 
-  class MixedErrorTest < RunningTest
+  class MixedErrorTests < RunningTests
     desc "and has 1 pass and 1 fail assertion with an exception raised in between"
     setup do
       @test = Factory.test do
@@ -180,7 +180,7 @@ class Assert::Test
 
 
 
-  class MixedPassTest < RunningTest
+  class MixedPassTests < RunningTests
     desc "and has 1 pass and 1 fail assertion with a pass call in between"
     setup do
       @test = Factory.test do
@@ -208,7 +208,7 @@ class Assert::Test
 
 
 
-  class MixedFailTest < RunningTest
+  class MixedFailTests < RunningTests
     desc "and has 1 pass and 1 fail assertion with a fail call in between"
     setup do
       @test = Factory.test do
@@ -236,7 +236,7 @@ class Assert::Test
 
 
 
-  class MixedFlunkTest < RunningTest
+  class MixedFlunkTests < RunningTests
     desc "and has 1 pass and 1 fail assertion with a flunk call in between"
     setup do
       @test = Factory.test do
@@ -264,7 +264,7 @@ class Assert::Test
 
 
 
-  class WithSetupTest < RunningTest
+  class WithSetupTests < RunningTests
     desc "a Test that runs and has assertions that depend on setups"
     setup do
       assert_style_msg = @asm = "set by assert style setup"
@@ -309,7 +309,7 @@ class Assert::Test
 
 
 
-  class WithTeardownTest < RunningTest
+  class WithTeardownTests < RunningTests
     desc "a Test that runs and has assertions with teardowns"
     setup do
       assert_style_msg = @asm = "set by assert style teardown"
