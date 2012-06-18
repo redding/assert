@@ -84,7 +84,7 @@ Assert uses a Runner object to run tests.  Any runner object should take the tes
 Assert provides a default Runner object for running test suites (https://github.com/teaminsight/assert/blob/master/lib/assert/runner.rb).  The default provides methods for running the tests, randomizing test order, and benchmarking test run time.  Feel free to extend this runner as you see fit.
 
 === Test Order
-The default Runner object runs tests in random order and the default Terminal view will display the seed value.  If you want to run tests in a consistant order, set a 'runner_seed' environment variable.  Here's an example running tests with rake:
+The default Runner object runs tests in random order and the `DefaultView` view will display the seed value.  If you want to run tests in a consistant order, set a 'runner_seed' environment variable.  Here's an example running tests with rake:
 
     $ rake test   # run tests in random order
     $ rake test runner_seed=1234  # run tests seeding with '1234'
@@ -139,13 +139,7 @@ Assert provides a rake task for running irb with your test environment loaded.  
 
 These are all tools that use and extend Assert.  If you write your own, share it with us and we will post it here.
 
-=== assert-view
-Assert::View (https://github.com/teaminsight/assert-view) is a collection of views that can be used with Assert.  Specify what view you want to use in your ~/.assert/options.rb settings file, ie:
-
-    # default is Assert::View::DefaultView on $stdout
-    Assert.options.view Assert::View::SuperCoolView.new($stdout)
-
-
+TODO: add in references to assert related tools.
 
 == Contributing
 
@@ -153,13 +147,13 @@ The source code is hosted on Github.  It's clean, modular, and easy to understan
 
 One note, however: please respect that Assert itself is intended to be the flexible, base-level type logic that should change little if at all.  Pull requests for niche functionality or personal testing philosphy stuff will likely not be accepted.
 
-If you wish to extend Assert for your niche purpose/desire/philosophy, please do so in it's own gem (named 'assert-<whatever>') that uses Assert as a dependency.  When you do, tell us about it and we'll add to the Family of tools.
+If you wish to extend Assert for your niche purpose/desire/philosophy, please do so in it's own gem (preferrably named 'assert-<whatever>') that uses Assert as a dependency.  When you do, tell us about it and we'll add to the Family of tools.
 
 
 
 == License
 
-Copyright (c) 2011 Kelly Redding, Collin Redding, and Team Insight
+Copyright (c) 2011-Present Kelly Redding, Collin Redding, and Team Insight
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
