@@ -4,8 +4,8 @@ require 'assert/rake_tasks/test_task'
 module Assert::RakeTasks
   class Scope
 
-    def self.test_file_suffix
-      "_test.rb"
+    def self.test_file_suffixes
+      ['_test.rb', '_tests.rb']
     end
 
     def initialize(path)
@@ -18,13 +18,17 @@ module Assert::RakeTasks
 
     # nested test files under the path
     def nested_files
-      nested_files = Rake::FileList["#{@path}/**/*#{self.class.test_file_suffix}"]
+      @nested_files ||= self.class.test_file_suffixes.map do |suffix|
+        Rake::FileList["#{@path}/**/*#{suffix}"]
+      end.flatten
     end
 
     # a list with the path test file "#{path}_test.rb" (if it exists)
     def path_file_list
-      path_file_name = @path+self.class.test_file_suffix
-      (File.exists?(path_file_name) ? Rake::FileList[path_file_name] : [])
+      @path_file_list ||= self.class.test_file_suffixes.map do |suffix|
+        path_file_name = "#{@path}#{suffix}"
+        File.exists?(path_file_name) ? Rake::FileList[path_file_name] : []
+      end.flatten
     end
 
     # return a test task covering the scopes nested files plus path file
@@ -39,30 +43,40 @@ module Assert::RakeTasks
 
     # a collection of test tasks for every standalone child test file
     def test_tasks
-      # get immediate child test files
-      Dir.glob("#{@path}/*#{self.class.test_file_suffix}").collect do |f|
-        # get just the path name for each file
-        File.join(File.dirname(f), File.basename(f, self.class.test_file_suffix))
-      end.reject do |p|
+      @test_tasks ||= self.class.test_file_suffixes.map do |suffix|
+        # get immediate child test files
+        Dir.glob("#{@path}/*#{suffix}").collect do |f|
+          # get just the path name for each file
+          File.join(File.dirname(f), File.basename(f, suffix))
+        end
+      end.flatten.reject do |p|
         # reject any that have deeply nested test files
-        !Dir.glob("#{p}/**/*#{self.class.test_file_suffix}").empty?
+        self.class.test_file_suffixes.inject(false) do |result, suffix|
+          result || !Dir.glob("#{p}/**/*#{suffix}").empty?
+        end
       end.collect do |p|
         # build a test task for the standalone test file of the path
         TestTask.new(p) do |tt|
-          tt.files = Rake::FileList[p+self.class.test_file_suffix]
+          tt.files = self.class.test_file_suffixes.map do |suffix|
+            (File.exists?("#{p}#{suffix}") ? Rake::FileList["#{p}#{suffix}"] : [])
+          end.flatten
         end
       end
     end
 
     # a collection of scopes for every child test dir or test dir/file combo
     def scopes
-      # get immediate child paths
-      Dir.glob("#{@path}/*").collect do |p|
-        # get just the path name for each dir/file and uniq it
-        File.join(File.dirname(p), File.basename(p, self.class.test_file_suffix))
-      end.uniq.select do |p|
+      @scopes ||= self.class.test_file_suffixes.map do |suffix|
+        # get immediate child paths
+        Dir.glob("#{@path}/*").collect do |p|
+          # get just the path name for each dir/file and uniq it
+          File.join(File.dirname(p), File.basename(p, suffix))
+        end
+      end.flatten.uniq.select do |p|
         # select any that have deeply nested test files
-        !Dir.glob("#{p}/**/*#{self.class.test_file_suffix}").empty?
+        self.class.test_file_suffixes.inject(false) do |result, suffix|
+          result || !Dir.glob("#{p}/**/*#{suffix}").empty?
+        end
       end.collect do |p|
         # build a scope for each path
         self.class.new(p)

@@ -98,7 +98,7 @@ Assert, by default, will halt test execution when a test produces a Fail result.
 
 
 === Rake Tasks
-Assert provides some rake task helpers that will scan your test folder and recursively generate rake tasks for each one of your test folders or files ending in '_test'.  Use this as an alternative to running ruby on each one of your test files individually.
+Assert provides some rake task helpers that will scan your test folder and recursively generate rake tasks for each one of your test folders or files.  Test files must end in either `'_test.rb'` or `'_tests.rb'`.  Use this as an alternative to running ruby on each one of your test files individually.
 
 As an example, say your test folder has a file structure like so:
 
