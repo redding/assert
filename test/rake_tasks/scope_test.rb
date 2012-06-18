@@ -12,12 +12,12 @@ module Assert::RakeTasks
     end
     subject { @handler }
 
-    should have_class_methods :test_file_suffix
+    should have_class_methods :test_file_suffixes
     should have_instance_methods :namespace, :nested_files, :path_file_list, :to_test_task
     should have_instance_methods :test_tasks, :scopes
 
     should "know its the test file suffix" do
-      assert_equal "_test.rb", subject.class.test_file_suffix
+      assert_equal ['_test.rb', '_tests.rb'], subject.class.test_file_suffixes
     end
 
     should "know its namespace" do

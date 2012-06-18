@@ -9,8 +9,6 @@ require 'assert/rake_tasks/test_task'
 
 module Assert::RakeTasks
 
-  FILE_SUFFIX = "_test.rb"
-
   # Setup the rake tasks for testing
   # * add 'include Assert::RakeTasks' to your Rakefile
   def self.included(receiver)

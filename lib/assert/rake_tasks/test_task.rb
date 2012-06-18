@@ -26,7 +26,10 @@ module Assert::RakeTasks
     end
 
     def name
-      File.basename(@path, Scope.test_file_suffix).to_sym
+      # File.basename(@path, Scope.test_file_suffix).to_sym
+      @name ||= File.basename(@path).tap do |bname|
+        Scope.test_file_suffixes.each { |suffix| bname.gsub(suffix, '') }
+      end.to_sym
     end
 
     def file_list # :nodoc:
