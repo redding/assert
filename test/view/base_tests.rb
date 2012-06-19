@@ -39,6 +39,13 @@ module Assert::View
 
   end
 
+  class HandlerTests < Assert::Context
+    desc 'the assert view handler'
+    subject { Assert::View }
+
+    should have_instance_method :require_user_view
+  end
+
   class BaseOptionsTestx < Assert::Context
     desc "options for the base view"
     subject do
