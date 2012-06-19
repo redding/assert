@@ -48,7 +48,9 @@ module Assert
 
     def run_suite
       # TODO: parallel running
-      tests_to_run.each {|test| test.run(@view)}
+      tests_to_run.each do |test|
+        test.run(@view)
+      end
     end
 
   end
