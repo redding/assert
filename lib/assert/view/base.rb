@@ -32,6 +32,10 @@ module Assert::View
     def initialize(output_io, suite=Assert.suite)
       self.output_io = output_io
       self.suite     = suite
+
+      if self.output_io.respond_to?(:sync=)
+        self.output_io.sync = true
+      end
     end
 
     def view
