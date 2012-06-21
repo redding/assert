@@ -95,12 +95,12 @@ You have a few options when it comes to viewing test results in Assert.  Assert 
 
 First, lets look at the default: `Assert::View:DefaultView`.  This is the default view class.  Its output goes something like this:
 
-# output something info about the test suite that is about to run
+# output some info about the test suite that is about to run
 # run the test suite, printing out result abbreviations as the tests are run
 # display any result details (from failing or error results) in reverse test/result order
 # output some summary info
 
-You can run asserts test suite using `rake test` and get a feel for what this default outputs.  This view have a few options you can tweak:
+You can run asserts test suite using `rake test` and get a feel for what this default outputs.  This view has a few options you can tweak:
 
 * `styled`: whether to apply ANSI styles to the output, default `true`
 * `pass_styles`: how to style pass result output, default `:green`
@@ -131,7 +131,7 @@ To use a 3rd party custom view, you first require it in and then specify using t
 
     Assert::View.require_user_view '/path/to/my/view'
 
-Alternatively, you can install/clone/copy/write your view implementations in `~/.assert/views` and require it in by name.  To have assert require it by name, have it installed at `<name>/lib/<name>.rb`.  For example:
+Alternatively, you can install/clone/copy/write your view implementations in `~/.assert/views` and require it in by name.  To have assert require it by name, have it installed at `~/assert/views/view_name/lib/view_name.rb` (this structure is compatible with popular conventions in rubygem development). For example:
 
     # assuming ~/.assert/views/my-custom-view/lib/my-custom-view.rb exists
     # this will work require it in
