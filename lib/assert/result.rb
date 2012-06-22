@@ -8,15 +8,13 @@ module Assert::Result
   class Error < Base; end
   class Skip < Base; end
 
-  class << self
-    def types
-      { :pass => Pass,
-        :fail => Fail,
-        :ignore => Ignore,
-        :skip => Skip,
-        :error => Error
-      }
-    end
+  class self.types
+    { :pass => Pass,
+      :fail => Fail,
+      :ignore => Ignore,
+      :skip => Skip,
+      :error => Error
+    }
   end
 
   class Backtrace < ::Array
