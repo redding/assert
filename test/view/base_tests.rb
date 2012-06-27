@@ -17,15 +17,11 @@ module Assert::View
     should have_instance_method :options
     should have_class_method :options
 
-    # accessors
-    should have_accessors :suite, :output_io, :runtime_result_callback
-
-    # renderer methods
-    should have_class_method :template, :helper
-    should have_instance_method :render
-
-    # base methods
-    should have_instance_methods :view, :run_tests, :handle_runtime_result
+    # accessors, base methods
+    should have_accessors :suite, :output_io
+    should have_instance_methods :view, :fire
+    should have_instance_methods :before_load, :after_load, :on_start, :on_finish
+    should have_instance_methods :before_test, :after_test, :on_result
 
     # common methods
     should have_instance_methods :run_time, :runner_seed, :count, :tests?, :all_pass?

@@ -1,4 +1,4 @@
-module Assert::View
+module Assert::View::Helpers
 
   class ResultDetails
 

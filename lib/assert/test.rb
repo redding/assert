@@ -34,44 +34,29 @@ module Assert
       self.context_info.klass
     end
 
-    def run(view=nil)
-      @results.view = view
+    def run(&result_callback)
+      # setup the a new test run
+      @results = ResultSet.new(result_callback)
       run_scope = self.context_class.new(self)
-      capture_output(StringIO.new(@output, "w+")) do
-        begin
-          # run any assert style 'setup do' setups
-          self.context_class.setup(run_scope)
-          # run any classic test/unit style 'def setup' setups
-          if run_scope.respond_to?(:setup)
-            run_scope.setup
-          end
 
-          # run the actual test code
-          if @code.kind_of?(::Proc)
-            run_scope.instance_eval(&@code)
-          elsif run_scope.respond_to?(@code.to_s)
-            run_scope.send(@code.to_s)
-          end
-        rescue Result::TestFailure => err
-          @results << Result::Fail.new(self, err)
-        rescue Result::TestSkipped => err
-          @results << Result::Skip.new(self, err)
-        rescue Exception => err
-          @results << Result::Error.new(self, err)
-        ensure
-          begin
-            # run any classic test/unit style 'def teardown' teardowns
-            if run_scope.respond_to?(:teardown)
-              run_scope.teardown
-            end
-            # run any assert style 'teardown do' teardowns
-            self.context_class.teardown(run_scope)
-          rescue Exception => teardown_err
-            @results << Result::Error.new(self, teardown_err)
-          end
+      # run the test, capturing its output
+      begin
+        run_test_setup(run_scope)
+        run_test_code(run_scope)
+      rescue Result::TestFailure => err
+        @results << Result::Fail.new(self, err)
+      rescue Result::TestSkipped => err
+        @results << Result::Skip.new(self, err)
+      rescue Exception => err
+        @results << Result::Error.new(self, err)
+      ensure
+        begin
+          run_test_teardown(run_scope)
+        rescue Exception => teardown_err
+          @results << Result::Error.new(self, teardown_err)
         end
       end
-      @results.view = nil
+      # return the results of the test run
       @results
     end
 
@@ -102,15 +87,49 @@ module Assert
 
     protected
 
-    def capture_output(io, &block)
-      if self.class.options.capture_output && io
+    def run_test_setup(scope)
+      capture_output do
+        # run any assert style 'setup do' setups
+        self.context_class.setup(scope)
+
+        # run any classic test/unit style 'def setup' setups
+        scope.setup if scope.respond_to?(:setup)
+      end
+    end
+
+    def run_test_code(scope)
+      capture_output do
+        if @code.kind_of?(::Proc)
+          scope.instance_eval(&@code)
+        elsif scope.respond_to?(@code.to_s)
+          scope.send(@code.to_s)
+        end
+      end
+    end
+
+    def run_test_teardown(scope)
+      capture_output do
+        # run any classic test/unit style 'def teardown' teardowns
+        scope.teardown if scope.respond_to?(:teardown)
+
+        # run any assert style 'teardown do' teardowns
+        self.context_class.teardown(scope)
+      end
+    end
+
+    def capture_output(&block)
+      if self.class.options.capture_output
         orig_stdout = $stdout.clone
-        $stdout = io
+        $stdout = capture_io
         block.call
         $stdout = orig_stdout
       else
         block.call
       end
+    end
+
+    def capture_io
+      StringIO.new(@output, "a+")
     end
 
     def name_from_context(name)

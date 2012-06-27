@@ -7,7 +7,7 @@ module Assert::RakeTasks
   class IrbTests < Assert::Context
     desc "the irb task handler"
     setup do
-      @root_path = :test
+      @root_path = File.expand_path('../../../test', __FILE__)
       @handler = Assert::RakeTasks::Irb.new(@root_path)
     end
     subject { @handler }
@@ -37,7 +37,7 @@ module Assert::RakeTasks
     end
 
     should "know the shell command to run the irb task" do
-      assert_equal "irb -rubygems -r ./#{subject.file_path}", subject.cmd
+      assert_equal "irb -rubygems -r #{subject.file_path}", subject.cmd
     end
 
   end

@@ -95,12 +95,13 @@ You have a few options when it comes to viewing test results in Assert.  Assert 
 
 First, lets look at the default: `Assert::View:DefaultView`.  This is the default view class.  Its output goes something like this:
 
-# output some info about the test suite that is about to run
-# run the test suite, printing out result abbreviations as the tests are run
+# before the run starts, output some info about the test suite that is about to run on
+# print out result abbreviations as the test results are generated
+# after the run finishes...
 # display any result details (from failing or error results) in reverse test/result order
 # output some summary info
 
-You can run asserts test suite using `rake test` and get a feel for what this default outputs.  This view has a few options you can tweak:
+You can run assert's test suite using `rake test` and get a feel for what this default outputs.  This view has a few options you can tweak:
 
 * `styled`: whether to apply ANSI styles to the output, default `true`
 * `pass_styles`: how to style pass result output, default `:green`
@@ -121,9 +122,22 @@ However, the view you use is configurable.  Define you own view class and specif
 
 A view class handles the logic and templating of test result output.  A view class should inherit from `Assert::View::Base`.  This provides the mechanisms and callbacks necessary for interacting with the test runner and gives access to a bunch of common helpers for reading test result data.
 
-Each view should implement the `template` class method.  This method takes a block that is the template code.  Each template is rendered in its own scope.  This scope is given access to the View class and Runner callback with the `view` and `runner` methods.  The template block should, at some point, call `view.run_tests(runner)` to actually run the test suite.  Use the `_` method to output to the io stream.  See the `DefaultView` template for an example and usage.
+Each view should implement the callback methods to output information at different points during the running of a test suite.  Callbacks have access to any view methods and should output information using `puts` and `prints`.  See the `DefaultView` template for a usage example.
 
-Beyond that, each view can do as it sees fit.  Initialize how you wish, take whatever options you'd like, and output results as you see fit.
+Available callbacks from the runner:
+* `before_load`: called at the beginning, before the suite is loaded
+* `after_load`:  called after the suite is loaded, just before `on_start`
+                 functionally equivalent to `on_start`
+* `on_start`:    called when a loaded test suite starts running
+* `before_test`: called before a test starts running
+                 the test is passed as an arg
+* `on_result`:   called when a running tests generates a result
+                 the result is passed as an arg
+* `after_test`:  called after a test finishes running
+                 the test is passed as an arg
+* `on_finish`:   called when the test suite is finished running
+
+Beyond that, each view can do as it sees fit.  Initialize how you wish, take whatever options you'd like, and output results as you see fit, given the available callbacks.
 
 === Using 3rd party views
 

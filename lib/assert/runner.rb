@@ -9,19 +9,15 @@ module Assert
       @view = view
     end
 
-    def run(render=true)
+    def run
+      @view.fire(:on_start)
       @suite.setup
 
-      if render
-        # render the view, passing it a callback block to run the test suite
-        @view.render do
-          benchmark { run_suite }
-        end
-      else
-        benchmark { run_suite }
-      end
+      benchmark { run_suite }
 
       @suite.teardown
+      @view.fire(:on_finish)
+
       count(:failed) + count(:errored)
     end
 
@@ -49,7 +45,9 @@ module Assert
     def run_suite
       # TODO: parallel running
       tests_to_run.each do |test|
-        test.run(@view)
+        @view.fire(:before_test, test)
+        test.run {|result| @view.fire(:on_result, result)}
+        @view.fire(:after_test, test)
       end
     end
 

@@ -8,7 +8,7 @@ module Assert::Result
   class Error < Base; end
   class Skip < Base; end
 
-  class self.types
+  def self.types
     { :pass => Pass,
       :fail => Fail,
       :ignore => Ignore,

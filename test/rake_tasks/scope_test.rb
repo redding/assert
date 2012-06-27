@@ -7,14 +7,14 @@ module Assert::RakeTasks
   class ScopeTests < Assert::Context
     desc "the scope rake tasks handler"
     setup do
-      @scope_root = 'test/fixtures'
-      @handler = Assert::RakeTasks::Scope.new(File.join(@scope_root, 'test_root'))
+      @scope_root = File.expand_path('../../../test/fixtures', __FILE__)
+      @scope = Assert::RakeTasks::Scope.new(File.join(@scope_root, 'test_root'))
     end
-    subject { @handler }
+    subject { @scope }
 
     should have_class_methods :test_file_suffixes
-    should have_instance_methods :namespace, :nested_files, :path_file_list, :to_test_task
-    should have_instance_methods :test_tasks, :scopes
+    should have_readers :path, :nested_files, :path_file_list, :test_tasks, :scopes
+    should have_instance_methods :namespace, :to_test_task
 
     should "know its the test file suffix" do
       assert_equal ['_test.rb', '_tests.rb'], subject.class.test_file_suffixes
@@ -27,7 +27,7 @@ module Assert::RakeTasks
 
     should "know its nested files" do
       assert_equal 6, subject.nested_files.size
-      assert_empty Assert::RakeTasks::Scope.new('does/not/exist').nested_files
+      assert_empty Assert::RakeTasks::Scope.new('/does/not/exist').nested_files
 
       h = Assert::RakeTasks::Scope.new("#{@scope_root}/test_root/shallow")
       assert_equal 2, h.nested_files.size
@@ -41,7 +41,7 @@ module Assert::RakeTasks
     end
 
     should "convert to a test task" do
-      assert_not Assert::RakeTasks::Scope.new('does/not/exist').to_test_task
+      assert_not Assert::RakeTasks::Scope.new('/does/not/exist').to_test_task
 
       tt = subject.to_test_task
       assert_kind_of TestTask, tt
