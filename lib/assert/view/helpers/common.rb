@@ -64,13 +64,28 @@ module Assert::View::Helpers
         test_index += 1
 
         details = test.results.
-          select { |result| self.show_result_details?(result) }.
           collect { |result| ResultDetails.new(result, test, test_index) }
 
         details.reverse! if result_order == :reversed
 
         details
       end.compact.flatten
+    end
+
+    # get all the result details for a set of tests matching a file or context
+    def matched_result_details_for(match, tests, result_order=:normal)
+      context_match = match.kind_of?(Class) && match.ancestors.include?(Assert::Context)
+      file_match = match.kind_of?(String)
+
+      matching_tests = if context_match
+        tests.select {|test| test.context_info.klass == match}
+      elsif file_match
+        tests.select {|test| test.context_info.file == match}
+      else
+        tests
+      end
+
+      result_details_for(matching_tests, result_order)
     end
 
     # only show result details for failed or errored results

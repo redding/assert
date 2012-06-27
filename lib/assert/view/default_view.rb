@@ -35,7 +35,6 @@ module Assert::View
       result_abbrev = options.send("#{result.to_sym}_abbrev")
       styled_abbrev = ansi_styled_msg(result_abbrev, result_ansi_styles(result))
 
-      # list out an abbrev for each test result as it is run
       print styled_abbrev
     end
 
@@ -47,20 +46,22 @@ module Assert::View
         # output detailed results for the tests in reverse test/result order
         tests = suite.ordered_tests.reverse
         result_details_for(tests, :reversed).each do |details|
-          # output the styled result details
-          result = details.result
-          puts ansi_styled_msg(result.to_s, result_ansi_styles(result))
+          if show_result_details?(details.result)
+            # output the styled result details
+            result = details.result
+            puts ansi_styled_msg(result.to_s, result_ansi_styles(result))
 
-          # output any captured output
-          output = details.output
-          puts captured_output(output) if output && !output.empty?
+            # output any captured stdout
+            output = details.output
+            puts captured_output(output) if output && !output.empty?
 
-          puts
+            puts
+          end
         end
       end
 
+      # style the summaries of each result set
       styled_results_sentence = results_summary_sentence do |summary, sym|
-        # style the summaries of each result set
         ansi_styled_msg(summary, result_ansi_styles(sym))
       end
 
