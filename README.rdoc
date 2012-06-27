@@ -86,8 +86,72 @@ Assert provides a default Runner object for running test suites (https://github.
 === Test Order
 The default Runner object runs tests in random order and the `DefaultView` view will display the seed value.  If you want to run tests in a consistant order, set a 'runner_seed' environment variable.  Here's an example running tests with rake:
 
-    $ rake test   # run tests in random order
+    $ rake test                   # run tests in random order
     $ rake test runner_seed=1234  # run tests seeding with '1234'
+
+== Viewing Test Results
+
+You have a few options when it comes to viewing test results in Assert.  Assert comes with its own `DefaultView` class that handles displaying test results.  However, you can extend or define your own view class and display your test results anyway you'd like.
+
+First, lets look at the default: `Assert::View:DefaultView`.  This is the default view class.  Its output goes something like this:
+
+# before the run starts, output some info about the test suite that is about to run on
+# print out result abbreviations as the test results are generated
+# after the run finishes...
+# display any result details (from failing or error results) in reverse test/result order
+# output some summary info
+
+You can run assert's test suite using `rake test` and get a feel for what this default outputs.  This view has a few options you can tweak:
+
+* `styled`: whether to apply ANSI styles to the output, default `true`
+* `pass_styles`: how to style pass result output, default `:green`
+* `fail_styles`: default `:red, :bold`
+* `error_styles`: default `:yellow, :bold`
+* `skip_styles`: default `:cyan`
+* `ignore_styles`: default: `:magenta`
+
+However, the view you use is configurable.  Define you own view class and specify it in your `~/.assert/options.rb` file:
+
+    class MyCustomView < Assert::View::Base
+      # define your view here...
+    end
+
+    Assert.options.view  MyCustomView.new
+
+=== Anatomy of a View
+
+A view class handles the logic and templating of test result output.  A view class should inherit from `Assert::View::Base`.  This provides the mechanisms and callbacks necessary for interacting with the test runner and gives access to a bunch of common helpers for reading test result data.
+
+Each view should implement the callback methods to output information at different points during the running of a test suite.  Callbacks have access to any view methods and should output information using `puts` and `prints`.  See the `DefaultView` template for a usage example.
+
+Available callbacks from the runner:
+* `before_load`: called at the beginning, before the suite is loaded
+* `after_load`:  called after the suite is loaded, just before `on_start`
+                 functionally equivalent to `on_start`
+* `on_start`:    called when a loaded test suite starts running
+* `before_test`: called before a test starts running
+                 the test is passed as an arg
+* `on_result`:   called when a running tests generates a result
+                 the result is passed as an arg
+* `after_test`:  called after a test finishes running
+                 the test is passed as an arg
+* `on_finish`:   called when the test suite is finished running
+
+Beyond that, each view can do as it sees fit.  Initialize how you wish, take whatever options you'd like, and output results as you see fit, given the available callbacks.
+
+=== Using 3rd party views
+
+To use a 3rd party custom view, you first require it in and then specify using the `Assert.options.view` option.  Assert provides a helper for requiring in views.  It can be used in two ways.  You can pass a fully qualified path to the helper and if it exists, will require it in.
+
+    Assert::View.require_user_view '/path/to/my/view'
+
+Alternatively, you can install/clone/copy/write your view implementations in `~/.assert/views` and require it in by name.  To have assert require it by name, have it installed at `~/assert/views/view_name/lib/view_name.rb` (this structure is compatible with popular conventions in rubygem development). For example:
+
+    # assuming ~/.assert/views/my-custom-view/lib/my-custom-view.rb exists
+    # this will work require it in
+    Assert::View.require_user_view 'my-custom-view'
+
+Once your view class is required in, use it and configure it just as you would any view.
 
 === Failure Handling
 Assert, by default, will halt test execution when a test produces a Fail result.  However, Assert provides an option to not halt when Fail results are produced.  You can control how assert handles fails by either setting an option (in your user .assert/options.rb file) or by setting an env variable:
