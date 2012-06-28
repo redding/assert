@@ -5,12 +5,14 @@ module Assert
   # a flag to know if at_exit hook has been installed already
   @@at_exit_installed ||= false
 
-  class << self
+  # install at_exit hook (if needed) (runs at process exit)
+  # this ensures the test suite won't run until all test files are loaded
+  # (this is essentially a direct rip from Minitest)
 
-    # install at_exit hook (if needed) (runs at process exit)
-    # this ensures the test suite won't run unitl all test files are loaded
-    # (this is essentially a direct rip from Minitest)
-    def autorun
+  def self.autorun
+    if !@@at_exit_installed
+      self.view.fire(:before_load)
+
       at_exit do
         # don't run if there was an exception
         next if $!
@@ -22,11 +24,13 @@ module Assert
 
         exit_code = nil
         at_exit { exit(false) if exit_code && exit_code != 0 }
+
+        self.view.fire(:after_load)
         self.runner.new(self.suite, self.view).run
-      end unless @@at_exit_installed
+      end
+
       @@at_exit_installed = true
     end
-
   end
 
 end

@@ -8,9 +8,10 @@ module Assert
     # the user-specific helper file will always be required in after the
     # package-specific one
 
-    class << self
+    USER_TEST_DIR    = './.assert'
+    USER_TEST_HELPER = 'options'
 
-      USER_TEST_HELPER = "./.assert/options"
+    class << self
 
       # assume the test dir path is ./test and look for helpers in ./test/helper.rb
       def package_test_dir
@@ -34,7 +35,8 @@ module Assert
 
       def require_user_test_helper
         if ENV['HOME']
-          safe_require File.expand_path(USER_TEST_HELPER, ENV['HOME'])
+          helper_path = File.join(USER_TEST_DIR, USER_TEST_HELPER)
+          safe_require File.expand_path(helper_path, ENV['HOME'])
         end
       end
 

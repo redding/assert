@@ -17,7 +17,7 @@ class Assert::Runner
     should have_instance_methods :run, :count
 
     should "return an integer exit code" do
-      assert_equal 0, subject.run(false)
+      assert_equal 0, subject.run
     end
 
   end

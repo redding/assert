@@ -12,13 +12,21 @@ module Assert::RakeTasks
   # Setup the rake tasks for testing
   # * add 'include Assert::RakeTasks' to your Rakefile
   def self.included(receiver)
-    # auto-build rake tasks for the ./test files (if defined in ./test)
-    self.for('test') if File.exists?(File.expand_path('./test', Dir.pwd))
+    # auto-install rake tasks
+    self.install
   end
 
-  def self.for(test_root='test')
-    self.irb_task(Assert::RakeTasks::Irb.new(test_root.to_s))
-    self.to_tasks(Assert::RakeTasks::Scope.new(test_root.to_s))
+  def self.install
+    assert_test_root = ENV['ASSERT_TEST_ROOT'] || './test'
+
+    if File.exists?(assert_test_root)
+      self.irb_task(Assert::RakeTasks::Irb.new(assert_test_root))
+      self.to_tasks(Assert::RakeTasks::Scope.new(assert_test_root))
+    end
+  end
+
+  def self.for(test_root_name)
+    warn "[DEPRECATED] `Assert::RakeTasts.for` has been deprecated.  Use `Assert::RakeTasks.install` instead."
   end
 
   class << self

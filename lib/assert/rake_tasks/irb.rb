@@ -26,7 +26,7 @@ module Assert::RakeTasks
     end
 
     def cmd
-      "irb -rubygems -r ./#{self.file_path}"
+      "irb -rubygems -r #{self.file_path}"
     end
 
   end

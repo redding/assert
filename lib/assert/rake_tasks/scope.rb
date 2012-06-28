@@ -8,27 +8,19 @@ module Assert::RakeTasks
       ['_test.rb', '_tests.rb']
     end
 
+    attr_reader :path, :nested_files, :path_file_list, :test_tasks, :scopes
+
     def initialize(path)
       @path = path
+
+      @nested_files = get_nested_files
+      @path_file_list = build_path_file_list
+      @test_tasks = build_test_tasks
+      @scopes = build_scopes
     end
 
     def namespace
       File.basename(@path).to_sym
-    end
-
-    # nested test files under the path
-    def nested_files
-      @nested_files ||= self.class.test_file_suffixes.map do |suffix|
-        Rake::FileList["#{@path}/**/*#{suffix}"]
-      end.flatten
-    end
-
-    # a list with the path test file "#{path}_test.rb" (if it exists)
-    def path_file_list
-      @path_file_list ||= self.class.test_file_suffixes.map do |suffix|
-        path_file_name = "#{@path}#{suffix}"
-        File.exists?(path_file_name) ? Rake::FileList[path_file_name] : []
-      end.flatten
     end
 
     # return a test task covering the scopes nested files plus path file
@@ -41,9 +33,29 @@ module Assert::RakeTasks
       end
     end
 
+    protected
+
+    # nested test files under the path
+
+    def get_nested_files
+      self.class.test_file_suffixes.map do |suffix|
+        Rake::FileList["#{@path}/**/*#{suffix}"]
+      end.flatten
+    end
+
+    # a list with the path test file "#{path}_test.rb" (if it exists)
+
+    def build_path_file_list
+      self.class.test_file_suffixes.map do |suffix|
+        path_file_name = "#{@path}#{suffix}"
+        File.exists?(path_file_name) ? Rake::FileList[path_file_name] : []
+      end.flatten
+    end
+
     # a collection of test tasks for every standalone child test file
-    def test_tasks
-      @test_tasks ||= self.class.test_file_suffixes.map do |suffix|
+
+    def build_test_tasks
+      self.class.test_file_suffixes.map do |suffix|
         # get immediate child test files
         Dir.glob("#{@path}/*#{suffix}").collect do |f|
           # get just the path name for each file
@@ -65,8 +77,9 @@ module Assert::RakeTasks
     end
 
     # a collection of scopes for every child test dir or test dir/file combo
-    def scopes
-      @scopes ||= self.class.test_file_suffixes.map do |suffix|
+
+    def build_scopes
+      self.class.test_file_suffixes.map do |suffix|
         # get immediate child paths
         Dir.glob("#{@path}/*").collect do |p|
           # get just the path name for each dir/file and uniq it
