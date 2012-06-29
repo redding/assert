@@ -47,6 +47,11 @@ class Assert::Macro
     should have_instance_method :method_2, :method_3
     should have_instance_methods :method_4
     should have_instance_methods :method_5, :method_6
+
+    should not_have_instance_method :method_7
+    should not_have_instance_method :method_8, :method_9
+    should not_have_instance_methods :method_10
+    should not_have_instance_methods :method_11, :method_12
   end
 
   class ClassMethodsTest < Assert::Context
@@ -64,6 +69,11 @@ class Assert::Macro
     should have_class_method :method_2, :method_3
     should have_class_methods :method_4
     should have_class_methods :method_5, :method_6
+
+    should not_have_class_method :method_7
+    should not_have_class_method :method_8, :method_9
+    should not_have_class_methods :method_10
+    should not_have_class_methods :method_11, :method_12
   end
 
   class ReadersTest < Assert::Context
@@ -79,6 +89,11 @@ class Assert::Macro
     should have_reader :method_2, :method_3
     should have_readers :method_4
     should have_readers :method_5, :method_6
+
+    should not_have_reader :method_7
+    should not_have_reader :method_8, :method_9
+    should not_have_readers :method_10
+    should not_have_readers :method_11, :method_12
   end
 
   class WritersTest < Assert::Context
@@ -94,6 +109,11 @@ class Assert::Macro
     should have_writer :method_2, :method_3
     should have_writers :method_4
     should have_writers :method_5, :method_6
+
+    should not_have_writer :method_7
+    should not_have_writer :method_8, :method_9
+    should not_have_writers :method_10
+    should not_have_writers :method_11, :method_12
   end
 
   class AccessorsTest < Assert::Context
@@ -109,6 +129,11 @@ class Assert::Macro
     should have_accessor :method_2, :method_3
     should have_accessors :method_4
     should have_accessors :method_5, :method_6
+
+    should not_have_accessor :method_7
+    should not_have_accessor :method_8, :method_9
+    should not_have_accessors :method_10
+    should not_have_accessors :method_11, :method_12
   end
 
 end
