@@ -180,6 +180,19 @@ module Assert
 
 
 
+    def assert_file_exists(file_path, fail_desc=nil)
+      what_failed_msg = "Expected #{file_path.inspect} to exist."
+      assert(File.exists?(File.expand_path(file_path)), fail_desc, what_failed_msg)
+    end
+
+    def assert_not_file_exists(file_path, fail_desc=nil)
+      what_failed_msg = "Expected #{file_path.inspect} to not exist."
+      assert(!File.exists?(File.expand_path(file_path)), fail_desc, what_failed_msg)
+    end
+    alias_method :refute_file_exists, :assert_not_file_exists
+
+
+
     IGNORED_ASSERTION_HELPERS = [ :assert_throws, :assert_nothing_thrown, :assert_send,
       :assert_operator, :refute_operator, :assert_in_epsilon, :refute_in_epsilon,
       :assert_in_delta, :refute_in_delta
