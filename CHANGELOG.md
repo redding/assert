@@ -1,6 +1,6 @@
-== Assert Changes
+## Assert Changes
 
-=== v0.7.x
+### v0.7.x
 * tests know context info (klass, called_from, file) (#62)
 * suites track tests ungrouped
 * fixed issue where method macros display incorrect fail traces
@@ -17,5 +17,5 @@
 * overhaul to how the rake tasks are generated and handled (#69)
 * added name attr to Result model (#61)
 
-=== v0.6.x
+### v0.6.x
 * everything prior to changelog tracking...
