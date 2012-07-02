@@ -24,6 +24,7 @@ module Assert::Assertions
     should have_instance_methods :assert_includes, :assert_included
     should have_instance_methods :assert_not_includes, :assert_not_included, :refute_includes, :refute_included
     should have_instance_methods :assert_nil, :assert_not_nil, :refute_nil
+    should have_instance_methods :assert_file_exists, :assert_not_file_exists, :refute_file_exists
   end
 
   class IgnoredTest < BasicTest
