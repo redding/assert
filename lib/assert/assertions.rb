@@ -74,6 +74,7 @@ module Assert
       ].join
       assert(object.respond_to?(method), fail_desc, what_failed_msg)
     end
+    alias_method :assert_responds_to, :assert_respond_to
 
     def assert_not_respond_to(method, object, fail_desc=nil)
       what_failed_msg = [
@@ -82,7 +83,9 @@ module Assert
       ].join
       assert(!object.respond_to?(method), fail_desc, what_failed_msg)
     end
+    alias_method :assert_not_responds_to, :assert_not_respond_to
     alias_method :refute_respond_to, :assert_not_respond_to
+    alias_method :refute_responds_to, :assert_not_respond_to
 
 
 
