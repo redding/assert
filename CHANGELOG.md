@@ -1,5 +1,16 @@
 ## Assert Changes
 
+### v0.8.x
+* deprecated assert-view sister repo
+* `DefaultView` now provided by assert directly
+* views render by defining callbacks that are fired by the runner
+* added in the corresponding `not_*` method macros (#87)
+* added in aliases for `assert_responds_to` assertion helpers (#86)
+* added in `assert_file_exists` assertion helpers (#85)
+* allows test files ending in `_tests.rb` to be recognized by rake task generator
+* `DefaultView` syncs its io output
+* README enhanced; added docs for view rendering and customization
+
 ### v0.7.x
 * tests know context info (klass, called_from, file) (#62)
 * suites track tests ungrouped
