@@ -44,14 +44,14 @@ class Assert::Macro
     end
 
     should have_instance_method :method_1
-    should have_instance_method :method_2, :method_3
-    should have_instance_methods :method_4
-    should have_instance_methods :method_5, :method_6
+    should have_instance_methods :method_2, :method_3
+    should have_imeth :method_4
+    should have_imeths :method_5, :method_6
 
     should not_have_instance_method :method_7
-    should not_have_instance_method :method_8, :method_9
-    should not_have_instance_methods :method_10
-    should not_have_instance_methods :method_11, :method_12
+    should not_have_instance_methods :method_8, :method_9
+    should not_have_imeth :method_10
+    should not_have_imeths :method_11, :method_12
   end
 
   class ClassMethodsTest < Assert::Context
@@ -66,14 +66,14 @@ class Assert::Macro
     end
 
     should have_class_method :method_1
-    should have_class_method :method_2, :method_3
-    should have_class_methods :method_4
-    should have_class_methods :method_5, :method_6
+    should have_class_methods :method_2, :method_3
+    should have_cmeth :method_4
+    should have_cmeths :method_5, :method_6
 
     should not_have_class_method :method_7
-    should not_have_class_method :method_8, :method_9
-    should not_have_class_methods :method_10
-    should not_have_class_methods :method_11, :method_12
+    should not_have_class_methods :method_8, :method_9
+    should not_have_cmeth :method_10
+    should not_have_cmeths :method_11, :method_12
   end
 
   class ReadersTest < Assert::Context
