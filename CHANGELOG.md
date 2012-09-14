@@ -1,6 +1,7 @@
 ## Assert Changes
 
 ### v0.8.x
+* added more succinct `have_imeth` and `have_cmeth` macro methods
 * deprecated assert-view sister repo
 * `DefaultView` now provided by assert directly
 * views render by defining callbacks that are fired by the runner
