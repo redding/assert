@@ -7,8 +7,8 @@ Gem::Specification.new do |s|
   s.version     = Assert::VERSION
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Kelly Redding", "Collin Redding"]
-  s.email       = ["kelly@kelredd.com"]
-  s.homepage    = "http://github.com/teaminsight/assert"
+  s.email       = ["kelly@kellyredding.com", "collin.redding@me.com"]
+  s.homepage    = "http://github.com/redding/assert"
   s.summary     = %q{Test::Unit style testing framework, just better than Test::Unit.}
   s.description = %q{Test::Unit style testing framework, just better than Test::Unit.}
 
@@ -17,7 +17,6 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
-  s.add_development_dependency("bundler", ["~> 1.0"])
   s.add_dependency("ansi", ["~> 1.3"])
 
 end
