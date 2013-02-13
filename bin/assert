@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+#
+# Copyright (c) 2011-Present Kelly Redding and Collin Redding
+#
+
+require 'assert/cli'
+Assert::CLI.run ARGV

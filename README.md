@@ -193,6 +193,8 @@ $ rake test halt_on_fail=true             # force halt on failure using an env v
 
 ## Rake Tasks
 
+**Note**: rake task handling is deprecated and will be removed in v2.0
+
 Assert provides some rake task helpers that will scan your test folder and recursively generate rake tasks for each one of your test folders or files.  Test files must end in either `'_test.rb'` or `'_tests.rb'`.  Use this as an alternative to running ruby on each one of your test files individually.
 
 As an example, say your test folder has a file structure like so:

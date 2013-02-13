@@ -17,6 +17,8 @@ module Assert::RakeTasks
   end
 
   def self.install
+    warn "[DEPRECATED] `Assert::RakeTasts` has been deprecated.  Support for running tests with Rake will be removed in v2.0.  Use the assert CLI instead."
+
     assert_test_root = ENV['ASSERT_TEST_ROOT'] || './test'
 
     if File.exists?(assert_test_root)
