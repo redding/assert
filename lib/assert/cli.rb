@@ -11,6 +11,11 @@ module Assert
 
     def initialize
       @cli = CLIRB.new
+      # TODO: opts to consider
+      # * show loaded test files, cli err backtraces
+      # * runner_seed
+      # * halt_on_fail
+      # * capture output
     end
 
     def run(*args)
