@@ -21,18 +21,15 @@ module Assert::View
     require 'assert/view/helpers/common'
     include Helpers::Common
 
-    attr_accessor :suite, :output_io
+    attr_accessor :output_io
 
-    def initialize(output_io, suite=Assert.suite)
-      @output_io = output_io
-      @suite     = suite
-
-      if @output_io.respond_to?(:sync=)
-        @output_io.sync = true
-      end
+    def initialize(output_io, suite=nil)
+      @output_io, @suite = output_io, suite
+      @output_io.sync = true if @output_io.respond_to?(:sync=)
     end
 
     def view; self; end
+    def suite; @suite || Assert.suite; end
 
     def fire(callback, *args)
       self.send(callback, *args)

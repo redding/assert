@@ -191,24 +191,22 @@ class Assert::Test
         puts "std out from the test"
         assert true
       }
-      @orig_capture = @test.class.options.capture_output
-      @test.class.options.capture_output(true)
-      @test.run
+      @orig_output = Assert.config.output
+      Assert.config.output false
     }
     teardown {
-      @test.class.options.capture_output(@orig_capture)
+      Assert.config.output @orig_output
     }
 
     should "capture any io from the test" do
+      @test.run
       assert_equal "std out from the test\n", @test.output
     end
 
   end
 
-
-
-  class FullOutputCaptureTest < BasicTest
-    desc "when collecting std out across setup, teardown, and meth calls"
+  class FullCaptureOutTest < CaptureOutTest
+    desc "across setup, teardown, and meth calls"
     setup do
       @test = Factory.test("fullstdouttest") {
         puts "std out from the test"
@@ -220,16 +218,11 @@ class Assert::Test
         puts "std out from a method an assert called"
         true
       end
-
-      @orig_capture = @test.class.options.capture_output
-      @test.class.options.capture_output(true)
-      @test.run
     end
-    teardown {
-      @test.class.options.capture_output(@orig_capture)
-    }
 
     should "collect it on itself in the output accessor" do
+      @test.run
+
       assert_equal([
         "std out from the setup",
         "std out from the test",

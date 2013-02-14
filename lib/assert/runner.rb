@@ -1,12 +1,12 @@
 module Assert
+
   class Runner
 
     # a Runner runs a suite of tests.
 
     def initialize(suite, view)
       raise ArgumentError if !suite.kind_of?(Suite)
-      @suite = suite
-      @view = view
+      @suite, @view = suite, view
     end
 
     def run
@@ -30,7 +30,7 @@ module Assert
     def tests_to_run
       # order tests randomly
       tests = @suite.tests
-      srand @suite.runner_seed
+      srand Assert.config.runner_seed # TODO: secure random??
       tests.sort.sort_by { rand tests.size }
     end
 
