@@ -61,7 +61,7 @@ module Assert
         args
       ]
 
-      @test_files = file_paths(test_paths).select{ |f| test_file?(f) }
+      @test_files = file_paths(test_paths).select{ |f| test_file?(f) }.sort
     end
 
     def run
