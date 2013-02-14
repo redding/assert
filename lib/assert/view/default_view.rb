@@ -6,9 +6,6 @@ module Assert::View
   # designed for terminal viewing.
 
   class DefaultView < Base
-    require 'assert/view/helpers/capture_output'
-    include Helpers::CaptureOutput
-
     require 'assert/view/helpers/ansi_styles'
     include Helpers::AnsiStyles
 
@@ -55,6 +52,7 @@ module Assert::View
             output = details.output
             puts captured_output(output) if output && !output.empty?
 
+            # add an empty line between each result detail
             puts
           end
         end

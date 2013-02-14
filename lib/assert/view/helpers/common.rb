@@ -95,6 +95,13 @@ module Assert::View::Helpers
       ([:skip, :ignore].include?(result.to_sym) && result.message)
     end
 
+    # show any captured output
+    def captured_output(output)
+      "--- stdout ---\n"\
+      "#{output}"\
+      "--------------"
+    end
+
     # return a list of result symbols that have actually occurred
     def ocurring_result_types
       @result_types ||= [
