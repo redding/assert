@@ -6,25 +6,41 @@ require 'assert/runner'
 require 'assert/suite'
 
 module Assert
-  class AssertOptionsTest < Assert::Context
-    desc "options for Assert"
-    subject { Assert.options }
 
-    should "be an Options::Base object" do
-      assert_kind_of Assert::Options::Base, subject
+  class BaseTests < Assert::Context
+    desc "the Assert module"
+    subject { Assert }
+
+    should have_imeths :view, :suite, :runner, :config, :configure, :init
+
+    should "know its config singleton" do
+      assert_same Config, subject.config
     end
 
-    should "default the view option" do
-      assert_kind_of Assert::View::DefaultView, subject.default_view
+    should "map its view, suite and runner to its config" do
+      assert_same subject.config.view,   subject.view
+      assert_same subject.config.suite,  subject.suite
+      assert_same subject.config.runner, subject.runner
     end
 
-    should "default the suite option" do
-      assert_kind_of Assert::Suite, subject.default_suite
-    end
+    # Note: don't really need to explicitly test the configure/init meths
+    # nothing runs as expected if they aren't working
 
-    should "default the runner option" do
-      assert_equal Assert::Runner, subject.default_runner
+  end
+
+  class ConfigTests < Assert::Context
+    desc "the Assert Config singleton"
+    subject { Config }
+
+    should have_imeths :suite, :view, :runner
+    should have_imeths :runner_seed, :output, :halt_on_fail
+
+    should "default the view, suite, and runner" do
+      assert_kind_of Assert::View::DefaultView, subject.view
+      assert_kind_of Assert::Suite,  subject.suite
+      assert_equal   Assert::Runner, subject.runner
     end
 
   end
+
 end

@@ -115,6 +115,26 @@ Assert.configure do |config|
 end
 ```
 
+### Test Dir
+
+By default Assert expects tests in the `test` dir.  The is where it looks for the helper file and is the default path used when running `$ assert`.  To override this dir, do so in your user/local settings file:
+
+```ruby
+Assert.configure do |config|
+  config.test_dir "testing"
+end
+```
+
+### Test Helper File
+
+By default Assert will look for a file named `helper.rb` in the `test_dir` and require it (if found) just before running the tests.  To override the helper file name, do so in your user/local settings file:
+
+```ruby
+Assert.configure do |config|
+  config.test_helper "some_helpers.rb"
+end
+```
+
 ### Test Order
 
 The default runner object runs tests in random order.  To run tests in a consistant order, specify a custom runner seed:

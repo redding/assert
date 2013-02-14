@@ -27,8 +27,10 @@ end
 # anywhere we test halt on fail behavior, we take care of it in the specific context
 class Assert::Context
   def setup
-    ENV['halt_on_fail'] = 'false'
-    Assert::Test.options.halt_on_fail false
+    Assert.config.halt_on_fail false
+    # Note: don't mess with `Assert.config.output` in this setup block - it will
+    # break the capture output tests.  If you really need to set it one way or
+    # another, do it in the `.assert.rb` local settings file.
   end
 end
 

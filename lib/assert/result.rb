@@ -138,8 +138,7 @@ module Assert::Result
   end
 
   # raised by the 'fail' context helper to break test execution
-  # (if Test.halt_on_fail?)
-  class TestFailure < RuntimeError; end
+  TestFailure = Class.new(RuntimeError)
 
   class Fail < Base
 
