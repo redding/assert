@@ -38,7 +38,7 @@ module Assert
     should "default the view, suite, and runner" do
       assert_kind_of Assert::View::DefaultView, subject.view
       assert_kind_of Assert::Suite,  subject.suite
-      assert_equal   Assert::Runner, subject.runner
+      assert_kind_of Assert::Runner, subject.runner
     end
 
   end
