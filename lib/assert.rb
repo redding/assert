@@ -37,7 +37,7 @@ module Assert
     end
 
     settings :view, :suite, :runner, :test_dir, :test_helper
-    settings :runner_seed, :output, :halt_on_fail, :debug
+    settings :runner_seed, :show_output, :halt_on_fail, :debug
 
     def initialize
       @view   = Assert::View::DefaultView.new($stdout)
@@ -48,7 +48,7 @@ module Assert
 
       # TODO: secure random??
       @runner_seed  = begin; srand; srand % 0xFFFF; end.to_i
-      @output       = true
+      @show_output  = true
       @halt_on_fail = true
       @debug        = false
     end
