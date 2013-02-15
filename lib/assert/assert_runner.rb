@@ -34,7 +34,7 @@ module Assert
     end
 
     def apply_option_settings(options)
-      # TODO: drive assert config settings from given options (don't nils)
+      Assert.config.apply(options)
     end
 
     def apply_env_settings
