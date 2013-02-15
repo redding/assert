@@ -16,9 +16,17 @@ module Assert
   def self.config; Config; end
   def self.configure; yield Config if block_given?; end
 
-  def self.init(test_dir)
-    helper_file = File.join(test_dir, Config.test_helper)
-    require helper_file if File.exists?(helper_file)
+  def self.init(test_files, opts)
+    # load any test helper file
+    if p = opts[:test_dir_path]
+      helper_file = File.join(p, Config.test_helper)
+      require helper_file if File.exists?(helper_file)
+    end
+
+    # load the test files
+    Assert.view.fire(:before_load)
+    test_files.each{ |p| require p }
+    Assert.view.fire(:after_load)
   end
 
   class Config
