@@ -18,25 +18,6 @@ module Assert::Result
   end
 
   class Backtrace < ::Array
-    # ripped from minitest...
-
-    file = File.expand_path __FILE__
-           # if RUBY_VERSION =~ /^1\.9/ then  # bt's expanded, but __FILE__ isn't :(
-           #    File.expand_path __FILE__
-           # elsif  __FILE__ =~ /^[^\.]/ then # assume both relative
-           #   require 'pathname'
-           #   pwd = Pathname.new Dir.pwd
-           #   pn = Pathname.new File.expand_path(__FILE__)
-           #   relpath = pn.relative_path_from(pwd) rescue pn
-           #   pn = File.join ".", relpath unless pn.relative?
-           #   pn.to_s
-           # else                             # assume both are expanded
-           #   __FILE__
-           # end
-
-    # './lib' in project dir, or '/usr/local/blahblah' if installed
-    ASSERT_DIR = File.dirname(File.dirname(file))
-
     def initialize(value=nil)
       super(value || ["No backtrace"])
     end
@@ -61,8 +42,27 @@ module Assert::Result
 
     protected
 
+    # filter a line out if it's an assert lib line
+
     def filter_out?(line)
-      line.rindex(ASSERT_DIR, 0)
+      # from minitest (for reference)...
+      # file = File.expand_path __FILE__
+             # if RUBY_VERSION =~ /^1\.9/ then  # bt's expanded, but __FILE__ isn't :(
+             #    File.expand_path __FILE__
+             # elsif  __FILE__ =~ /^[^\.]/ then # assume both relative
+             #   require 'pathname'
+             #   pwd = Pathname.new Dir.pwd
+             #   pn = Pathname.new File.expand_path(__FILE__)
+             #   relpath = pn.relative_path_from(pwd) rescue pn
+             #   pn = File.join ".", relpath unless pn.relative?
+             #   pn.to_s
+             # else                             # assume both are expanded
+             #   __FILE__
+             # end
+
+      # './lib' in project dir, or '/usr/local/blahblah' if installed
+      assert_lib_path = File.expand_path('../..', __FILE__)
+      line.rindex(assert_lib_path, 0)
     end
 
   end
