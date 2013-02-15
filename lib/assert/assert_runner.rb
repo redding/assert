@@ -22,8 +22,7 @@ module Assert
 
     def run
       Assert.init(File.join(@test_dir_root_path, Assert.config.test_dir))
-      # TODO: have `run` take suite, view; config be instance
-      Assert.runner.new(Assert.suite, Assert.view).run
+      Assert.runner.run(Assert.suite, Assert.view)
     end
 
     protected

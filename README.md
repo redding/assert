@@ -111,7 +111,7 @@ Assert uses its [`Assert::Runner`](/lib/assert/runner.rb) to run tests.  You can
 require 'my_awesome_runner_class'
 
 Assert.configure do |config|
-  config.runner MyAwesomeRunnerClass
+  config.runner MyAwesomeRunnerClass.new
 end
 ```
 

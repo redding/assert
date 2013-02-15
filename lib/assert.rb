@@ -41,8 +41,8 @@ module Assert
 
     def initialize
       @view   = Assert::View::DefaultView.new($stdout)
-      @suite  = Suite.new
-      @runner = Assert::Runner
+      @suite  = Assert::Suite.new
+      @runner = Assert::Runner.new
 
       @runner_seed = begin # TODO: secure random??
         srand

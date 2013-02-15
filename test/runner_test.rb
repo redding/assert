@@ -11,13 +11,14 @@ class Assert::Runner
     setup do
       @suite  = Assert::Suite.new
       @view   = Assert::View::Base.new(@suite, StringIO.new("", "w+"))
+      @runner = Assert::Runner.new
     end
-    subject { Assert::Runner.new(@suite, @view) }
+    subject { @runner }
 
-    should have_instance_methods :run, :count
+    should have_instance_methods :run
 
     should "return an integer exit code" do
-      assert_equal 0, subject.run
+      assert_equal 0, subject.run(@suite, @view)
     end
 
   end
