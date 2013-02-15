@@ -13,10 +13,10 @@ module Assert
       apply_option_settings(test_options)
       apply_env_settings
 
-      test_paths = test_paths
-      test_paths << Assert.config.test_dir if test_paths.empty?
-      Assert.init(path_of(Assert.config.test_dir, test_paths.first))
-      load_tests(test_paths)
+      files = test_files(test_paths.empty? ? Assert.config.test_dir : test_paths)
+      Assert.init(files, {
+        :test_dir_path => path_of(Assert.config.test_dir, files.first)
+      })
     end
 
     def run
@@ -43,21 +43,15 @@ module Assert
       end
     end
 
-    def load_tests(paths)
-      Assert.view.fire(:before_load)
-      file_paths(paths).select{ |p| test_file?(p) }.sort.each{ |p| require p }
-      Assert.view.fire(:after_load)
-    end
-
     private
 
-    def file_paths(test_paths)
+    def test_files(test_paths)
       test_paths.inject(Set.new) do |paths, path|
         paths += Dir.glob("#{path}*") + Dir.glob("#{path}*/**/*")
-      end
+      end.select{ |p| is_test_file?(p) }.sort
     end
 
-    def test_file?(path)
+    def is_test_file?(path)
       TEST_FILE_SUFFIXES.inject(false) do |result, suffix|
         result || path =~ /#{suffix}$/
       end
@@ -70,7 +64,7 @@ module Assert
     # this method inspects a test path and finds the test dir path.
 
     def path_of(segment, a_path)
-      full_path = File.expand_path(a_path)
+      full_path = File.expand_path(a_path, Dir.pwd)
       seg_pos = full_path.index(segment_regex(segment))
       File.join(seg_pos && (seg_pos > 0) ? full_path[0..(seg_pos-1)] : full_path, segment)
     end
