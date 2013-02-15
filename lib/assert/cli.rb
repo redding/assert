@@ -21,13 +21,17 @@ module Assert
         option 'halt_on_fail', 'halt a test when it fails', {
           :abbrev => 't'
         }
-        # show loaded test files, cli err backtraces
-        option 'debug', 'run assert in debug mode'
+        # show loaded test files, cli err backtraces, etc
+        option 'debug', 'run in debug mode'
       end
     end
 
     def run(*args)
+      # default debug_mode to the env var
+      debug_mode = ENV['ASSERT_DEBUG'] == 'true'
       begin
+        # parse manually in the case that parsing fails before the debug arg
+        debug_mode ||= args.include?('-d') || args.include?('--debug')
         @cli.parse!(args)
         Assert::AssertRunner.new(@cli.args, @cli.opts).run
       rescue CLIRB::HelpExit
@@ -35,12 +39,12 @@ module Assert
       rescue CLIRB::VersionExit
         puts Assert::VERSION
       rescue CLIRB::Error => exception
-        puts "#{exception.message}\n"
-        puts help
+        puts "#{exception.message}\n\n"
+        puts  debug_mode ? exception.backtrace.join("\n") : help
         exit(1)
       rescue Exception => exception
         puts "#{exception.class}: #{exception.message}"
-        puts exception.backtrace.join("\n") if ENV['DEBUG']
+        puts exception.backtrace.join("\n") if debug_mode
         exit(1)
       end
       exit(0)
