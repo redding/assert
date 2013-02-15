@@ -11,17 +11,24 @@ module Assert
     end
 
     def initialize
-      @cli = CLIRB.new
-      # TODO: opts to consider
-      # * show loaded test files, cli err backtraces
-      # * runner_seed
-      # * halt_on_fail
-      # * capture output
+      @cli = CLIRB.new do
+        option 'runner_seed', 'Use a given seed to run tests', {
+          :abbrev => 's', :value => Fixnum
+        }
+        option 'show_output', 'show stdout output (do not capture)', {
+          :abbrev => 'o'
+        }
+        option 'halt_on_fail', 'halt a test when it fails', {
+          :abbrev => 't'
+        }
+        # show loaded test files, cli err backtraces
+        option 'debug', 'run assert in debug mode'
+      end
     end
 
     def run(*args)
       begin
-        @cli.parse!(*args)
+        @cli.parse!(args)
         Assert::AssertRunner.new(@cli.args, @cli.opts).run
       rescue CLIRB::HelpExit
         puts help
@@ -40,7 +47,7 @@ module Assert
     end
 
     def help
-      "Usage: assert [TESTS] [options]\n\n"\
+      "Usage: assert [options] [TESTS]\n\n"\
       "Options:"\
       "#{@cli}"
     end
