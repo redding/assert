@@ -13,15 +13,13 @@ module Assert
       apply_option_settings(test_options)
       apply_env_settings
 
-      @test_paths = test_paths
-      @test_paths << Assert.config.test_dir if @test_paths.empty?
-      @test_dir_root_path = test_dir_root_path(@test_paths.first)
-
-      load_tests
+      test_paths = test_paths
+      test_paths << Assert.config.test_dir if test_paths.empty?
+      Assert.init(path_of(Assert.config.test_dir, test_paths.first))
+      load_tests(test_paths)
     end
 
     def run
-      Assert.init(File.join(@test_dir_root_path, Assert.config.test_dir))
       Assert.runner.run(Assert.suite, Assert.view)
     end
 
@@ -32,7 +30,7 @@ module Assert
     end
 
     def apply_local_settings
-      # TODO: use ENV file or walk up Dir.pwd to `.assert.rb` file
+      safe_require(ENV['ASSERT_LOCALFILE'] || path_of(LOCAL_SETTINGS_FILE, Dir.pwd))
     end
 
     def apply_option_settings(options)
@@ -43,9 +41,9 @@ module Assert
       # TODO: drive assert config settings from env vars (don't nils)
     end
 
-    def load_tests
+    def load_tests(paths)
       Assert.view.fire(:before_load)
-      file_paths(@test_paths).select{ |p| test_file?(p) }.sort.each{ |p| require p }
+      file_paths(paths).select{ |p| test_file?(p) }.sort.each{ |p| require p }
       Assert.view.fire(:after_load)
     end
 
@@ -69,14 +67,13 @@ module Assert
 
     # this method inspects a test path and finds the test dir path.
 
-    def test_dir_root_path(a_test_path)
-      full_path = File.expand_path("./#{a_test_path}", Dir.pwd)
-      test_dir_pos = full_path.index(dir_regex(Assert.config.test_dir))
-      full_path[0..(test_dir_pos-1)] if test_dir_pos && (test_dir_pos > 0)
+    def path_of(segment, a_path)
+      full_path = File.expand_path(a_path)
+      seg_pos = full_path.index(segment_regex(segment))
+      File.join(seg_pos && (seg_pos > 0) ? full_path[0..(seg_pos-1)] : full_path, segment)
     end
 
-    def dir_regex(dir); /^#{dir}$|^#{dir}\/|\/#{dir}\/|\/#{dir}$/; end
-
+    def segment_regex(seg); /^#{seg}$|^#{seg}\/|\/#{seg}\/|\/#{seg}$/; end
 
   end
 
