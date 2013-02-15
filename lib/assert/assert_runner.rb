@@ -38,7 +38,9 @@ module Assert
     end
 
     def apply_env_settings
-      # TODO: drive assert config settings from env vars (don't nils)
+      Assert.configure do |c|
+        c.runner_seed ENV['ASSERT_RUNNER_SEED'].to_i if ENV['ASSERT_RUNNER_SEED']
+      end
     end
 
     def load_tests(paths)
