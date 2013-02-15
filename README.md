@@ -167,20 +167,20 @@ In user/local settings file:
 
 ```ruby
 Assert.configure do |config|
-  config.output false
+  config.show_output false
 end
 ```
 
 Using the CLI:
 
 ```sh
-$ assert [-o|--output|--no-output]
+$ assert [-o|--show-output|--no-show-output]
 ```
 
 Using an ENV var:
 
 ```sh
-$ ASSERT_OUTPUT=false assert
+$ ASSERT_SHOW_OUTPUT=false assert
 ```
 
 ### Failure Handling

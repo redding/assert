@@ -36,22 +36,29 @@ module Assert
       end
     end
 
-    settings :view, :suite, :runner
-    settings :runner_seed, :output, :halt_on_fail, :test_dir, :test_helper
+    settings :view, :suite, :runner, :test_dir, :test_helper
+    settings :runner_seed, :show_output, :halt_on_fail, :debug
 
     def initialize
       @view   = Assert::View::DefaultView.new($stdout)
       @suite  = Assert::Suite.new
       @runner = Assert::Runner.new
-
-      @runner_seed = begin # TODO: secure random??
-        srand
-        srand % 0xFFFF
-      end.to_i
-      @output = true
-      @halt_on_fail = true
-      @test_dir = "test"
+      @test_dir    = "test"
       @test_helper = "helper.rb"
+
+      # TODO: secure random??
+      @runner_seed  = begin; srand; srand % 0xFFFF; end.to_i
+      @show_output  = true
+      @halt_on_fail = true
+      @debug        = false
+    end
+
+    def apply(options)
+      options.keys.each do |opt|
+        if !options[opt].nil? && self.respond_to?(opt.to_s)
+          self.send(opt.to_s, options[opt])
+        end
+      end
     end
 
   end

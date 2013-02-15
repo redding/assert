@@ -4,4 +4,4 @@
 #
 
 require 'assert/cli'
-Assert::CLI.run ARGV
+Assert::CLI.run *ARGV
