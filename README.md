@@ -95,6 +95,8 @@ Assert will look for and require the file `$HOME/.assert/initializer.rb`.  Use t
 
 Assert will look for and require the file `./.assert.rb`.  Use this file to specify project settings.  Local settings can be overridden by CLI, and ENV settings.
 
+To specify a custom local settings file path, use the `ASSERT_LOCALFILE` env var.
+
 ### CLI settings
 
 Assert accepts options from its CLI.  Use these options to specify runtime settings.  CLI settings can be overridden by ENV settings.
@@ -177,12 +179,6 @@ Using the CLI:
 $ assert [-o|--show-output|--no-show-output]
 ```
 
-Using an ENV var:
-
-```sh
-$ ASSERT_SHOW_OUTPUT=false assert
-```
-
 ### Failure Handling
 
 By default, Assert will halt test execution when a test produces a Fail result.  It provides a setting to override this default:
@@ -199,12 +195,6 @@ Using the CLI:
 
 ```sh
 $ assert [-t|--halt|--no-halt]
-```
-
-Using an ENV var:
-
-```sh
-$ ASSERT_HALT_ON_FAIL=false assert
 ```
 
 ## Viewing Test Results
