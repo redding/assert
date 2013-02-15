@@ -18,20 +18,20 @@ module Assert::View
     should have_class_method :options
 
     # accessors, base methods
-    should have_accessors :suite, :output_io
-    should have_instance_methods :view, :fire
-    should have_instance_methods :before_load, :after_load, :on_start, :on_finish
-    should have_instance_methods :before_test, :after_test, :on_result
+    should have_accessors :output_io
+    should have_imeths :view, :suite, :fire
+    should have_imeths :before_load, :after_load, :on_start, :on_finish
+    should have_imeths :before_test, :after_test, :on_result
 
     # common methods
-    should have_instance_methods :run_time, :runner_seed, :count, :tests?, :all_pass?
-    should have_instance_methods :suite_contexts, :ordered_suite_contexts
-    should have_instance_methods :suite_files, :ordered_suite_files
-    should have_instance_methods :result_details_for, :show_result_details?
-    should have_instance_methods :ocurring_result_types, :result_summary_msg
-    should have_instance_methods :all_pass_result_summary_msg, :results_summary_sentence
-    should have_instance_methods :test_count_statement, :result_count_statement
-    should have_instance_methods :to_sentence
+    should have_imeths :run_time, :runner_seed, :count, :tests?, :all_pass?
+    should have_imeths :suite_contexts, :ordered_suite_contexts
+    should have_imeths :suite_files, :ordered_suite_files
+    should have_imeths :result_details_for, :show_result_details?
+    should have_imeths :ocurring_result_types, :result_summary_msg
+    should have_imeths :all_pass_result_summary_msg, :results_summary_sentence
+    should have_imeths :test_count_statement, :result_count_statement
+    should have_imeths :to_sentence
 
   end
 

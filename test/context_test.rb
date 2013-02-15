@@ -91,23 +91,7 @@ class Assert::Context
 
 
 
-  class FailTests < BasicTest
-    desc "fail method"
-    setup do
-      @result = @context.fail
-    end
-    subject{ @result }
-
-    should "create a fail result" do
-      assert_kind_of Assert::Result::Fail, subject
-    end
-    should "set the calling backtrace on the result" do
-      assert_kind_of Array, subject.backtrace
-      assert_equal Factory.context_info_called_from, subject.trace
-    end
-  end
-
-  class FlunkTest < BasicTest
+  class FlunkTests < BasicTest
     desc "flunk method"
     setup do
       @flunk_msg = "It flunked."
@@ -122,6 +106,22 @@ class Assert::Context
       assert_equal @flunk_msg, subject.message
     end
 
+  end
+
+  class FailTests < BasicTest
+    desc "fail method"
+    setup do
+      @result = @context.fail
+    end
+    subject{ @result }
+
+    should "create a fail result" do
+      assert_kind_of Assert::Result::Fail, subject
+    end
+    should "set the calling backtrace on the result" do
+      assert_kind_of Array, subject.backtrace
+      assert_equal Factory.context_info_called_from, subject.trace
+    end
   end
 
   class StringMessageTests < FailTests
@@ -150,54 +150,32 @@ class Assert::Context
 
   end
 
-
-
-
-
-
-  class SaveRestoreHaltOnFailTests < BasicTest
-    desc "when not halting on fails"
+  class HaltOnFailTests < FailTests
+    desc "when halting on fails"
     setup do
-      @prev_halt_option = Assert::Test.options.halt_on_fail
-      @prev_halt_envvar = ENV['halt_on_fail']
+      @orig_halt_fail = Assert.config.halt_on_fail
+      @fail_msg = "something failed"
     end
     teardown do
-      Assert::Test.options.halt_on_fail @prev_halt_option
-      ENV['halt_on_fail'] = @prev_halt_envvar
-    end
-  end
-
-  class HaltOnFailTests < SaveRestoreHaltOnFailTests
-    setup do
-      ENV['halt_on_fail'] = 'true'
-      Assert::Test.options.halt_on_fail true
-    end
-  end
-
-  class HaltFailTests < HaltOnFailTests
-    desc "fail method"
-    setup do
-      @fail_msg = "something failed"
-      begin
-        @context.fail @fail_msg
-      rescue Exception => @exception
-      end
-      @result = Assert::Result::Fail.new(Factory.test("something"), @exception)
+      Assert.config.halt_on_fail @orig_halt_fail
     end
     subject{ @result }
 
-    should "raise a test failure exception when called" do
-      assert_kind_of Assert::Result::TestFailure, @exception
-    end
-    should "raise the exception with the message passed to it" do
-      assert_equal @fail_msg, @exception.message
-    end
-    should "set the message passed to it on the result" do
-      assert_equal @fail_msg, subject.message
+    should "raise an exception with the failure's message" do
+      Assert.config.halt_on_fail true
+      err = begin
+        @context.fail @fail_msg
+      rescue Exception => exception
+        exception
+      end
+      assert_kind_of Assert::Result::TestFailure, err
+      assert_equal @fail_msg, err.message
+
+      result = Assert::Result::Fail.new(Factory.test("something"), err)
+      assert_equal @fail_msg, result.message
     end
 
   end
-
 
 
 

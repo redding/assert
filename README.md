@@ -1,4 +1,4 @@
-# The Assert testing framework
+# The Assert Testing Framework
 
 Test::Unit style testing framework, just better than Test::Unit.
 
@@ -50,13 +50,13 @@ In addition, Assert adds some helpers and syntax sugar to enhance the way tests 
 
 **Note**: Assert is tested using itself.  The tests are a pretty good place to look for examples and usage patterns.
 
-## Running Tests
+## CLI
 
 ```sh
 $ assert --help
 ```
 
-Assert ships with a CLI for running tests.  Test files must end in `_tests.rb` (or `_test.rb`).  The CLI globs any given file path(s), requires any test files, and run the tests in them.
+Assert ships with a CLI for running tests.  Test files must end in `_tests.rb` (or `_test.rb`).  The CLI globs any given file path(s), requires any test files, and runs the tests in them.
 
 As an example, say your test folder has a file structure like so:
 
@@ -79,41 +79,145 @@ All you need to do is pass some sort of existing file path (hint: use tab-comple
 
 ## Configuring Assert
 
-TODO
+```ruby
+Assert.configure do |config|
+  # set your config options here
+end
+```
 
-### User Options and Helpers
+Assert uses a config pattern for specifying settings.  Using this pattern, you can configure settings, extensions, custom views, etc.  Settings can be configured in 4 different scopes and are applied in this order: User, Local, CLI, ENV.
 
-Assert provides ways for setting user-specfic options and helpers.  When Assert is setting itself up, the last setup step is to look for and require the file `~/.assert/options.rb`.  This file is essentially a user level test helper file.  Use it to set options, configure assert extensions, setup/define how to view test results, etc.
+### User settings
 
-### Running Tests
+Assert will look for and require the file `$HOME/.assert/initializer.rb`.  Use this file to specify user settings.  User settings can be overridden by Local, CLI, and ENV settings.
 
-Assert uses its [`Assert::Runner`](/lib/assert/runner.rb) to run tests.  This runner runs its suite's tests in random order based on the `runner_seed`.
+### Local settings
 
-You can extend this default runner or use your own runner implementation.  Either way, specify that you want to use your new runner class by adding this to your user options file
+Assert will look for and require the file `./.assert.rb`.  Use this file to specify project settings.  Local settings can be overridden by CLI, and ENV settings.
+
+### CLI settings
+
+Assert accepts options from its CLI.  Use these options to specify runtime settings.  CLI settings can be overridden by ENV settings.
+
+### ENV settings
+
+Assert uses ENV vars to drive certain settings.  Use these vars to specify absolute runtime settings.  ENV settings are always applied last and cannot be overridden.
+
+## Running Tests
+
+Assert uses its [`Assert::Runner`](/lib/assert/runner.rb) to run tests.  You can extend this default runner or use your own runner implementation.  Specify it in your user/local settings:
 
 ```ruby
-Assert.runner  MyAwesomeRunner
+require 'my_awesome_runner_class'
+
+Assert.configure do |config|
+  config.runner MyAwesomeRunnerClass
+end
+```
+
+### Test Dir
+
+By default Assert expects tests in the `test` dir.  The is where it looks for the helper file and is the default path used when running `$ assert`.  To override this dir, do so in your user/local settings file:
+
+```ruby
+Assert.configure do |config|
+  config.test_dir "testing"
+end
+```
+
+### Test Helper File
+
+By default Assert will look for a file named `helper.rb` in the `test_dir` and require it (if found) just before running the tests.  To override the helper file name, do so in your user/local settings file:
+
+```ruby
+Assert.configure do |config|
+  config.test_helper "some_helpers.rb"
+end
 ```
 
 ### Test Order
 
-The default runner object runs tests in random order and the `DefaultView` view will display the seed value.  If you want to run tests in a consistant order, set a 'runner_seed' environment variable.
+The default runner object runs tests in random order.  To run tests in a consistant order, specify a custom runner seed:
 
-TODO: examples?
+In user/local settings file:
+
+```ruby
+Assert.configure do |config|
+  config.runner_seed 1234
+end
+```
+
+Using the CLI:
+
+```sh
+$ assert [-s|--seed] 1234
+```
+
+Using an ENV var:
+
+```sh
+$ ASSERT_RUNNER_SEED=1234 assert
+```
+
+### Showing Output
+
+By default, Assert shows any output on `$stdout` produced while running a test.  It provides a setting to override whether to show this output or to 'capture' it and show it with the test result details:
+
+In user/local settings file:
+
+```ruby
+Assert.configure do |config|
+  config.output false
+end
+```
+
+Using the CLI:
+
+```sh
+$ assert [-o|--output|--no-output]
+```
+
+Using an ENV var:
+
+```sh
+$ ASSERT_OUTPUT=false assert
+```
+
+### Failure Handling
+
+By default, Assert will halt test execution when a test produces a Fail result.  It provides a setting to override this default:
+
+In user/local settings file:
+
+```ruby
+Assert.configure do |config|
+  config.halt_on_fail false
+end
+```
+
+Using the CLI:
+
+```sh
+$ assert [-t|--halt|--no-halt]
+```
+
+Using an ENV var:
+
+```sh
+$ ASSERT_HALT_ON_FAIL=false assert
+```
 
 ## Viewing Test Results
 
-You have a few options when it comes to viewing test results in Assert.  Assert comes with its own `DefaultView` class that handles displaying test results.
-
-First, lets look at the default: `Assert::View::DefaultView`.  This is the default view class.  Its output goes something like this:
+`Assert::View::DefaultView` is the default handler for viewing test results.  Its output goes something like this:
 
 * before the run starts, output some info about the test suite that is about to run
 * print out result abbreviations as the test results are generated
 * after the run finishes...
-* display any result details (from failing or error results) in reverse test/result order
-* output some summary info
+ * display any result details (from failing or error results) in reverse test/result order
+ * output some summary info
 
-You can run assert's test suite and get a feel for what this default outputs.  This view has a few options you can tweak:
+You can run a test suite and get a feel for what this default outputs.  The view has a few options you can tweak:
 
 * `styled`: whether to apply ANSI styles to the output, default `true`
 * `pass_styles`: how to style pass result output, default `:green`
@@ -122,20 +226,24 @@ You can run assert's test suite and get a feel for what this default outputs.  T
 * `skip_styles`: default `:cyan`
 * `ignore_styles`: default: `:magenta`
 
-To override an option, do so in your user options file:
+To override an option, do so in your user/local settings:
 
 ```ruby
-Assert.view.options.styled  false
+Assert.configure do |config|
+  config.view.styled false
+end
 ```
 
-However, the view you use is configurable.  Define you own view class and specify it in your `~/.assert/options.rb` file:
+However, the view hanlder you use is itself configurable.  Define you own view handler class and specify it in your user/local settings:
 
 ```ruby
 class MyCustomView < Assert::View::Base
   # define your view here...
 end
 
-Assert.options.view  MyCustomView.new
+Assert.configure do |config|
+  config.view MyCustomView.new
+end
 ```
 
 ### Anatomy of a View
@@ -154,17 +262,17 @@ Available callbacks from the runner, and when they are called:
 * `after_test`: after a test finishes running, the test is passed as an arg
 * `on_finish`: when the test suite is finished running
 
-Beyond that, each view can do as it sees fit.  Initialize how you wish, take whatever options you'd like, and output results as you see fit, given the available callbacks.
+Beyond that, each view can do as it sees fit.  Initialize how you wish, take whatever settings you'd like, and output results as you see fit, given the available callbacks.
 
 ### Using 3rd party views
 
-To use a 3rd party custom view, you first require it in and then specify using the `Assert.options.view` option.  Assert provides a helper for requiring in views.  It can be used in two ways.  You can pass a fully qualified path to the helper and if it exists, will require it in.
+To use a 3rd party custom view, first require it in and then configure it.  Assert provides a helper for requiring in views.  It can be used in two ways.  You can pass a fully qualified path to the helper and if it exists, will require it in.
 
 ```ruby
 Assert::View.require_user_view '/path/to/my/view'
 ```
 
-Alternatively, you can install/clone/copy/write your view implementations in `~/.assert/views` and require it in by name.  To have assert require it by name, have it installed at `~/assert/views/view_name/lib/view_name.rb` (this structure is compatible with popular conventions in rubygem development). For example:
+Alternatively, you can install/clone/copy/write your view implementations in `~/.assert/views` and require it in by name.  To have assert require it by name, have it installed at `~/assert/views/view_name/lib/view_name.rb` (this structure is compatible with popular conventions for rubygem development). For example:
 
 ```ruby
 # assuming ~/.assert/views/my-custom-view/lib/my-custom-view.rb exists
@@ -174,12 +282,6 @@ Assert::View.require_user_view 'my-custom-view'
 
 Once your view class is required in, use it and configure it just as you would any view.
 
-## Failure Handling
-
-Assert, by default, will halt test execution when a test produces a Fail result.  However, Assert provides an option to not halt when Fail results are produced.  You can control how assert handles fails by either setting a user option (in your user `~/.assert/options.rb` file):
-
-TODO: examples??
-
 ## Test Console
 
 ```sh
@@ -188,7 +290,7 @@ $ assert irb
  => Assert
 ```
 
-This command runs `irb` and loads/configures assert.  Use it to interact with and verify your test environment in a console.  Alias `irb` if you prefer another console (such as Pry).
+This `irb` CLI command runs `irb` and configures assert.  Use it to interact with and verify your test environment in a console.  Alias `irb` if you prefer another console (such as Pry).
 
 ## Assert Models
 

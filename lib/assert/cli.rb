@@ -1,4 +1,5 @@
 require 'set'
+require 'assert/assert_runner'
 require 'assert/version'
 
 module Assert
@@ -21,9 +22,7 @@ module Assert
     def run(*args)
       begin
         @cli.parse!(*args)
-        tests = @cli.args
-        tests = ['test'] if tests.empty?
-        Assert::CLIRunner.new(*tests).run
+        Assert::AssertRunner.new(@cli.args, @cli.opts).run
       rescue CLIRB::HelpExit
         puts help
       rescue CLIRB::VersionExit
@@ -37,9 +36,7 @@ module Assert
         puts exception.backtrace.join("\n") if ENV['DEBUG']
         exit(1)
       end
-
-      # Don't call `exit(0)`.  The test suite runs as the by an `at_exit`
-      # callback.  Calling `exit(0)` bypasses that callback.
+      exit(0)
     end
 
     def help
@@ -48,40 +45,6 @@ module Assert
       "#{@cli}"
     end
 
-  end
-
-  class CLIRunner
-    TEST_FILE_SUFFIXES = ['_tests.rb', '_test.rb']
-
-    attr_reader :test_files
-
-    def initialize(*args)
-      options, test_paths = [
-        args.last.kind_of?(::Hash) ? args.pop : {},
-        args
-      ]
-
-      @test_files = file_paths(test_paths).select{ |f| test_file?(f) }.sort
-    end
-
-    def run
-      @test_files.each{ |file| require file }
-      require 'assert' if @test_files.empty?  # show empty test output
-    end
-
-    private
-
-    def file_paths(test_paths)
-      test_paths.inject(Set.new) do |paths, path|
-        paths += Dir.glob("#{path}*") + Dir.glob("#{path}*/**/*")
-      end
-    end
-
-    def test_file?(path)
-      TEST_FILE_SUFFIXES.inject(false) do |result, suffix|
-        result || path =~ /#{suffix}$/
-      end
-    end
   end
 
   class CLIRB  # Version 1.0.0, https://github.com/redding/cli.rb

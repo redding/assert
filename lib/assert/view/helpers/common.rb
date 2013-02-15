@@ -20,7 +20,7 @@ module Assert::View::Helpers
     end
 
     def runner_seed
-      self.suite.runner_seed
+      Assert.config.runner_seed
     end
 
     def count(type)
@@ -63,11 +63,10 @@ module Assert::View::Helpers
       tests.collect do |test|
         test_index += 1
 
-        details = test.results.
-          collect { |result| ResultDetails.new(result, test, test_index) }
-
+        details = test.results.collect do |result|
+          ResultDetails.new(result, test, test_index)
+        end
         details.reverse! if result_order == :reversed
-
         details
       end.compact.flatten
     end
