@@ -24,7 +24,7 @@ module Assert
     end
 
     # load the test files
-    Assert.view.fire(:before_load)
+    Assert.view.fire(:before_load, test_files)
     test_files.each{ |p| require p }
     Assert.view.fire(:after_load)
   end
