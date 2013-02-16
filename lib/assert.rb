@@ -1,6 +1,5 @@
 require 'singleton'
-
-module Assert; end
+require 'assert/version'
 
 require 'assert/view'
 require 'assert/suite'
