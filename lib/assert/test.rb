@@ -1,20 +1,8 @@
-require 'assert/result'
-require 'assert/result_set'
-require 'assert/options'
-
 require 'stringio'
+require 'assert/result'
 
 module Assert
   class Test
-    include Assert::Options
-    options do
-      default_capture_output false
-      default_halt_on_fail   true
-    end
-
-    def self.halt_on_fail?
-      ENV['halt_on_fail'] == 'true' || self.options.halt_on_fail
-    end
 
     # a Test is some code/method to run in the scope of a Context.  After a
     # a test runs, it should have some assertions which are its results.
@@ -26,7 +14,7 @@ module Assert
       @context_info = suite_context_info
       @name = name_from_context(name)
       @code = (code || block)
-      @results = ResultSet.new
+      @results = Result::Set.new
       @output = ""
     end
 
@@ -36,7 +24,7 @@ module Assert
 
     def run(&result_callback)
       # setup the a new test run
-      @results = ResultSet.new(result_callback)
+      @results = Result::Set.new(result_callback)
       run_scope = self.context_class.new(self)
 
       # run the test, capturing its output
@@ -118,7 +106,7 @@ module Assert
     end
 
     def capture_output(&block)
-      if self.class.options.capture_output
+      if Assert.config.show_output == false
         orig_stdout = $stdout.clone
         $stdout = capture_io
         block.call

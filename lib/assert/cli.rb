@@ -1,4 +1,5 @@
 require 'set'
+require 'assert/assert_runner'
 require 'assert/version'
 
 module Assert
@@ -10,73 +11,51 @@ module Assert
     end
 
     def initialize
-      @cli = CLIRB.new
+      @cli = CLIRB.new do
+        option 'runner_seed', 'Use a given seed to run tests', {
+          :abbrev => 's', :value => Fixnum
+        }
+        option 'show_output', 'show stdout output (do not capture)', {
+          :abbrev => 'o'
+        }
+        option 'halt_on_fail', 'halt a test when it fails', {
+          :abbrev => 't'
+        }
+        # show loaded test files, cli err backtraces, etc
+        option 'debug', 'run in debug mode'
+      end
     end
 
     def run(*args)
+      # default debug_mode to the env var
+      debug_mode = ENV['ASSERT_DEBUG'] == 'true'
       begin
-        @cli.parse!(*args)
-        tests = @cli.args
-        tests = ['test'] if tests.empty?
-        Assert::CLIRunner.new(*tests).run
+        # parse manually in the case that parsing fails before the debug arg
+        debug_mode ||= args.include?('-d') || args.include?('--debug')
+        @cli.parse!(args)
+        Assert::AssertRunner.new(@cli.args, @cli.opts).run
       rescue CLIRB::HelpExit
         puts help
       rescue CLIRB::VersionExit
         puts Assert::VERSION
       rescue CLIRB::Error => exception
-        puts "#{exception.message}\n"
-        puts help
+        puts "#{exception.message}\n\n"
+        puts  debug_mode ? exception.backtrace.join("\n") : help
         exit(1)
       rescue Exception => exception
         puts "#{exception.class}: #{exception.message}"
-        puts exception.backtrace.join("\n") if ENV['DEBUG']
+        puts exception.backtrace.join("\n") if debug_mode
         exit(1)
       end
-
-      # Don't call `exit(0)`.  The test suite runs as the by an `at_exit`
-      # callback.  Calling `exit(0)` bypasses that callback.
+      exit(0)
     end
 
     def help
-      "Usage: assert [TESTS] [options]\n\n"\
+      "Usage: assert [options] [TESTS]\n\n"\
       "Options:"\
       "#{@cli}"
     end
 
-  end
-
-  class CLIRunner
-    TEST_FILE_SUFFIXES = ['_tests.rb', '_test.rb']
-
-    attr_reader :test_files
-
-    def initialize(*args)
-      options, test_paths = [
-        args.last.kind_of?(::Hash) ? args.pop : {},
-        args
-      ]
-
-      @test_files = file_paths(test_paths).select{ |f| test_file?(f) }
-    end
-
-    def run
-      @test_files.each{ |file| require file }
-      require 'assert' if @test_files.empty?  # show empty test output
-    end
-
-    private
-
-    def file_paths(test_paths)
-      test_paths.inject(Set.new) do |paths, path|
-        paths += Dir.glob("#{path}*") + Dir.glob("#{path}*/**/*")
-      end
-    end
-
-    def test_file?(path)
-      TEST_FILE_SUFFIXES.inject(false) do |result, suffix|
-        result || path =~ /#{suffix}$/
-      end
-    end
   end
 
   class CLIRB  # Version 1.0.0, https://github.com/redding/cli.rb
