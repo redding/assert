@@ -1,6 +1,4 @@
 require 'assert'
-
-require 'assert/options'
 require 'assert/view/default_view'
 require 'assert/runner'
 require 'assert/suite'

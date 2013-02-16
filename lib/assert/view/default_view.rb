@@ -9,14 +9,14 @@ module Assert::View
     require 'assert/view/helpers/ansi_styles'
     include Helpers::AnsiStyles
 
-    options do
-      styled         true
-      pass_styles    :green
-      fail_styles    :red, :bold
-      error_styles   :yellow, :bold
-      skip_styles    :cyan
-      ignore_styles  :magenta
-    end
+    # setup options and their default values
+
+    option 'styled',        true
+    option 'pass_styles',   :green
+    option 'fail_styles',   :red, :bold
+    option 'error_styles',  :yellow, :bold
+    option 'skip_styles',   :cyan
+    option 'ignore_styles', :magenta
 
     def before_load(test_files)
       if Assert.config.debug
@@ -36,7 +36,7 @@ module Assert::View
     end
 
     def on_result(result)
-      result_abbrev = options.send("#{result.to_sym}_abbrev")
+      result_abbrev = self.send("#{result.to_sym}_abbrev")
       styled_abbrev = ansi_styled_msg(result_abbrev, result_ansi_styles(result))
 
       print styled_abbrev
