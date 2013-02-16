@@ -6,13 +6,13 @@ class Assert::Context
     desc "Assert context class"
     setup do
       @orig_assert_suite = Assert.suite
-      Assert.options.suite TEST_ASSERT_SUITE
+      Assert.config.suite TEST_ASSERT_SUITE
       @test = Factory.test
       @context_class = @test.context_class
     end
     teardown do
       TEST_ASSERT_SUITE.tests.clear
-      Assert.options.suite @orig_assert_suite
+      Assert.config.suite @orig_assert_suite
     end
     subject{ @context_class }
 

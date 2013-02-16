@@ -204,11 +204,11 @@ module Assert
     end
 
     # adds a Fail result to the end of the test's results
-    # does not break test execution
+    # break test execution if Assert.config.halt_on_fail
     def fail(fail_msg=nil)
       message = (fail_message(fail_msg) { }).call
-      if Assert::Test.halt_on_fail?
-        raise(Result::TestFailure, message)
+      if Assert.config.halt_on_fail
+        raise Result::TestFailure, message
       else
         capture_result do |test, backtrace|
           Assert::Result::Fail.new(test, message, backtrace)

@@ -22,7 +22,7 @@ class Assert::Suite
 
     should have_accessors :tests, :test_methods
     should have_accessors :start_time, :end_time
-    should have_instance_method  :run_time, :runner_seed
+    should have_instance_method  :run_time
 
     should "determine a klass' local public test methods" do
       assert_equal(
