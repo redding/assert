@@ -35,11 +35,13 @@ module Assert
     def self.method_missing(m, *a, &b); self.instance.send(m, *a, &b); end
     def self.respond_to?(m); super || self.instance.respond_to?(m); end
 
-    def self.settings(*values)
-      values.each do |value|
-        define_method(value) do |*args|
-          instance_variable_set("@#{value}", args.first) if !args.first.nil?
-          instance_variable_get("@#{value}")
+    def self.settings(*items)
+      items.each do |item|
+        define_method(item) do |*args|
+          if !(value = args.size > 1 ? args : args.first).nil?
+            instance_variable_set("@#{item}", value)
+          end
+          instance_variable_get("@#{item}")
         end
       end
     end
@@ -61,10 +63,10 @@ module Assert
       @debug        = false
     end
 
-    def apply(options)
-      options.keys.each do |opt|
-        if !options[opt].nil? && self.respond_to?(opt.to_s)
-          self.send(opt.to_s, options[opt])
+    def apply(settings)
+      settings.keys.each do |name|
+        if !settings[name].nil? && self.respond_to?(name.to_s)
+          self.send(name.to_s, settings[name])
         end
       end
     end

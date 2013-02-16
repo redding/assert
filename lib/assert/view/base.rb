@@ -1,27 +1,21 @@
 require 'assert/result'
-require 'assert/options'
 
 module Assert::View
 
   class Base
-
-    # setup some default options for all views
-
-    include Assert::Options
-    options do
-      default_pass_abbrev   '.'
-      default_fail_abbrev   'F'
-      default_ignore_abbrev 'I'
-      default_skip_abbrev   'S'
-      default_error_abbrev  'E'
-    end
 
     # include a bunch of common helper methods
 
     require 'assert/view/helpers/common'
     include Helpers::Common
 
-    attr_accessor :output_io
+    # setup options and their default values
+
+    option 'pass_abbrev',   '.'
+    option 'fail_abbrev',   'F'
+    option 'ignore_abbrev', 'I'
+    option 'skip_abbrev',   'S'
+    option 'error_abbrev',  'E'
 
     def initialize(output_io, suite=nil)
       @output_io, @suite = output_io, suite

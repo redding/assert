@@ -10,7 +10,7 @@ class Assert::Runner
     desc "a basic runner"
     setup do
       @suite  = Assert::Suite.new
-      @view   = Assert::View::Base.new(@suite, StringIO.new("", "w+"))
+      @view   = Assert::View::Base.new(StringIO.new("", "w+"), @suite)
       @runner = Assert::Runner.new
     end
     subject { @runner }
