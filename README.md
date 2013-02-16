@@ -272,16 +272,6 @@ Assert::View.require_user_view 'my-custom-view'
 
 Once your view class is required in, use it and configure it just as you would any view.
 
-## Test Console
-
-```sh
-$ assert irb
-> Assert
- => Assert
-```
-
-This `irb` CLI command runs `irb` and configures assert.  Use it to interact with and verify your test environment in a console.  Alias `irb` if you prefer another console (such as Pry).
-
 ## Assert Models
 
 ### Suite
