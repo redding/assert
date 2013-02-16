@@ -47,7 +47,8 @@ module Assert
 
     def test_files(test_paths)
       test_paths.inject(Set.new) do |paths, path|
-        paths += Dir.glob("#{path}*") + Dir.glob("#{path}*/**/*")
+        p = File.expand_path(path, Dir.pwd)
+        paths += Dir.glob("#{p}*") + Dir.glob("#{p}*/**/*")
       end.select{ |p| is_test_file?(p) }.sort
     end
 
