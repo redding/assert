@@ -64,7 +64,7 @@ module Assert
     # this method inspects a test path and finds the test dir path.
 
     def path_of(segment, a_path)
-      full_path = File.expand_path(a_path, Dir.pwd)
+      full_path = File.expand_path(a_path || '.', Dir.pwd)
       seg_pos = full_path.index(segment_regex(segment))
       File.join(seg_pos && (seg_pos > 0) ? full_path[0..(seg_pos-1)] : full_path, segment)
     end
