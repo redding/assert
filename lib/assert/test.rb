@@ -1,6 +1,5 @@
 require 'stringio'
 require 'assert/result'
-require 'assert/result_set'
 
 module Assert
   class Test
@@ -15,7 +14,7 @@ module Assert
       @context_info = suite_context_info
       @name = name_from_context(name)
       @code = (code || block)
-      @results = ResultSet.new
+      @results = Result::Set.new
       @output = ""
     end
 
@@ -25,7 +24,7 @@ module Assert
 
     def run(&result_callback)
       # setup the a new test run
-      @results = ResultSet.new(result_callback)
+      @results = Result::Set.new(result_callback)
       run_scope = self.context_class.new(self)
 
       # run the test, capturing its output

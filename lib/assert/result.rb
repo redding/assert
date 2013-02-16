@@ -17,59 +17,6 @@ module Assert::Result
     }
   end
 
-  class Backtrace < ::Array
-    def initialize(value=nil)
-      super(value || ["No backtrace"])
-    end
-
-    def to_s
-      self.join("\n")
-    end
-
-    def filtered
-      new_bt = []
-
-      self.each do |line|
-        break if filter_out?(line)
-        new_bt << line
-      end
-
-      new_bt = self.reject { |line| filter_out?(line) } if new_bt.empty?
-      new_bt = self.dup if new_bt.empty?
-
-      self.class.new(new_bt)
-    end
-
-    protected
-
-    # filter a line out if it's an assert lib line
-
-    def filter_out?(line)
-      # from minitest (for reference)...
-      # file = File.expand_path __FILE__
-             # if RUBY_VERSION =~ /^1\.9/ then  # bt's expanded, but __FILE__ isn't :(
-             #    File.expand_path __FILE__
-             # elsif  __FILE__ =~ /^[^\.]/ then # assume both relative
-             #   require 'pathname'
-             #   pwd = Pathname.new Dir.pwd
-             #   pn = Pathname.new File.expand_path(__FILE__)
-             #   relpath = pn.relative_path_from(pwd) rescue pn
-             #   pn = File.join ".", relpath unless pn.relative?
-             #   pn.to_s
-             # else                             # assume both are expanded
-             #   __FILE__
-             # end
-
-      # './lib' in project dir, or '/usr/local/blahblah' if installed
-      assert_lib_path = File.expand_path('../..', __FILE__)
-      line.rindex(assert_lib_path, 0)
-    end
-
-  end
-
-
-  # Result classes...
-
   class Base
 
     attr_reader :test, :message, :backtrace
@@ -211,6 +158,70 @@ module Assert::Result
     # override of the base, always show the full unfiltered backtrace for errors
     def trace
       self.backtrace.to_s
+    end
+
+  end
+
+  # Utility Classes
+
+  class Set < ::Array
+    attr_accessor :callback
+
+    def initialize(callback=nil)
+      @callback = callback
+      super()
+    end
+
+    def <<(result)
+      super
+      @callback.call(result) if @callback
+    end
+  end
+
+  class Backtrace < ::Array
+    def initialize(value=nil)
+      super(value || ["No backtrace"])
+    end
+
+    def to_s; self.join("\n"); end
+
+    def filtered
+      new_bt = []
+
+      self.each do |line|
+        break if filter_out?(line)
+        new_bt << line
+      end
+
+      new_bt = self.reject { |line| filter_out?(line) } if new_bt.empty?
+      new_bt = self.dup if new_bt.empty?
+
+      self.class.new(new_bt)
+    end
+
+    protected
+
+    # filter a line out if it's an assert lib line
+
+    def filter_out?(line)
+      # from minitest (for reference)...
+      # file = File.expand_path __FILE__
+             # if RUBY_VERSION =~ /^1\.9/ then  # bt's expanded, but __FILE__ isn't :(
+             #    File.expand_path __FILE__
+             # elsif  __FILE__ =~ /^[^\.]/ then # assume both relative
+             #   require 'pathname'
+             #   pwd = Pathname.new Dir.pwd
+             #   pn = Pathname.new File.expand_path(__FILE__)
+             #   relpath = pn.relative_path_from(pwd) rescue pn
+             #   pn = File.join ".", relpath unless pn.relative?
+             #   pn.to_s
+             # else                             # assume both are expanded
+             #   __FILE__
+             # end
+
+      # './lib' in project dir, or '/usr/local/blahblah' if installed
+      assert_lib_path = File.expand_path('../..', __FILE__)
+      line.rindex(assert_lib_path, 0)
     end
   end
 
