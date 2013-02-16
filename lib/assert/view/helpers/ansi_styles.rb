@@ -5,7 +5,7 @@ module Assert::View::Helpers
   module AnsiStyles
 
     def result_ansi_styles(result)
-      view.options.styled ? view.options.send("#{result.to_sym}_styles") : []
+      view.styled ? view.send("#{result.to_sym}_styles") : []
     end
 
     def ansi_styled_msg(msg, styles=[])

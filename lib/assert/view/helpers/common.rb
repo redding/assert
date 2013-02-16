@@ -1,18 +1,10 @@
 module Assert::View::Helpers
 
-  class ResultDetails
-
-    attr_reader :result, :test_index, :test, :output
-
-    def initialize(result, test, test_index)
-      @result = result
-      @test = test
-      @test_index = test_index
-      @output = test.output
-    end
-  end
-
   module Common
+
+    def self.included(receiver)
+      receiver.class_eval{ extend ClassMethods }
+    end
 
     # get the formatted suite run time
     def run_time(format='%.6f')
@@ -152,6 +144,29 @@ module Assert::View::Helpers
         things.join(things.size == 2 ? ' and ' : '')
       else
         [things[0..-2].join(", "), things.last].join(", and ")
+      end
+    end
+
+    class ResultDetails
+      attr_reader :result, :test_index, :test, :output
+
+      def initialize(result, test, test_index)
+        @result = result
+        @test = test
+        @test_index = test_index
+        @output = test.output
+      end
+    end
+
+    module ClassMethods
+      def option(name, *default_vals)
+        default = default_vals.size > 1 ? default_vals : default_vals.first
+        define_method(name) do |*args|
+          if !(value = args.size > 1 ? args : args.first).nil?
+            instance_variable_set("@#{name}", value)
+          end
+          (val = instance_variable_get("@#{name}")).nil? ? default : val
+        end
       end
     end
 
