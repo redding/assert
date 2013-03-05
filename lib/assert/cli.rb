@@ -44,7 +44,7 @@ module Assert
         exit(1)
       rescue Exception => exception
         puts "#{exception.class}: #{exception.message}"
-        puts exception.backtrace.join("\n") if debug_mode
+        puts exception.backtrace.join("\n")
         exit(1)
       end
       exit(0)
