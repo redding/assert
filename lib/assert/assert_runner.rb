@@ -13,7 +13,7 @@ module Assert
       apply_option_settings(test_options)
       apply_env_settings
 
-      files = test_files(test_paths.empty? ? Assert.config.test_dir : test_paths)
+      files = test_files(test_paths.empty? ? [*Assert.config.test_dir] : test_paths)
       Assert.init(files, {
         :test_dir_path => path_of(Assert.config.test_dir, files.first)
       })
