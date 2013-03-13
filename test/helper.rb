@@ -4,6 +4,9 @@
 # add the root dir to the load path
 $LOAD_PATH.unshift(File.expand_path("../..", __FILE__))
 
+# require pry for debugging (`binding.pry`)
+require 'pry'
+
 # Force tests to run without halting on failures (needed so all tests will run
 # properly).  For halt on fail behavior testing, the context of those tests
 # configures Assert temporarily as needed.
