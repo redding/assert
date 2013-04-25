@@ -106,7 +106,7 @@ module Assert
     end
 
     def capture_output(&block)
-      if Assert.config.show_output == false
+      if Assert.config.capture_output == true
         orig_stdout = $stdout.clone
         $stdout = capture_io
         block.call

@@ -31,7 +31,7 @@ module Assert
     subject { Config }
 
     should have_imeths :suite, :view, :runner, :test_dir, :test_helper
-    should have_imeths :runner_seed, :show_output, :halt_on_fail, :debug
+    should have_imeths :runner_seed, :capture_output, :halt_on_fail, :debug
     should have_imeths :apply
 
     should "default the view, suite, and runner" do

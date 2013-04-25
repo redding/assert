@@ -15,7 +15,7 @@ module Assert
         option 'runner_seed', 'Use a given seed to run tests', {
           :abbrev => 's', :value => Fixnum
         }
-        option 'show_output', 'show stdout output (do not capture)', {
+        option 'capture_output', 'capture stdout and display in result details', {
           :abbrev => 'o'
         }
         option 'halt_on_fail', 'halt a test when it fails', {
