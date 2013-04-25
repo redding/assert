@@ -89,7 +89,7 @@ Assert uses a config pattern for specifying settings.  Using this pattern, you c
 
 ### User settings
 
-Assert will look for and require the file `$HOME/.assert/initializer.rb`.  Use this file to specify user settings.  User settings can be overridden by Local, CLI, and ENV settings.
+Assert will look for and require the file `$HOME/.assert/init.rb`.  Use this file to specify user settings.  User settings can be overridden by Local, CLI, and ENV settings.
 
 ### Local settings
 
@@ -161,22 +161,22 @@ Using an ENV var:
 $ ASSERT_RUNNER_SEED=1234 assert
 ```
 
-### Showing Output
+### Capture Output
 
-By default, Assert shows any output on `$stdout` produced while running a test.  It provides a setting to override whether to show this output or to 'capture' it and show it with the test result details:
+By default, Assert shows any output on `$stdout` produced while running a test.  It provides a setting to override whether to show this output or to 'capture' it and display it in the test result details:
 
 In user/local settings file:
 
 ```ruby
 Assert.configure do |config|
-  config.show_output false
+  config.capture_output true
 end
 ```
 
 Using the CLI:
 
 ```sh
-$ assert [-o|--show-output|--no-show-output]
+$ assert [-o|--capture-output|--no-capture-output]
 ```
 
 ### Failure Handling
@@ -309,10 +309,6 @@ A `View` object is responsible for rendering test result output.  Assert provide
 ### Macro
 
 Macros are procs that define sets of test code and make it available for easy reuse.  Macros work nicely with the 'should' and 'test' context methods.
-
-## The Assert family of testing tools
-
-TODO: add in references to assert related tools.
 
 ## Installation
 
