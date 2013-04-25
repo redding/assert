@@ -161,11 +161,11 @@ class Assert::Test
         puts "std out from the test"
         assert true
       }
-      @orig_show = Assert.config.show_output
-      Assert.config.show_output false
+      @orig_capture = Assert.config.capture_output
+      Assert.config.capture_output true
     end
     teardown do
-      Assert.config.show_output @orig_show
+      Assert.config.capture_output @orig_capture
     end
 
     should "capture any io from the test" do

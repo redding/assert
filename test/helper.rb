@@ -14,7 +14,7 @@ require 'pry'
 class Assert::Context
   def setup
     Assert.config.halt_on_fail false
-    # Note: don't mess with the `show_output` setting in this setup block. Doing
+    # Note: don't mess with the `capture_output` setting in this setup block. Doing
     # so will break the capture output tests.  If you really need to set it one
     # way or the other, do so in the `.assert.rb` local settings file.
   end
