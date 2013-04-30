@@ -181,14 +181,18 @@ class Assert::Suite
     end
     subject{ @info }
 
-    should have_readers :called_from, :first_caller, :klass, :file
+    should have_readers :called_from, :klass, :file
 
     should "set its klass on init" do
       assert_equal @klass, subject.klass
     end
 
-    should "set its called_from to the first caller on init" do
-      assert_equal @caller.first, subject.first_caller
+    should "set its called_from to the called_from or first caller on init" do
+      info = Assert::Suite::ContextInfo.new(@klass, @caller.first, nil)
+      assert_equal @caller.first, info.called_from
+
+      info = Assert::Suite::ContextInfo.new(@klass, nil, @caller.first)
+      assert_equal @caller.first, info.called_from
     end
 
     should "set its file from caller info on init" do
