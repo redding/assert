@@ -38,52 +38,70 @@ class Assert::Context
       assert_equal @test_block, built_test.code
     end
 
-    should "build a test that skips when `test` called with no block" do
-      d = @test_desc
-      context_class = Factory.context_class { test(d) }
-      context_info  = Factory.context_info(context_class)
-      context = context_class.new(Factory.test("whatever", context_info))
-
-      assert_equal @test_count_before+1, Assert.suite.tests.size
-      assert_raises(Assert::Result::TestSkipped) do
-        context.instance_eval(&Assert.suite.tests.last.code)
-      end
-    end
-
-    should "build a test that skips when `should` called with no block" do
-      d = @test_desc
-      context_class = Factory.context_class { should(d) }
-      context_info  = Factory.context_info(context_class)
-      context = context_class.new(Factory.test("whatever", context_info))
-
-      assert_equal @test_count_before+1, Assert.suite.tests.size
-      assert_raises(Assert::Result::TestSkipped) do
-        context.instance_eval(&Assert.suite.tests.last.code)
-      end
-    end
-
-    should "build a test that skips when `test_eventually` called" do
+    should "build a test that skips with no msg when `test_eventually` called" do
       d, b = @test_desc, @test_block
-      context_class = Factory.context_class { test_eventually(d, &b) }
-      context_info  = Factory.context_info(context_class)
-      context = context_class.new(Factory.test("whatever", context_info))
-
-      assert_equal @test_count_before+1, Assert.suite.tests.size
-      assert_raises(Assert::Result::TestSkipped) do
+      context = build_eval_context{ test_eventually(d, &b) }
+      err = capture_err(Assert::Result::TestSkipped) do
         context.instance_eval(&Assert.suite.tests.last.code)
       end
+
+      assert_equal @test_count_before+1, Assert.suite.tests.size
+      assert_equal "", err.message
     end
 
-    should "build a test that skips when `should_eventually` called" do
+    should "build a test that skips with no msg  when `should_eventually` called" do
       d, b = @test_desc, @test_block
-      context_class = Factory.context_class { should_eventually(d, &b) }
-      context_info  = Factory.context_info(context_class)
-      context = context_class.new(Factory.test("whatever", context_info))
-
-      assert_equal @test_count_before+1, Assert.suite.tests.size
-      assert_raises(Assert::Result::TestSkipped) do
+      context = build_eval_context{ should_eventually(d, &b) }
+      err = capture_err(Assert::Result::TestSkipped) do
         context.instance_eval(&Assert.suite.tests.last.code)
       end
+
+      assert_equal @test_count_before+1, Assert.suite.tests.size
+      assert_equal "", err.message
+    end
+
+    should "skip with the msg \"TODO\" when `test` called with no block" do
+      d = @test_desc
+      context = build_eval_context { test(d) } # no block passed
+      err = capture_err(Assert::Result::TestSkipped) do
+        context.instance_eval(&Assert.suite.tests.last.code)
+      end
+
+      assert_equal @test_count_before+1, Assert.suite.tests.size
+      assert_equal "TODO", err.message
+    end
+
+    should "skip with the msg \"TODO\" when `should` called with no block" do
+      d = @test_desc
+      context = build_eval_context { should(d) } # no block passed
+      err = capture_err(Assert::Result::TestSkipped) do
+        context.instance_eval(&Assert.suite.tests.last.code)
+      end
+
+      assert_equal @test_count_before+1, Assert.suite.tests.size
+      assert_equal "TODO", err.message
+    end
+
+    should "skip with the msg \"TODO\" when `test_eventually` called with no block" do
+      d = @test_desc
+      context = build_eval_context{ test_eventually(d) } # no block given
+      err = capture_err(Assert::Result::TestSkipped) do
+        context.instance_eval(&Assert.suite.tests.last.code)
+      end
+
+      assert_equal @test_count_before+1, Assert.suite.tests.size
+      assert_equal "TODO", err.message
+    end
+
+    should "skip with the msg \"TODO\" when `should_eventually` called with no block" do
+      d = @test_desc
+      context = build_eval_context{ should_eventually(d) } # no block given
+      err = capture_err(Assert::Result::TestSkipped) do
+        context.instance_eval(&Assert.suite.tests.last.code)
+      end
+
+      assert_equal @test_count_before+1, Assert.suite.tests.size
+      assert_equal "TODO", err.message
     end
 
     should "build a test from a macro using `test`" do
@@ -105,9 +123,7 @@ class Assert::Context
     should "build a test that skips from a macro using `test_eventually`" do
       d, b = @test_desc, @test_block
       m = Assert::Macro.new{ test(d, &b); test(d, &b) }
-      context_class = Factory.context_class { test_eventually(m) }
-      context_info  = Factory.context_info(context_class)
-      context = context_class.new(Factory.test("whatever", context_info))
+      context = build_eval_context{ test_eventually(m) }
 
       assert_equal @test_count_before+1, Assert.suite.tests.size
       assert_raises(Assert::Result::TestSkipped) do
@@ -118,15 +134,29 @@ class Assert::Context
     should "build a test that skips from a macro using `should_eventually`" do
       d, b = @test_desc, @test_block
       m = Assert::Macro.new{ should(d, &b); should(d, &b) }
-      context_class = Factory.context_class { should_eventually(m) }
-      context_info  = Factory.context_info(context_class)
-      context = context_class.new(Factory.test("whatever", context_info))
+      context = build_eval_context{ should_eventually(m) }
 
       assert_equal @test_count_before+1, Assert.suite.tests.size
       assert_raises(Assert::Result::TestSkipped) do
         context.instance_eval(&Assert.suite.tests.last.code)
       end
 
+    end
+
+    private
+
+    def build_eval_context(&build_block)
+      context_class = Factory.context_class &build_block
+      context_info  = Factory.context_info(context_class)
+      context_class.new(Factory.test("whatever", context_info))
+    end
+
+    def capture_err(err_class, &block)
+      begin
+        block.call
+      rescue err_class => e
+        e
+      end
     end
 
   end

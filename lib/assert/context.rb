@@ -129,9 +129,10 @@ module Assert
       def test_eventually(desc_or_macro, called_from=nil, first_caller=nil, &block)
         ci = Suite::ContextInfo.new(self, called_from, first_caller || caller.first)
         test_name = desc_or_macro.kind_of?(Macro) ? desc_or_macro.name : desc_or_macro
+        skip_block = block.nil? ? Proc.new { skip 'TODO' } : Proc.new { skip }
 
         # create a test from a proc that just skips
-        Assert.suite.tests << Test.new(test_name, ci, &(Proc.new { skip }))
+        Assert.suite.tests << Test.new(test_name, ci, &skip_block)
       end
       alias_method :test_skip, :test_eventually
 
@@ -146,7 +147,7 @@ module Assert
         if !desc_or_macro.kind_of?(Macro)
           desc_or_macro = "should #{desc_or_macro}"
         end
-        test_eventually(desc_or_macro, called_from, first_caller || caller.first)
+        test_eventually(desc_or_macro, called_from, first_caller || caller.first, &block)
       end
       alias_method :should_skip, :should_eventually
 
