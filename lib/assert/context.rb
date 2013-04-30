@@ -122,7 +122,7 @@ module Assert
           # create a test from the given code block
           Assert.suite.tests << Test.new(test_name, ci, &block)
         else
-          test_eventually(desc_or_macro, called_from, first_caller, &block)
+          test_eventually(desc_or_macro, called_from, first_caller || caller.first, &block)
         end
       end
 
