@@ -38,52 +38,88 @@ class Assert::Context
       assert_equal @test_block, built_test.code
     end
 
-    should "build a test that skips when `test` called with no block" do
+    should "skip with the msg \"TODO\" when `test` called with no block" do
       d = @test_desc
-      context_class = Factory.context_class { test(d) }
+      context_class = Factory.context_class { test(d) } # no block passed
       context_info  = Factory.context_info(context_class)
       context = context_class.new(Factory.test("whatever", context_info))
 
       assert_equal @test_count_before+1, Assert.suite.tests.size
-      assert_raises(Assert::Result::TestSkipped) do
+
+      err = capture_err(Assert::Result::TestSkipped) do
         context.instance_eval(&Assert.suite.tests.last.code)
       end
+      assert_equal "TODO", err.message
     end
 
-    should "build a test that skips when `should` called with no block" do
+    should "skip with the msg \"TODO\" when `should` called with no block" do
       d = @test_desc
-      context_class = Factory.context_class { should(d) }
+      context_class = Factory.context_class { should(d) } # no block passed
       context_info  = Factory.context_info(context_class)
       context = context_class.new(Factory.test("whatever", context_info))
 
       assert_equal @test_count_before+1, Assert.suite.tests.size
-      assert_raises(Assert::Result::TestSkipped) do
+
+      err = capture_err(Assert::Result::TestSkipped) do
         context.instance_eval(&Assert.suite.tests.last.code)
       end
+      assert_equal "TODO", err.message
     end
 
-    should "build a test that skips when `test_eventually` called" do
+    should "build a test that skips with no msg when `test_eventually` called" do
       d, b = @test_desc, @test_block
       context_class = Factory.context_class { test_eventually(d, &b) }
       context_info  = Factory.context_info(context_class)
       context = context_class.new(Factory.test("whatever", context_info))
 
       assert_equal @test_count_before+1, Assert.suite.tests.size
-      assert_raises(Assert::Result::TestSkipped) do
+
+      err = capture_err(Assert::Result::TestSkipped) do
         context.instance_eval(&Assert.suite.tests.last.code)
       end
+      assert_equal "", err.message
     end
 
-    should "build a test that skips when `should_eventually` called" do
+    should "skip with the msg \"TODO\" when `test_eventually` called with no block" do
+      d, b = @test_desc, @test_block
+      context_class = Factory.context_class { test_eventually(d) } # no block passed
+      context_info  = Factory.context_info(context_class)
+      context = context_class.new(Factory.test("whatever", context_info))
+
+      assert_equal @test_count_before+1, Assert.suite.tests.size
+
+      err = capture_err(Assert::Result::TestSkipped) do
+        context.instance_eval(&Assert.suite.tests.last.code)
+      end
+      assert_equal "TODO", err.message
+    end
+
+    should "build a test that skips with no msg  when `should_eventually` called" do
       d, b = @test_desc, @test_block
       context_class = Factory.context_class { should_eventually(d, &b) }
       context_info  = Factory.context_info(context_class)
       context = context_class.new(Factory.test("whatever", context_info))
 
       assert_equal @test_count_before+1, Assert.suite.tests.size
-      assert_raises(Assert::Result::TestSkipped) do
+
+      err = capture_err(Assert::Result::TestSkipped) do
         context.instance_eval(&Assert.suite.tests.last.code)
       end
+      assert_equal "", err.message
+    end
+
+    should "skip with the msg \"TODO\" when `should_eventually` called with no block" do
+      d, b = @test_desc, @test_block
+      context_class = Factory.context_class { should_eventually(d) } # no block given
+      context_info  = Factory.context_info(context_class)
+      context = context_class.new(Factory.test("whatever", context_info))
+
+      assert_equal @test_count_before+1, Assert.suite.tests.size
+
+      err = capture_err(Assert::Result::TestSkipped) do
+        context.instance_eval(&Assert.suite.tests.last.code)
+      end
+      assert_equal "TODO", err.message
     end
 
     should "build a test from a macro using `test`" do
@@ -127,6 +163,16 @@ class Assert::Context
         context.instance_eval(&Assert.suite.tests.last.code)
       end
 
+    end
+
+    private
+
+    def capture_err(err_class, &block)
+      begin
+        block.call
+      rescue err_class => e
+        e
+      end
     end
 
   end
