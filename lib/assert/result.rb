@@ -135,6 +135,11 @@ module Assert::Result
       "Skip"
     end
 
+    # override of the base, show the test's context info called_from
+    def trace
+      self.test.context_info.called_from || super
+    end
+
   end
 
   class Error < Base
