@@ -98,7 +98,7 @@ class Assert::Context
 
     should "create a fail result and set its backtrace" do
       assert_kind_of Assert::Result::Fail, subject
-      assert_equal Factory.context_info_called_from, subject.trace
+      assert_equal subject.backtrace.filtered.first, subject.trace
       assert_kind_of Array, subject.backtrace
     end
 

@@ -49,7 +49,7 @@ module Assert::Result
     end
 
     def trace
-      self.backtrace.filtered.first.to_s
+      (self.backtrace.filtered.first || self.test.context_info.called_from).to_s
     end
 
     def ==(other)
@@ -107,11 +107,6 @@ module Assert::Result
       "Fail"
     end
 
-    # override of the base, show the test's context info called_from
-    def trace
-      self.test.context_info.called_from || super
-    end
-
   end
 
   # raised by the 'skip' context helper to break test execution
@@ -133,11 +128,6 @@ module Assert::Result
 
     def name
       "Skip"
-    end
-
-    # override of the base, show the test's context info called_from
-    def trace
-      self.test.context_info.called_from || super
     end
 
   end
@@ -191,42 +181,17 @@ module Assert::Result
     def to_s; self.join("\n"); end
 
     def filtered
-      new_bt = []
-
-      self.each do |line|
-        break if filter_out?(line)
-        new_bt << line
-      end
-
-      new_bt = self.reject { |line| filter_out?(line) } if new_bt.empty?
-      new_bt = self.dup if new_bt.empty?
-
-      self.class.new(new_bt)
+      self.class.new(self.reject { |line| filter_out?(line) })
     end
 
     protected
 
-    # filter a line out if it's an assert lib line
-
+    # filter a line out if it's an assert lib/bin line
     def filter_out?(line)
-      # from minitest (for reference)...
-      # file = File.expand_path __FILE__
-             # if RUBY_VERSION =~ /^1\.9/ then  # bt's expanded, but __FILE__ isn't :(
-             #    File.expand_path __FILE__
-             # elsif  __FILE__ =~ /^[^\.]/ then # assume both relative
-             #   require 'pathname'
-             #   pwd = Pathname.new Dir.pwd
-             #   pn = Pathname.new File.expand_path(__FILE__)
-             #   relpath = pn.relative_path_from(pwd) rescue pn
-             #   pn = File.join ".", relpath unless pn.relative?
-             #   pn.to_s
-             # else                             # assume both are expanded
-             #   __FILE__
-             # end
-
       # './lib' in project dir, or '/usr/local/blahblah' if installed
       assert_lib_path = File.expand_path('../..', __FILE__)
-      line.rindex(assert_lib_path, 0)
+      assert_bin_regex = /bin\/assert\:/
+      line.rindex(assert_lib_path, 0) || line =~ assert_bin_regex
     end
   end
 
