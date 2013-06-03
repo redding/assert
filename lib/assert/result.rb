@@ -52,6 +52,12 @@ module Assert::Result
       (self.backtrace.filtered.first || self.test.context_info.called_from).to_s
     end
 
+    # chose to implement this way instead of using an `attr_writer` to be
+    # consistant with how you override exception backtraces.
+    def set_backtrace(bt)
+      @backtrace = Backtrace.new(bt || [])
+    end
+
     def ==(other)
       self.class == other.class && self.message == other.message
     end
@@ -110,7 +116,7 @@ module Assert::Result
   end
 
   # raised by the 'skip' context helper to break test execution
-  class TestSkipped < RuntimeError; end
+  TestSkipped = Class.new(RuntimeError)
 
   class Skip < Base
 

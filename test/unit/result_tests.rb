@@ -40,6 +40,7 @@ module Assert::Result
 
     should have_readers :test, :message, :backtrace
     should have_imeths :test_name, :name, :to_sym, :to_s, :trace
+    should have_imeth :set_backtrace
 
     Assert::Result.types.keys.each do |type|
       should "respond to the instance method ##{type}?" do
@@ -62,6 +63,13 @@ module Assert::Result
     should "show only its class and message when inspected" do
       exp = "#<#{subject.class} @message=#{subject.message.inspect}>"
       assert_equal exp, subject.inspect
+    end
+
+    should "allow overriding the result backtrace with `set_backtrace`" do
+      subject.set_backtrace(['bt'])
+
+      assert_kind_of Assert::Result::Backtrace, subject.backtrace
+      assert_equal ['bt'], subject.backtrace
     end
 
   end

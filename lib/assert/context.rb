@@ -223,6 +223,20 @@ module Assert
       raise(Result::TestSkipped, skip_msg || "")
     end
 
+    # alter the backtraces of fail results generated in the given block
+    def with_backtrace(bt, &block)
+      bt ||= []
+      current_results.count.tap do |count|
+        begin
+          instance_eval(&block)
+        rescue Result::TestSkipped, Result::TestFailure => e
+          e.set_backtrace(bt); raise(e)
+        ensure
+          current_results[count..-1].each{ |r| r.set_backtrace(bt) }
+        end
+      end
+    end
+
     def subject
       if subj = self.class.subject
         instance_eval(&subj)
@@ -250,6 +264,10 @@ module Assert
         @__running_test__.results << result
         result
       end
+    end
+
+    def current_results
+      @__running_test__.results
     end
 
   end
