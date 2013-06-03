@@ -17,7 +17,7 @@ class Assert::Context
 
     should have_imeths :assert, :assert_not, :refute
     should have_imeths :skip, :pass, :fail, :flunk, :ignore
-    should have_imeths :subject
+    should have_imeths :with_backtrace, :subject
 
     def test_should_collect_context_info
       this = @__running_test__
@@ -215,6 +215,33 @@ class Assert::Context
 
     should "instance evaluate the block set with the class setup method" do
       assert_equal @expected, subject
+    end
+
+  end
+
+  class WithBacktraceTests < BasicTests
+    desc "with_backtrace method"
+    setup do
+      @from_bt = ['called_from_here']
+      @from_block = proc { ignore; fail; pass; skip 'todo' }
+    end
+
+    should "replace the fail results from the block with the given backtrace" do
+      @context.fail 'not affected'
+      begin
+        @context.with_backtrace(@from_bt, &@from_block)
+      rescue Assert::Result::TestSkipped => e
+        @test.results << Assert::Result::Skip.new(@test, e)
+      end
+
+      assert_equal 5, @test.results.size
+      norm_fail, with_ignore, with_fail, with_pass, with_skip = @test.results
+
+      assert_not_equal @from_bt, norm_fail.backtrace
+      assert_equal @from_bt, with_ignore.backtrace
+      assert_equal @from_bt, with_fail.backtrace
+      assert_equal @from_bt, with_pass.backtrace
+      assert_equal @from_bt, with_skip.backtrace
     end
 
   end
