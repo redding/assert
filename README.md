@@ -194,7 +194,60 @@ end
 Using the CLI:
 
 ```sh
-$ assert [-t|--halt|--no-halt]
+$ assert [-t|--halt-on-fail|--no-halt-on-fail]
+```
+
+### Changed Only
+
+By default, Assert loads every test file in the path(s) it is given and runs the tests in those files.  At times it is convenient to only run certain test files while you are actively developing on a feature.  Assert can detect which test files have changes and only load those files:
+
+In user/local settings file:
+
+```ruby
+Assert.configure do |config|
+  config.changed_only true  # not recommended - use the CLI with the `-c` flag
+end
+```
+
+Using the CLI:
+
+```sh
+$ assert [-c|--changed-only|--no-changed-only]
+```
+
+#### Changed Test File Detection
+
+The changed files are detected using two git commands by default:
+
+```sh
+git diff --no-ext-diff --name-only        # changed files
+git ls-files --others --exclude-standard  # added files
+```
+
+The git cmds have ` -- #{test_paths}` appended to them to scope their results to just the test paths specified by the CLI and are run together using ` && `.
+
+This, of course, assumes you are working in a git repository.  If you are not or you want to use custom logic to determine the changed files, configure a custom proc.  The proc should take a single parameter which is an array of test paths specified by the CLI.
+
+```ruby
+Assert.configure do |config|
+  config.changed_files do |test_paths|
+    `git diff --name-only master -- #{test_paths.join(' ')}`.split("\n")  # or whatever
+  end
+end
+```
+
+If you just want to disable this feature completely:
+
+```ruby
+Assert.configure do |config|
+
+  # run nothing if the `-c` flag is given
+  config.changed_files{ |test_paths| [] }
+
+  # run all test paths if the `-c` flag is given
+  config.changed_files{ |test_paths| test_paths }
+
+end
 ```
 
 ## Viewing Test Results
@@ -330,4 +383,4 @@ If submitting a Pull Request, please:
 
 One note: please respect that Assert itself is intended to be the flexible, base-level, framework-type logic that should change little if at all.  Pull requests for niche functionality or personal testing philosphy stuff will likely not be accepted.
 
-If you wish to extend Assert for your niche purpose/desire/philosophy, please do so in it's own gem (preferrably named `assert-<whatever>`) that uses Assert as a dependency.  When you do, tell us about it and we'll add to this README with a short description.
+If you wish to extend Assert for your niche purpose/desire/philosophy, please do so in it's own gem (preferrably named `assert-<whatever>`) that uses Assert as a dependency.  When you do, tell us about it and we'll add it to this README with a short description.
