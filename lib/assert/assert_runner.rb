@@ -46,10 +46,25 @@ module Assert
     private
 
     def test_files(test_paths)
+      file_paths = if Assert.config.changed_only
+        changed_test_files(test_paths)
+      else
+        globbed_test_files(test_paths)
+      end
+
+      file_paths.select{ |p| is_test_file?(p) }.sort
+    end
+
+    def changed_test_files(test_paths)
+      puts "Loading only changed files:" if Assert.config.debug
+      globbed_test_files(Assert.config.changed_files.call(test_paths))
+    end
+
+    def globbed_test_files(test_paths)
       test_paths.inject(Set.new) do |paths, path|
         p = File.expand_path(path, Dir.pwd)
         paths += Dir.glob("#{p}*") + Dir.glob("#{p}*/**/*")
-      end.select{ |p| is_test_file?(p) }.sort
+      end
     end
 
     def is_test_file?(path)

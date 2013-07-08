@@ -45,8 +45,9 @@ module Assert
       end
     end
 
-    settings :view, :suite, :runner, :test_dir, :test_helper
-    settings :runner_seed, :capture_output, :halt_on_fail, :debug
+    settings :view, :suite, :runner, :test_dir, :test_helper, :changed_files
+    settings :runner_seed, :capture_output, :halt_on_fail, :changed_only
+    settings :debug
 
     def initialize
       @view   = Assert::View::DefaultView.new($stdout)
@@ -55,10 +56,22 @@ module Assert
       @test_dir    = "test"
       @test_helper = "helper.rb"
 
-      # default settings
+      # use git, by default, to determine which files have changes
+      @changed_files = proc do |test_paths|
+        cmds = [
+          "git diff --no-ext-diff --name-only",       # changed files
+          "git ls-files --others --exclude-standard"  # added files
+        ]
+        cmd = cmds.map{ |c| "#{c} -- #{test_paths.join(' ')}" }.join(' && ')
+        puts "  `#{cmd}`" if Assert.config.debug
+        `#{cmd}`.split("\n")
+      end
+
+      # default option values
       @runner_seed    = begin; srand; srand % 0xFFFF; end.to_i
-      @capture_output = true
+      @capture_output = false
       @halt_on_fail   = true
+      @changed_only   = false
       @debug          = false
     end
 

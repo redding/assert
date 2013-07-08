@@ -21,6 +21,9 @@ module Assert
         option 'halt_on_fail', 'halt a test when it fails', {
           :abbrev => 't'
         }
+        option 'changed_only', 'only run test files with changes', {
+          :abbrev => 'c'
+        }
         # show loaded test files, cli err backtraces, etc
         option 'debug', 'run in debug mode'
       end
