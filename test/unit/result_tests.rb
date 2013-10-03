@@ -30,7 +30,7 @@ module Assert::Result
 
   end
 
-  class BaseTests < Assert::Context
+  class UnitTests < Assert::Context
     desc "a base result"
     setup do
       @test = Factory.test("a test name")
@@ -74,7 +74,7 @@ module Assert::Result
 
   end
 
-  class ToStringTests < BaseTests
+  class ToStringTests < UnitTests
 
     should "include its test context name in the to_s" do
       assert subject.to_s.include?(subject.test_name)

@@ -5,7 +5,7 @@ require 'stringio'
 
 module Assert::View
 
-  class BaseTests < Assert::Context
+  class UnitTests < Assert::Context
     desc "the base view"
     setup do
       @view = Assert::View::Base.new(StringIO.new("", "w+"), Assert::Suite.new)

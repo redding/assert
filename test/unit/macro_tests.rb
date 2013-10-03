@@ -3,7 +3,7 @@ require 'assert/macro'
 
 class Assert::Macro
 
-  class BaseTests < Assert::Context
+  class UnitTests < Assert::Context
     desc "a macro"
     setup do
       @macro = Assert::Macro.new {}

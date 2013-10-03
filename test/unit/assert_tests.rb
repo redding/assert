@@ -5,7 +5,7 @@ require 'assert/suite'
 
 module Assert
 
-  class BaseTests < Assert::Context
+  class UnitTests < Assert::Context
     desc "the Assert module"
     subject { Assert }
 
