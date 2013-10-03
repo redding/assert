@@ -180,8 +180,8 @@ module Assert::Result
   end
 
   class Backtrace < ::Array
-    def initialize(value=nil)
-      super(value || ["No backtrace"])
+    def initialize(value = nil)
+      super([*(value || "No backtrace")])
     end
 
     def to_s; self.join("\n"); end

@@ -11,13 +11,9 @@ module Assert::Macros
 
       def have_instance_method(*methods)
         called_from = (methods.last.kind_of?(Array) ? methods.pop : caller).first
-        name = "have instance methods: #{methods.map{|m| "'#{m}'"}.join(', ')}"
-        Assert::Macro.new(name) do
-          methods.each do |method|
-            should "respond to instance method ##{method}", called_from do
-              assert_respond_to method, subject, "#{subject.class.name} does not have instance method ##{method}"
-            end
-          end
+        Assert::Macro.new do
+          methods.each{ |m| _methods_macro_instance_methods << [m, called_from] }
+          _methods_macro_test
         end
       end
       alias_method :have_instance_methods, :have_instance_method
@@ -26,13 +22,9 @@ module Assert::Macros
 
       def not_have_instance_method(*methods)
         called_from = (methods.last.kind_of?(Array) ? methods.pop : caller).first
-        name = "not have instance methods: #{methods.map{|m| "'#{m}'"}.join(', ')}"
-        Assert::Macro.new(name) do
-          methods.each do |method|
-            should "not respond to instance method ##{method}", called_from do
-              assert_not_respond_to method, subject, "#{subject.class.name} has instance method ##{method}"
-            end
-          end
+        Assert::Macro.new do
+          methods.each{ |m| _methods_macro_not_instance_methods << [m, called_from] }
+          _methods_macro_test
         end
       end
       alias_method :not_have_instance_methods, :not_have_instance_method
@@ -41,13 +33,9 @@ module Assert::Macros
 
       def have_class_method(*methods)
         called_from = (methods.last.kind_of?(Array) ? methods.pop : caller).first
-        name = "have class methods: #{methods.map{|m| "'#{m}'"}.join(', ')}"
-        Assert::Macro.new(name) do
-          methods.each do |method|
-            should "respond to class method ##{method}", called_from do
-              assert_respond_to method, subject.class, "#{subject.class.name} does not have class method ##{method}"
-            end
-          end
+        Assert::Macro.new do
+          methods.each{ |m| _methods_macro_class_methods << [m, called_from] }
+          _methods_macro_test
         end
       end
       alias_method :have_class_methods, :have_class_method
@@ -56,13 +44,9 @@ module Assert::Macros
 
       def not_have_class_method(*methods)
         called_from = (methods.last.kind_of?(Array) ? methods.pop : caller).first
-        name = "not have class methods: #{methods.map{|m| "'#{m}'"}.join(', ')}"
-        Assert::Macro.new(name) do
-          methods.each do |method|
-            should "not respond to class method ##{method}", called_from do
-              assert_not_respond_to method, subject.class, "#{subject.class.name} has class method ##{method}"
-            end
-          end
+        Assert::Macro.new do
+          methods.each{ |m| _methods_macro_not_class_methods << [m, called_from] }
+          _methods_macro_test
         end
       end
       alias_method :not_have_class_methods, :not_have_class_method
@@ -112,6 +96,58 @@ module Assert::Macros
         not_have_instance_methods(*accessor_meths)
       end
       alias_method :not_have_accessors, :not_have_accessor
+
+      # private
+
+      def _methods_macro_test
+        @_methods_macro_test ||= should "respond to methods" do
+
+          self.class._methods_macro_instance_methods.each do |(method, called_from)|
+            msg = "#{subject.class.name} does not have instance method ##{method}"
+            with_backtrace(called_from) do
+              assert_respond_to method, subject, msg
+            end
+          end
+
+          self.class._methods_macro_class_methods.each do |(method, called_from)|
+            msg = "#{subject.class.name} does not have class method ##{method}"
+            with_backtrace(called_from) do
+              assert_respond_to method, subject.class, msg
+            end
+          end
+
+          self.class._methods_macro_not_instance_methods.each do |(method, called_from)|
+            msg = "#{subject.class.name} has instance method ##{method}"
+            with_backtrace(called_from) do
+              assert_not_respond_to method, subject, msg
+            end
+          end
+
+          self.class._methods_macro_not_class_methods.each do |(method, called_from)|
+            msg = "#{subject.class.name} has class method ##{method}"
+            with_backtrace(called_from) do
+              assert_not_respond_to method, subject.class, msg
+            end
+          end
+
+        end
+      end
+
+      def _methods_macro_instance_methods
+        @_methods_macro_instance_methods ||= []
+      end
+
+      def _methods_macro_not_instance_methods
+        @_methods_macro_not_instance_methods ||= []
+      end
+
+      def _methods_macro_class_methods
+        @_methods_macro_class_methods ||= []
+      end
+
+      def _methods_macro_not_class_methods
+        @_methods_macro_not_class_methods ||= []
+      end
 
     end
 
