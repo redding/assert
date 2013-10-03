@@ -11,6 +11,7 @@ Gem::Specification.new do |gem|
   gem.description = %q{Test::Unit style testing framework, just better than Test::Unit.}
   gem.summary     = %q{Test::Unit style testing framework, just better than Test::Unit.}
   gem.homepage    = "http://github.com/redding/assert"
+  gem.license     = 'MIT'
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
