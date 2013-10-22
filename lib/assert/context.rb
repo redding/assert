@@ -174,17 +174,19 @@ module Assert
     # check if the assertion is a truthy value, if so create a new pass result, otherwise
     # create a new fail result with the desc and what failed msg.
     # all other assertion helpers use this one in the end
-    def assert(assertion, fail_desc=nil, what_failed_msg=nil)
-      what_failed_msg ||= "Failed assert: assertion was <#{assertion.inspect}>."
-      msg = fail_message(fail_desc) { what_failed_msg }
-      assertion ? pass : fail(msg)
+    def assert(assertion, fail_desc = nil)
+      if assertion
+        pass
+      else
+        what_failed_msg = block_given? ? yield : "Failed assert: assertion was <#{assertion.inspect}>."
+        fail(fail_message(fail_desc, what_failed_msg))
+      end
     end
 
     # the opposite of assert, check if the assertion is a false value, if so create a new pass
     # result, otherwise create a new fail result with the desc and it's what failed msg
-    def assert_not(assertion, fail_desc=nil)
-      what_failed_msg = "Failed assert_not: assertion was <#{assertion.inspect}>."
-      assert(!assertion, fail_desc, what_failed_msg)
+    def assert_not(assertion, fail_desc = nil)
+      assert(!assertion, fail_desc){ "Failed assert_not: assertion was <#{assertion.inspect}>." }
     end
     alias_method :refute, :assert_not
 
@@ -206,13 +208,12 @@ module Assert
 
     # adds a Fail result to the end of the test's results
     # break test execution if Assert.config.halt_on_fail
-    def fail(fail_msg=nil)
-      message = (fail_message(fail_msg) { }).call
+    def fail(message = nil)
       if Assert.config.halt_on_fail
-        raise Result::TestFailure, message
+        raise Result::TestFailure, message || ''
       else
         capture_result do |test, backtrace|
-          Assert::Result::Fail.new(test, message, backtrace)
+          Assert::Result::Fail.new(test, message || '', backtrace)
         end
       end
     end
@@ -250,10 +251,8 @@ module Assert
     protected
 
     # Returns a Proc that will output a custom message along with the default fail message.
-    def fail_message(fail_desc=nil, &what_failed)
-      fail_desc.kind_of?(::Proc) ? fail_desc : Proc.new do
-        [ fail_desc, what_failed.call ].compact.join("\n")
-      end
+    def fail_message(fail_desc = nil, what_failed_msg = nil)
+      [ fail_desc, what_failed_msg ].compact.join("\n")
     end
 
     private
