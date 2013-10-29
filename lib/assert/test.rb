@@ -40,6 +40,8 @@ module Assert
       ensure
         begin
           run_test_teardown(run_scope)
+        rescue Result::TestSkipped => err
+          @results << Result::Skip.new(self, err)
         rescue Exception => teardown_err
           @results << Result::Error.new(self, teardown_err)
         end

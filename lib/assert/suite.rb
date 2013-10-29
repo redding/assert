@@ -77,7 +77,7 @@ module Assert
       if block_given?
         self.setups << block
       else
-        self.setups.each{|setup| setup.call}
+        self.setups.each{ |setup| setup.call }
       end
     end
     alias_method :startup, :setup
@@ -86,7 +86,7 @@ module Assert
       if block_given?
         self.teardowns << block
       else
-        self.teardowns.reverse.each{|teardown| teardown.call}
+        self.teardowns.reverse.each{ |teardown| teardown.call }
       end
     end
     alias_method :shutdown, :teardown
