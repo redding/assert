@@ -108,12 +108,6 @@ class Assert::Context
       assert_equal fail_msg, result.message
     end
 
-    should "set any given result message evaluated from a proc" do
-      fail_msg = ::Proc.new{ "Still didn't work" }
-      result = @context.fail(fail_msg)
-      assert_equal fail_msg.call, result.message
-    end
-
   end
 
   class HaltOnFailTests < FailTests
@@ -151,13 +145,13 @@ class Assert::Context
     end
 
     should "return a pass result given a `true` assertion" do
-      result = subject.assert(true, @fail_desc, @what_failed)
+      result = subject.assert(true, @fail_desc){ @what_failed }
       assert_kind_of Assert::Result::Pass, result
       assert_nil result.message
     end
 
     should "return a fail result given a `false` assertion" do
-      result = subject.assert(false, @fail_desc, @what_failed)
+      result = subject.assert(false, @fail_desc){ @what_failed }
       assert_kind_of Assert::Result::Fail, result
       assert_equal [@fail_desc, @what_failed].join("\n"), result.message
     end
