@@ -51,9 +51,16 @@ class Assert::Test
         ignore("something")
         assert(true)
         assert(false)
-        ignore("something else")
-        assert(34)
-        assert(nil)
+      end
+      @test.context_class.setup do
+        ignore("something")
+        assert(true)
+        assert(false)
+      end
+      @test.context_class.teardown do
+        ignore("something")
+        assert(true)
+        assert(false)
       end
       @test.run
     end
@@ -61,7 +68,7 @@ class Assert::Test
 
     should "know its pass results" do
       assert_kind_of Array, subject.pass_results
-      assert_equal 2, subject.pass_results.size
+      assert_equal 3, subject.pass_results.size
       subject.pass_results.each do |result|
         assert_kind_of Assert::Result::Pass, result
       end
@@ -70,7 +77,7 @@ class Assert::Test
 
     should "know its fail results" do
       assert_kind_of Array, subject.fail_results
-      assert_equal 2, subject.fail_results.size
+      assert_equal 3, subject.fail_results.size
       subject.fail_results.each do |result|
         assert_kind_of Assert::Result::Fail, result
       end
@@ -79,7 +86,7 @@ class Assert::Test
 
     should "know its ignore results" do
       assert_kind_of Array, subject.ignore_results
-      assert_equal 2, subject.ignore_results.size
+      assert_equal 3, subject.ignore_results.size
       subject.ignore_results.each do |result|
         assert_kind_of Assert::Result::Ignore, result
       end
@@ -87,7 +94,7 @@ class Assert::Test
     end
 
     should "know the total number of results" do
-      assert_equal(6, subject.result_count)
+      assert_equal(9, subject.result_count)
     end
 
   end
@@ -99,7 +106,7 @@ class Assert::Test
     end
     subject{ @test }
 
-    should "know its skip results" do
+    should "capture skip results" do
       assert_skipped(subject)
     end
 
@@ -142,13 +149,64 @@ class Assert::Test
     end
     subject{ @test }
 
-    should "know its error results" do
-      assert_kind_of Array, subject.error_results
-      assert_equal 1, subject.error_results.size
-      subject.error_results.each do |result|
-        assert_kind_of Assert::Result::Error, result
+    should "capture error results" do
+      assert_errored(subject)
+    end
+
+    should "capture errors in the context setup" do
+      test = Factory.test("setup error test", @context_info){ }
+      test.context_class.setup{ raise 'an error' }
+      test.run
+
+      assert_errored(test)
+    end
+
+    should "capture errors in the context teardown" do
+      test = Factory.test("teardown error test", @context_info){ }
+      test.context_class.teardown{ raise 'an error' }
+      test.run
+
+      assert_errored(test)
+    end
+
+    private
+
+    def assert_errored(test)
+      with_backtrace(caller) do
+        assert_equal 1, subject.error_results.size, 'too many/few error results'
+        test.error_results.each do |result|
+          assert_kind_of Assert::Result::Error, result, 'result is not an error result'
+        end
+        assert_equal test.error_results.size, test.result_count(:error), 'error result not counted'
       end
-      assert_equal subject.error_results.size, subject.result_count(:error)
+    end
+
+  end
+
+  class SignalExceptionHandlingTests < BasicTests
+    setup do
+      @test = Factory.test("signal test", @context_info) do
+        raise SignalException, "USR1"
+      end
+    end
+    subject{ @test }
+
+    should "raise any signal exceptions and not capture as an error" do
+      assert_raises(SignalException){ subject.run }
+    end
+
+    should "raises signal exceptions in the context setup" do
+      test = Factory.test("setup signal test", @context_info){ }
+      test.context_class.setup{ raise SignalException, 'INT' }
+
+      assert_raises(SignalException){ test.run }
+    end
+
+    should "raises signal exceptions in the context teardown" do
+      test = Factory.test("teardown signal test", @context_info){ }
+      test.context_class.teardown{ raise SignalException, "TERM" }
+
+      assert_raises(SignalException){ test.run }
     end
 
   end

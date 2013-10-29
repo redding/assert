@@ -35,13 +35,19 @@ module Assert
         @results << Result::Fail.new(self, err)
       rescue Result::TestSkipped => err
         @results << Result::Skip.new(self, err)
+      rescue SignalException => err
+        raise(err)
       rescue Exception => err
         @results << Result::Error.new(self, err)
       ensure
         begin
           run_test_teardown(run_scope)
+        rescue Result::TestFailure => err
+          @results << Result::Fail.new(self, err)
         rescue Result::TestSkipped => err
           @results << Result::Skip.new(self, err)
+        rescue SignalException => err
+          raise(err)
         rescue Exception => teardown_err
           @results << Result::Error.new(self, teardown_err)
         end
