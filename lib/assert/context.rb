@@ -220,7 +220,7 @@ module Assert
 
     # adds a Skip result to the end of the test's results and breaks test execution
     def skip(skip_msg=nil)
-      raise(Result::TestSkipped, skip_msg || "")
+      raise(Result::TestSkipped, skip_msg || '')
     end
 
     # alter the backtraces of fail results generated in the given block

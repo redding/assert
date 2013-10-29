@@ -7,7 +7,7 @@ class Assert::Test
     desc "a test obj"
     setup do
       @test_code = lambda{ assert(true) }
-      @context_class = Factory.context_class { desc "context class" }
+      @context_class = Factory.context_class{ desc "context class" }
       @context_info  = Factory.context_info(@context_class)
       @test = Factory.test("should do something amazing", @context_info, @test_code)
     end
@@ -94,18 +94,41 @@ class Assert::Test
 
   class SkipHandlingTests < BasicTests
     setup do
-      @test = Factory.test("skip test", @context_info) { skip }
+      @test = Factory.test("skip test", @context_info){ skip }
       @test.run
     end
     subject{ @test }
 
     should "know its skip results" do
-      assert_kind_of Array, subject.skip_results
-      assert_equal 1, subject.skip_results.size
-      subject.skip_results.each do |result|
-        assert_kind_of Assert::Result::Skip, result
+      assert_skipped(subject)
+    end
+
+    should "capture skips in the context setup" do
+      test = Factory.test("setup skip test", @context_info){ }
+      test.context_class.setup{ skip }
+      test.run
+
+      assert_skipped(test)
+    end
+
+    should "capture skips in the context teardown" do
+      test = Factory.test("teardown skip test", @context_info){ }
+      test.context_class.teardown{ skip }
+      test.run
+
+      assert_skipped(test)
+    end
+
+    private
+
+    def assert_skipped(test)
+      with_backtrace(caller) do
+        assert_equal 1, test.skip_results.size, 'too many/few skip results'
+        test.skip_results.each do |result|
+          assert_kind_of Assert::Result::Skip, result, 'result is not a skip result'
+        end
+        assert_equal test.skip_results.size, test.result_count(:skip), 'skip result not counted'
       end
-      assert_equal subject.skip_results.size, subject.result_count(:skip)
     end
 
   end
@@ -157,10 +180,10 @@ class Assert::Test
   class CaptureOutTests < BasicTests
     desc "when capturing std out"
     setup do
-      @test = Factory.test("stdout") {
+      @test = Factory.test("stdout") do
         puts "std out from the test"
         assert true
-      }
+      end
       @orig_capture = Assert.config.capture_output
       Assert.config.capture_output true
     end
@@ -182,8 +205,8 @@ class Assert::Test
         puts "std out from the test"
         assert a_method_an_assert_calls
       end
-      @test.context_class.setup { puts "std out from the setup" }
-      @test.context_class.teardown { puts "std out from the teardown" }
+      @test.context_class.setup{ puts "std out from the setup" }
+      @test.context_class.teardown{ puts "std out from the teardown" }
       @test.context_class.send(:define_method, "a_method_an_assert_calls") do
         puts "std out from a method an assert called"
       end
