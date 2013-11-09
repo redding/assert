@@ -9,7 +9,7 @@ module Assert
     desc "the Assert module"
     subject { Assert }
 
-    should have_imeths :view, :suite, :runner, :config, :configure, :init
+    should have_imeths :view, :suite, :runner, :config, :configure
 
     should "know its config singleton" do
       assert_same Config, subject.config

@@ -1,3 +1,5 @@
+require 'assert/cli'
+
 module Assert
 
   class AssertRunner
@@ -5,18 +7,49 @@ module Assert
     USER_SETTINGS_FILE  = ".assert/init.rb"
     LOCAL_SETTINGS_FILE = ".assert.rb"
 
-    def initialize(test_paths, test_options)
-      require 'assert'  # inits config singleton with the default settings
+    DEFAULT_CHANGED_FILES_PROC = Proc.new do |test_paths|
+      # use git to determine which files have changes
+      files = []
+      cmd = [
+        "git diff --no-ext-diff --name-only",       # changed files
+        "git ls-files --others --exclude-standard"  # added files
+      ].map{ |c| "#{c} -- #{test_paths.join(' ')}" }.join(' && ')
 
-      apply_user_settings
-      apply_local_settings
-      apply_option_settings(test_options)
-      apply_env_settings
+      Assert::CLI.bench('Load only changed files') do
+        files = `#{cmd}`.split("\n")
+      end
+      puts Assert::CLI.debug_msg("  `#{cmd}`") if Assert.config.debug
+      files
+    end
+
+    def initialize(test_paths, test_options)
+      Assert::CLI.bench('Apply settings') do
+        apply_user_settings
+        apply_local_settings
+        apply_option_settings(test_options)
+        apply_env_settings
+      end
 
       files = test_files(test_paths.empty? ? [*Assert.config.test_dir] : test_paths)
-      Assert.init(files, {
-        :test_dir_path => path_of(Assert.config.test_dir, files.first)
-      })
+      init(files, path_of(Assert.config.test_dir, files.first))
+    end
+
+    def init(test_files, test_dir)
+      # load any test helper file
+      if test_dir && (h = File.join(test_dir, Config.test_helper)) && File.exists?(h)
+        Assert::CLI.bench('Require test helper'){ require h }
+      end
+
+      # load the test files
+      Assert.view.fire(:before_load, test_files)
+      Assert::CLI.bench("Require #{test_files.count} test files") do
+        test_files.each{ |p| require p }
+      end
+      if Assert.config.debug
+        puts Assert::CLI.debug_msg("Test files:")
+        test_files.each{ |f| puts Assert::CLI.debug_msg("  #{f}") }
+      end
+      Assert.view.fire(:after_load)
     end
 
     def run
@@ -56,7 +89,6 @@ module Assert
     end
 
     def changed_test_files(test_paths)
-      puts "Loading only changed files:" if Assert.config.debug
       globbed_test_files(Assert.config.changed_files.call(test_paths))
     end
 

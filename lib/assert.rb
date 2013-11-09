@@ -15,19 +15,6 @@ module Assert
   def self.config; Config; end
   def self.configure; yield Config if block_given?; end
 
-  def self.init(test_files, opts)
-    # load any test helper file
-    if p = opts[:test_dir_path]
-      helper_file = File.join(p, Config.test_helper)
-      require helper_file if File.exists?(helper_file)
-    end
-
-    # load the test files
-    Assert.view.fire(:before_load, test_files)
-    test_files.each{ |p| require p }
-    Assert.view.fire(:after_load)
-  end
-
   class Config
     include Singleton
     # map any class methods to the singleton
@@ -55,17 +42,7 @@ module Assert
       @runner = Assert::Runner.new
       @test_dir    = "test"
       @test_helper = "helper.rb"
-
-      # use git, by default, to determine which files have changes
-      @changed_files = proc do |test_paths|
-        cmds = [
-          "git diff --no-ext-diff --name-only",       # changed files
-          "git ls-files --others --exclude-standard"  # added files
-        ]
-        cmd = cmds.map{ |c| "#{c} -- #{test_paths.join(' ')}" }.join(' && ')
-        puts "  `#{cmd}`" if Assert.config.debug
-        `#{cmd}`.split("\n")
-      end
+      @changed_files = Assert::AssertRunner::DEFAULT_CHANGED_FILES_PROC
 
       # default option values
       @runner_seed    = begin; srand; srand % 0xFFFF; end.to_i

@@ -1,3 +1,4 @@
+require 'benchmark'
 require 'set'
 require 'assert/assert_runner'
 require 'assert/version'
@@ -6,11 +7,24 @@ module Assert
 
   class CLI
 
-    def self.run(*args)
-      self.new.run(*args)
+    def self.debug?(args)
+      args.include?('-d') || args.include?('--debug')
     end
 
-    def initialize
+    def self.debug_msg(msg, time_in_ms = nil)
+      "[DEBUG] #{msg}#{" (#{time_in_ms} ms)" if time_in_ms}"
+    end
+
+    def self.bench(msg, &block)
+      if !Assert.config.debug
+        block.call; return
+      end
+      RoundedMillisecondTime.new(Benchmark.measure(&block).real).tap do |time_in_ms|
+        puts debug_msg(msg, time_in_ms)
+      end
+    end
+
+    def initialize(*args)
       @cli = CLIRB.new do
         option 'runner_seed', 'Use a given seed to run tests', {
           :abbrev => 's', :value => Fixnum
@@ -27,15 +41,11 @@ module Assert
         # show loaded test files, cli err backtraces, etc
         option 'debug', 'run in debug mode'
       end
+      @cli.parse!(args)
     end
 
-    def run(*args)
-      # default debug_mode to the env var
-      debug_mode = ENV['ASSERT_DEBUG'] == 'true'
+    def run
       begin
-        # parse manually in the case that parsing fails before the debug arg
-        debug_mode ||= args.include?('-d') || args.include?('--debug')
-        @cli.parse!(args)
         Assert::AssertRunner.new(@cli.args, @cli.opts).run
       rescue CLIRB::HelpExit
         puts help
@@ -43,7 +53,7 @@ module Assert
         puts Assert::VERSION
       rescue CLIRB::Error => exception
         puts "#{exception.message}\n\n"
-        puts  debug_mode ? exception.backtrace.join("\n") : help
+        puts  Assert.config.debug ? exception.backtrace.join("\n") : help
         exit(1)
       rescue Exception => exception
         puts "#{exception.class}: #{exception.message}"
@@ -59,6 +69,14 @@ module Assert
       "#{@cli}"
     end
 
+  end
+
+  module RoundedMillisecondTime
+    ROUND_PRECISION = 3
+    ROUND_MODIFIER = 10 ** ROUND_PRECISION
+    def self.new(time_in_seconds)
+      (time_in_seconds * 1000 * ROUND_MODIFIER).to_i / ROUND_MODIFIER.to_f
+    end
   end
 
   class CLIRB  # Version 1.0.0, https://github.com/redding/cli.rb
