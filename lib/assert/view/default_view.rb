@@ -19,10 +19,6 @@ module Assert::View
     option 'ignore_styles', :magenta
 
     def before_load(test_files)
-      if Assert.config.debug
-        puts "Loading test files:"
-        test_files.each{ |f| puts "  #{f}" }
-      end
     end
 
     def after_load
