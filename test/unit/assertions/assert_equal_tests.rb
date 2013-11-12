@@ -1,6 +1,8 @@
 require 'assert'
 require 'assert/assertions'
 
+require 'assert/utils'
+
 module Assert::Assertions
 
   class AssertEqualTests < Assert::Context
@@ -23,7 +25,7 @@ module Assert::Assertions
     end
 
     should "have a fail message with custom and generic explanations" do
-      exp = "#{@args[2]}\nExpected #{@args[0].inspect}, not #{@args[1].inspect}."
+      exp = "#{@args[2]}\nExpected #{Assert::U.pp(@args[0])}, not #{Assert::U.pp(@args[1])}."
       assert_equal exp, subject.fail_results.first.message
     end
 
@@ -50,7 +52,7 @@ module Assert::Assertions
 
     should "have a fail message with custom and generic explanations" do
       exp = "#{@args[2]}\n"\
-            "#{@args[1].inspect} not expected to equal #{@args[0].inspect}."
+            "#{Assert::U.pp(@args[1])} not expected to equal #{Assert::U.pp(@args[0])}."
       assert_equal exp, subject.fail_results.first.message
     end
 

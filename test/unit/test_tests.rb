@@ -39,7 +39,7 @@ class Assert::Test
       attrs_string = [:name, :context_info, :results].collect do |method|
         "@#{method}=#{subject.send(method).inspect}"
       end.join(" ")
-      expected = "#<#{subject.class} #{attrs_string}>"
+      expected = "#<#{subject.class}:#{'0x0%x' % (subject.object_id << 1)} #{attrs_string}>"
       assert_equal expected, subject.inspect
     end
 

@@ -31,13 +31,19 @@ module Assert
     subject { Config }
 
     should have_imeths :suite, :view, :runner, :test_dir, :test_helper, :changed_files
-    should have_imeths :runner_seed, :capture_output, :halt_on_fail, :changed_only
-    should have_imeths :debug, :apply
+    should have_imeths :runner_seed, :pp_processor
+    should have_imeths :capture_output, :halt_on_fail, :changed_only, :debug
+    should have_imeths :apply
 
     should "default the view, suite, and runner" do
       assert_kind_of Assert::View::DefaultView, subject.view
       assert_kind_of Assert::Suite,  subject.suite
       assert_kind_of Assert::Runner, subject.runner
+    end
+
+    should "default the optional settings" do
+      assert_not_nil subject.runner_seed
+      assert_equal :inspect, subject.pp_processor
     end
 
   end

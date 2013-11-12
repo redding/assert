@@ -1,6 +1,8 @@
 require 'assert'
 require 'assert/assertions'
 
+require 'assert/utils'
+
 module Assert::Assertions
 
   class AssertInstanceOfTests < Assert::Context
@@ -23,7 +25,7 @@ module Assert::Assertions
     end
 
     should "have a fail message with custom and generic explanations" do
-      exp = "#{@args[2]}\nExpected #{@args[1].inspect} (#{@args[1].class}) to"\
+      exp = "#{@args[2]}\nExpected #{Assert::U.pp(@args[1])} (#{@args[1].class}) to"\
             " be an instance of #{@args[0]}."
       assert_equal exp, subject.fail_results.first.message
     end
@@ -50,7 +52,7 @@ module Assert::Assertions
     end
 
     should "have a fail message with custom and generic explanations" do
-      exp = "#{@args[2]}\n#{@args[1].inspect} (#{@args[1].class}) not expected to"\
+      exp = "#{@args[2]}\n#{Assert::U.pp(@args[1])} (#{@args[1].class}) not expected to"\
             " be an instance of #{@args[0]}."
       assert_equal exp, subject.fail_results.first.message
     end

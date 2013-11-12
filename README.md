@@ -250,6 +250,18 @@ Assert.configure do |config|
 end
 ```
 
+## Pretty Printing values in fail messages
+
+By default, Assert uses `inspect` when outputting value details in failure messages.  This can be overridden to use a custom processor using the `pp_processor` config setting.  Any processor values should respond to `to_proc` and their proc form should take an input value.  For example:
+
+```ruby
+Assert.config.pp_processor :to_s
+
+# --or--
+
+Asser.config.pp_processor Proc.new{ |input| "herp, #{input.inspect}, derp" }
+```
+
 ## Viewing Test Results
 
 `Assert::View::DefaultView` is the default handler for viewing test results.  Its output goes something like this:

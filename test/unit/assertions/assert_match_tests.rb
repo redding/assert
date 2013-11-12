@@ -1,6 +1,8 @@
 require 'assert'
 require 'assert/assertions'
 
+require 'assert/utils'
+
 module Assert::Assertions
 
   class AssertMatchTests < Assert::Context
@@ -23,7 +25,7 @@ module Assert::Assertions
     end
 
     should "have a fail message with custom and generic explanations" do
-      exp = "#{@args[2]}\nExpected #{@args[1].inspect} to match #{@args[0].inspect}."
+      exp = "#{@args[2]}\nExpected #{Assert::U.pp(@args[1])} to match #{Assert::U.pp(@args[0])}."
       assert_equal exp, subject.fail_results.first.message
     end
 
@@ -49,7 +51,7 @@ module Assert::Assertions
     end
 
     should "have a fail message with custom and generic explanations" do
-      exp = "#{@args[2]}\n#{@args[1].inspect} not expected to match #{@args[0].inspect}."
+      exp = "#{@args[2]}\n#{Assert::U.pp(@args[1])} not expected to match #{Assert::U.pp(@args[0])}."
       assert_equal exp, subject.fail_results.first.message
     end
 

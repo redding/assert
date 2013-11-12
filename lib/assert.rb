@@ -1,6 +1,7 @@
 require 'singleton'
 require 'assert/version'
 
+require 'assert/utils'
 require 'assert/view'
 require 'assert/suite'
 require 'assert/runner'
@@ -33,8 +34,8 @@ module Assert
     end
 
     settings :view, :suite, :runner, :test_dir, :test_helper, :changed_files
-    settings :runner_seed, :capture_output, :halt_on_fail, :changed_only
-    settings :debug
+    settings :runner_seed, :pp_processor
+    settings :capture_output, :halt_on_fail, :changed_only, :debug
 
     def initialize
       @view   = Assert::View::DefaultView.new($stdout)
@@ -46,6 +47,7 @@ module Assert
 
       # default option values
       @runner_seed    = begin; srand; srand % 0xFFFF; end.to_i
+      @pp_processor   = :inspect
       @capture_output = false
       @halt_on_fail   = true
       @changed_only   = false

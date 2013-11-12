@@ -1,6 +1,8 @@
 require 'assert'
 require 'assert/assertions'
 
+require 'assert/utils'
+
 module Assert::Assertions
 
   class AssertIncludesTests < Assert::Context
@@ -24,7 +26,7 @@ module Assert::Assertions
 
     should "have a fail message with custom and generic explanations" do
       exp = "#{@args[2]}\n"\
-            "Expected #{@args[1].inspect} to include #{@args[0].inspect}."
+            "Expected #{Assert::U.pp(@args[1])} to include #{Assert::U.pp(@args[0])}."
       assert_equal exp, subject.fail_results.first.message
     end
 
@@ -51,7 +53,7 @@ module Assert::Assertions
 
     should "have a fail message with custom and generic explanations" do
       exp = "#{@args[2]}\n"\
-            "Expected #{@args[1].inspect} to not include #{@args[0].inspect}."
+            "Expected #{Assert::U.pp(@args[1])} to not include #{Assert::U.pp(@args[0])}."
       assert_equal exp, subject.fail_results.first.message
     end
 

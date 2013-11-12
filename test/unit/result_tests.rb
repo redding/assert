@@ -61,7 +61,8 @@ module Assert::Result
     end
 
     should "show only its class and message when inspected" do
-      exp = "#<#{subject.class} @message=#{subject.message.inspect}>"
+      exp = "#<#{subject.class}:#{'0x0%x' % (subject.object_id << 1)}"\
+            " @message=#{subject.message.inspect}>"
       assert_equal exp, subject.inspect
     end
 

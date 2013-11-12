@@ -1,6 +1,8 @@
 require 'assert'
 require 'assert/assertions'
 
+require 'assert/utils'
+
 module Assert::Assertions
 
   class AssertSameTest < Assert::Context
@@ -25,8 +27,8 @@ module Assert::Assertions
 
     should "have a fail message with custom and generic explanations" do
       exp = "#{@args[2]}\n"\
-            "Expected #{@args[1].inspect} (#{@args[1].object_id})"\
-            " to be the same as #{@args[0].inspect} (#{@args[0].object_id})."
+            "Expected #{Assert::U.pp(@args[1])} (#{@args[1].object_id})"\
+            " to be the same as #{Assert::U.pp(@args[0])} (#{@args[0].object_id})."
       assert_equal exp, subject.fail_results.first.message
     end
 
@@ -54,8 +56,8 @@ module Assert::Assertions
 
     should "have a fail message with custom and generic explanations" do
       exp = "#{@args[2]}\n"\
-            "#{@args[1].inspect} (#{@args[1].object_id}) not expected"\
-            " to be the same as #{@args[0].inspect} (#{@args[0].object_id})."
+            "#{Assert::U.pp(@args[1])} (#{@args[1].object_id}) not expected"\
+            " to be the same as #{Assert::U.pp(@args[0])} (#{@args[0].object_id})."
       assert_equal exp, subject.fail_results.first.message
     end
 

@@ -78,7 +78,7 @@ module Assert
       attributes_string = ([ :name, :context_info, :results ].collect do |attr|
         "@#{attr}=#{self.send(attr).inspect}"
       end).join(" ")
-      "#<#{self.class} #{attributes_string}>"
+      "#<#{self.class}:#{'0x0%x' % (object_id << 1)} #{attributes_string}>"
     end
 
     protected
