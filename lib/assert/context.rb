@@ -1,3 +1,4 @@
+require 'assert/utils'
 require 'assert/suite'
 require 'assert/assertions'
 require 'assert/result'
@@ -174,19 +175,19 @@ module Assert
     # check if the assertion is a truthy value, if so create a new pass result, otherwise
     # create a new fail result with the desc and what failed msg.
     # all other assertion helpers use this one in the end
-    def assert(assertion, fail_desc = nil)
+    def assert(assertion, desc = nil)
       if assertion
         pass
       else
-        what_failed_msg = block_given? ? yield : "Failed assert: assertion was <#{assertion.inspect}>."
-        fail(fail_message(fail_desc, what_failed_msg))
+        what = block_given? ? yield : "Failed assert: assertion was `#{Assert::U.pp(assertion)}`."
+        fail(fail_message(desc, what))
       end
     end
 
     # the opposite of assert, check if the assertion is a false value, if so create a new pass
     # result, otherwise create a new fail result with the desc and it's what failed msg
     def assert_not(assertion, fail_desc = nil)
-      assert(!assertion, fail_desc){ "Failed assert_not: assertion was <#{assertion.inspect}>." }
+      assert(!assertion, fail_desc){ "Failed assert_not: assertion was `#{Assert::U.pp(assertion)}`." }
     end
     alias_method :refute, :assert_not
 

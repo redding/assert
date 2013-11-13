@@ -1,9 +1,11 @@
 require 'assert'
 require 'assert/context'
 
+require 'assert/utils'
+
 class Assert::Context
 
-  class BasicTests < Assert::Context
+  class UnitTests < Assert::Context
     desc "Assert context"
     setup do
       @test = Factory.test
@@ -27,7 +29,7 @@ class Assert::Context
 
   end
 
-  class SkipTests < BasicTests
+  class SkipTests < UnitTests
     desc "skip method"
     setup do
       @skip_msg = "I need to implement this in the future."
@@ -44,7 +46,7 @@ class Assert::Context
 
   end
 
-  class IgnoreTests < BasicTests
+  class IgnoreTests < UnitTests
     desc "ignore method"
     setup do
       @ignore_msg = "Ignore this for now, will do later."
@@ -59,7 +61,7 @@ class Assert::Context
 
   end
 
-  class PassTests < BasicTests
+  class PassTests < UnitTests
     desc "pass method"
     setup do
       @pass_msg = "That's right, it works."
@@ -74,7 +76,7 @@ class Assert::Context
 
   end
 
-  class FlunkTests < BasicTests
+  class FlunkTests < UnitTests
     desc "flunk method"
     setup do
       @flunk_msg = "It flunked."
@@ -89,7 +91,7 @@ class Assert::Context
 
   end
 
-  class FailTests < BasicTests
+  class FailTests < UnitTests
     desc "fail method"
     setup do
       @result = @context.fail
@@ -137,7 +139,7 @@ class Assert::Context
 
   end
 
-  class AssertTests < BasicTests
+  class AssertTests < UnitTests
     desc "assert method"
     setup do
       @fail_desc = "my fail desc"
@@ -153,6 +155,17 @@ class Assert::Context
     should "return a fail result given a `false` assertion" do
       result = subject.assert(false, @fail_desc){ @what_failed }
       assert_kind_of Assert::Result::Fail, result
+    end
+
+    should "pp the assertion value in the fail message by default" do
+      exp_default_what = "Failed assert: assertion was `#{Assert::U.pp(false)}`."
+      result = subject.assert(false, @fail_desc)
+
+      assert_equal [@fail_desc, exp_default_what].join("\n"), result.message
+    end
+
+    should "use a custom fail message if one is given" do
+      result = subject.assert(false, @fail_desc){ @what_failed }
       assert_equal [@fail_desc, @what_failed].join("\n"), result.message
     end
 
@@ -166,23 +179,28 @@ class Assert::Context
 
   end
 
-  class AssertNotTests < BasicTests
+  class AssertNotTests < UnitTests
     desc "assert_not method"
     setup do
       @fail_desc = "my fail desc"
-      @what_failed = "Failed assert_not: assertion was <true>."
-    end
-
-    should "return a fail result given a `true` assertion" do
-      result = subject.assert_not(true, @fail_desc)
-      assert_kind_of Assert::Result::Fail, result
-      assert_equal [@fail_desc, @what_failed].join("\n"), result.message
     end
 
     should "return a pass result given a `false` assertion" do
       result = subject.assert_not(false, @fail_desc)
       assert_kind_of Assert::Result::Pass, result
       assert_nil result.message
+    end
+
+    should "return a fail result given a `true` assertion" do
+      result = subject.assert_not(true, @fail_desc)
+      assert_kind_of Assert::Result::Fail, result
+    end
+
+    should "pp the assertion value in the fail message by default" do
+      exp_default_what = "Failed assert_not: assertion was `#{Assert::U.pp(true)}`."
+      result = subject.assert_not(true, @fail_desc)
+
+      assert_equal [@fail_desc, exp_default_what].join("\n"), result.message
     end
 
     should "return a fail result given a \"truthy\" assertion" do
@@ -195,7 +213,7 @@ class Assert::Context
 
   end
 
-  class SubjectTests < BasicTests
+  class SubjectTests < UnitTests
     desc "subject method"
     setup do
       expected = @expected = "amazing"
@@ -213,7 +231,7 @@ class Assert::Context
 
   end
 
-  class WithBacktraceTests < BasicTests
+  class WithBacktraceTests < UnitTests
     desc "with_backtrace method"
     setup do
       @from_bt = ['called_from_here']
@@ -240,7 +258,7 @@ class Assert::Context
 
   end
 
-  class InspectTests < BasicTests
+  class InspectTests < UnitTests
     desc "inspect method"
     setup do
       @expected = "#<#{@context.class}>"

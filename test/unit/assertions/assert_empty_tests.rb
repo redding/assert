@@ -1,6 +1,8 @@
 require 'assert'
 require 'assert/assertions'
 
+require 'assert/utils'
+
 module Assert::Assertions
 
   class AssertEmptyTests < Assert::Context
@@ -23,7 +25,7 @@ module Assert::Assertions
     end
 
     should "have a fail message with custom and generic explanations" do
-      exp = "#{@args[1]}\nExpected #{@args[0].inspect} to be empty."
+      exp = "#{@args[1]}\nExpected #{Assert::U.pp(@args[0])} to be empty."
       assert_equal exp, subject.fail_results.first.message
     end
 
@@ -49,7 +51,7 @@ module Assert::Assertions
     end
 
     should "have a fail message with custom and generic explanations" do
-      exp = "#{@args[1]}\nExpected #{@args[0].inspect} to not be empty."
+      exp = "#{@args[1]}\nExpected #{Assert::U.pp(@args[0])} to not be empty."
       assert_equal exp, subject.fail_results.first.message
     end
 
