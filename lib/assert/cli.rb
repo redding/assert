@@ -25,6 +25,7 @@ module Assert
     end
 
     def initialize(*args)
+      @args = args
       @cli = CLIRB.new do
         option 'runner_seed', 'Use a given seed to run tests', {
           :abbrev => 's', :value => Fixnum
@@ -38,14 +39,17 @@ module Assert
         option 'changed_only', 'only run test files with changes', {
           :abbrev => 'c'
         }
+        option 'pp_objects', 'pretty-print objects in fail messages', {
+          :abbrev => 'p'
+        }
         # show loaded test files, cli err backtraces, etc
         option 'debug', 'run in debug mode'
       end
-      @cli.parse!(args)
     end
 
     def run
       begin
+        @cli.parse!(@args)
         Assert::AssertRunner.new(@cli.args, @cli.opts).run
       rescue CLIRB::HelpExit
         puts help

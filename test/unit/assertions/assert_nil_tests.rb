@@ -25,7 +25,7 @@ module Assert::Assertions
     end
 
     should "have a fail message with custom and generic explanations" do
-      exp = "#{@args[1]}\nExpected nil, not #{Assert::U.pp(@args[0])}."
+      exp = "#{@args[1]}\nExpected nil, not #{Assert::U.show(@args[0])}."
       assert_equal exp, subject.fail_results.first.message
     end
 
@@ -51,7 +51,7 @@ module Assert::Assertions
     end
 
     should "have a fail message with custom and generic explanations" do
-      exp = "#{@args[1]}\nExpected #{Assert::U.pp(@args[0])} to not be nil."
+      exp = "#{@args[1]}\nExpected #{Assert::U.show(@args[0])} to not be nil."
       assert_equal exp, subject.fail_results.first.message
     end
 

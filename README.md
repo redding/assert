@@ -250,17 +250,89 @@ Assert.configure do |config|
 end
 ```
 
-## Pretty Printing values in fail messages
+### Pretty Printing values in fail messages
 
-By default, Assert uses `inspect` when outputting value details in failure messages.  This can be overridden to use a custom processor using the `pp_processor` config setting.  Any processor values should respond to `to_proc` and their proc form should take an input value.  For example:
+By default, Assert uses `inspect` when outputting value details in failure messages.  At times you may want to pretty-print complex objects as their inspect value is not very human-readable.  You can tell Assert to pretty print the assertion objects instead.
+
+In user/local settings file:
 
 ```ruby
-Assert.config.pp_processor :to_s
-
-# --or--
-
-Asser.config.pp_processor Proc.new{ |input| "herp, #{input.inspect}, derp" }
+Assert.configure do |config|
+  config.pp_objects true
+end
 ```
+
+Using the CLI:
+
+```sh
+$ assert [-p|--pp-objects|--no-pp-objects]
+```
+
+#### Default pretty print processor
+
+Assert uses the stdlib's `PP.pp` to pretty print objects by default.  This is provided by the `Assert::Utils.stdlib_pp_proc` util.
+
+Using the default `inspect` (no pretty print):
+
+```
+$ assert
+
+FAIL: a test that fails should fail
+Expected nil, not {:now_usec=>164055, :string=>"a really really really really really really really really long string", :now=>Thu Nov 14 10:28:49 -0600 2013}.
+```
+
+Using the default pretty printing (`Assert::Utils.stdlib_pp_proc`):
+
+```
+$ assert -p
+
+FAIL: a test that fails should fail
+Expected nil, not
+{:now_usec=>45127,
+ :string=>
+  "a really really really really really really really really long string",
+ :now=>Thu Nov 14 10:28:35 -0600 2013}
+.
+```
+
+You can customize the width used by `PP.pp` by overriding the default `pp_proc` setting:
+
+```ruby
+# set PP.pp width used to 1
+Assert.configure do |config|
+  config.pp_proc Assert::Utils.stdlib_pp_proc(1)
+end
+```
+```
+$ assert -p
+
+FAIL: a test that fails should fail
+Expected nil, not
+{:now_usec=>
+  984698,
+ :string=>
+  "a really really really really really really really really long string",
+ :now=>
+  Thu Nov 14 10:30:52 -0600 2013}
+.
+```
+
+You can provide you own custom pretty-print processor if you like:
+
+```ruby
+# set not a very useful pretty print processor
+Assert.configure do |config|
+  config.pp_proc Proc.new{ |obj| "herp derp" }
+end
+```
+```
+$ assert -p
+
+FAIL: a test that fails should fail
+Expected nil, not herp derp.
+```
+
+Use this if you prefer a 3rd-party tool (like awesome_print or something) over the stdlib `PP.pp` for pretty printing.
 
 ## Viewing Test Results
 
