@@ -27,8 +27,8 @@ module Assert::Assertions
 
     should "have a fail message with custom and generic explanations" do
       exp = "#{@args[2]}\n"\
-            "Expected #{Assert::U.pp(@args[1])} (#{@args[1].object_id})"\
-            " to be the same as #{Assert::U.pp(@args[0])} (#{@args[0].object_id})."
+            "Expected #{Assert::U.show(@args[1])} (#{@args[1].object_id})"\
+            " to be the same as #{Assert::U.show(@args[0])} (#{@args[0].object_id})."
       assert_equal exp, subject.fail_results.first.message
     end
 
@@ -56,8 +56,8 @@ module Assert::Assertions
 
     should "have a fail message with custom and generic explanations" do
       exp = "#{@args[2]}\n"\
-            "#{Assert::U.pp(@args[1])} (#{@args[1].object_id}) not expected"\
-            " to be the same as #{Assert::U.pp(@args[0])} (#{@args[0].object_id})."
+            "#{Assert::U.show(@args[1])} (#{@args[1].object_id}) not expected"\
+            " to be the same as #{Assert::U.show(@args[0])} (#{@args[0].object_id})."
       assert_equal exp, subject.fail_results.first.message
     end
 

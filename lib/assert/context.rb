@@ -179,7 +179,7 @@ module Assert
       if assertion
         pass
       else
-        what = block_given? ? yield : "Failed assert: assertion was `#{Assert::U.pp(assertion)}`."
+        what = block_given? ? yield : "Failed assert: assertion was `#{Assert::U.show(assertion)}`."
         fail(fail_message(desc, what))
       end
     end
@@ -187,7 +187,7 @@ module Assert
     # the opposite of assert, check if the assertion is a false value, if so create a new pass
     # result, otherwise create a new fail result with the desc and it's what failed msg
     def assert_not(assertion, fail_desc = nil)
-      assert(!assertion, fail_desc){ "Failed assert_not: assertion was `#{Assert::U.pp(assertion)}`." }
+      assert(!assertion, fail_desc){ "Failed assert_not: assertion was `#{Assert::U.show(assertion)}`." }
     end
     alias_method :refute, :assert_not
 

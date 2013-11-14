@@ -25,7 +25,7 @@ module Assert::Assertions
     end
 
     should "have a fail message with custom and generic explanations" do
-      exp = "#{@args[2]}\nExpected #{Assert::U.pp(@args[1])} to match #{Assert::U.pp(@args[0])}."
+      exp = "#{@args[2]}\nExpected #{Assert::U.show(@args[1])} to match #{Assert::U.show(@args[0])}."
       assert_equal exp, subject.fail_results.first.message
     end
 
@@ -51,7 +51,7 @@ module Assert::Assertions
     end
 
     should "have a fail message with custom and generic explanations" do
-      exp = "#{@args[2]}\n#{Assert::U.pp(@args[1])} not expected to match #{Assert::U.pp(@args[0])}."
+      exp = "#{@args[2]}\n#{Assert::U.show(@args[1])} not expected to match #{Assert::U.show(@args[0])}."
       assert_equal exp, subject.fail_results.first.message
     end
 

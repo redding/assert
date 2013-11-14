@@ -1,7 +1,9 @@
 require 'assert'
+
 require 'assert/view/default_view'
 require 'assert/runner'
 require 'assert/suite'
+require 'assert/utils'
 
 module Assert
 
@@ -31,9 +33,9 @@ module Assert
     subject { Config }
 
     should have_imeths :suite, :view, :runner, :test_dir, :test_helper, :changed_files
-    should have_imeths :runner_seed, :pp_processor
-    should have_imeths :capture_output, :halt_on_fail, :changed_only, :debug
-    should have_imeths :apply
+    should have_imeths :runner_seed, :pp_proc
+    should have_imeths :capture_output, :halt_on_fail, :changed_only, :pp_objects
+    should have_imeths :debug, :apply
 
     should "default the view, suite, and runner" do
       assert_kind_of Assert::View::DefaultView, subject.view
@@ -41,9 +43,9 @@ module Assert
       assert_kind_of Assert::Runner, subject.runner
     end
 
-    should "default the optional settings" do
+    should "default the optional values" do
       assert_not_nil subject.runner_seed
-      assert_equal :inspect, subject.pp_processor
+      assert_not_nil subject.pp_proc
     end
 
   end

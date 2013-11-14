@@ -158,7 +158,7 @@ class Assert::Context
     end
 
     should "pp the assertion value in the fail message by default" do
-      exp_default_what = "Failed assert: assertion was `#{Assert::U.pp(false)}`."
+      exp_default_what = "Failed assert: assertion was `#{Assert::U.show(false)}`."
       result = subject.assert(false, @fail_desc)
 
       assert_equal [@fail_desc, exp_default_what].join("\n"), result.message
@@ -197,7 +197,7 @@ class Assert::Context
     end
 
     should "pp the assertion value in the fail message by default" do
-      exp_default_what = "Failed assert_not: assertion was `#{Assert::U.pp(true)}`."
+      exp_default_what = "Failed assert_not: assertion was `#{Assert::U.show(true)}`."
       result = subject.assert_not(true, @fail_desc)
 
       assert_equal [@fail_desc, exp_default_what].join("\n"), result.message

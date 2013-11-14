@@ -26,7 +26,7 @@ module Assert::Assertions
 
     should "have a fail message with custom and generic explanations" do
       exp = "#{@args[2]}\n"\
-            "Expected #{Assert::U.pp(@args[1])} to include #{Assert::U.pp(@args[0])}."
+            "Expected #{Assert::U.show(@args[1])} to include #{Assert::U.show(@args[0])}."
       assert_equal exp, subject.fail_results.first.message
     end
 
@@ -53,7 +53,7 @@ module Assert::Assertions
 
     should "have a fail message with custom and generic explanations" do
       exp = "#{@args[2]}\n"\
-            "Expected #{Assert::U.pp(@args[1])} to not include #{Assert::U.pp(@args[0])}."
+            "Expected #{Assert::U.show(@args[1])} to not include #{Assert::U.show(@args[0])}."
       assert_equal exp, subject.fail_results.first.message
     end
 
