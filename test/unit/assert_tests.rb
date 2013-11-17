@@ -33,7 +33,7 @@ module Assert
     subject { Config }
 
     should have_imeths :suite, :view, :runner, :test_dir, :test_helper, :changed_files
-    should have_imeths :runner_seed, :pp_proc
+    should have_imeths :runner_seed, :pp_proc, :use_diff_proc, :run_diff_proc
     should have_imeths :capture_output, :halt_on_fail, :changed_only, :pp_objects
     should have_imeths :debug, :apply
 
@@ -46,6 +46,8 @@ module Assert
     should "default the optional values" do
       assert_not_nil subject.runner_seed
       assert_not_nil subject.pp_proc
+      assert_not_nil subject.use_diff_proc
+      assert_not_nil subject.run_diff_proc
     end
 
   end

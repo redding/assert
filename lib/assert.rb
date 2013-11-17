@@ -34,7 +34,7 @@ module Assert
     end
 
     settings :view, :suite, :runner, :test_dir, :test_helper, :changed_files
-    settings :runner_seed, :pp_proc
+    settings :runner_seed, :pp_proc, :use_diff_proc, :run_diff_proc
     settings :capture_output, :halt_on_fail, :changed_only, :pp_objects, :debug
 
     def initialize
@@ -46,8 +46,10 @@ module Assert
       @changed_files = Assert::AssertRunner::DEFAULT_CHANGED_FILES_PROC
 
       # default option values
-      @runner_seed = begin; srand; srand % 0xFFFF; end.to_i
-      @pp_proc     = Assert::U.stdlib_pp_proc
+      @runner_seed   = begin; srand; srand % 0xFFFF; end.to_i
+      @pp_proc       = Assert::U.stdlib_pp_proc
+      @use_diff_proc = Assert::U.default_use_diff_proc
+      @run_diff_proc = Assert::U.syscmd_diff_proc
 
       # mode flags
       @capture_output = false
