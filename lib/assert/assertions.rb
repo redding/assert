@@ -28,13 +28,29 @@ module Assert
 
     def assert_equal(exp, act, desc = nil)
       assert(act == exp, desc) do
-        "Expected #{Assert::U.show(exp)}, not #{Assert::U.show(act)}."
+        exp_show = Assert::U.show_for_diff(exp)
+        act_show = Assert::U.show_for_diff(act)
+
+        if Assert.config.use_diff_proc.call(exp_show, act_show)
+          "Expected does not equal actual, diff:\n"\
+          "#{Assert.config.run_diff_proc.call(exp_show, act_show)}"
+        else
+          "Expected #{Assert::U.show(exp)}, not #{Assert::U.show(act)}."
+        end
       end
     end
 
     def assert_not_equal(exp, act, desc = nil)
       assert(act != exp, desc) do
-        "#{Assert::U.show(act)} not expected to equal #{Assert::U.show(exp)}."
+        exp_show = Assert::U.show_for_diff(exp)
+        act_show = Assert::U.show_for_diff(act)
+
+        if Assert.config.use_diff_proc.call(exp_show, act_show)
+          "Expected equals actual, diff:\n"\
+          "#{Assert.config.run_diff_proc.call(exp_show, act_show)}"
+        else
+          "#{Assert::U.show(act)} not expected to equal #{Assert::U.show(exp)}."
+        end
       end
     end
     alias_method :refute_equal, :assert_not_equal
