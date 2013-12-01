@@ -15,41 +15,43 @@ module Assert
 
     def assert_empty(collection, desc = nil)
       assert(collection.empty?, desc) do
-        "Expected #{Assert::U.show(collection)} to be empty."
+        "Expected #{Assert::U.show(collection, __assert_config__)} to be empty."
       end
     end
 
     def assert_not_empty(collection, desc = nil)
       assert(!collection.empty?, desc) do
-        "Expected #{Assert::U.show(collection)} to not be empty."
+        "Expected #{Assert::U.show(collection, __assert_config__)} to not be empty."
       end
     end
     alias_method :refute_empty, :assert_not_empty
 
     def assert_equal(exp, act, desc = nil)
       assert(act == exp, desc) do
-        exp_show = Assert::U.show_for_diff(exp)
-        act_show = Assert::U.show_for_diff(act)
+        c = __assert_config__
+        exp_show = Assert::U.show_for_diff(exp, c)
+        act_show = Assert::U.show_for_diff(act, c)
 
-        if Assert.config.use_diff_proc.call(exp_show, act_show)
+        if c.use_diff_proc.call(exp_show, act_show)
           "Expected does not equal actual, diff:\n"\
-          "#{Assert.config.run_diff_proc.call(exp_show, act_show)}"
+          "#{c.run_diff_proc.call(exp_show, act_show)}"
         else
-          "Expected #{Assert::U.show(exp)}, not #{Assert::U.show(act)}."
+          "Expected #{Assert::U.show(exp, c)}, not #{Assert::U.show(act, c)}."
         end
       end
     end
 
     def assert_not_equal(exp, act, desc = nil)
       assert(act != exp, desc) do
-        exp_show = Assert::U.show_for_diff(exp)
-        act_show = Assert::U.show_for_diff(act)
+        c = __assert_config__
+        exp_show = Assert::U.show_for_diff(exp, c)
+        act_show = Assert::U.show_for_diff(act, c)
 
-        if Assert.config.use_diff_proc.call(exp_show, act_show)
+        if c.use_diff_proc.call(exp_show, act_show)
           "Expected equals actual, diff:\n"\
-          "#{Assert.config.run_diff_proc.call(exp_show, act_show)}"
+          "#{c.run_diff_proc.call(exp_show, act_show)}"
         else
-          "#{Assert::U.show(act)} not expected to equal #{Assert::U.show(exp)}."
+          "#{Assert::U.show(act, c)} not expected to equal #{Assert::U.show(exp, c)}."
         end
       end
     end
@@ -57,27 +59,29 @@ module Assert
 
     def assert_file_exists(file_path, desc = nil)
       assert(File.exists?(File.expand_path(file_path)), desc) do
-        "Expected #{Assert::U.show(file_path)} to exist."
+        "Expected #{Assert::U.show(file_path, __assert_config__)} to exist."
       end
     end
 
     def assert_not_file_exists(file_path, desc = nil)
       assert(!File.exists?(File.expand_path(file_path)), desc) do
-        "Expected #{Assert::U.show(file_path)} to not exist."
+        "Expected #{Assert::U.show(file_path, __assert_config__)} to not exist."
       end
     end
     alias_method :refute_file_exists, :assert_not_file_exists
 
     def assert_includes(object, collection, desc = nil)
       assert(collection.include?(object), desc) do
-        "Expected #{Assert::U.show(collection)} to include #{Assert::U.show(object)}."
+        "Expected #{Assert::U.show(collection, __assert_config__)}"\
+        " to include #{Assert::U.show(object, __assert_config__)}."
       end
     end
     alias_method :assert_included, :assert_includes
 
     def assert_not_includes(object, collection, desc = nil)
       assert(!collection.include?(object), desc) do
-        "Expected #{Assert::U.show(collection)} to not include #{Assert::U.show(object)}."
+        "Expected #{Assert::U.show(collection, __assert_config__)}"\
+        " to not include #{Assert::U.show(object, __assert_config__)}."
       end
     end
     alias_method :assert_not_included, :assert_not_includes
@@ -86,26 +90,30 @@ module Assert
 
     def assert_instance_of(klass, instance, desc = nil)
       assert(instance.instance_of?(klass), desc) do
-        "Expected #{Assert::U.show(instance)} (#{instance.class}) to be an instance of #{klass}."
+        "Expected #{Assert::U.show(instance, __assert_config__)} (#{instance.class})"\
+        " to be an instance of #{klass}."
       end
     end
 
     def assert_not_instance_of(klass, instance, desc = nil)
       assert(!instance.instance_of?(klass), desc) do
-        "#{Assert::U.show(instance)} (#{instance.class}) not expected to be an instance of #{klass}."
+        "#{Assert::U.show(instance, __assert_config__)} (#{instance.class})"\
+        " not expected to be an instance of #{klass}."
       end
     end
     alias_method :refute_instance_of, :assert_not_instance_of
 
     def assert_kind_of(klass, instance, desc=nil)
       assert(instance.kind_of?(klass), desc) do
-        "Expected #{Assert::U.show(instance)} (#{instance.class}) to be a kind of #{klass}."
+        "Expected #{Assert::U.show(instance, __assert_config__)} (#{instance.class})"\
+        " to be a kind of #{klass}."
       end
     end
 
     def assert_not_kind_of(klass, instance, desc=nil)
       assert(!instance.kind_of?(klass), desc) do
-        "#{Assert::U.show(instance)} not expected to be a kind of #{klass}."
+        "#{Assert::U.show(instance, __assert_config__)}"\
+        " not expected to be a kind of #{klass}."
       end
     end
     alias_method :refute_kind_of, :assert_not_kind_of
@@ -113,25 +121,31 @@ module Assert
     def assert_match(exp, act, desc=nil)
       exp_regex = String === exp && String === act ? /#{Regexp.escape(exp)}/ : exp
       assert(act =~ exp_regex, desc) do
-        "Expected #{Assert::U.show(act)} to match #{Assert::U.show(exp)}."
+        "Expected #{Assert::U.show(act, __assert_config__)}"\
+        " to match #{Assert::U.show(exp, __assert_config__)}."
       end
     end
 
     def assert_not_match(exp, act, desc=nil)
       exp = String === exp && String === act ? /#{Regexp.escape(exp)}/ : exp
       assert(act !~ exp, desc) do
-        "#{Assert::U.show(act)} not expected to match #{Assert::U.show(exp)}."
+        "#{Assert::U.show(act, __assert_config__)}"\
+        " not expected to match #{Assert::U.show(exp, __assert_config__)}."
       end
     end
     alias_method :refute_match, :assert_not_match
     alias_method :assert_no_match, :assert_not_match
 
     def assert_nil(object, desc=nil)
-      assert(object.nil?, desc){ "Expected nil, not #{Assert::U.show(object)}." }
+      assert(object.nil?, desc) do
+        "Expected nil, not #{Assert::U.show(object, __assert_config__)}."
+      end
     end
 
     def assert_not_nil(object, desc=nil)
-      assert(!object.nil?, desc){ "Expected #{Assert::U.show(object)} to not be nil." }
+      assert(!object.nil?, desc) do
+        "Expected #{Assert::U.show(object, __assert_config__)} to not be nil."
+      end
     end
     alias_method :refute_nil, :assert_not_nil
 
@@ -152,14 +166,16 @@ module Assert
 
     def assert_respond_to(method, object, desc=nil)
       assert(object.respond_to?(method), desc) do
-        "Expected #{Assert::U.show(object)} (#{object.class}) to respond to `#{method}`."
+        "Expected #{Assert::U.show(object, __assert_config__)} (#{object.class})"\
+        " to respond to `#{method}`."
       end
     end
     alias_method :assert_responds_to, :assert_respond_to
 
     def assert_not_respond_to(method, object, desc=nil)
       assert(!object.respond_to?(method), desc) do
-        "#{Assert::U.show(object)} (#{object.class}) not expected to respond to `#{method}`."
+        "#{Assert::U.show(object, __assert_config__)} (#{object.class})"\
+        " not expected to respond to `#{method}`."
       end
     end
     alias_method :assert_not_responds_to, :assert_not_respond_to
@@ -168,15 +184,16 @@ module Assert
 
     def assert_same(exp, act, desc=nil)
       assert(act.equal?(exp), desc) do
-        "Expected #{Assert::U.show(act)} (#{act.object_id})"\
-        " to be the same as #{Assert::U.show(exp)} (#{exp.object_id})."
+        "Expected #{Assert::U.show(act, __assert_config__)} (#{act.object_id})"\
+        " to be the same as #{Assert::U.show(exp, __assert_config__)} (#{exp.object_id})."
       end
     end
 
     def assert_not_same(exp, act, desc=nil)
       assert(!act.equal?(exp), desc) do
-        "#{Assert::U.show(act)} (#{act.object_id})"\
-        " not expected to be the same as #{Assert::U.show(exp)} (#{exp.object_id})."
+        "#{Assert::U.show(act, __assert_config__)} (#{act.object_id})"\
+        " not expected to be the same as"\
+        " #{Assert::U.show(exp, __assert_config__)} (#{exp.object_id})."
       end
     end
     alias_method :refute_same, :assert_not_same

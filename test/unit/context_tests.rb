@@ -1,6 +1,7 @@
 require 'assert'
 require 'assert/context'
 
+require 'assert/config'
 require 'assert/utils'
 
 class Assert::Context
@@ -10,10 +11,7 @@ class Assert::Context
     setup do
       @test = Factory.test
       @context_class = @test.context_class
-      @context = @context_class.new(@test)
-    end
-    teardown do
-      TEST_ASSERT_SUITE.tests.clear
+      @context = @context_class.new(@test, @test.config)
     end
     subject{ @context }
 
@@ -115,16 +113,13 @@ class Assert::Context
   class HaltOnFailTests < FailTests
     desc "when halting on fails"
     setup do
-      @orig_halt_fail = Assert.config.halt_on_fail
+      @halt_config = Assert::Config.new(:halt_on_fail => true)
+      @context = @context_class.new(@test, @halt_config)
       @fail_msg = "something failed"
-    end
-    teardown do
-      Assert.config.halt_on_fail @orig_halt_fail
     end
     subject{ @result }
 
     should "raise an exception with the failure's message" do
-      Assert.config.halt_on_fail true
       err = begin
         @context.fail @fail_msg
       rescue Exception => exception
@@ -158,10 +153,10 @@ class Assert::Context
     end
 
     should "pp the assertion value in the fail message by default" do
-      exp_default_what = "Failed assert: assertion was `#{Assert::U.show(false)}`."
+      exp_def_what = "Failed assert: assertion was `#{Assert::U.show(false, @test.config)}`."
       result = subject.assert(false, @fail_desc)
 
-      assert_equal [@fail_desc, exp_default_what].join("\n"), result.message
+      assert_equal [@fail_desc, exp_def_what].join("\n"), result.message
     end
 
     should "use a custom fail message if one is given" do
@@ -197,10 +192,10 @@ class Assert::Context
     end
 
     should "pp the assertion value in the fail message by default" do
-      exp_default_what = "Failed assert_not: assertion was `#{Assert::U.show(true)}`."
+      exp_def_what = "Failed assert_not: assertion was `#{Assert::U.show(true, @test.config)}`."
       result = subject.assert_not(true, @fail_desc)
 
-      assert_equal [@fail_desc, exp_default_what].join("\n"), result.message
+      assert_equal [@fail_desc, exp_def_what].join("\n"), result.message
     end
 
     should "return a fail result given a \"truthy\" assertion" do
@@ -220,7 +215,7 @@ class Assert::Context
       @context_class = Factory.context_class do
         subject{ @something = expected }
       end
-      @context = @context_class.new
+      @context = @context_class.new(@test, @test.config)
       @subject = @context.subject
     end
     subject{ @subject }

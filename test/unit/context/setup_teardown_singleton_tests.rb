@@ -3,12 +3,16 @@ require 'assert/context'
 
 class Assert::Context
 
-  # `ContextSingletonTests` defined in `test/helper.rb`
-  class SetupTeardownSingletonTests < ContextSingletonTests
+  class SetupTeardownSingletonUnitTests < Assert::Context
     desc "setup and teardown"
+    setup do
+      @context_class = Factory.context_class
+    end
+    subject{ @context_class }
+
   end
 
-  class SetupTeardownOnceMethodsTests < SetupTeardownSingletonTests
+  class SetupTeardownOnceMethodsTests < SetupTeardownSingletonUnitTests
     desc "once methods"
     setup do
       block = @block = ::Proc.new{ something_once = true }
@@ -28,7 +32,7 @@ class Assert::Context
 
   end
 
-  class SetupTeardownMethodsTests < SetupTeardownSingletonTests
+  class SetupTeardownMethodsTests < SetupTeardownSingletonUnitTests
     desc "methods"
     setup do
       block = @block = ::Proc.new{ something = true }
@@ -45,7 +49,7 @@ class Assert::Context
 
   end
 
-  class SetupTeardownWithMethodNameTests < SetupTeardownSingletonTests
+  class SetupTeardownWithMethodNameTests < SetupTeardownSingletonUnitTests
     desc "methods given a method name"
     setup do
       method_name = @method_name = :something_amazing
@@ -62,7 +66,7 @@ class Assert::Context
 
   end
 
-  class SetupTeardownMultipleTests < SetupTeardownSingletonTests
+  class SetupTeardownMultipleTests < SetupTeardownSingletonUnitTests
     desc "with multiple calls"
     setup do
       parent_setup_block    = ::Proc.new{ self.setup_status    =  "the setup"    }

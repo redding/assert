@@ -1,8 +1,8 @@
-require 'assert/utils'
-require 'assert/suite'
 require 'assert/assertions'
-require 'assert/result'
 require 'assert/macros/methods'
+require 'assert/result'
+require 'assert/suite'
+require 'assert/utils'
 
 module Assert
   class Context
@@ -29,7 +29,8 @@ module Assert
         end
 
         ci = Suite::ContextInfo.new(self, nil, caller.first)
-        Assert.suite.tests << Test.new(method_name.to_s, ci, :code => method_name)
+        test = Test.new(method_name.to_s, ci, Assert.config, :code => method_name)
+        Assert.suite.tests << test
       end
     end
 
@@ -121,7 +122,7 @@ module Assert
           test_name = desc_or_macro
 
           # create a test from the given code block
-          Assert.suite.tests << Test.new(test_name, ci, &block)
+          Assert.suite.tests << Test.new(test_name, ci, Assert.config, &block)
         else
           test_eventually(desc_or_macro, called_from, first_caller || caller.first, &block)
         end
@@ -133,7 +134,7 @@ module Assert
         skip_block = block.nil? ? Proc.new { skip 'TODO' } : Proc.new { skip }
 
         # create a test from a proc that just skips
-        Assert.suite.tests << Test.new(test_name, ci, &skip_block)
+        Assert.suite.tests << Test.new(test_name, ci, Assert.config, &skip_block)
       end
       alias_method :test_skip, :test_eventually
 
@@ -168,8 +169,8 @@ module Assert
 
     end
 
-    def initialize(running_test = nil)
-      @__running_test__ = running_test
+    def initialize(running_test, config)
+      @__running_test__, @__assert_config__ = running_test, config
     end
 
     # check if the assertion is a truthy value, if so create a new pass result, otherwise
@@ -179,7 +180,11 @@ module Assert
       if assertion
         pass
       else
-        what = block_given? ? yield : "Failed assert: assertion was `#{Assert::U.show(assertion)}`."
+        what = if block_given?
+          yield
+        else
+          "Failed assert: assertion was `#{Assert::U.show(assertion, __assert_config__)}`."
+        end
         fail(fail_message(desc, what))
       end
     end
@@ -187,7 +192,9 @@ module Assert
     # the opposite of assert, check if the assertion is a false value, if so create a new pass
     # result, otherwise create a new fail result with the desc and it's what failed msg
     def assert_not(assertion, fail_desc = nil)
-      assert(!assertion, fail_desc){ "Failed assert_not: assertion was `#{Assert::U.show(assertion)}`." }
+      assert(!assertion, fail_desc) do
+        "Failed assert_not: assertion was `#{Assert::U.show(assertion, __assert_config__)}`."
+      end
     end
     alias_method :refute, :assert_not
 
@@ -208,9 +215,9 @@ module Assert
     end
 
     # adds a Fail result to the end of the test's results
-    # break test execution if Assert.config.halt_on_fail
+    # break test execution if assert is configured to halt on failures
     def fail(message = nil)
-      if Assert.config.halt_on_fail
+      if halt_on_fail?
         raise Result::TestFailure, message || ''
       else
         capture_result do |test, backtrace|
@@ -258,16 +265,28 @@ module Assert
 
     private
 
+    def halt_on_fail?
+      __assert_config__.halt_on_fail
+    end
+
     def capture_result
       if block_given?
-        result = yield @__running_test__, caller
-        @__running_test__.results << result
+        result = yield __running_test__, caller
+        __running_test__.results << result
         result
       end
     end
 
     def current_results
-      @__running_test__.results
+      __running_test__.results
+    end
+
+    def __running_test__
+      @__running_test__
+    end
+
+    def __assert_config__
+      @__assert_config__
     end
 
   end

@@ -15,6 +15,7 @@ module Assert::Assertions
         assert_same(object, object) # pass
         assert_same(*args)          # fail
       end
+      @c = @test.config
       @test.run
     end
     subject{ @test }
@@ -27,8 +28,8 @@ module Assert::Assertions
 
     should "have a fail message with custom and generic explanations" do
       exp = "#{@args[2]}\n"\
-            "Expected #{Assert::U.show(@args[1])} (#{@args[1].object_id})"\
-            " to be the same as #{Assert::U.show(@args[0])} (#{@args[0].object_id})."
+            "Expected #{Assert::U.show(@args[1], @c)} (#{@args[1].object_id})"\
+            " to be the same as #{Assert::U.show(@args[0], @c)} (#{@args[0].object_id})."
       assert_equal exp, subject.fail_results.first.message
     end
 
@@ -44,6 +45,7 @@ module Assert::Assertions
         assert_not_same(*args)             # fail
         assert_not_same(object, klass.new) # pass
       end
+      @c = @test.config
       @test.run
     end
     subject{ @test }
@@ -56,8 +58,8 @@ module Assert::Assertions
 
     should "have a fail message with custom and generic explanations" do
       exp = "#{@args[2]}\n"\
-            "#{Assert::U.show(@args[1])} (#{@args[1].object_id}) not expected"\
-            " to be the same as #{Assert::U.show(@args[0])} (#{@args[0].object_id})."
+            "#{Assert::U.show(@args[1], @c)} (#{@args[1].object_id}) not expected"\
+            " to be the same as #{Assert::U.show(@args[0], @c)} (#{@args[0].object_id})."
       assert_equal exp, subject.fail_results.first.message
     end
 

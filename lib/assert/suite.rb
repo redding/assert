@@ -18,9 +18,10 @@ module Assert
     # A suite is a set of tests to run.  When a test class subclasses
     # the Context class, that test class is pushed to the suite.
 
-    attr_accessor :tests, :test_methods, :start_time, :end_time
+    attr_accessor :config, :tests, :test_methods, :start_time, :end_time
 
-    def initialize
+    def initialize(config)
+      @config = config
       @tests = []
       @test_methods = []
       @start_time = 0

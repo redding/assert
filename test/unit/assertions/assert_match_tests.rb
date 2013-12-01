@@ -14,6 +14,7 @@ module Assert::Assertions
         assert_match(/a/, "a string") # pass
         assert_match(*args)           # fail
       end
+      @c = @test.config
       @test.run
     end
     subject{ @test }
@@ -25,7 +26,8 @@ module Assert::Assertions
     end
 
     should "have a fail message with custom and generic explanations" do
-      exp = "#{@args[2]}\nExpected #{Assert::U.show(@args[1])} to match #{Assert::U.show(@args[0])}."
+      exp = "#{@args[2]}\nExpected #{Assert::U.show(@args[1], @c)}"\
+            " to match #{Assert::U.show(@args[0], @c)}."
       assert_equal exp, subject.fail_results.first.message
     end
 
@@ -40,6 +42,7 @@ module Assert::Assertions
         assert_not_match(*args)             # fail
         assert_not_match("not", "a string") # pass
       end
+      @c = @test.config
       @test.run
     end
     subject{ @test }
@@ -51,7 +54,8 @@ module Assert::Assertions
     end
 
     should "have a fail message with custom and generic explanations" do
-      exp = "#{@args[2]}\n#{Assert::U.show(@args[1])} not expected to match #{Assert::U.show(@args[0])}."
+      exp = "#{@args[2]}\n#{Assert::U.show(@args[1], @c)}"\
+            " not expected to match #{Assert::U.show(@args[0], @c)}."
       assert_equal exp, subject.fail_results.first.message
     end
 

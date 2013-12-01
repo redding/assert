@@ -2,6 +2,7 @@ require 'assert'
 require 'assert/utils'
 
 require 'tempfile'
+require 'assert/config'
 
 module Assert::Utils
 
@@ -21,28 +22,21 @@ module Assert::Utils
   class ShowTests < UnitTests
     desc "`show`"
     setup do
-      @orig_pp_objs = Assert.config.pp_objects
-      @orig_pp_proc = Assert.config.pp_proc
-      @new_pp_proc  = Proc.new{ |input| 'herp derp' }
-      Assert.config.pp_objects(false)
-    end
-    teardown do
-      Assert.config.pp_proc(@orig_pp_proc)
-      Assert.config.pp_objects(@orig_pp_objs)
+      @pp_config = Assert::Config.new({
+        :pp_objects => true,
+        :pp_proc => Proc.new{ |input| 'herp derp' }
+      })
     end
 
     should "use `inspect` to show objs when `pp_objects` setting is false" do
       @objs.each do |obj|
-        assert_equal obj.inspect, subject.show(obj)
+        assert_equal obj.inspect, subject.show(obj, Factory.modes_off_config)
       end
     end
 
     should "use `pp_proc` to show objs when `pp_objects` setting is true" do
-      Assert.config.pp_objects(true)
-      Assert.config.pp_proc(@new_pp_proc)
-
       @objs.each do |obj|
-        assert_equal @new_pp_proc.call(obj), subject.show(obj)
+        assert_equal @pp_config.pp_proc.call(obj), subject.show(obj, @pp_config)
       end
     end
 
@@ -51,24 +45,18 @@ module Assert::Utils
   class ShowForDiffTests < ShowTests
     desc "`show_for_diff`"
     setup do
-      @orig_pp_objects = Assert.config.pp_objects
-      Assert.config.pp_objects(false)
-
       @w_newlines = { :string => "herp derp, derp herp\nherpderpedia" }
       @w_obj_id = Struct.new(:a, :b).new('aye', 'bee')
-    end
-    teardown do
-      Assert.config.pp_objects(@orig_pp_objects)
     end
 
     should "call show, escaping newlines" do
       exp_out = "{:string=>\"herp derp, derp herp\nherpderpedia\"}"
-      assert_equal exp_out, subject.show_for_diff(@w_newlines)
+      assert_equal exp_out, subject.show_for_diff(@w_newlines, Factory.modes_off_config)
     end
 
     should "make any obj ids generic" do
       exp_out = "#<struct #<Class:0xXXXXXX> a=\"aye\", b=\"bee\">"
-      assert_equal exp_out, subject.show_for_diff(@w_obj_id)
+      assert_equal exp_out, subject.show_for_diff(@w_obj_id, Factory.modes_off_config)
     end
 
   end

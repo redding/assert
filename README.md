@@ -226,11 +226,11 @@ git ls-files --others --exclude-standard  # added files
 
 The git cmds have ` -- #{test_paths}` appended to them to scope their results to just the test paths specified by the CLI and are run together using ` && `.
 
-This, of course, assumes you are working in a git repository.  If you are not or you want to use custom logic to determine the changed files, configure a custom proc.  The proc should take a single parameter which is an array of test paths specified by the CLI.
+This, of course, assumes you are working in a git repository.  If you are not or you want to use custom logic to determine the changed files, configure a custom proc.  The proc should take two parameters: the config and an array of test paths specified by the CLI.
 
 ```ruby
 Assert.configure do |config|
-  config.changed_proc Proc.new do |test_paths|
+  config.changed_proc Proc.new do |config, test_paths|
     `git diff --name-only master -- #{test_paths.join(' ')}`.split("\n")  # or whatever
   end
 end

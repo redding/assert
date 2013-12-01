@@ -12,7 +12,7 @@ module Assert::View::Helpers
     end
 
     def runner_seed
-      Assert.config.runner_seed
+      self.config.runner_seed
     end
 
     def count(type)

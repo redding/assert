@@ -14,6 +14,7 @@ module Assert::Assertions
         assert_empty([])    # pass
         assert_empty(*args) # fail
       end
+      @c = @test.config
       @test.run
     end
     subject{ @test }
@@ -25,7 +26,7 @@ module Assert::Assertions
     end
 
     should "have a fail message with custom and generic explanations" do
-      exp = "#{@args[1]}\nExpected #{Assert::U.show(@args[0])} to be empty."
+      exp = "#{@args[1]}\nExpected #{Assert::U.show(@args[0], @c)} to be empty."
       assert_equal exp, subject.fail_results.first.message
     end
 
@@ -40,6 +41,7 @@ module Assert::Assertions
         assert_not_empty([ 1 ]) # pass
         assert_not_empty(*args) # fail
       end
+      @c = @test.config
       @test.run
     end
     subject{ @test }
@@ -51,7 +53,7 @@ module Assert::Assertions
     end
 
     should "have a fail message with custom and generic explanations" do
-      exp = "#{@args[1]}\nExpected #{Assert::U.show(@args[0])} to not be empty."
+      exp = "#{@args[1]}\nExpected #{Assert::U.show(@args[0], @c)} to not be empty."
       assert_equal exp, subject.fail_results.first.message
     end
 

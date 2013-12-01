@@ -14,6 +14,7 @@ module Assert::Assertions
         assert_nil(nil)   # pass
         assert_nil(*args) # fail
       end
+      @c = @test.config
       @test.run
     end
     subject{ @test }
@@ -25,7 +26,7 @@ module Assert::Assertions
     end
 
     should "have a fail message with custom and generic explanations" do
-      exp = "#{@args[1]}\nExpected nil, not #{Assert::U.show(@args[0])}."
+      exp = "#{@args[1]}\nExpected nil, not #{Assert::U.show(@args[0], @c)}."
       assert_equal exp, subject.fail_results.first.message
     end
 
@@ -40,6 +41,7 @@ module Assert::Assertions
         assert_not_nil(1)     # pass
         assert_not_nil(*args) # fail
       end
+      @c = @test.config
       @test.run
     end
     subject{ @test }
@@ -51,7 +53,7 @@ module Assert::Assertions
     end
 
     should "have a fail message with custom and generic explanations" do
-      exp = "#{@args[1]}\nExpected #{Assert::U.show(@args[0])} to not be nil."
+      exp = "#{@args[1]}\nExpected #{Assert::U.show(@args[0], @c)} to not be nil."
       assert_equal exp, subject.fail_results.first.message
     end
 

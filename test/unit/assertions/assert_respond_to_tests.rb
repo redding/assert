@@ -14,6 +14,7 @@ module Assert::Assertions
         assert_respond_to(:abs, 1) # pass
         assert_respond_to(*args)   # fail
       end
+      @c = @test.config
       @test.run
     end
     subject{ @test }
@@ -26,7 +27,7 @@ module Assert::Assertions
 
     should "have a fail message with custom and generic explanations" do
       exp = "#{@args[2]}\n"\
-            "Expected #{Assert::U.show(@args[1])} (#{@args[1].class})"\
+            "Expected #{Assert::U.show(@args[1], @c)} (#{@args[1].class})"\
             " to respond to `#{@args[0]}`."
       assert_equal exp, subject.fail_results.first.message
     end
@@ -42,6 +43,7 @@ module Assert::Assertions
         assert_not_respond_to(*args)     # fail
         assert_not_respond_to(:abs, "1") # pass
       end
+      @c = @test.config
       @test.run
     end
     subject{ @test }
@@ -54,7 +56,7 @@ module Assert::Assertions
 
     should "have a fail message with custom and generic explanations" do
       exp = "#{@args[2]}\n"\
-            "#{Assert::U.show(@args[1])} (#{@args[1].class})"\
+            "#{Assert::U.show(@args[1], @c)} (#{@args[1].class})"\
             " not expected to respond to `#{@args[0]}`."
       assert_equal exp, subject.fail_results.first.message
     end

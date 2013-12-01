@@ -50,7 +50,7 @@ module Assert
     def run
       begin
         @cli.parse!(@args)
-        Assert::AssertRunner.new(@cli.args, @cli.opts).run
+        Assert::AssertRunner.new(Assert.config, @cli.args, @cli.opts).run
       rescue CLIRB::HelpExit
         puts help
       rescue CLIRB::VersionExit
