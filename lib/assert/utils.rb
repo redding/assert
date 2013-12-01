@@ -35,7 +35,7 @@ module Assert
 
     def self.stdlib_pp_proc(width = nil)
       require 'pp'
-      Proc.new{ |obj| "\n#{PP.pp(obj, '', width || 79).strip}\n" }
+      Proc.new{ |obj| PP.pp(obj, '', width || 79).strip }
     end
 
     # Return true if if either show output has newlines or is bigger than 29 chars
@@ -52,7 +52,7 @@ module Assert
         result = ""
         tempfile('exp_show_output', exp_show_output) do |a|
           tempfile('act_show_output', act_show_output) do |b|
-            result = `#{syscmd} #{a.path} #{b.path}`
+            result = `#{syscmd} #{a.path} #{b.path}`.strip
             result.sub!(/^\-\-\- .+/, "--- expected")
             result.sub!(/^\+\+\+ .+/, "+++ actual")
             result = "--- expected\n+++ actual" if result.empty?
