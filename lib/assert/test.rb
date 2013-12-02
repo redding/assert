@@ -10,10 +10,12 @@ module Assert
     attr_reader :name, :code, :context_info
     attr_accessor :results, :output
 
-    def initialize(name, suite_context_info, code = nil, &block)
+    def initialize(name, suite_context_info, opts = nil, &block)
       @context_info = suite_context_info
       @name = name_from_context(name)
-      @code = (code || block)
+
+      o = opts || {}
+      @code = (o[:code] || block || Proc.new{})
       @results = Result::Set.new
       @output = ""
     end
