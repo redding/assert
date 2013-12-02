@@ -29,7 +29,7 @@ module Assert
         end
 
         ci = Suite::ContextInfo.new(self, nil, caller.first)
-        Assert.suite.tests << Test.new(method_name.to_s, ci, method_name)
+        Assert.suite.tests << Test.new(method_name.to_s, ci, :code => method_name)
       end
     end
 

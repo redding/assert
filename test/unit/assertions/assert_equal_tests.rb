@@ -5,7 +5,18 @@ require 'assert/utils'
 
 module Assert::Assertions
 
-  class AssertEqualTests < Assert::Context
+  class AssertEqualUnitTests < Assert::Context
+    setup do
+      @orig_pp_objects = Assert.config.pp_objects
+      Assert.config.pp_objects(false)
+    end
+    teardown do
+      Assert.config.pp_objects(@orig_pp_objects)
+    end
+
+  end
+
+  class AssertEqualTests < AssertEqualUnitTests
     desc "`assert_equal`"
     setup do
       desc = @desc = "assert equal fail desc"
@@ -31,7 +42,7 @@ module Assert::Assertions
 
   end
 
-  class AssertNotEqualTests < Assert::Context
+  class AssertNotEqualTests < AssertEqualUnitTests
     desc "`assert_not_equal`"
     setup do
       desc = @desc = "assert not equal fail desc"
@@ -58,7 +69,7 @@ module Assert::Assertions
 
   end
 
-  class DiffTests < Assert::Context
+  class DiffTests < AssertEqualUnitTests
     desc "with objects that should use diff when showing"
     setup do
       @exp_obj = "I'm a\nstring"

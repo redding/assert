@@ -51,8 +51,14 @@ module Assert::Utils
   class ShowForDiffTests < ShowTests
     desc "`show_for_diff`"
     setup do
+      @orig_pp_objects = Assert.config.pp_objects
+      Assert.config.pp_objects(false)
+
       @w_newlines = { :string => "herp derp, derp herp\nherpderpedia" }
       @w_obj_id = Struct.new(:a, :b).new('aye', 'bee')
+    end
+    teardown do
+      Assert.config.pp_objects(@orig_pp_objects)
     end
 
     should "call show, escaping newlines" do
