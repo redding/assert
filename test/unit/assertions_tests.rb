@@ -3,12 +3,12 @@ require 'assert/assertions'
 
 module Assert::Assertions
 
-  class BasicTests < Assert::Context
-
+  class UnitTests < Assert::Context
     desc "An assert context"
     setup do
       @context_class = Factory.context_class
-      @context = @context_class.new
+      @test = Factory.test
+      @context = @context_class.new(@test, @test.config)
     end
     subject{ @context }
 
@@ -32,7 +32,7 @@ module Assert::Assertions
 
   end
 
-  class IgnoredTests < BasicTests
+  class IgnoredTests < UnitTests
     desc "ignored assertions helpers"
     setup do
       @tests = Assert::Assertions::IGNORED_ASSERTION_HELPERS.map do |helper|

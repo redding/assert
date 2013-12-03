@@ -3,8 +3,12 @@ require 'assert/context'
 
 class Assert::Context
 
-  # `ContextSingletonTests` defined in `test/helper.rb`
-  class BasicSingletonTests < ContextSingletonTests
+  class BasicSingletonUnitTests < Assert::Context
+    setup do
+      @context_class = Factory.context_class
+    end
+    subject{ @context_class }
+
     should have_instance_methods :setup_once, :before_once, :startup
     should have_instance_methods :teardown_once, :after_once, :shutdown
     should have_instance_methods :setup, :before, :setups
@@ -15,7 +19,7 @@ class Assert::Context
 
   end
 
-  class DescriptionsTests < BasicSingletonTests
+  class DescriptionsTests < BasicSingletonUnitTests
     desc "`descriptions` method"
     setup do
       descs = @descs = [ "something amazing", "it really is" ]
@@ -25,13 +29,12 @@ class Assert::Context
     end
 
     should "return a collection containing any descriptions defined on the class" do
-      context_descs = subject.send :descriptions
-      assert_equal @descs, context_descs
+      assert_equal @descs, subject.send(:descriptions)
     end
 
   end
 
-  class DescriptionTests < BasicSingletonTests
+  class DescriptionTests < BasicSingletonUnitTests
     desc "`description` method"
     setup do
       parent_text = @parent_desc = "parent description"
@@ -51,7 +54,7 @@ class Assert::Context
 
   end
 
-  class SubjectFromLocalTests < BasicSingletonTests
+  class SubjectFromLocalTests < BasicSingletonUnitTests
     desc "subject method using local context"
     setup do
       subject_block = @subject_block = ::Proc.new{ @something }
@@ -67,7 +70,7 @@ class Assert::Context
 
   end
 
-  class SubjectFromParentTests < BasicSingletonTests
+  class SubjectFromParentTests < BasicSingletonUnitTests
     desc "subject method using parent context"
     setup do
       parent_block = @parent_block = ::Proc.new{ @something }

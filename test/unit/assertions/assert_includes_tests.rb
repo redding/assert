@@ -14,6 +14,7 @@ module Assert::Assertions
         assert_includes(1, [ 1 ]) # pass
         assert_includes(*args)    # fail
       end
+      @c = @test.config
       @test.run
     end
     subject{ @test }
@@ -26,7 +27,8 @@ module Assert::Assertions
 
     should "have a fail message with custom and generic explanations" do
       exp = "#{@args[2]}\n"\
-            "Expected #{Assert::U.show(@args[1])} to include #{Assert::U.show(@args[0])}."
+            "Expected #{Assert::U.show(@args[1], @c)}"\
+            " to include #{Assert::U.show(@args[0], @c)}."
       assert_equal exp, subject.fail_results.first.message
     end
 
@@ -41,6 +43,7 @@ module Assert::Assertions
         assert_not_included(2, [ 1 ]) # pass
         assert_not_included(*args)    # fail
       end
+      @c = @test.config
       @test.run
     end
     subject{ @test }
@@ -53,7 +56,8 @@ module Assert::Assertions
 
     should "have a fail message with custom and generic explanations" do
       exp = "#{@args[2]}\n"\
-            "Expected #{Assert::U.show(@args[1])} to not include #{Assert::U.show(@args[0])}."
+            "Expected #{Assert::U.show(@args[1], @c)}"\
+            " to not include #{Assert::U.show(@args[0], @c)}."
       assert_equal exp, subject.fail_results.first.message
     end
 

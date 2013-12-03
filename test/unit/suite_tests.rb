@@ -5,17 +5,18 @@ require 'test/support/inherited_stuff'
 
 class Assert::Suite
 
-  class BasicTests < Assert::Context
-    desc "an basic suite"
+  class UnitTests < Assert::Context
+    desc "Assert::Suite"
     setup do
-      @suite = Assert::Suite.new
+      @config = Factory.modes_off_config
+      @suite = Assert::Suite.new(@config)
     end
     subject{ @suite }
 
+    should have_accessors :config, :tests, :test_methods, :start_time, :end_time
     should have_imeths :ordered_tests, :results, :ordered_results, :run_time
     should have_imeths :count, :test_count, :result_count
     should have_imeths :setup, :startup, :teardown, :shutdown
-    should have_accessors :tests, :test_methods, :start_time, :end_time
 
     should "determine a klass' local public test methods" do
       exp = ["test_subclass_stuff", "test_mixin_stuff", "test_repeated"].sort
@@ -27,13 +28,13 @@ class Assert::Suite
       assert_equal 0, subject.run_time
     end
 
+
   end
 
-  class WithTestsTests < Assert::Context
+  class WithTestsTests < UnitTests
     desc "a suite with tests"
     setup do
       ci = Factory.context_info(Factory.context_class)
-      @suite = Assert::Suite.new
       @suite.tests = [
         Factory.test("should nothing", ci){ },
         Factory.test("should pass",    ci){ assert(1==1); refute(1==0) },
@@ -44,7 +45,6 @@ class Assert::Suite
       ]
       @suite.tests.each(&:run)
     end
-    subject{ @suite }
 
     should "build test instances to run" do
       assert_kind_of Assert::Test, subject.tests.first
@@ -121,37 +121,33 @@ class Assert::Suite
 
   end
 
-  class SetupTests < Assert::Context
+  class SetupTests < UnitTests
     desc "a suite with a setup block"
     setup do
       @setup_status = nil
-      @suite = Assert::Suite.new
       @setup_blocks = []
       @setup_blocks << ::Proc.new{ @setup_status = "setup" }
       @setup_blocks << ::Proc.new{ @setup_status += " has been run" }
       @setup_blocks.each{ |setup_block| @suite.setup(&setup_block) }
     end
-    subject{ @setup_status }
 
     should "set the setup status to the correct message" do
-      @suite.setup
-      assert_equal "setup has been run", subject
+      subject.setup
+      assert_equal "setup has been run", @setup_status
     end
 
     should "return the setup blocks with the #setups method" do
-      setups = @suite.send(:setups)
       @setup_blocks.each do |setup_block|
-        assert_includes setup_block, setups
+        assert_includes setup_block, subject.send(:setups)
       end
     end
 
   end
 
-  class TeardownTests < Assert::Context
+  class TeardownTests < UnitTests
     desc "a suite with a teardown"
     setup do
       @teardown_status = nil
-      @suite = Assert::Suite.new
       @teardown_blocks = []
       @teardown_blocks << ::Proc.new{ @teardown_status += " has been run" }
       @teardown_blocks << ::Proc.new{ @teardown_status = "teardown" }
@@ -159,20 +155,19 @@ class Assert::Suite
     end
 
     should "set the teardown status to the correct message" do
-      @suite.teardown
+      subject.teardown
       assert_equal "teardown has been run", @teardown_status
     end
 
     should "return the teardown blocks with the #teardowns method" do
-      teardowns = @suite.send(:teardowns)
       @teardown_blocks.each do |setup_block|
-        assert_includes setup_block, teardowns
+        assert_includes setup_block, subject.send(:teardowns)
       end
     end
 
   end
 
-  class ContextInfoTests < Assert::Context
+  class ContextInfoTests < UnitTests
     desc "a suite's context info"
     setup do
       @caller = caller

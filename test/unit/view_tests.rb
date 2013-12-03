@@ -3,17 +3,18 @@ require 'assert/suite'
 require 'assert/view/base'
 require 'stringio'
 
-module Assert::View
+class Assert::View::Base
 
   class UnitTests < Assert::Context
-    desc "the base view"
+    desc "Assert::View::Base"
     setup do
-      @view = Assert::View::Base.new(StringIO.new("", "w+"), Assert::Suite.new)
+      @config = Factory.modes_off_config
+      @view = Assert::View::Base.new(StringIO.new("", "w+"), @config, @config.suite)
     end
     subject{ @view }
 
     # accessors, base methods
-    should have_imeths :view, :suite, :fire
+    should have_imeths :view, :config, :suite, :fire
     should have_imeths :before_load, :after_load, :on_start, :on_finish
     should have_imeths :before_test, :after_test, :on_result
 

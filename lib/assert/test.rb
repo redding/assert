@@ -7,17 +7,18 @@ module Assert
     # a Test is some code/method to run in the scope of a Context.  After a
     # a test runs, it should have some assertions which are its results.
 
-    attr_reader :name, :code, :context_info
+    attr_reader :name, :context_info, :config, :code
     attr_accessor :results, :output
 
-    def initialize(name, suite_context_info, opts = nil, &block)
-      @context_info = suite_context_info
-      @name = name_from_context(name)
+    def initialize(name, suite_ci, config, opts = nil, &block)
+      @context_info = suite_ci
+      @name, @config = name_from_context(name), config
 
       o = opts || {}
-      @code = (o[:code] || block || Proc.new{})
+      @code = o[:code] || block || Proc.new{}
+
       @results = Result::Set.new
-      @output = ""
+      @output  = ""
     end
 
     def context_class
@@ -27,7 +28,7 @@ module Assert
     def run(&result_callback)
       # setup the a new test run
       @results = Result::Set.new(result_callback)
-      run_scope = self.context_class.new(self)
+      run_scope = self.context_class.new(self, self.config)
 
       # run the test, capturing its output
       begin
@@ -116,7 +117,7 @@ module Assert
     end
 
     def capture_output(&block)
-      if Assert.config.capture_output == true
+      if self.config.capture_output == true
         orig_stdout = $stdout.clone
         $stdout = capture_io
         block.call

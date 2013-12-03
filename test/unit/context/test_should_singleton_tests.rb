@@ -3,8 +3,7 @@ require 'assert/context'
 
 class Assert::Context
 
-  # `ContextSingletonTests` defined in `test/helper.rb`
-  class TestShouldSingletonTests < ContextSingletonTests
+  class TestShouldSingletonUnitTests < Assert::Context
     desc "test and should methods"
     setup do
       @test_count_before = Assert.suite.tests.size
@@ -148,7 +147,8 @@ class Assert::Context
     def build_eval_context(&build_block)
       context_class = Factory.context_class &build_block
       context_info  = Factory.context_info(context_class)
-      context_class.new(Factory.test("whatever", context_info))
+      test = Factory.test("whatever", context_info)
+      context_class.new(test, test.config)
     end
 
     def capture_err(err_class, &block)

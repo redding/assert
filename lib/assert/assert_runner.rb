@@ -7,7 +7,7 @@ module Assert
     USER_SETTINGS_FILE  = ".assert/init.rb"
     LOCAL_SETTINGS_FILE = ".assert.rb"
 
-    DEFAULT_CHANGED_FILES_PROC = Proc.new do |test_paths|
+    DEFAULT_CHANGED_FILES_PROC = Proc.new do |config, test_paths|
       # use git to determine which files have changes
       files = []
       cmd = [
@@ -18,11 +18,14 @@ module Assert
       Assert::CLI.bench('Load only changed files') do
         files = `#{cmd}`.split("\n")
       end
-      puts Assert::CLI.debug_msg("  `#{cmd}`") if Assert.config.debug
+      puts Assert::CLI.debug_msg("  `#{cmd}`") if config.debug
       files
     end
 
-    def initialize(test_paths, test_options)
+    attr_reader :config
+
+    def initialize(config, test_paths, test_options)
+      @config = config
       Assert::CLI.bench('Apply settings') do
         apply_user_settings
         apply_local_settings
@@ -30,30 +33,30 @@ module Assert
         apply_env_settings
       end
 
-      files = test_files(test_paths.empty? ? [*Assert.config.test_dir] : test_paths)
-      init(files, path_of(Assert.config.test_dir, files.first))
+      files = test_files(test_paths.empty? ? [*self.config.test_dir] : test_paths)
+      init(files, path_of(self.config.test_dir, files.first))
     end
 
     def init(test_files, test_dir)
       # load any test helper file
-      if test_dir && (h = File.join(test_dir, Config.test_helper)) && File.exists?(h)
+      if test_dir && (h = File.join(test_dir, self.config.test_helper)) && File.exists?(h)
         Assert::CLI.bench('Require test helper'){ require h }
       end
 
       # load the test files
-      Assert.view.fire(:before_load, test_files)
+      self.config.view.fire(:before_load, test_files)
       Assert::CLI.bench("Require #{test_files.count} test files") do
         test_files.each{ |p| require p }
       end
-      if Assert.config.debug
+      if self.config.debug
         puts Assert::CLI.debug_msg("Test files:")
         test_files.each{ |f| puts Assert::CLI.debug_msg("  #{f}") }
       end
-      Assert.view.fire(:after_load)
+      self.config.view.fire(:after_load)
     end
 
     def run
-      Assert.runner.run(Assert.suite, Assert.view)
+      self.config.runner.run(self.config.suite, self.config.view)
     end
 
     protected
@@ -67,19 +70,17 @@ module Assert
     end
 
     def apply_option_settings(options)
-      Assert.config.apply(options)
+      self.config.apply(options)
     end
 
     def apply_env_settings
-      Assert.configure do |c|
-        c.runner_seed ENV['ASSERT_RUNNER_SEED'].to_i if ENV['ASSERT_RUNNER_SEED']
-      end
+      self.config.runner_seed ENV['ASSERT_RUNNER_SEED'].to_i if ENV['ASSERT_RUNNER_SEED']
     end
 
     private
 
     def test_files(test_paths)
-      file_paths = if Assert.config.changed_only
+      file_paths = if self.config.changed_only
         changed_test_files(test_paths)
       else
         globbed_test_files(test_paths)
@@ -89,7 +90,7 @@ module Assert
     end
 
     def changed_test_files(test_paths)
-      globbed_test_files(Assert.config.changed_proc.call(test_paths))
+      globbed_test_files(self.config.changed_proc.call(self.config, test_paths))
     end
 
     def globbed_test_files(test_paths)

@@ -7,8 +7,8 @@ module Assert
     # show objects in a human-readable manner.  Either inspects or pretty-prints
     # them depending on settings.
 
-    def self.show(obj)
-      out = Assert.config.pp_objects ? Assert.config.pp_proc.call(obj) : obj.inspect
+    def self.show(obj, config)
+      out = config.pp_objects ? config.pp_proc.call(obj) : obj.inspect
       out = out.encode(Encoding.default_external) if defined?(Encoding)
       out
     end
@@ -17,8 +17,8 @@ module Assert
     # expands on the basic `show` util by escaping newlines and making object id
     # hex-values generic.
 
-    def self.show_for_diff(obj)
-      show(obj).gsub(/\\n/, "\n").gsub(/:0x[a-fA-F0-9]{4,}/m, ':0xXXXXXX')
+    def self.show_for_diff(obj, config)
+      show(obj, config).gsub(/\\n/, "\n").gsub(/:0x[a-fA-F0-9]{4,}/m, ':0xXXXXXX')
     end
 
     # open a tempfile and yield it

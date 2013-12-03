@@ -1,3 +1,5 @@
+require 'assert/config'
+require 'assert/suite'
 require 'assert/result'
 
 module Assert::View
@@ -17,13 +19,29 @@ module Assert::View
     option 'skip_abbrev',   'S'
     option 'error_abbrev',  'E'
 
-    def initialize(output_io, suite=nil)
-      @output_io, @suite = output_io, suite
+    attr_reader :config, :suite
+
+    def initialize(output_io, *args)
+      @output_io = output_io
+      @suite, @config = [
+        args.last.kind_of?(Assert::Suite)  ? args.pop : nil,
+        args.last.kind_of?(Assert::Config) ? args.pop : nil
+      ]
+
       @output_io.sync = true if @output_io.respond_to?(:sync=)
     end
 
-    def view; self; end
-    def suite; @suite || Assert.suite; end
+    def view
+      self
+    end
+
+    def config
+      @config ||= Assert.config
+    end
+
+    def suite
+      @suite ||= Assert.suite
+    end
 
     def fire(callback, *args)
       self.send(callback, *args)

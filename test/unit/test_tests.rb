@@ -1,6 +1,8 @@
 require 'assert'
 require 'assert/test'
 
+require 'assert/config'
+
 class Assert::Test
 
   class BasicTests < Assert::Context
@@ -11,12 +13,9 @@ class Assert::Test
       @context_info  = Factory.context_info(@context_class)
       @test = Factory.test("should do something amazing", @context_info, :code => @test_code)
     end
-    teardown do
-      TEST_ASSERT_SUITE.tests.clear
-    end
     subject{ @test }
 
-    should have_readers :name, :code, :context_info
+    should have_readers :name, :context_info, :config, :code
     should have_accessors :results, :output
     should have_imeths :run, :result_count, :context_class
     should have_imeths *Assert::Result.types.keys.collect{ |k| "#{k}_results" }
@@ -26,9 +25,22 @@ class Assert::Test
       assert_equal exp_name, subject.name
     end
 
-    should "know it's context class and code" do
+    should "know it's context class" do
       assert_equal @context_class, subject.context_class
+    end
+
+    should "know its config" do
+      cust_config = Assert::Config.new
+      assert_equal cust_config, Factory.test(cust_config).config
+    end
+
+    should "get its code from any passed opt, falling back on any given block" do
       assert_equal @test_code, subject.code
+
+      given_block = Proc.new{ assert(false) }
+      assert_equal given_block, Factory.test(&given_block).code
+
+      assert_kind_of Proc, Factory.test.code
     end
 
     should "have zero results before running" do
@@ -238,15 +250,11 @@ class Assert::Test
   class CaptureOutTests < BasicTests
     desc "when capturing std out"
     setup do
-      @test = Factory.test("stdout") do
+      @capture_config = Assert::Config.new(:capture_output => true)
+      @test = Factory.test("stdout", @capture_config) do
         puts "std out from the test"
         assert true
       end
-      @orig_capture = Assert.config.capture_output
-      Assert.config.capture_output true
-    end
-    teardown do
-      Assert.config.capture_output @orig_capture
     end
 
     should "capture any io from the test" do
@@ -259,7 +267,7 @@ class Assert::Test
   class FullCaptureOutTests < CaptureOutTests
     desc "across setup, teardown, and meth calls"
     setup do
-      @test = Factory.test("fullstdouttest") do
+      @test = Factory.test("fullstdouttest", @capture_config) do
         puts "std out from the test"
         assert a_method_an_assert_calls
       end

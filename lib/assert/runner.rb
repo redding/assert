@@ -1,8 +1,14 @@
+require 'assert/suite'
+
 module Assert
 
   class Runner
 
-    # Runner runs a suite of tests.
+    attr_reader :config
+
+    def initialize(config)
+      @config = config
+    end
 
     def run(suite, view)
       raise ArgumentError if !suite.kind_of?(Suite)
@@ -27,7 +33,7 @@ module Assert
     protected
 
     def tests_to_run(suite)
-      srand Assert.config.runner_seed
+      srand self.config.runner_seed
       suite.tests.sort.sort_by { rand suite.tests.size }
     end
 

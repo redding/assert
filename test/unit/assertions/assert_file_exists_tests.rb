@@ -14,6 +14,7 @@ module Assert::Assertions
         assert_file_exists(__FILE__) # pass
         assert_file_exists(*args)    # fail
       end
+      @c = @test.config
       @test.run
     end
     subject{ @test }
@@ -25,7 +26,7 @@ module Assert::Assertions
     end
 
     should "have a fail message with custom and generic explanations" do
-      exp = "#{@args[1]}\nExpected #{Assert::U.show(@args[0])} to exist."
+      exp = "#{@args[1]}\nExpected #{Assert::U.show(@args[0], @c)} to exist."
       assert_equal exp, subject.fail_results.first.message
     end
 
@@ -40,6 +41,7 @@ module Assert::Assertions
         assert_not_file_exists('/a/path/to/some/file/that/no/exists') # pass
         assert_not_file_exists(*args) # fail
       end
+      @c = @test.config
       @test.run
     end
     subject{ @test }
@@ -51,7 +53,7 @@ module Assert::Assertions
     end
 
     should "have a fail message with custom and generic explanations" do
-      exp = "#{@args[1]}\nExpected #{Assert::U.show(@args[0])} to not exist."
+      exp = "#{@args[1]}\nExpected #{Assert::U.show(@args[0], @c)} to not exist."
       assert_equal exp, subject.fail_results.first.message
     end
 

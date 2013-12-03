@@ -14,6 +14,7 @@ module Assert::Assertions
         assert_instance_of(String, "object") # pass
         assert_instance_of(*args)            # fail
       end
+      @c = @test.config
       @test.run
     end
     subject{ @test }
@@ -25,7 +26,7 @@ module Assert::Assertions
     end
 
     should "have a fail message with custom and generic explanations" do
-      exp = "#{@args[2]}\nExpected #{Assert::U.show(@args[1])} (#{@args[1].class}) to"\
+      exp = "#{@args[2]}\nExpected #{Assert::U.show(@args[1], @c)} (#{@args[1].class}) to"\
             " be an instance of #{@args[0]}."
       assert_equal exp, subject.fail_results.first.message
     end
@@ -41,6 +42,7 @@ module Assert::Assertions
         assert_not_instance_of(*args)           # fail
         assert_not_instance_of(Array, "object") # pass
       end
+      @c = @test.config
       @test.run
     end
     subject{ @test }
@@ -52,7 +54,7 @@ module Assert::Assertions
     end
 
     should "have a fail message with custom and generic explanations" do
-      exp = "#{@args[2]}\n#{Assert::U.show(@args[1])} (#{@args[1].class}) not expected to"\
+      exp = "#{@args[2]}\n#{Assert::U.show(@args[1], @c)} (#{@args[1].class}) not expected to"\
             " be an instance of #{@args[0]}."
       assert_equal exp, subject.fail_results.first.message
     end
