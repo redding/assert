@@ -230,7 +230,7 @@ This, of course, assumes you are working in a git repository.  If you are not or
 
 ```ruby
 Assert.configure do |config|
-  config.changed_files do |test_paths|
+  config.changed_proc Proc.new do |test_paths|
     `git diff --name-only master -- #{test_paths.join(' ')}`.split("\n")  # or whatever
   end
 end
@@ -242,10 +242,10 @@ If you just want to disable this feature completely:
 Assert.configure do |config|
 
   # run nothing if the `-c` flag is given
-  config.changed_files{ |test_paths| [] }
+  config.changed_proc Proc.new{ |test_paths| [] }
 
   # run all test paths if the `-c` flag is given
-  config.changed_files{ |test_paths| test_paths }
+  config.changed_proc Proc.new{ |test_paths| test_paths }
 
 end
 ```

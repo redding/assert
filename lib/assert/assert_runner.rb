@@ -89,7 +89,7 @@ module Assert
     end
 
     def changed_test_files(test_paths)
-      globbed_test_files(Assert.config.changed_files.call(test_paths))
+      globbed_test_files(Assert.config.changed_proc.call(test_paths))
     end
 
     def globbed_test_files(test_paths)

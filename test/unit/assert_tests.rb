@@ -32,7 +32,7 @@ module Assert
     desc "the Assert Config singleton"
     subject { Config }
 
-    should have_imeths :suite, :view, :runner, :test_dir, :test_helper, :changed_files
+    should have_imeths :suite, :view, :runner, :test_dir, :test_helper, :changed_proc
     should have_imeths :runner_seed, :pp_proc, :use_diff_proc, :run_diff_proc
     should have_imeths :capture_output, :halt_on_fail, :changed_only, :pp_objects
     should have_imeths :debug, :apply
