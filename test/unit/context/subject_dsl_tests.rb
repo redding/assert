@@ -1,25 +1,15 @@
 require 'assert'
-require 'assert/context'
+require 'assert/context/subject_dsl'
 
-class Assert::Context
+module Assert::Context::SubjectDSL
 
-  class BasicSingletonUnitTests < Assert::Context
-    setup do
-      @context_class = Factory.context_class
-    end
+  class UnitTests < Assert::Context
+    desc "Assert::Context::SubjectDSL"
     subject{ @context_class }
-
-    should have_instance_methods :setup_once, :before_once, :startup
-    should have_instance_methods :teardown_once, :after_once, :shutdown
-    should have_instance_methods :setup, :before, :setups
-    should have_instance_methods :teardown, :after, :teardowns
-    should have_instance_methods :description, :desc, :describe, :subject
-    should have_instance_methods :test, :test_eventually, :test_skip
-    should have_instance_methods :should, :should_eventually, :should_skip
 
   end
 
-  class DescriptionsTests < BasicSingletonUnitTests
+  class DescriptionsTests < UnitTests
     desc "`descriptions` method"
     setup do
       descs = @descs = [ "something amazing", "it really is" ]
@@ -34,7 +24,7 @@ class Assert::Context
 
   end
 
-  class DescriptionTests < BasicSingletonUnitTests
+  class DescriptionTests < UnitTests
     desc "`description` method"
     setup do
       parent_text = @parent_desc = "parent description"
@@ -54,7 +44,7 @@ class Assert::Context
 
   end
 
-  class SubjectFromLocalTests < BasicSingletonUnitTests
+  class SubjectFromLocalTests < UnitTests
     desc "subject method using local context"
     setup do
       subject_block = @subject_block = ::Proc.new{ @something }
@@ -70,7 +60,7 @@ class Assert::Context
 
   end
 
-  class SubjectFromParentTests < BasicSingletonUnitTests
+  class SubjectFromParentTests < UnitTests
     desc "subject method using parent context"
     setup do
       parent_block = @parent_block = ::Proc.new{ @something }

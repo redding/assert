@@ -1,11 +1,19 @@
 require 'assert/assertions'
+require 'assert/context/setup_dsl'
+require 'assert/context/subject_dsl'
+require 'assert/context/test_dsl'
 require 'assert/macros/methods'
 require 'assert/result'
 require 'assert/suite'
 require 'assert/utils'
 
 module Assert
+
   class Context
+    # put all logic in DSL methods to keep context instances pure for running tests
+    extend SetupDSL
+    extend SubjectDSL
+    extend TestDSL
     include Assert::Assertions
     include Assert::Macros::Methods
 
@@ -32,141 +40,6 @@ module Assert
         test = Test.new(method_name.to_s, ci, Assert.config, :code => method_name)
         Assert.suite.tests << test
       end
-    end
-
-    # put all logic here to keep context instances pure for running tests
-    class << self
-
-      def setup_once(&block)
-        Assert.suite.setup(&block)
-      end
-      alias_method :before_once, :setup_once
-      alias_method :startup, :setup_once
-
-      def teardown_once(&block)
-        Assert.suite.teardown(&block)
-      end
-      alias_method :after_once, :teardown_once
-      alias_method :shutdown, :teardown_once
-
-      # Add a setup block to run before each test or run the list of teardown blocks in given scope
-      def setup(scope_or_method_name = nil, &block)
-        is_method = scope_or_method_name.kind_of?(String) || scope_or_method_name.kind_of?(Symbol)
-        if block_given? || is_method
-          # arg is a block or method that needs to be stored as a setup
-          self.setups << (block || scope_or_method_name)
-        elsif !is_method
-          # arg is an instance of this class (the scope for a test),
-          # run the setups for this context in the scope
-          scope = scope_or_method_name
-          # setup parent...
-          self.superclass.setup(scope) if self.superclass.respond_to?(:setup)
-          # ... before child
-          self.setups.each do |setup|
-            setup.kind_of?(::Proc) ? scope.instance_eval(&setup) : scope.send(setup)
-          end
-        end
-      end
-      alias_method :before, :setup
-
-      # Add a teardown block to run after each test or run the list of teardown blocks in given scope
-      def teardown(scope_or_method_name = nil, &block)
-        is_method = scope_or_method_name.kind_of?(String) || scope_or_method_name.kind_of?(Symbol)
-        if block_given? || is_method
-          # arg is a block or method that needs to be stored as a teardown
-          self.teardowns << (block || scope_or_method_name)
-        elsif !is_method
-          # arg is an instance of this class (the scope for a test),
-          # run the setups for this context in the scope
-          scope = scope_or_method_name
-          # teardown child...
-          self.teardowns.each do |teardown|
-            teardown.kind_of?(::Proc) ? scope.instance_eval(&teardown) : scope.send(teardown)
-          end
-          # ... before parent
-          self.superclass.teardown(scope) if self.superclass.respond_to?(:teardown)
-        end
-      end
-      alias_method :after, :teardown
-
-      # Add a piece of description text or return the full description for the context
-      def description(text=nil)
-        if text
-          self.descriptions << text.to_s
-        else
-          parent = self.superclass.desc if self.superclass.respond_to?(:desc)
-          own = self.descriptions
-          [parent, *own].compact.reject do |p|
-            p.to_s.empty?
-          end.join(" ")
-        end
-      end
-      alias_method :desc, :description
-      alias_method :describe, :description
-
-      def subject(&block)
-        if block_given?
-          @subject = block
-        else
-          @subject || if superclass.respond_to?(:subject)
-            superclass.subject
-          end
-        end
-      end
-
-      def test(desc_or_macro, called_from=nil, first_caller=nil, &block)
-        if desc_or_macro.kind_of?(Macro)
-          instance_eval(&desc_or_macro)
-        elsif block_given?
-          ci = Suite::ContextInfo.new(self, called_from, first_caller || caller.first)
-          test_name = desc_or_macro
-
-          # create a test from the given code block
-          Assert.suite.tests << Test.new(test_name, ci, Assert.config, &block)
-        else
-          test_eventually(desc_or_macro, called_from, first_caller || caller.first, &block)
-        end
-      end
-
-      def test_eventually(desc_or_macro, called_from=nil, first_caller=nil, &block)
-        ci = Suite::ContextInfo.new(self, called_from, first_caller || caller.first)
-        test_name = desc_or_macro.kind_of?(Macro) ? desc_or_macro.name : desc_or_macro
-        skip_block = block.nil? ? Proc.new { skip 'TODO' } : Proc.new { skip }
-
-        # create a test from a proc that just skips
-        Assert.suite.tests << Test.new(test_name, ci, Assert.config, &skip_block)
-      end
-      alias_method :test_skip, :test_eventually
-
-      def should(desc_or_macro, called_from=nil, first_caller=nil, &block)
-        if !desc_or_macro.kind_of?(Macro)
-          desc_or_macro = "should #{desc_or_macro}"
-        end
-        test(desc_or_macro, called_from, first_caller || caller.first, &block)
-      end
-
-      def should_eventually(desc_or_macro, called_from=nil, first_caller=nil, &block)
-        if !desc_or_macro.kind_of?(Macro)
-          desc_or_macro = "should #{desc_or_macro}"
-        end
-        test_eventually(desc_or_macro, called_from, first_caller || caller.first, &block)
-      end
-      alias_method :should_skip, :should_eventually
-
-      protected
-
-      def descriptions
-        @descriptions ||= []
-      end
-
-      def setups
-        @setups ||= []
-      end
-
-      def teardowns
-        @teardowns ||= []
-      end
-
     end
 
     def initialize(running_test, config)

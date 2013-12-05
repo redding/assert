@@ -15,6 +15,15 @@ class Assert::Context
     end
     subject{ @context }
 
+    # DSL methods
+    should have_cmeths :description, :desc, :describe, :subject
+    should have_cmeths :setup_once, :before_once, :startup
+    should have_cmeths :teardown_once, :after_once, :shutdown
+    should have_cmeths :setup, :before, :setups
+    should have_cmeths :teardown, :after, :teardowns
+    should have_cmeths :test, :test_eventually, :test_skip
+    should have_cmeths :should, :should_eventually, :should_skip
+
     should have_imeths :assert, :assert_not, :refute
     should have_imeths :skip, :pass, :fail, :flunk, :ignore
     should have_imeths :with_backtrace, :subject

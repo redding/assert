@@ -1,18 +1,15 @@
 require 'assert'
-require 'assert/context'
+require 'assert/context/setup_dsl'
 
-class Assert::Context
+module Assert::Context::SetupDSL
 
-  class SetupTeardownSingletonUnitTests < Assert::Context
-    desc "setup and teardown"
-    setup do
-      @context_class = Factory.context_class
-    end
+  class UnitTests < Assert::Context
+    desc "Assert::Context::SetupDSL"
     subject{ @context_class }
 
   end
 
-  class SetupTeardownOnceMethodsTests < SetupTeardownSingletonUnitTests
+  class SetupTeardownOnceMethodsTests < UnitTests
     desc "once methods"
     setup do
       block = @block = ::Proc.new{ something_once = true }
@@ -32,7 +29,7 @@ class Assert::Context
 
   end
 
-  class SetupTeardownMethodsTests < SetupTeardownSingletonUnitTests
+  class SetupTeardownMethodsTests < UnitTests
     desc "methods"
     setup do
       block = @block = ::Proc.new{ something = true }
@@ -49,7 +46,7 @@ class Assert::Context
 
   end
 
-  class SetupTeardownWithMethodNameTests < SetupTeardownSingletonUnitTests
+  class SetupTeardownWithMethodNameTests < UnitTests
     desc "methods given a method name"
     setup do
       method_name = @method_name = :something_amazing
@@ -66,7 +63,7 @@ class Assert::Context
 
   end
 
-  class SetupTeardownMultipleTests < SetupTeardownSingletonUnitTests
+  class SetupTeardownMultipleTests < UnitTests
     desc "with multiple calls"
     setup do
       parent_setup_block    = ::Proc.new{ self.setup_status    =  "the setup"    }
