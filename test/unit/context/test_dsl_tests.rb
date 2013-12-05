@@ -1,10 +1,10 @@
 require 'assert'
-require 'assert/context'
+require 'assert/context/test_dsl'
 
-class Assert::Context
+module Assert::Context::TestDSL
 
-  class TestShouldSingletonUnitTests < Assert::Context
-    desc "test and should methods"
+  class UnitTests < Assert::Context
+    desc "Assert::Context::TestDSL"
     setup do
       @test_count_before = Assert.suite.tests.size
       @test_desc = "be true"
