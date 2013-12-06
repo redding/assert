@@ -3,7 +3,6 @@ require 'assert/cli'
 module Assert
 
   class AssertRunner
-    TEST_FILE_SUFFIXES  = ['_tests.rb', '_test.rb']
     USER_SETTINGS_FILE  = ".assert/init.rb"
     LOCAL_SETTINGS_FILE = ".assert.rb"
 
@@ -86,7 +85,7 @@ module Assert
     end
 
     def is_test_file?(path)
-      TEST_FILE_SUFFIXES.inject(false) do |result, suffix|
+      self.config.test_file_suffixes.inject(false) do |result, suffix|
         result || path =~ /#{suffix}$/
       end
     end
