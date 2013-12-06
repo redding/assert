@@ -27,7 +27,7 @@ module Assert
       @test_helper = "helper.rb"
       @runner_seed   = begin; srand; srand % 0xFFFF; end.to_i
 
-      @changed_proc  = Assert::AssertRunner::DEFAULT_CHANGED_FILES_PROC
+      @changed_proc  = Assert::U.git_changed_proc
       @pp_proc       = Assert::U.stdlib_pp_proc
       @use_diff_proc = Assert::U.default_use_diff_proc
       @run_diff_proc = Assert::U.syscmd_diff_proc

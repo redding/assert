@@ -16,6 +16,7 @@ module Assert::Utils
     should have_imeths :show, :show_for_diff
     should have_imeths :tempfile
     should have_imeths :stdlib_pp_proc, :default_use_diff_proc, :syscmd_diff_proc
+    should have_imeths :git_changed_proc
 
   end
 
