@@ -7,7 +7,9 @@ module Assert::View
   # or passing the name of a view installed in ~/.assert/views
 
   def self.require_user_view(view_name)
-    views_file = File.expand_path(File.join('~/.assert/views', view_name, 'lib', view_name))
+    views_file = File.expand_path(
+      File.join("#{ENV['HOME']}/.assert/views", view_name, 'lib', view_name)
+    )
 
     if File.exists?(view_name) || File.exists?(view_name + '.rb')
       require view_name
