@@ -11,7 +11,7 @@ class Assert::Config
     subject{ @config }
 
     should have_imeths :suite, :view, :runner
-    should have_imeths :test_dir, :test_helper, :runner_seed
+    should have_imeths :test_dir, :test_helper, :test_file_suffixes, :runner_seed
     should have_imeths :changed_proc, :pp_proc, :use_diff_proc, :run_diff_proc
     should have_imeths :capture_output, :halt_on_fail, :changed_only, :pp_objects, :debug
     should have_imeths :apply
@@ -22,9 +22,10 @@ class Assert::Config
       assert_kind_of Assert::Runner, subject.runner
     end
 
-    should "default the test dir/helper" do
+    should "default the test dir/helper/suffixes/seed" do
       assert_equal 'test', subject.test_dir
       assert_equal 'helper.rb', subject.test_helper
+      assert_equal ['_tests.rb', "_test.rb"], subject.test_file_suffixes
       assert_not_nil subject.runner_seed
     end
 

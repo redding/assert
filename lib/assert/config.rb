@@ -14,7 +14,7 @@ module Assert
     end
 
     settings :view, :suite, :runner
-    settings :test_dir, :test_helper, :runner_seed
+    settings :test_dir, :test_helper, :test_file_suffixes, :runner_seed
     settings :changed_proc, :pp_proc, :use_diff_proc, :run_diff_proc
     settings :capture_output, :halt_on_fail, :changed_only, :pp_objects, :debug
 
@@ -25,6 +25,7 @@ module Assert
 
       @test_dir    = "test"
       @test_helper = "helper.rb"
+      @test_file_suffixes = ['_tests.rb', '_test.rb']
       @runner_seed   = begin; srand; srand % 0xFFFF; end.to_i
 
       @changed_proc  = Assert::U.git_changed_proc
