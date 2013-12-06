@@ -7,21 +7,6 @@ module Assert
     USER_SETTINGS_FILE  = ".assert/init.rb"
     LOCAL_SETTINGS_FILE = ".assert.rb"
 
-    DEFAULT_CHANGED_FILES_PROC = Proc.new do |config, test_paths|
-      # use git to determine which files have changes
-      files = []
-      cmd = [
-        "git diff --no-ext-diff --name-only",       # changed files
-        "git ls-files --others --exclude-standard"  # added files
-      ].map{ |c| "#{c} -- #{test_paths.join(' ')}" }.join(' && ')
-
-      Assert::CLI.bench('Load only changed files') do
-        files = `#{cmd}`.split("\n")
-      end
-      puts Assert::CLI.debug_msg("  `#{cmd}`") if config.debug
-      files
-    end
-
     attr_reader :config
 
     def initialize(config, test_paths, test_options)
