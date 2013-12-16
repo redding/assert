@@ -6,11 +6,6 @@ module Assert::View::Helpers
       receiver.class_eval{ extend ClassMethods }
     end
 
-    # get the formatted suite run time
-    def run_time(format='%.6f')
-      format % self.suite.run_time
-    end
-
     def runner_seed
       self.config.runner_seed
     end
@@ -25,6 +20,21 @@ module Assert::View::Helpers
 
     def all_pass?
       self.count(:pass) == self.count(:results)
+    end
+
+    # get the formatted suite run time
+    def run_time(format = '%.6f')
+      format % self.suite.run_time
+    end
+
+    # get the formatted suite test rate
+    def test_rate(format = '%.6f')
+      format % self.suite.test_rate
+    end
+
+    # get the formatted suite result rate
+    def result_rate(format = '%.6f')
+      format % self.suite.result_rate
     end
 
     # get a uniq list of contexts for the test suite

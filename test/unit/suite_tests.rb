@@ -14,7 +14,8 @@ class Assert::Suite
     subject{ @suite }
 
     should have_accessors :config, :tests, :test_methods, :start_time, :end_time
-    should have_imeths :ordered_tests, :results, :ordered_results, :run_time
+    should have_imeths :ordered_tests, :results, :ordered_results
+    should have_imeths :run_time, :test_rate, :result_rate
     should have_imeths :count, :test_count, :result_count
     should have_imeths :setup, :startup, :teardown, :shutdown
 
@@ -24,10 +25,11 @@ class Assert::Suite
       assert_equal(exp, act)
     end
 
-    should "have zero a run time by default" do
+    should "have a zero run time, test rate and result by default" do
       assert_equal 0, subject.run_time
+      assert_equal 0, subject.test_rate
+      assert_equal 0, subject.result_rate
     end
-
 
   end
 

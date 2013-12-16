@@ -32,6 +32,14 @@ module Assert
       @end_time - @start_time
     end
 
+    def test_rate
+      get_rate(self.tests.size, self.run_time.to_f)
+    end
+
+    def result_rate
+      get_rate(self.results.size, self.run_time.to_f)
+    end
+
     alias_method :ordered_tests, :tests
 
     def results
@@ -117,6 +125,12 @@ module Assert
 
       # uniq and remove any that don't start with 'test'
       methods.uniq.delete_if {|method_name| method_name !~ TEST_METHOD_REGEX }
+    end
+
+    private
+
+    def get_rate(count, time)
+      time == 0 ? 0.0 : (count.to_f / time.to_f)
     end
 
   end

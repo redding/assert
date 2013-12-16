@@ -19,7 +19,8 @@ class Assert::View::Base
     should have_imeths :before_test, :after_test, :on_result
 
     # common methods
-    should have_imeths :run_time, :runner_seed, :count, :tests?, :all_pass?
+    should have_imeths :runner_seed, :count, :tests?, :all_pass?
+    should have_imeths :run_time, :test_rate, :result_rate
     should have_imeths :suite_contexts, :ordered_suite_contexts
     should have_imeths :suite_files, :ordered_suite_files
     should have_imeths :result_details_for, :show_result_details?
