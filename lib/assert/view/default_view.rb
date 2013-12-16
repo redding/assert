@@ -68,7 +68,7 @@ module Assert::View
 
       puts "#{result_count_statement}: #{styled_results_sentence}"
       puts
-      puts "(#{run_time} seconds)"
+      puts "(#{run_time} seconds, #{test_rate} tests/s, #{result_rate} results/s)"
     end
 
   end
