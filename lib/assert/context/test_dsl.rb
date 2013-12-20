@@ -15,7 +15,7 @@ class Assert::Context
         test_name = desc_or_macro
 
         # create a test from the given code block
-        Assert.suite.tests << Assert::Test.new(test_name, ci, Assert.config, &block)
+        self.suite.tests << Assert::Test.new(test_name, ci, self.suite.config, &block)
       else
         test_eventually(desc_or_macro, called_from, first_caller || caller.first, &block)
       end
@@ -27,7 +27,7 @@ class Assert::Context
       skip_block = block.nil? ? Proc.new { skip 'TODO' } : Proc.new { skip }
 
       # create a test from a proc that just skips
-      Assert.suite.tests << Assert::Test.new(test_name, ci, Assert.config, &skip_block)
+      self.suite.tests << Assert::Test.new(test_name, ci, self.suite.config, &skip_block)
     end
     alias_method :test_skip, :test_eventually
 

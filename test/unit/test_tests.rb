@@ -9,7 +9,7 @@ class Assert::Test
     desc "a test obj"
     setup do
       @test_code = lambda{ assert(true) }
-      @context_class = Factory.context_class{ desc "context class" }
+      @context_class = Factory.modes_off_context_class{ desc "context class" }
       @context_info  = Factory.context_info(@context_class)
       @test = Factory.test("should do something amazing", @context_info, :code => @test_code)
     end

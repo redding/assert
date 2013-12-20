@@ -55,4 +55,16 @@ module Factory
     })
   end
 
+  def self.modes_off_suite
+    Assert::Suite.new(self.modes_off_config)
+  end
+
+  def self.modes_off_context_class(*args, &block)
+    suite_obj = self.modes_off_suite
+    self.context_class(*args) do
+      suite(suite_obj)
+      instance_eval(&block) if !block.nil?
+    end
+  end
+
 end

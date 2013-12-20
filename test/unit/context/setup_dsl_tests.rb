@@ -13,18 +13,15 @@ module Assert::Context::SetupDSL
     desc "once methods"
     setup do
       block = @block = ::Proc.new{ something_once = true }
-      @context_class = Factory.context_class do
+      @context_class = Factory.modes_off_context_class do
         setup_once(&block)
         teardown_once(&block)
       end
     end
-    teardown do
-      Assert.suite.send(:setups).reject!{ |b| b == @block }
-    end
 
     should "add the block to the suite" do
-      assert_includes @block, Assert.suite.send(:setups)
-      assert_includes @block, Assert.suite.send(:teardowns)
+      assert_includes @block, subject.suite.send(:setups)
+      assert_includes @block, subject.suite.send(:teardowns)
     end
 
   end
@@ -33,7 +30,7 @@ module Assert::Context::SetupDSL
     desc "methods"
     setup do
       block = @block = ::Proc.new{ something = true }
-      @context_class = Factory.context_class do
+      @context_class = Factory.modes_off_context_class do
         setup(&block)
         teardown(&block)
       end
@@ -50,7 +47,7 @@ module Assert::Context::SetupDSL
     desc "methods given a method name"
     setup do
       method_name = @method_name = :something_amazing
-      @context_class = Factory.context_class do
+      @context_class = Factory.modes_off_context_class do
         setup(method_name)
         teardown(method_name)
       end
@@ -68,14 +65,14 @@ module Assert::Context::SetupDSL
     setup do
       parent_setup_block    = ::Proc.new{ self.setup_status    =  "the setup"    }
       parent_teardown_block = ::Proc.new{ self.teardown_status += "the teardown" }
-      @parent_class = Factory.context_class do
+      @parent_class = Factory.modes_off_context_class do
         setup(&parent_setup_block)
         teardown(&parent_teardown_block)
       end
 
       context_setup_block    = ::Proc.new{ self.setup_status    += " has been run" }
       context_teardown_block = ::Proc.new{ self.teardown_status += "has been run " }
-      @context_class = Factory.context_class(@parent_class) do
+      @context_class = Factory.modes_off_context_class(@parent_class) do
         setup(&context_setup_block)
         setup(:setup_something)
         teardown(:teardown_something)

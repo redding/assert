@@ -6,7 +6,7 @@ module Assert::Assertions
   class UnitTests < Assert::Context
     desc "An assert context"
     setup do
-      @context_class = Factory.context_class
+      @context_class = Factory.modes_off_context_class
       @test = Factory.test
       @context = @context_class.new(@test, @test.config)
     end

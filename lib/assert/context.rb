@@ -1,6 +1,7 @@
 require 'assert/assertions'
 require 'assert/context/setup_dsl'
 require 'assert/context/subject_dsl'
+require 'assert/context/suite_dsl'
 require 'assert/context/test_dsl'
 require 'assert/macros/methods'
 require 'assert/result'
@@ -13,6 +14,7 @@ module Assert
     # put all logic in DSL methods to keep context instances pure for running tests
     extend SetupDSL
     extend SubjectDSL
+    extend SuiteDSL
     extend TestDSL
     include Assert::Assertions
     include Assert::Macros::Methods
@@ -29,16 +31,16 @@ module Assert
       if method_name.to_s =~ Suite::TEST_METHOD_REGEX
         klass_method_name = "#{self}##{method_name}"
 
-        if Assert.suite.test_methods.include?(klass_method_name)
+        if self.suite.test_methods.include?(klass_method_name)
           puts "WARNING: redefining '#{klass_method_name}'"
           puts "  from: #{called_from}"
         else
-          Assert.suite.test_methods << klass_method_name
+          self.suite.test_methods << klass_method_name
         end
 
         ci = Suite::ContextInfo.new(self, nil, caller.first)
-        test = Test.new(method_name.to_s, ci, Assert.config, :code => method_name)
-        Assert.suite.tests << test
+        test = Test.new(method_name.to_s, ci, self.suite.config, :code => method_name)
+        self.suite.tests << test
       end
     end
 
