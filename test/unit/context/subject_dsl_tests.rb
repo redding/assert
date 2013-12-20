@@ -13,7 +13,7 @@ module Assert::Context::SubjectDSL
     desc "`descriptions` method"
     setup do
       descs = @descs = [ "something amazing", "it really is" ]
-      @context_class = Factory.context_class do
+      @context_class = Factory.modes_off_context_class do
         descs.each{ |text| desc text }
       end
     end
@@ -28,11 +28,11 @@ module Assert::Context::SubjectDSL
     desc "`description` method"
     setup do
       parent_text = @parent_desc = "parent description"
-      @parent_class = Factory.context_class do
+      @parent_class = Factory.modes_off_context_class do
         desc parent_text
       end
       text = @desc = "and the description for this context"
-      @context_class = Factory.context_class(@parent_class) do
+      @context_class = Factory.modes_off_context_class(@parent_class) do
         desc text
       end
     end
@@ -45,35 +45,34 @@ module Assert::Context::SubjectDSL
   end
 
   class SubjectFromLocalTests < UnitTests
-    desc "subject method using local context"
+    desc "`subject` method using local context"
     setup do
       subject_block = @subject_block = ::Proc.new{ @something }
-      @context_class = Factory.context_class do
+      @context_class = Factory.modes_off_context_class do
         subject(&subject_block)
       end
     end
-    subject{ @subject_block }
 
     should "set the subject block on the context class" do
-      assert_equal @context_class.subject, subject
+      assert_equal @subject_block, @context_class.subject
     end
 
   end
 
   class SubjectFromParentTests < UnitTests
-    desc "subject method using parent context"
+    desc "`subject` method using parent context"
     setup do
       parent_block = @parent_block = ::Proc.new{ @something }
-      @parent_class = Factory.context_class do
+      @parent_class = Factory.modes_off_context_class do
         subject(&parent_block)
       end
-      @context_class = Factory.context_class(@parent_class)
+      @context_class = Factory.modes_off_context_class(@parent_class)
     end
-    subject{ @parent_block }
 
     should "default to it's parents subject block" do
-      assert_equal @context_class.subject, subject
+      assert_equal @parent_block, @context_class.subject
     end
+
   end
 
 end

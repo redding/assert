@@ -3,16 +3,6 @@ require 'assert/test'
 module Assert
   class Suite
 
-    class ContextInfo
-      attr_reader :called_from, :klass, :file
-
-      def initialize(klass, called_from=nil, first_caller=nil)
-        @called_from = called_from || first_caller
-        @klass = klass
-        @file = @called_from.gsub(/\:[0-9]+.*$/, '') if @called_from
-      end
-    end
-
     TEST_METHOD_REGEX = /^test./
 
     # A suite is a set of tests to run.  When a test class subclasses
@@ -100,6 +90,12 @@ module Assert
     end
     alias_method :shutdown, :teardown
 
+    def inspect
+      "#<#{self.class}:#{'0x0%x' % (object_id << 1)}"\
+      " test_count=#{self.test_count.inspect}"\
+      " result_count=#{self.result_count.inspect}>"
+    end
+
     protected
 
     def setups
@@ -131,6 +127,16 @@ module Assert
 
     def get_rate(count, time)
       time == 0 ? 0.0 : (count.to_f / time.to_f)
+    end
+
+    class ContextInfo
+      attr_reader :called_from, :klass, :file
+
+      def initialize(klass, called_from=nil, first_caller=nil)
+        @called_from = called_from || first_caller
+        @klass = klass
+        @file = @called_from.gsub(/\:[0-9]+.*$/, '') if @called_from
+      end
     end
 
   end

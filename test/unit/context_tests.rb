@@ -16,7 +16,7 @@ class Assert::Context
     subject{ @context }
 
     # DSL methods
-    should have_cmeths :description, :desc, :describe, :subject
+    should have_cmeths :description, :desc, :describe, :subject, :suite
     should have_cmeths :setup_once, :before_once, :startup
     should have_cmeths :teardown_once, :after_once, :shutdown
     should have_cmeths :setup, :before, :setups
@@ -221,7 +221,7 @@ class Assert::Context
     desc "subject method"
     setup do
       expected = @expected = "amazing"
-      @context_class = Factory.context_class do
+      @context_class = Factory.modes_off_context_class do
         subject{ @something = expected }
       end
       @context = @context_class.new(@test, @test.config)

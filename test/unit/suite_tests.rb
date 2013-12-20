@@ -36,7 +36,7 @@ class Assert::Suite
   class WithTestsTests < UnitTests
     desc "a suite with tests"
     setup do
-      ci = Factory.context_info(Factory.context_class)
+      ci = Factory.context_info(Factory.modes_off_context_class)
       @suite.tests = [
         Factory.test("should nothing", ci){ },
         Factory.test("should pass",    ci){ assert(1==1); refute(1==0) },
