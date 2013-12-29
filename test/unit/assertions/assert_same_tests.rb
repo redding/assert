@@ -6,7 +6,7 @@ require 'assert/utils'
 module Assert::Assertions
 
   class AssertSameTest < Assert::Context
-    desc "the assert_same helper"
+    desc "`assert_same`"
     setup do
       klass = Class.new; object = klass.new
       desc = @desc = "assert same fail desc"
@@ -28,15 +28,17 @@ module Assert::Assertions
 
     should "have a fail message with custom and generic explanations" do
       exp = "#{@args[2]}\n"\
-            "Expected #{Assert::U.show(@args[1], @c)} (#{@args[1].object_id})"\
-            " to be the same as #{Assert::U.show(@args[0], @c)} (#{@args[0].object_id})."
+            "#{Assert::U.show(@args[1], @c)}"\
+            " (#<#{@args[1].class}:#{'0x0%x' % (@args[1].object_id << 1)}>)"\
+            " expected to be the same as #{Assert::U.show(@args[0], @c)}"\
+            " (#<#{@args[0].class}:#{'0x0%x' % (@args[0].object_id << 1)}>)."
       assert_equal exp, subject.fail_results.first.message
     end
 
   end
 
   class AssertNotSameTests < Assert::Context
-    desc "the assert_not_same helper"
+    desc "`assert_not_same`"
     setup do
       klass = Class.new; object = klass.new
       desc = @desc = "assert not same fail desc"
@@ -58,8 +60,73 @@ module Assert::Assertions
 
     should "have a fail message with custom and generic explanations" do
       exp = "#{@args[2]}\n"\
-            "#{Assert::U.show(@args[1], @c)} (#{@args[1].object_id}) not expected"\
-            " to be the same as #{Assert::U.show(@args[0], @c)} (#{@args[0].object_id})."
+            "#{Assert::U.show(@args[1], @c)}"\
+            " (#<#{@args[1].class}:#{'0x0%x' % (@args[1].object_id << 1)}>)"\
+            " not expected to be the same as #{Assert::U.show(@args[0], @c)}"\
+            " (#<#{@args[0].class}:#{'0x0%x' % (@args[0].object_id << 1)}>)."
+      assert_equal exp, subject.fail_results.first.message
+    end
+
+  end
+
+  class DiffTests < Assert::Context
+    desc "with objects that should use diff when showing"
+    setup do
+      @exp_obj = "I'm a\nstring"
+      @act_obj = "I am a \nstring"
+
+      @c = Factory.modes_off_config
+      @c.use_diff_proc(Assert::U.default_use_diff_proc)
+      @c.run_diff_proc(Assert::U.syscmd_diff_proc)
+
+      @exp_obj_show = Assert::U.show_for_diff(@exp_obj, @c)
+      @act_obj_show = Assert::U.show_for_diff(@act_obj, @c)
+    end
+
+  end
+
+  class AssertSameDiffTests < DiffTests
+    desc "`assert_same`"
+    setup do
+      exp_obj, act_obj = @exp_obj, @act_obj
+      @test = Factory.test(@c) do
+        assert_same(exp_obj, act_obj)
+      end
+      @test.run
+    end
+    subject{ @test }
+
+    should "include diff output in the fail messages" do
+      exp = "#<#{@act_obj.class}:#{'0x0%x' % (@act_obj.object_id << 1)}>"\
+            " expected to be the same as"\
+            " #<#{@exp_obj.class}:#{'0x0%x' % (@exp_obj.object_id << 1)}>"\
+            ", diff:\n"\
+            "#{Assert::U.syscmd_diff_proc.call(@exp_obj_show, @act_obj_show)}"
+      assert_equal exp, subject.fail_results.first.message
+    end
+
+  end
+
+  class AssertNotSameDiffTests < DiffTests
+    desc "`assert_not_same`"
+    setup do
+      @exp_obj = @act_obj
+      @exp_obj_show = @act_obj_show
+
+      exp_obj, act_obj = @exp_obj, @act_obj
+      @test = Factory.test(@c) do
+        assert_not_same(exp_obj, exp_obj)
+      end
+      @test.run
+    end
+    subject{ @test }
+
+    should "include diff output in the fail messages" do
+      exp = "#<#{@act_obj.class}:#{'0x0%x' % (@act_obj.object_id << 1)}>"\
+            " not expected to be the same as"\
+            " #<#{@exp_obj.class}:#{'0x0%x' % (@exp_obj.object_id << 1)}>"\
+            ", diff:\n"\
+            "#{Assert::U.syscmd_diff_proc.call(@exp_obj_show, @act_obj_show)}"
       assert_equal exp, subject.fail_results.first.message
     end
 
