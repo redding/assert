@@ -9,7 +9,7 @@ module Assert::View::Helpers
     end
 
     def ansi_styled_msg(msg, styles=[])
-      if !(style = ansi_style(*styles)).empty?
+      if !(style = ansi_style(*styles)).empty? && self.is_tty?
         style + msg + ANSI.send(:reset)
       else
         msg
