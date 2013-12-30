@@ -103,14 +103,14 @@ module Assert
     end
     alias_method :refute_instance_of, :assert_not_instance_of
 
-    def assert_kind_of(klass, instance, desc=nil)
+    def assert_kind_of(klass, instance, desc = nil)
       assert(instance.kind_of?(klass), desc) do
         "Expected #{Assert::U.show(instance, __assert_config__)} (#{instance.class})"\
         " to be a kind of #{klass}."
       end
     end
 
-    def assert_not_kind_of(klass, instance, desc=nil)
+    def assert_not_kind_of(klass, instance, desc = nil)
       assert(!instance.kind_of?(klass), desc) do
         "#{Assert::U.show(instance, __assert_config__)}"\
         " not expected to be a kind of #{klass}."
@@ -118,7 +118,7 @@ module Assert
     end
     alias_method :refute_kind_of, :assert_not_kind_of
 
-    def assert_match(exp, act, desc=nil)
+    def assert_match(exp, act, desc = nil)
       exp_regex = String === exp && String === act ? /#{Regexp.escape(exp)}/ : exp
       assert(act =~ exp_regex, desc) do
         "Expected #{Assert::U.show(act, __assert_config__)}"\
@@ -126,7 +126,7 @@ module Assert
       end
     end
 
-    def assert_not_match(exp, act, desc=nil)
+    def assert_not_match(exp, act, desc = nil)
       exp = String === exp && String === act ? /#{Regexp.escape(exp)}/ : exp
       assert(act !~ exp, desc) do
         "#{Assert::U.show(act, __assert_config__)}"\
@@ -136,13 +136,13 @@ module Assert
     alias_method :refute_match, :assert_not_match
     alias_method :assert_no_match, :assert_not_match
 
-    def assert_nil(object, desc=nil)
+    def assert_nil(object, desc = nil)
       assert(object.nil?, desc) do
         "Expected nil, not #{Assert::U.show(object, __assert_config__)}."
       end
     end
 
-    def assert_not_nil(object, desc=nil)
+    def assert_not_nil(object, desc = nil)
       assert(!object.nil?, desc) do
         "Expected #{Assert::U.show(object, __assert_config__)} to not be nil."
       end
@@ -164,7 +164,7 @@ module Assert
     alias_method :assert_not_raises, :assert_nothing_raised
     alias_method :assert_not_raise, :assert_nothing_raised
 
-    def assert_respond_to(method, object, desc=nil)
+    def assert_respond_to(method, object, desc = nil)
       assert(object.respond_to?(method), desc) do
         "Expected #{Assert::U.show(object, __assert_config__)} (#{object.class})"\
         " to respond to `#{method}`."
@@ -172,7 +172,7 @@ module Assert
     end
     alias_method :assert_responds_to, :assert_respond_to
 
-    def assert_not_respond_to(method, object, desc=nil)
+    def assert_not_respond_to(method, object, desc = nil)
       assert(!object.respond_to?(method), desc) do
         "#{Assert::U.show(object, __assert_config__)} (#{object.class})"\
         " not expected to respond to `#{method}`."
@@ -182,18 +182,39 @@ module Assert
     alias_method :refute_respond_to, :assert_not_respond_to
     alias_method :refute_responds_to, :assert_not_respond_to
 
-    def assert_same(exp, act, desc=nil)
+    def assert_same(exp, act, desc = nil)
       assert(act.equal?(exp), desc) do
-        "Expected #{Assert::U.show(act, __assert_config__)} (#{act.object_id})"\
-        " to be the same as #{Assert::U.show(exp, __assert_config__)} (#{exp.object_id})."
+        c = __assert_config__
+        exp_show = Assert::U.show_for_diff(exp, c)
+        act_show = Assert::U.show_for_diff(act, c)
+        exp_id = "#<#{exp.class}:#{'0x0%x' % (exp.object_id << 1)}>"
+        act_id = "#<#{act.class}:#{'0x0%x' % (act.object_id << 1)}>"
+
+        if c.use_diff_proc.call(exp_show, act_show)
+          "#{act_id} expected to be the same as #{exp_id}, diff:\n"\
+          "#{c.run_diff_proc.call(exp_show, act_show)}"
+        else
+          "#{Assert::U.show(act, c)} (#{act_id}) expected to be the same as"\
+          " #{Assert::U.show(exp, c)} (#{exp_id})."
+        end
       end
     end
 
-    def assert_not_same(exp, act, desc=nil)
+    def assert_not_same(exp, act, desc = nil)
       assert(!act.equal?(exp), desc) do
-        "#{Assert::U.show(act, __assert_config__)} (#{act.object_id})"\
-        " not expected to be the same as"\
-        " #{Assert::U.show(exp, __assert_config__)} (#{exp.object_id})."
+        c = __assert_config__
+        exp_show = Assert::U.show_for_diff(exp, c)
+        act_show = Assert::U.show_for_diff(act, c)
+        exp_id = "#<#{exp.class}:#{'0x0%x' % (exp.object_id << 1)}>"
+        act_id = "#<#{act.class}:#{'0x0%x' % (act.object_id << 1)}>"
+
+        if c.use_diff_proc.call(exp_show, act_show)
+          "#{act_id} not expected to be the same as #{exp_id}, diff:\n"\
+          "#{c.run_diff_proc.call(exp_show, act_show)}"
+        else
+          "#{Assert::U.show(act, c)} (#{act_id}) not expected to be the same as"\
+          " #{Assert::U.show(exp, c)} (#{exp_id})."
+        end
       end
     end
     alias_method :refute_same, :assert_not_same
