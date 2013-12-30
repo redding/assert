@@ -31,6 +31,10 @@ module Assert::View
       @output_io.sync = true if @output_io.respond_to?(:sync=)
     end
 
+    def is_tty?
+      !!@output_io.isatty
+    end
+
     def view
       self
     end

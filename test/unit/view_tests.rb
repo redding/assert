@@ -8,13 +8,14 @@ class Assert::View::Base
   class UnitTests < Assert::Context
     desc "Assert::View::Base"
     setup do
+      @io = StringIO.new("", "w+")
       @config = Factory.modes_off_config
-      @view = Assert::View::Base.new(StringIO.new("", "w+"), @config, @config.suite)
+      @view = Assert::View::Base.new(@io, @config, @config.suite)
     end
     subject{ @view }
 
     # accessors, base methods
-    should have_imeths :view, :config, :suite, :fire
+    should have_imeths :is_tty?, :view, :config, :suite, :fire
     should have_imeths :before_load, :after_load, :on_start, :on_finish
     should have_imeths :before_test, :after_test, :on_result
 
@@ -35,6 +36,10 @@ class Assert::View::Base
       assert_equal 'I', subject.ignore_abbrev
       assert_equal 'S', subject.skip_abbrev
       assert_equal 'E', subject.error_abbrev
+    end
+
+    should "know if it is a tty" do
+      assert_equal !!@io.isatty, subject.is_tty?
     end
 
   end
