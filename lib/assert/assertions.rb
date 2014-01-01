@@ -149,6 +149,32 @@ module Assert
     end
     alias_method :refute_nil, :assert_not_nil
 
+    def assert_true(object, desc = nil)
+      assert(object == true, desc) do
+        "Expected #{Assert::U.show(object, __assert_config__)} to be true."
+      end
+    end
+
+    def assert_not_true(object, desc = nil)
+      assert(object != true, desc) do
+        "Expected #{Assert::U.show(object, __assert_config__)} to not be true."
+      end
+    end
+    alias_method :refute_true, :assert_not_true
+
+    def assert_false(object, desc = nil)
+      assert(object == false, desc) do
+        "Expected #{Assert::U.show(object, __assert_config__)} to be false."
+      end
+    end
+
+    def assert_not_false(object, desc = nil)
+      assert(object != false, desc) do
+        "Expected #{Assert::U.show(object, __assert_config__)} to not be false."
+      end
+    end
+    alias_method :refute_false, :assert_not_false
+
     def assert_raises(*exceptions, &block)
       desc = exceptions.last.kind_of?(String) ? exceptions.pop : nil
       err = RaisedException.new(exceptions, &block)

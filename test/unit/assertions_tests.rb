@@ -28,6 +28,8 @@ module Assert::Assertions
     should have_imeths :assert_included, :assert_not_included
     should have_imeths :refute_includes, :refute_included
     should have_imeths :assert_nil, :assert_not_nil, :refute_nil
+    should have_imeths :assert_true, :assert_not_true, :refute_true
+    should have_imeths :assert_false, :assert_not_false, :refute_false
     should have_imeths :assert_file_exists, :assert_not_file_exists, :refute_file_exists
 
   end
