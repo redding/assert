@@ -6,7 +6,7 @@ require 'assert/utils'
 module Assert::Assertions
 
   class AssertKindOfTests < Assert::Context
-    desc "the assert_kind_of helper"
+    desc "`assert_kind_of`"
     setup do
       desc = @desc = "assert kind of fail desc"
       args = @args = [ Array, "object", desc ]
@@ -26,15 +26,15 @@ module Assert::Assertions
     end
 
     should "have a fail message with custom and generic explanations" do
-      exp = "#{@args[2]}\nExpected #{Assert::U.show(@args[1], @c)} (#{@args[1].class}) to"\
-            " be a kind of #{@args[0]}."
+      exp = "#{@args[2]}\nExpected #{Assert::U.show(@args[1], @c)} (#{@args[1].class})"\
+            " to be a kind of #{@args[0]}."
       assert_equal exp, subject.fail_results.first.message
     end
 
   end
 
   class AssertNotKindOfTests < Assert::Context
-    desc "the assert_not_kind_of helper"
+    desc "`assert_not_kind_of`"
     setup do
       desc = @desc = "assert not kind of fail desc"
       args = @args = [ String, "object", desc ]
@@ -54,7 +54,8 @@ module Assert::Assertions
     end
 
     should "have a fail message with custom and generic explanations" do
-      exp = "#{@args[2]}\n#{Assert::U.show(@args[1], @c)} not expected to be a kind of #{@args[0]}."
+      exp = "#{@args[2]}\nExpected #{Assert::U.show(@args[1], @c)} (#{@args[1].class})"\
+            " to not be a kind of #{@args[0]}."
       assert_equal exp, subject.fail_results.first.message
     end
 

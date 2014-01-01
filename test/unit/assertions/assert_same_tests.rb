@@ -28,9 +28,9 @@ module Assert::Assertions
 
     should "have a fail message with custom and generic explanations" do
       exp = "#{@args[2]}\n"\
-            "#{Assert::U.show(@args[1], @c)}"\
+            "Expected #{Assert::U.show(@args[1], @c)}"\
             " (#<#{@args[1].class}:#{'0x0%x' % (@args[1].object_id << 1)}>)"\
-            " expected to be the same as #{Assert::U.show(@args[0], @c)}"\
+            " to be the same as #{Assert::U.show(@args[0], @c)}"\
             " (#<#{@args[0].class}:#{'0x0%x' % (@args[0].object_id << 1)}>)."
       assert_equal exp, subject.fail_results.first.message
     end
@@ -60,9 +60,9 @@ module Assert::Assertions
 
     should "have a fail message with custom and generic explanations" do
       exp = "#{@args[2]}\n"\
-            "#{Assert::U.show(@args[1], @c)}"\
+            "Expected #{Assert::U.show(@args[1], @c)}"\
             " (#<#{@args[1].class}:#{'0x0%x' % (@args[1].object_id << 1)}>)"\
-            " not expected to be the same as #{Assert::U.show(@args[0], @c)}"\
+            " to not be the same as #{Assert::U.show(@args[0], @c)}"\
             " (#<#{@args[0].class}:#{'0x0%x' % (@args[0].object_id << 1)}>)."
       assert_equal exp, subject.fail_results.first.message
     end
@@ -97,8 +97,8 @@ module Assert::Assertions
     subject{ @test }
 
     should "include diff output in the fail messages" do
-      exp = "#<#{@act_obj.class}:#{'0x0%x' % (@act_obj.object_id << 1)}>"\
-            " expected to be the same as"\
+      exp = "Expected #<#{@act_obj.class}:#{'0x0%x' % (@act_obj.object_id << 1)}>"\
+            " to be the same as"\
             " #<#{@exp_obj.class}:#{'0x0%x' % (@exp_obj.object_id << 1)}>"\
             ", diff:\n"\
             "#{Assert::U.syscmd_diff_proc.call(@exp_obj_show, @act_obj_show)}"
@@ -122,8 +122,8 @@ module Assert::Assertions
     subject{ @test }
 
     should "include diff output in the fail messages" do
-      exp = "#<#{@act_obj.class}:#{'0x0%x' % (@act_obj.object_id << 1)}>"\
-            " not expected to be the same as"\
+      exp = "Expected #<#{@act_obj.class}:#{'0x0%x' % (@act_obj.object_id << 1)}>"\
+            " to not be the same as"\
             " #<#{@exp_obj.class}:#{'0x0%x' % (@exp_obj.object_id << 1)}>"\
             ", diff:\n"\
             "#{Assert::U.syscmd_diff_proc.call(@exp_obj_show, @act_obj_show)}"

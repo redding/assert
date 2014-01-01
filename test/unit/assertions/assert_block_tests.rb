@@ -4,7 +4,7 @@ require 'assert/assertions'
 module Assert::Assertions
 
   class AssertBlockTests < Assert::Context
-    desc "the `assert_block` helper"
+    desc "`assert_block`"
     setup do
       desc = @desc = "assert block fail desc"
       @test = Factory.test do
@@ -29,7 +29,7 @@ module Assert::Assertions
   end
 
   class AssertNotBlockTests < Assert::Context
-    desc "the assert_not_block helper"
+    desc "`assert_not_block`"
     setup do
       desc = @desc = "assert not block fail desc"
       @test = Factory.test do
@@ -47,7 +47,7 @@ module Assert::Assertions
     end
 
     should "have a fail message with custom and generic explanations" do
-      exp = "#{@desc}\nExpected block to return a false value."
+      exp = "#{@desc}\nExpected block to not return a true value."
       assert_equal exp, subject.fail_results.first.message
     end
 

@@ -6,7 +6,7 @@ require 'assert/utils'
 module Assert::Assertions
 
   class AssertRespondToTest < Assert::Context
-    desc "the assert_respond_to helper"
+    desc "`assert_respond_to`"
     setup do
       desc = @desc = "assert respond to fail desc"
       args = @args = [ :abs, "1", desc ]
@@ -35,7 +35,7 @@ module Assert::Assertions
   end
 
   class AssertNotRespondToTests < Assert::Context
-    desc "the assert_not_respond_to helper"
+    desc "`assert_not_respond_to`"
     setup do
       desc = @desc = "assert not respond to fail desc"
       args = @args = [ :abs, 1, desc ]
@@ -56,8 +56,8 @@ module Assert::Assertions
 
     should "have a fail message with custom and generic explanations" do
       exp = "#{@args[2]}\n"\
-            "#{Assert::U.show(@args[1], @c)} (#{@args[1].class})"\
-            " not expected to respond to `#{@args[0]}`."
+            "Expected #{Assert::U.show(@args[1], @c)} (#{@args[1].class})"\
+            " to not respond to `#{@args[0]}`."
       assert_equal exp, subject.fail_results.first.message
     end
 

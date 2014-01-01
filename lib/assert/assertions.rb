@@ -9,7 +9,7 @@ module Assert
     end
 
     def assert_not_block(desc = nil)
-      assert(!yield, desc){ "Expected block to return a false value." }
+      assert(!yield, desc){ "Expected block to not return a true value." }
     end
     alias_method :refute_block, :assert_not_block
 
@@ -36,7 +36,7 @@ module Assert
           "Expected does not equal actual, diff:\n"\
           "#{c.run_diff_proc.call(exp_show, act_show)}"
         else
-          "Expected #{Assert::U.show(exp, c)}, not #{Assert::U.show(act, c)}."
+          "Expected #{Assert::U.show(act, c)} to be equal to #{Assert::U.show(exp, c)}."
         end
       end
     end
@@ -51,7 +51,7 @@ module Assert
           "Expected equals actual, diff:\n"\
           "#{c.run_diff_proc.call(exp_show, act_show)}"
         else
-          "#{Assert::U.show(act, c)} not expected to equal #{Assert::U.show(exp, c)}."
+          "Expected #{Assert::U.show(act, c)} to not be equal to #{Assert::U.show(exp, c)}."
         end
       end
     end
@@ -97,8 +97,8 @@ module Assert
 
     def assert_not_instance_of(klass, instance, desc = nil)
       assert(!instance.instance_of?(klass), desc) do
-        "#{Assert::U.show(instance, __assert_config__)} (#{instance.class})"\
-        " not expected to be an instance of #{klass}."
+        "Expected #{Assert::U.show(instance, __assert_config__)} (#{instance.class})"\
+        " to not be an instance of #{klass}."
       end
     end
     alias_method :refute_instance_of, :assert_not_instance_of
@@ -112,8 +112,8 @@ module Assert
 
     def assert_not_kind_of(klass, instance, desc = nil)
       assert(!instance.kind_of?(klass), desc) do
-        "#{Assert::U.show(instance, __assert_config__)}"\
-        " not expected to be a kind of #{klass}."
+        "Expected #{Assert::U.show(instance, __assert_config__)} (#{instance.class})"\
+        " to not be a kind of #{klass}."
       end
     end
     alias_method :refute_kind_of, :assert_not_kind_of
@@ -129,8 +129,8 @@ module Assert
     def assert_not_match(exp, act, desc = nil)
       exp = String === exp && String === act ? /#{Regexp.escape(exp)}/ : exp
       assert(act !~ exp, desc) do
-        "#{Assert::U.show(act, __assert_config__)}"\
-        " not expected to match #{Assert::U.show(exp, __assert_config__)}."
+        "Expected #{Assert::U.show(act, __assert_config__)}"\
+        " to not match #{Assert::U.show(exp, __assert_config__)}."
       end
     end
     alias_method :refute_match, :assert_not_match
@@ -138,7 +138,7 @@ module Assert
 
     def assert_nil(object, desc = nil)
       assert(object.nil?, desc) do
-        "Expected nil, not #{Assert::U.show(object, __assert_config__)}."
+        "Expected #{Assert::U.show(object, __assert_config__)} to be nil."
       end
     end
 
@@ -174,8 +174,8 @@ module Assert
 
     def assert_not_respond_to(method, object, desc = nil)
       assert(!object.respond_to?(method), desc) do
-        "#{Assert::U.show(object, __assert_config__)} (#{object.class})"\
-        " not expected to respond to `#{method}`."
+        "Expected #{Assert::U.show(object, __assert_config__)} (#{object.class})"\
+        " to not respond to `#{method}`."
       end
     end
     alias_method :assert_not_responds_to, :assert_not_respond_to
@@ -191,10 +191,10 @@ module Assert
         act_id = "#<#{act.class}:#{'0x0%x' % (act.object_id << 1)}>"
 
         if c.use_diff_proc.call(exp_show, act_show)
-          "#{act_id} expected to be the same as #{exp_id}, diff:\n"\
+          "Expected #{act_id} to be the same as #{exp_id}, diff:\n"\
           "#{c.run_diff_proc.call(exp_show, act_show)}"
         else
-          "#{Assert::U.show(act, c)} (#{act_id}) expected to be the same as"\
+          "Expected #{Assert::U.show(act, c)} (#{act_id}) to be the same as"\
           " #{Assert::U.show(exp, c)} (#{exp_id})."
         end
       end
@@ -209,10 +209,10 @@ module Assert
         act_id = "#<#{act.class}:#{'0x0%x' % (act.object_id << 1)}>"
 
         if c.use_diff_proc.call(exp_show, act_show)
-          "#{act_id} not expected to be the same as #{exp_id}, diff:\n"\
+          "Expected #{act_id} to not be the same as #{exp_id}, diff:\n"\
           "#{c.run_diff_proc.call(exp_show, act_show)}"
         else
-          "#{Assert::U.show(act, c)} (#{act_id}) not expected to be the same as"\
+          "Expected #{Assert::U.show(act, c)} (#{act_id}) to not be the same as"\
           " #{Assert::U.show(exp, c)} (#{exp_id})."
         end
       end

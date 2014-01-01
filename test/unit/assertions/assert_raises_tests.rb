@@ -4,7 +4,7 @@ require 'assert/assertions'
 module Assert::Assertions
 
   class AssertRaisesTests < Assert::Context
-    desc "the assert_raises helper"
+    desc "`assert_raises`"
     setup do
       d = @d = "assert raises fail desc"
       @test = Factory.test do
@@ -38,7 +38,7 @@ module Assert::Assertions
   end
 
   class AssertNothingRaisedTests < Assert::Context
-    desc "the assert_nothing_raised helper"
+    desc "`assert_nothing_raised`"
     setup do
       d = @d = "assert nothing raised fail desc"
       @test = Factory.test do
