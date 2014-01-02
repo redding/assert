@@ -11,22 +11,22 @@ require 'assert'
 
 class MyTests < Assert::Context
 
-  def test_something
+  test "something" do
     assert_equal 1, 1
   end
 
 end
 ```
 
-```sh
+```
 $ assert test/my_tests.rb
 Loaded suite (1 test)
-Running tests in random order, seeded with "33650"
+Running tests in random order, seeded with "56382"
 .
 
 1 result: pass
 
-(0.000199 seconds)
+(0.000128 seconds, 7812.500000 tests/s, 7812.500000 results/s)
 ```
 
 ## What Assert is
