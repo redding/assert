@@ -6,7 +6,7 @@ require 'assert/utils'
 module Assert::Assertions
 
   class AssertEmptyTests < Assert::Context
-    desc "the assert_empty helper"
+    desc "`assert_empty`"
     setup do
       desc = @desc = "assert empty fail desc"
       args = @args = [ [ 1 ], desc ]
@@ -33,7 +33,7 @@ module Assert::Assertions
   end
 
   class AssertNotEmptyTests < Assert::Context
-    desc "the assert_not_empty helper"
+    desc "`assert_not_empty`"
     setup do
       desc = @desc = "assert not empty fail desc"
       args = @args = [ [], desc ]

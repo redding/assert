@@ -6,7 +6,7 @@ require 'assert/utils'
 module Assert::Assertions
 
   class AssertMatchTests < Assert::Context
-    desc "the assert_match helper"
+    desc "`assert_match`"
     setup do
       desc = @desc = "assert match fail desc"
       args = @args = [ "not", "a string", desc ]
@@ -34,7 +34,7 @@ module Assert::Assertions
   end
 
   class AssertNotMatchTests < Assert::Context
-    desc "the assert_not_match helper"
+    desc "`assert_not_match`"
     setup do
       desc = @desc = "assert not match fail desc"
       args = @args = [ /a/, "a string", desc ]
@@ -54,8 +54,8 @@ module Assert::Assertions
     end
 
     should "have a fail message with custom and generic explanations" do
-      exp = "#{@args[2]}\n#{Assert::U.show(@args[1], @c)}"\
-            " not expected to match #{Assert::U.show(@args[0], @c)}."
+      exp = "#{@args[2]}\nExpected #{Assert::U.show(@args[1], @c)}"\
+            " to not match #{Assert::U.show(@args[0], @c)}."
       assert_equal exp, subject.fail_results.first.message
     end
 

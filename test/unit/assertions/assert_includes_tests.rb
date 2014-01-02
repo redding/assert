@@ -6,7 +6,7 @@ require 'assert/utils'
 module Assert::Assertions
 
   class AssertIncludesTests < Assert::Context
-    desc "the assert_includes helper"
+    desc "`assert_includes`"
     setup do
       desc = @desc = "assert includes fail desc"
       args = @args = [ 2, [ 1 ], desc ]
@@ -35,7 +35,7 @@ module Assert::Assertions
   end
 
   class AssertNotIncluded < Assert::Context
-    desc "the assert_not_included helper"
+    desc "`assert_not_included`"
     setup do
       desc = @desc = "assert not included fail desc"
       args = @args = [ 1, [ 1 ], desc ]

@@ -6,7 +6,7 @@ require 'assert/utils'
 module Assert::Assertions
 
   class AssertInstanceOfTests < Assert::Context
-    desc "the assert_instance_of helper"
+    desc "`assert_instance_of`"
     setup do
       desc = @desc = "assert instance of fail desc"
       args = @args = [ Array, "object", desc ]
@@ -26,15 +26,15 @@ module Assert::Assertions
     end
 
     should "have a fail message with custom and generic explanations" do
-      exp = "#{@args[2]}\nExpected #{Assert::U.show(@args[1], @c)} (#{@args[1].class}) to"\
-            " be an instance of #{@args[0]}."
+      exp = "#{@args[2]}\nExpected #{Assert::U.show(@args[1], @c)} (#{@args[1].class})"\
+            " to be an instance of #{@args[0]}."
       assert_equal exp, subject.fail_results.first.message
     end
 
   end
 
   class AssertNotInstanceOfTests < Assert::Context
-    desc "the assert_not_instance_of helper"
+    desc "`assert_not_instance_of`"
     setup do
       desc = @desc = "assert not instance of fail desc"
       args = @args = [ String, "object", desc ]
@@ -54,8 +54,8 @@ module Assert::Assertions
     end
 
     should "have a fail message with custom and generic explanations" do
-      exp = "#{@args[2]}\n#{Assert::U.show(@args[1], @c)} (#{@args[1].class}) not expected to"\
-            " be an instance of #{@args[0]}."
+      exp = "#{@args[2]}\nExpected #{Assert::U.show(@args[1], @c)} (#{@args[1].class})"\
+            " to not be an instance of #{@args[0]}."
       assert_equal exp, subject.fail_results.first.message
     end
 
