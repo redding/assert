@@ -15,43 +15,15 @@ class Assert::Context
     alias_method :after_once, :teardown_once
     alias_method :shutdown, :teardown_once
 
-    # Add a setup block to run before each test or run the list of teardown blocks in given scope
-    def setup(scope_or_method_name = nil, &block)
-      is_method = scope_or_method_name.kind_of?(String) || scope_or_method_name.kind_of?(Symbol)
-      if block_given? || is_method
-        # arg is a block or method that needs to be stored as a setup
-        self.setups << (block || scope_or_method_name)
-      elsif !is_method
-        # arg is an instance of this class (the scope for a test),
-        # run the setups for this context in the scope
-        scope = scope_or_method_name
-        # setup parent...
-        self.superclass.setup(scope) if self.superclass.respond_to?(:setup)
-        # ... before child
-        self.setups.each do |setup|
-          setup.kind_of?(::Proc) ? scope.instance_eval(&setup) : scope.send(setup)
-        end
-      end
+    # Add a setup block to run before each test
+    def setup(method_name = nil, &block)
+      self.setups << (block || method_name)
     end
     alias_method :before, :setup
 
-    # Add a teardown block to run after each test or run the list of teardown blocks in given scope
-    def teardown(scope_or_method_name = nil, &block)
-      is_method = scope_or_method_name.kind_of?(String) || scope_or_method_name.kind_of?(Symbol)
-      if block_given? || is_method
-        # arg is a block or method that needs to be stored as a teardown
-        self.teardowns << (block || scope_or_method_name)
-      elsif !is_method
-        # arg is an instance of this class (the scope for a test),
-        # run the setups for this context in the scope
-        scope = scope_or_method_name
-        # teardown child...
-        self.teardowns.each do |teardown|
-          teardown.kind_of?(::Proc) ? scope.instance_eval(&teardown) : scope.send(teardown)
-        end
-        # ... before parent
-        self.superclass.teardown(scope) if self.superclass.respond_to?(:teardown)
-      end
+    # Add a teardown block to run after each test
+    def teardown(method_name = nil, &block)
+      self.teardowns << (block || method_name)
     end
     alias_method :after, :teardown
 
@@ -63,6 +35,24 @@ class Assert::Context
 
     def teardowns
       @teardowns ||= []
+    end
+
+    def run_setups(scope)
+      # setup the parent...
+      self.superclass.run_setups(scope) if self.superclass.respond_to?(:run_setups)
+      # ... before you setup the child
+      self.setups.compact.each do |setup|
+        setup.kind_of?(::Proc) ? scope.instance_eval(&setup) : scope.send(setup)
+      end
+    end
+
+    def run_teardowns(scope)
+      # teardown the child...
+      self.teardowns.compact.each do |teardown|
+        teardown.kind_of?(::Proc) ? scope.instance_eval(&teardown) : scope.send(teardown)
+      end
+      # ... before the parent
+      self.superclass.run_teardowns(scope) if self.superclass.respond_to?(:run_teardowns)
     end
 
   end
