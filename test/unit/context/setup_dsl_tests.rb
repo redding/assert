@@ -91,10 +91,10 @@ module Assert::Context::SetupDSL
     end
 
     should "run it's parent and it's own blocks in the correct order" do
-      subject.setup(obj = @test_status_class.new)
+      subject.send('run_setups', obj = @test_status_class.new)
       assert_equal "the setup has been run with something", obj.setup_status
 
-      subject.teardown(obj = @test_status_class.new)
+      subject.send('run_teardowns', obj = @test_status_class.new)
       assert_equal "with something has been run the teardown", obj.teardown_status
     end
 
