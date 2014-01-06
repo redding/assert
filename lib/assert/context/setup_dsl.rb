@@ -15,13 +15,15 @@ class Assert::Context
     alias_method :after_once, :teardown_once
     alias_method :shutdown, :teardown_once
 
-    # Add a setup block to run before each test
+    def around(&block)
+      self.arounds << block
+    end
+
     def setup(method_name = nil, &block)
       self.setups << (block || method_name)
     end
     alias_method :before, :setup
 
-    # Add a teardown block to run after each test
     def teardown(method_name = nil, &block)
       self.teardowns << (block || method_name)
     end
@@ -29,12 +31,28 @@ class Assert::Context
 
     protected
 
+    def arounds
+      @arounds ||= []
+    end
+
     def setups
       @setups ||= []
     end
 
     def teardowns
       @teardowns ||= []
+    end
+
+    def run_arounds(scope, &run_block)
+      context_block = self.arounds.compact.reverse.inject(run_block) do |run_b, around_b|
+        Proc.new{ scope.instance_exec(run_b, &around_b) }
+      end
+
+      if self.superclass.respond_to?(:run_arounds)
+        self.superclass.run_arounds(scope, &context_block)
+      else
+        context_block.call
+      end
     end
 
     def run_setups(scope)

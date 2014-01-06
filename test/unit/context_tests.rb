@@ -21,6 +21,7 @@ class Assert::Context
     should have_cmeths :teardown_once, :after_once, :shutdown
     should have_cmeths :setup, :before, :setups, :run_setups
     should have_cmeths :teardown, :after, :teardowns, :run_teardowns
+    should have_cmeths :around, :arounds, :run_arounds
     should have_cmeths :test, :test_eventually, :test_skip
     should have_cmeths :should, :should_eventually, :should_skip
 
