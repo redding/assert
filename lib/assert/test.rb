@@ -8,7 +8,7 @@ module Assert
     # a test runs, it should have some assertions which are its results.
 
     attr_reader :name, :context_info, :config, :code
-    attr_accessor :results, :output
+    attr_accessor :results, :output, :run_time
 
     def initialize(name, suite_ci, config, opts = nil, &block)
       @context_info = suite_ci
@@ -19,6 +19,8 @@ module Assert
 
       @results = Result::Set.new
       @output  = ""
+      @run_time = 0
+      @result_rate = 0
     end
 
     def context_class
@@ -26,16 +28,15 @@ module Assert
     end
 
     def run(&result_callback)
-      # setup the a new test run
       @results = Result::Set.new(result_callback)
 
-      # run the test, capturing its output
       scope = self.context_class.new(self, self.config)
+      start_time = Time.now
       capture_output do
         self.context_class.send('run_arounds', scope){ run_test_main(scope) }
       end
+      @run_time = Time.now - start_time
 
-      # return the results of the test run
       @results
     end
 
@@ -51,6 +52,10 @@ module Assert
       else
         @results.size
       end
+    end
+
+    def result_rate
+      get_rate(self.result_count, self.run_time)
     end
 
     def <=>(other_test)
@@ -136,6 +141,12 @@ module Assert
       [ self.context_class.description,
         name
       ].compact.reject{|p| p.empty?}.join(" ")
+    end
+
+    private
+
+    def get_rate(count, time)
+      time == 0 ? 0.0 : (count.to_f / time.to_f)
     end
 
   end

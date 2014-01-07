@@ -23,11 +23,11 @@ module Assert
     end
 
     def test_rate
-      get_rate(self.tests.size, self.run_time.to_f)
+      get_rate(self.tests.size, self.run_time)
     end
 
     def result_rate
-      get_rate(self.results.size, self.run_time.to_f)
+      get_rate(self.results.size, self.run_time)
     end
 
     alias_method :ordered_tests, :tests

@@ -16,8 +16,8 @@ class Assert::Test
     subject{ @test }
 
     should have_readers :name, :context_info, :config, :code
-    should have_accessors :results, :output
-    should have_imeths :run, :result_count, :context_class
+    should have_accessors :results, :output, :run_time
+    should have_imeths :run, :result_count, :result_rate, :context_class
     should have_imeths *Assert::Result.types.keys.collect{ |k| "#{k}_results" }
 
     should "build its name from the context description" do
@@ -45,6 +45,17 @@ class Assert::Test
 
     should "have zero results before running" do
       assert_equal 0, subject.result_count
+    end
+
+    should "have a zero run time and result rate by default" do
+      assert_equal 0, subject.run_time
+      assert_equal 0, subject.result_rate
+    end
+
+    should "have a non-zero run time and result rate after it is run" do
+      subject.run
+      assert_not_equal 0, subject.run_time
+      assert_not_equal 0, subject.result_rate
     end
 
     should "have a custom inspect that only shows limited attributes" do

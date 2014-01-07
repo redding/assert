@@ -25,7 +25,7 @@ class Assert::Suite
       assert_equal(exp, act)
     end
 
-    should "have a zero run time, test rate and result by default" do
+    should "have a zero run time, test rate and result rate by default" do
       assert_equal 0, subject.run_time
       assert_equal 0, subject.test_rate
       assert_equal 0, subject.result_rate
