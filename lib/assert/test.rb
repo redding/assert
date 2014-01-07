@@ -28,33 +28,13 @@ module Assert
     def run(&result_callback)
       # setup the a new test run
       @results = Result::Set.new(result_callback)
-      run_scope = self.context_class.new(self, self.config)
 
       # run the test, capturing its output
-      begin
-        run_test_setup(run_scope)
-        run_test_code(run_scope)
-      rescue Result::TestFailure => err
-        @results << Result::Fail.new(self, err)
-      rescue Result::TestSkipped => err
-        @results << Result::Skip.new(self, err)
-      rescue SignalException => err
-        raise(err)
-      rescue Exception => err
-        @results << Result::Error.new(self, err)
-      ensure
-        begin
-          run_test_teardown(run_scope)
-        rescue Result::TestFailure => err
-          @results << Result::Fail.new(self, err)
-        rescue Result::TestSkipped => err
-          @results << Result::Skip.new(self, err)
-        rescue SignalException => err
-          raise(err)
-        rescue Exception => teardown_err
-          @results << Result::Error.new(self, teardown_err)
-        end
+      scope = self.context_class.new(self, self.config)
+      capture_output do
+        self.context_class.send('run_arounds', scope){ run_test_main(scope) }
       end
+
       # return the results of the test run
       @results
     end
@@ -86,34 +66,55 @@ module Assert
 
     protected
 
-    def run_test_setup(scope)
-      capture_output do
-        # run any assert style 'setup do' setups
-        self.context_class.send('run_setups', scope)
-
-        # run any classic test/unit style 'def setup' setups
-        scope.setup if scope.respond_to?(:setup)
-      end
-    end
-
-    def run_test_code(scope)
-      capture_output do
-        if @code.kind_of?(::Proc)
-          scope.instance_eval(&@code)
-        elsif scope.respond_to?(@code.to_s)
-          scope.send(@code.to_s)
+    def run_test_main(scope)
+      begin
+        run_test_setup(scope)
+        run_test_code(scope)
+      rescue Result::TestFailure => err
+        @results << Result::Fail.new(self, err)
+      rescue Result::TestSkipped => err
+        @results << Result::Skip.new(self, err)
+      rescue SignalException => err
+        raise(err)
+      rescue Exception => err
+        @results << Result::Error.new(self, err)
+      ensure
+        begin
+          run_test_teardown(scope)
+        rescue Result::TestFailure => err
+          @results << Result::Fail.new(self, err)
+        rescue Result::TestSkipped => err
+          @results << Result::Skip.new(self, err)
+        rescue SignalException => err
+          raise(err)
+        rescue Exception => teardown_err
+          @results << Result::Error.new(self, teardown_err)
         end
       end
     end
 
-    def run_test_teardown(scope)
-      capture_output do
-        # run any classic test/unit style 'def teardown' teardowns
-        scope.teardown if scope.respond_to?(:teardown)
+    def run_test_setup(scope)
+      # run any assert style 'setup do' setups
+      self.context_class.send('run_setups', scope)
 
-        # run any assert style 'teardown do' teardowns
-        self.context_class.send('run_teardowns', scope)
+      # run any classic test/unit style 'def setup' setups
+      scope.setup if scope.respond_to?(:setup)
+    end
+
+    def run_test_code(scope)
+      if @code.kind_of?(::Proc)
+        scope.instance_eval(&@code)
+      elsif scope.respond_to?(@code.to_s)
+        scope.send(@code.to_s)
       end
+    end
+
+    def run_test_teardown(scope)
+      # run any classic test/unit style 'def teardown' teardowns
+      scope.teardown if scope.respond_to?(:teardown)
+
+      # run any assert style 'teardown do' teardowns
+      self.context_class.send('run_teardowns', scope)
     end
 
     def capture_output(&block)

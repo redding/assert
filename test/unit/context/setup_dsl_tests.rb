@@ -100,4 +100,48 @@ module Assert::Context::SetupDSL
 
   end
 
+  class AroundMethodTests < UnitTests
+    desc "with multiple `around` calls"
+    setup do
+      @parent_class = Factory.modes_off_context_class do
+        around do |block|
+          self.out_status ||= ''
+          self.out_status += "p-around start, "
+          block.call
+          self.out_status += "p-around end."
+        end
+      end
+
+      @context_class = Factory.modes_off_context_class(@parent_class) do
+        around do |block|
+          self.out_status += "c-around1 start, "
+          block.call
+          self.out_status += "c-around1 end, "
+        end
+        around do |block|
+          self.out_status += "c-around2 start, "
+          block.call
+          self.out_status += "c-around2 end, "
+        end
+      end
+
+      @test_status_class = Class.new do
+        attr_accessor :out_status
+      end
+    end
+
+    should "run it's parent and it's own blocks in the correct order" do
+      obj = @test_status_class.new
+      subject.send('run_arounds', obj) do
+        obj.instance_eval{ self.out_status += 'TEST, ' }
+      end
+
+      exp = "p-around start, c-around1 start, c-around2 start, "\
+            "TEST, "\
+            "c-around2 end, c-around1 end, p-around end."
+      assert_equal exp, obj.out_status
+    end
+
+  end
+
 end

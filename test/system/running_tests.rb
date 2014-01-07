@@ -262,8 +262,8 @@ class RunningSystemTests < Assert::Context
 
   end
 
-  class WithSetupTests < RunningSystemTests
-    desc "has assertions that depend on setups"
+  class WithSetupsTests < RunningSystemTests
+    desc "has tests that depend on setups"
     setup do
       assert_style_msg = @asm = "set by assert style setup"
       testunit_style_msg = @tusm = "set by test/unit style setup"
@@ -307,8 +307,8 @@ class RunningSystemTests < Assert::Context
 
   end
 
-  class WithTeardownTests < RunningSystemTests
-    desc "has assertions with teardowns"
+  class WithTeardownsTests < RunningSystemTests
+    desc "has tests that depend on teardowns"
     setup do
       assert_style_msg = @asm = "set by assert style teardown"
       testunit_style_msg = @tusm = "set by test/unit style teardown"
@@ -347,6 +347,56 @@ class RunningSystemTests < Assert::Context
 
     should "have run test/unit style teardown" do
       assert_equal @tusm, subject.pass_results.last.message
+    end
+
+  end
+
+  class WithAroundsTests < RunningSystemTests
+    desc "has arounds (in addition to setups/teardowns)"
+    setup do
+      @parent_class = Factory.modes_off_context_class do
+        around do |block|
+          @__running_test__.output += "p-around start, "
+          block.call
+          @__running_test__.output += "p-around end."
+        end
+        setup{ @__running_test__.output += "p-setup, " }
+        teardown{ @__running_test__.output += "p-teardown, " }
+      end
+
+      @context_class = Factory.modes_off_context_class(@parent_class) do
+        attr_accessor :out_status
+
+        setup{ @__running_test__.output += "c-setup1, " }
+        around do |block|
+          @__running_test__.output += "c-around1 start, "
+          block.call
+          @__running_test__.output += "c-around1 end, "
+        end
+        teardown{ @__running_test__.output += "c-teardown1, " }
+        setup{ @__running_test__.output += "c-setup2, " }
+        around do |block|
+          @__running_test__.output += "c-around2 start, "
+          block.call
+          @__running_test__.output += "c-around2 end, "
+        end
+        teardown{ @__running_test__.output += "c-teardown2, " }
+      end
+
+
+      @test = Factory.test("something amazing", Factory.context_info(@context_class)) do
+        @__running_test__.output += "TEST, "
+      end
+      @test.run
+    end
+
+    should "run the arounds outside of the setups/teardowns/test" do
+      exp = "p-around start, c-around1 start, c-around2 start, "\
+            "p-setup, c-setup1, c-setup2, "\
+            "TEST, "\
+            "c-teardown1, c-teardown2, p-teardown, "\
+            "c-around2 end, c-around1 end, p-around end."
+      assert_equal exp, subject.output
     end
 
   end
