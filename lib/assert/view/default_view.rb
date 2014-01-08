@@ -61,6 +61,17 @@ module Assert::View
         end
       end
 
+      # show profile output
+      if show_test_profile_info?
+        ordered_profile_tests.each do |test|
+          puts "#{test_run_time(test)} seconds,"\
+               " #{test.result_count} results,"\
+               " #{test_result_rate(test)} results/s --"\
+               " #{test.context_class}: #{test.name.inspect}"
+        end
+        puts
+      end
+
       # style the summaries of each result set
       styled_results_sentence = results_summary_sentence do |summary, sym|
         ansi_styled_msg(summary, result_ansi_styles(sym))

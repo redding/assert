@@ -42,6 +42,9 @@ module Assert
         option 'pp_objects', 'pretty-print objects in fail messages', {
           :abbrev => 'p'
         }
+        option 'profile', 'output test profile info', {
+          :abbrev => 'e'
+        }
         # show loaded test files, cli err backtraces, etc
         option 'debug', 'run in debug mode'
       end
