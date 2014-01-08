@@ -37,6 +37,16 @@ module Assert::View::Helpers
       format % self.suite.result_rate
     end
 
+    # get the formatted run time for an idividual test
+    def test_run_time(test, format = '%.6f')
+      format % test.run_time
+    end
+
+    # get the formatted result rate for an individual test
+    def test_result_rate(test, format = '%.6f')
+      format % test.result_rate
+    end
+
     # get a uniq list of contexts for the test suite
     def suite_contexts
       @suite_contexts ||= self.suite.tests.inject([]) do |contexts, test|
@@ -57,6 +67,14 @@ module Assert::View::Helpers
 
     def ordered_suite_files
       self.suite_files.sort{|a,b| a.to_s <=> b.to_s}
+    end
+
+    def ordered_profile_tests
+      suite.ordered_tests.sort{ |a, b| a.run_time <=> b.run_time }
+    end
+
+    def show_test_profile_info?
+      !!config.profile
     end
 
     # get all the result details for a set of tests
