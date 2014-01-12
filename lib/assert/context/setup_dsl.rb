@@ -29,8 +29,6 @@ class Assert::Context
     end
     alias_method :after, :teardown
 
-    protected
-
     def arounds
       @arounds ||= []
     end
