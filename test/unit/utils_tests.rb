@@ -47,7 +47,7 @@ module Assert::Utils
     desc "`show_for_diff`"
     setup do
       @w_newlines = { :string => "herp derp, derp herp\nherpderpedia" }
-      @w_obj_id = Struct.new(:a, :b).new('aye', 'bee')
+      @w_obj_id = Class.new.new
     end
 
     should "call show, escaping newlines" do
@@ -56,7 +56,7 @@ module Assert::Utils
     end
 
     should "make any obj ids generic" do
-      exp_out = "#<struct #<Class:0xXXXXXX> a=\"aye\", b=\"bee\">"
+      exp_out = "#<#<Class:0xXXXXXX>:0xXXXXXX>"
       assert_equal exp_out, subject.show_for_diff(@w_obj_id, Factory.modes_off_config)
     end
 
