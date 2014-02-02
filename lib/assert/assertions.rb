@@ -27,7 +27,7 @@ module Assert
     alias_method :refute_empty, :assert_not_empty
 
     def assert_equal(exp, act, desc = nil)
-      assert(act == exp, desc) do
+      assert(exp == act, desc) do
         c = __assert_config__
         exp_show = Assert::U.show_for_diff(exp, c)
         act_show = Assert::U.show_for_diff(act, c)
@@ -42,7 +42,7 @@ module Assert
     end
 
     def assert_not_equal(exp, act, desc = nil)
-      assert(act != exp, desc) do
+      assert(exp != act, desc) do
         c = __assert_config__
         exp_show = Assert::U.show_for_diff(exp, c)
         act_show = Assert::U.show_for_diff(act, c)
