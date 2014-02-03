@@ -61,6 +61,27 @@ module Assert::Assertions
 
   end
 
+  class EqualOrderTests < Assert::Context
+    desc "with objects that define custom equality operators"
+    setup do
+      is_class = Class.new do
+        def ==(other); true; end
+      end
+      @is = is_class.new
+
+      is_not_class = Class.new do
+        def ==(other); false; end
+      end
+      @is_not = is_not_class.new
+    end
+
+    should "use the equality operator of the exp value" do
+      assert_equal @is, @is_not
+      assert_not_equal @is_not, @is
+    end
+
+  end
+
   class DiffTests < Assert::Context
     desc "with objects that should use diff when showing"
     setup do
