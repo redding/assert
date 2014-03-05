@@ -11,6 +11,7 @@ module Assert::Factory
     should have_imeths :date, :time, :datetime
     should have_imeths :string, :text, :slug, :hex
     should have_imeths :file_name, :dir_path, :file_path
+    should have_imeths :path, :url
     should have_imeths :binary, :boolean
     should have_imeths :type_cast, :type_converter
 
@@ -108,6 +109,25 @@ module Assert::Factory
       assert_equal 4, segments.size
       segments[0..-2].each{ |s| assert_match /\A[a-z]{4}\Z/, s }
       assert_match /\A[a-z]{6}\.[a-z]{3}\Z/, segments.last
+    end
+
+    should "return a random url string using `url`" do
+      u = subject.url
+      segments = u.split('/')
+
+      assert_kind_of String, u
+      assert_match /\A\//, u
+      assert_equal 4, segments.size
+      segments[1..-1].each{ |s| assert_match /\A[a-z]{4}\Z/, s }
+    end
+
+    should "allow passing a host string using `url`" do
+      host = "example.com"
+      assert_match /\A#{host}\//, subject.url(host)
+    end
+
+    should "allow passing a maximum length using `url`" do
+      assert_equal 2, subject.url('', 1).length # plus leading '/'
     end
 
     should "return a random binary string using `binary`" do
