@@ -60,6 +60,12 @@ module Assert
       self.type_cast(Random.file_path_string, :string)
     end
 
+    alias_method :path, :dir_path
+
+    def url(host = nil, length = nil)
+      self.type_cast(Random.url_string(host, length), :string)
+    end
+
     def binary
       self.type_cast(Random.binary, :binary)
     end
@@ -134,6 +140,10 @@ module Assert
 
       def self.file_path_string
         File.join(self.dir_path_string, self.file_name_string)
+      end
+
+      def self.url_string(host = nil, length = nil)
+        File.join(host.to_s, self.dir_path_string(length))
       end
 
       def self.binary
