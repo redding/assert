@@ -66,6 +66,10 @@ module Assert
       self.type_cast(Random.url_string(host, length), :string)
     end
 
+    def email(domain = nil, length = nil)
+      self.type_cast(Random.email_string(domain, length), :string)
+    end
+
     def binary
       self.type_cast(Random.binary, :binary)
     end
@@ -144,6 +148,11 @@ module Assert
 
       def self.url_string(host = nil, length = nil)
         File.join(host.to_s, self.dir_path_string(length))
+      end
+
+      def self.email_string(domain = nil, length = nil)
+        domain ||= "#{self.string(5)}.com"
+        "#{self.string(length)}@#{domain}"
       end
 
       def self.binary
