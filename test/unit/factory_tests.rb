@@ -11,7 +11,7 @@ module Assert::Factory
     should have_imeths :date, :time, :datetime
     should have_imeths :string, :text, :slug, :hex
     should have_imeths :file_name, :dir_path, :file_path
-    should have_imeths :path, :url
+    should have_imeths :path, :url, :email
     should have_imeths :binary, :boolean
     should have_imeths :type_cast, :type_converter
 
@@ -128,6 +128,21 @@ module Assert::Factory
 
     should "allow passing a maximum length using `url`" do
       assert_equal 2, subject.url('', 1).length # plus leading '/'
+    end
+
+    should "return a random email string using `email`" do
+      e = subject.email
+      assert_kind_of String, e
+      assert_match /\A\w+@\w+\.com\Z/, e
+    end
+
+    should "allow passing a custom domain to `email`" do
+      e = subject.email('example.org')
+      assert_match /@example\.org\Z/, e
+    end
+
+    should "allow passing a mailbox length using `email`" do
+      assert_equal 2, subject.email(nil, 2).split('@').first.size
     end
 
     should "return a random binary string using `binary`" do
