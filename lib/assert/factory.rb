@@ -97,7 +97,7 @@ module Assert
 
     module Random
       def self.integer(max = nil)
-        rand(max || 100) + 1
+        rand(max || 32_766) + 1
       end
 
       # `rand` with no args gives a float between 0 and 1
