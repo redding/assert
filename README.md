@@ -40,7 +40,7 @@ Running tests in random order, seeded with "56382"
 
 * **Rspec**
 * **Unit/Functional/Integration/etc**: Assert is agnostic - you define whatever kinds of tests you like (one or more of the above) and assert runs them in context.
-* **Mock/Spec/BDD/Factories/etc**: Assert is the framework and there are a variety of 3rd party tools to do such things - feel free to use whatever you like.
+* **Mock/Spec/BDD/etc**: Assert is the framework and there are a variety of 3rd party tools to do such things - feel free to use whatever you like.
 
 ## Description
 
