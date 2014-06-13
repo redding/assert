@@ -34,7 +34,7 @@ module Assert::Assertions
 
   end
 
-  class AssertNotIncluded < Assert::Context
+  class AssertNotIncludedTests < Assert::Context
     desc "`assert_not_included`"
     setup do
       desc = @desc = "assert not included fail desc"

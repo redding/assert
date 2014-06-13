@@ -7,7 +7,7 @@ require 'assert/utils'
 class Assert::Context
 
   class UnitTests < Assert::Context
-    desc "Assert context"
+    desc "Assert::Context"
     setup do
       @test = Factory.test
       @context_class = @test.context_class

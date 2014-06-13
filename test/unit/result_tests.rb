@@ -4,7 +4,7 @@ require 'assert/result'
 module Assert::Result
 
   class BacktraceTests < Assert::Context
-    desc "a result backtrace"
+    desc "Assert::Result::Backtrace"
     setup do
       @backtrace = Backtrace.new(caller)
     end
@@ -30,8 +30,8 @@ module Assert::Result
 
   end
 
-  class UnitTests < Assert::Context
-    desc "a base result"
+  class BaseTests < Assert::Context
+    desc "Assert::Result::Base"
     setup do
       @test = Factory.test("a test name")
       @result = Assert::Result::Base.new(@test, "a message", ["line 1", "line2"])
@@ -73,10 +73,6 @@ module Assert::Result
       assert_equal ['bt'], subject.backtrace
     end
 
-  end
-
-  class ToStringTests < UnitTests
-
     should "include its test context name in the to_s" do
       assert subject.to_s.include?(subject.test_name)
     end
@@ -99,14 +95,14 @@ module Assert::Result
   end
 
   class PassTests < Assert::Context
-    desc "a pass result"
+    desc "Assert::Result::Pass"
     setup do
       @test = Factory.test("a test name")
       @result = Assert::Result::Pass.new(@test, "passed", [])
     end
     subject { @result }
 
-    should "be pass?" do
+    should "pass?" do
       assert_equal true, subject.pass?
     end
 
@@ -131,14 +127,14 @@ module Assert::Result
   end
 
   class IgnoreTests < Assert::Context
-    desc "an ignore result"
+    desc "Assert::Result::Ignore"
     setup do
       @test = Factory.test("a test name")
       @result = Assert::Result::Ignore.new(@test, "ignored", [])
     end
     subject { @result }
 
-    should "be ignore?" do
+    should "ignore?" do
       assert_equal true, subject.ignore?
     end
 
@@ -163,7 +159,7 @@ module Assert::Result
   end
 
   class FailTests < Assert::Context
-    desc "a fail result"
+    desc "Assert::Result::Fail"
     setup do
       @test = Factory.test("a test name")
       @result = Assert::Result::Fail.new(@test, "failed", [])
@@ -174,7 +170,7 @@ module Assert::Result
       assert_kind_of RuntimeError, Assert::Result::TestFailure.new
     end
 
-    should "be fail?" do
+    should "fail?" do
       assert_equal true, subject.fail?
     end
 
@@ -199,7 +195,7 @@ module Assert::Result
   end
 
   class SkipTests < Assert::Context
-    desc "a skip result"
+    desc "Assert::Result::Skip"
     setup do
       @test = Factory.test("a test name")
       @exception = nil
@@ -216,7 +212,7 @@ module Assert::Result
       assert_kind_of RuntimeError, Assert::Result::TestSkipped.new
     end
 
-    should "be skip?" do
+    should "skip?" do
       assert_equal true, subject.skip?
     end
 
@@ -241,7 +237,7 @@ module Assert::Result
   end
 
   class ErrorTests < Assert::Context
-    desc "an error result"
+    desc "Assert::Result::Error"
     setup do
       @test = Factory.test("a test name")
       @exception = nil
@@ -254,7 +250,7 @@ module Assert::Result
     end
     subject { @result }
 
-    should "be error?" do
+    should "error?" do
       assert_equal true, subject.error?
     end
 

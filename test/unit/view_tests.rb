@@ -47,10 +47,11 @@ class Assert::View::Base
   end
 
   class HandlerTests < Assert::Context
-    desc 'the assert view handler'
+    desc "Assert::View"
     subject { Assert::View }
 
     should have_instance_method :require_user_view
+
   end
 
 end

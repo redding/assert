@@ -5,8 +5,8 @@ require 'assert/runner'
 
 class Assert::Runner
 
-  class BasicTests < Assert::Context
-    desc "a basic runner"
+  class UnitTests < Assert::Context
+    desc "Assert::Runner"
     setup do
       @config = Factory.modes_off_config
       @suite  = Assert::Suite.new(@config)

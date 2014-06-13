@@ -4,7 +4,7 @@ require 'assert/assertions'
 module Assert::Assertions
 
   class UnitTests < Assert::Context
-    desc "An assert context"
+    desc "Assert::Context"
     setup do
       @context_class = Factory.modes_off_context_class
       @test = Factory.test

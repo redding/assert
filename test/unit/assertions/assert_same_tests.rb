@@ -5,7 +5,7 @@ require 'assert/utils'
 
 module Assert::Assertions
 
-  class AssertSameTest < Assert::Context
+  class AssertSameTests < Assert::Context
     desc "`assert_same`"
     setup do
       klass = Class.new; object = klass.new

@@ -5,7 +5,7 @@ require 'assert/config'
 module Assert
 
   class UnitTests < Assert::Context
-    desc "the Assert module"
+    desc "Assert"
     subject { Assert }
 
     should have_imeths :config, :configure, :view, :suite, :runner

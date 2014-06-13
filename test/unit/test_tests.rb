@@ -5,8 +5,8 @@ require 'assert/config'
 
 class Assert::Test
 
-  class BasicTests < Assert::Context
-    desc "a test obj"
+  class UnitTests < Assert::Context
+    desc "Assert::Test"
     setup do
       @test_code = lambda{ assert(true) }
       @context_class = Factory.modes_off_context_class{ desc "context class" }
@@ -68,7 +68,7 @@ class Assert::Test
 
   end
 
-  class PassFailIgnoreTotalTests < BasicTests
+  class PassFailIgnoreTotalTests < UnitTests
     setup do
       @test = Factory.test("pass fail ignore test", @context_info) do
         ignore("something")
@@ -122,7 +122,7 @@ class Assert::Test
 
   end
 
-  class SkipHandlingTests < BasicTests
+  class SkipHandlingTests < UnitTests
     setup do
       @test = Factory.test("skip test", @context_info){ skip }
       @test.run
@@ -163,7 +163,7 @@ class Assert::Test
 
   end
 
-  class ErrorHandlingTests < BasicTests
+  class ErrorHandlingTests < UnitTests
     setup do
       @test = Factory.test("error test", @context_info) do
         raise StandardError, "WHAT"
@@ -206,7 +206,7 @@ class Assert::Test
 
   end
 
-  class SignalExceptionHandlingTests < BasicTests
+  class SignalExceptionHandlingTests < UnitTests
     setup do
       @test = Factory.test("signal test", @context_info) do
         raise SignalException, "USR1"
@@ -234,7 +234,7 @@ class Assert::Test
 
   end
 
-  class ComparingTests < BasicTests
+  class ComparingTests < UnitTests
     desc "<=> another test"
     setup do
       @test = Factory.test("mmm")
@@ -258,7 +258,7 @@ class Assert::Test
 
   end
 
-  class CaptureOutTests < BasicTests
+  class CaptureOutTests < UnitTests
     desc "when capturing std out"
     setup do
       @capture_config = Assert::Config.new(:capture_output => true)

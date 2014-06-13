@@ -5,7 +5,7 @@ require 'assert/utils'
 
 module Assert::Assertions
 
-  class AssertRespondToTest < Assert::Context
+  class AssertRespondToTests < Assert::Context
     desc "`assert_respond_to`"
     setup do
       desc = @desc = "assert respond to fail desc"
