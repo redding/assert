@@ -10,7 +10,7 @@ module Assert
     subject { Assert }
 
     should have_imeths :config, :configure, :view, :suite, :runner
-    should have_imeths :stub, :unstub
+    should have_imeths :stubs, :stub, :unstub, :unstub!
 
     should "know its config instance" do
       assert_kind_of Assert::Config, subject.config
@@ -63,6 +63,32 @@ module Assert
       assert_equal 'mymeth', @myobj.mymeth
       Assert.unstub(@myobj, :mymeth)
       assert_equal 'meth', @myobj.mymeth
+    end
+
+    should "know and teardown all stubs" do
+      assert_equal 'meth', @myobj.mymeth
+
+      Assert.stub(@myobj, :mymeth){ 'mymeth' }
+      assert_equal 'mymeth', @myobj.mymeth
+      assert_equal 1, Assert.stubs.size
+
+      Assert.unstub!
+      assert_equal 'meth', @myobj.mymeth
+      assert_empty Assert.stubs
+    end
+
+    should "auto-unstub any stubs on teardown" do
+      context_class = ::Factory.modes_off_context_class do
+        setup do
+          Assert.stub('1', :to_s){ 'one' }
+        end
+      end
+
+      context_class.run_setups('scope')
+      assert_equal 1, Assert.stubs.size
+
+      context_class.run_teardowns('scope')
+      assert_empty Assert.stubs
     end
 
   end

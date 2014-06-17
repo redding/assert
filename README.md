@@ -112,6 +112,7 @@ to be friendly and complain if stubbing doesn't match up with the object/method 
 * complains if you stub a method that the object doesn't respond to
 * complains if you stub with an arity mismatch
 * no methods added to `Object`
+* stubs are auto-unstubbed on test teardown
 
 ## CLI
 

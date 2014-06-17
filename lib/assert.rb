@@ -31,4 +31,14 @@ module Assert
     (self.stubs.delete(Assert::Stub.key(*args)) || Assert::Stub::NullStub.new).teardown
   end
 
+  def self.unstub!
+    self.stubs.keys.each{ |key| self.stubs.delete(key).teardown }
+  end
+
+  class Context
+
+    teardown{ Assert.unstub! } # unstub all stubs automatically
+
+  end
+
 end
