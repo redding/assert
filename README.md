@@ -50,6 +50,69 @@ In addition, Assert adds some helpers and syntax sugar to enhance the way tests 
 
 **Note**: Assert is tested using itself.  The tests are a pretty good place to look for examples and usage patterns.
 
+## Defining tests
+
+TODO
+
+## Factory
+
+TODO
+
+## Stub
+
+```ruby
+myclass = Class.new do
+  def mymeth; 'meth'; end
+  def myval(val); val; end
+end
+myobj = myclass.new
+
+myobj.mymeth
+  # => 'meth'
+myobj.myval(123)
+  # => 123
+myobj.myval(456)
+  # => 456
+
+Assert.stub(myobj, :mymeth)
+myobj.mymeth
+  # => StubError: `mymeth` not stubbed.
+Assert.stub(myobj, :mymeth){ 'stub-meth' }
+myobj.mymeth
+  # => 'stub-meth'
+myobj.mymeth(123)
+  # => StubError: arity mismatch
+Assert.stub(myobj, :mymeth).with(123){ 'stub-meth' }
+  # => StubError: arity mismatch
+
+Assert.stub(myobj, :myval){ 'stub-meth' }
+  # => StubError: arity mismatch
+Assert.stub(myobj, :myval).with(123){ |val| val.to_s }
+myobj.myval
+  # => StubError: arity mismatch
+myobj.mymeth(123)
+  # => '123'
+myobj.mymeth(456)
+  # => StubError: `mymeth(456)` not stubbed.
+
+Assert.unstub(myobj, :mymeth)
+
+myobj.mymeth
+  # => 'meth'
+myobj.myval(123)
+  # => 123
+myobj.myval(456)
+  # => 456
+```
+
+Assert comes with a simple stubbing API - all it does is replace method calls.  In general it tries
+to be friendly and complain if stubbing doesn't match up with the object/method being stubbed:
+
+* each stub takes a block that is called in place of the method
+* complains if you stub a method that the object doesn't respond to
+* complains if you stub with an arity mismatch
+* no methods added to `Object`
+
 ## CLI
 
 ```sh
