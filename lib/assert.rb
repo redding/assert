@@ -17,28 +17,9 @@ module Assert
   def self.suite;  self.config.suite;  end
   def self.runner; self.config.runner; end
 
-  def self.stubs
-    @stubs ||= {}
-  end
-
-  def self.stub(*args, &block)
-    (self.stubs[Assert::Stub.key(*args)] ||= Assert::Stub.new(*args)).tap do |s|
-      s.do = block
-    end
-  end
-
-  def self.unstub(*args)
-    (self.stubs.delete(Assert::Stub.key(*args)) || Assert::Stub::NullStub.new).teardown
-  end
-
-  def self.unstub!
-    self.stubs.keys.each{ |key| self.stubs.delete(key).teardown }
-  end
-
+  # unstub all stubs automatically (see stub.rb)
   class Context
-
-    teardown{ Assert.unstub! } # unstub all stubs automatically
-
+    teardown{ Assert.unstub! }
   end
 
 end

@@ -1,5 +1,23 @@
 module Assert
 
+  def self.stubs
+    @stubs ||= {}
+  end
+
+  def self.stub(*args, &block)
+    (self.stubs[Assert::Stub.key(*args)] ||= Assert::Stub.new(*args)).tap do |s|
+      s.do = block
+    end
+  end
+
+  def self.unstub(*args)
+    (self.stubs.delete(Assert::Stub.key(*args)) || Assert::Stub::NullStub.new).teardown
+  end
+
+  def self.unstub!
+    self.stubs.keys.each{ |key| self.stubs.delete(key).teardown }
+  end
+
   StubError = Class.new(ArgumentError)
 
   class Stub
