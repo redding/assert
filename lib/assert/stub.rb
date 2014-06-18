@@ -58,9 +58,11 @@ module Assert
         raise StubError, "#{object.inspect} does not respond to `#{@method_name}`"
       end
       if !object.methods.map(&:to_s).include?(@method_name)
-        @metaclass.send(:define_method, @method_name) do |*args, &block|
-          super(*args, &block)
-        end
+        @metaclass.class_eval <<-method
+          def #{@method_name}(*args, &block)
+            super(*args, &block)
+          end
+        method
       end
 
       if !object.respond_to?(@name) # already stubbed

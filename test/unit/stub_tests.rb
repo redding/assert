@@ -159,16 +159,26 @@ class Assert::Stub
       assert_equal 'true', blkcalled
     end
 
-    should "stub methods even if they are from a super class" do
-      mysubclass = Class.new(@myclass)
-      mysubobj = mysubclass.new
+    should "stub methods even if they are not local to the object" do
+      mydelegatorclass = Class.new do
+        def initialize(delegateclass)
+          @delegate = delegateclass.new
+        end
+        def respond_to?(meth)
+          @delegate.respond_to?(meth) || super
+        end
+        def method_missing(meth, *args, &block)
+          respond_to?(meth) ? @delegate.send(meth, *args, &block) : super
+        end
+      end
+      mydelegator = mydelegatorclass.new(@myclass)
 
-      assert_equal 1, mysubobj.myval(1)
-      stub = Assert::Stub.new(mysubobj, :myval){ |val| val.to_s }
-      assert_equal '1', mysubobj.myval(1)
-      assert_equal '2', mysubobj.myval(2)
-      stub.with(2){ 'two' }
-      assert_equal 'two', mysubobj.myval(2)
+      assert_equal [1,2,[3]], mydelegator.myvalargs(1,2,3)
+      stub = Assert::Stub.new(mydelegator, :myvalargs){ |*args| args.inspect }
+      assert_equal '[1, 2, 3]', mydelegator.myvalargs(1,2,3)
+      assert_equal '[4, 5, 6]', mydelegator.myvalargs(4,5,6)
+      stub.with(4,5,6){ 'four-five-six' }
+      assert_equal 'four-five-six', mydelegator.myvalargs(4,5,6)
     end
 
     should "be removable" do
