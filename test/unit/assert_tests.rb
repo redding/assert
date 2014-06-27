@@ -48,7 +48,7 @@ module Assert
 
     should "set the stub's do block if given a block" do
       Assert.stub(@myobj, :mymeth)
-      assert_raises(StubError){ @myobj.mymeth }
+      assert_raises(NotStubbedError){ @myobj.mymeth }
       Assert.stub(@myobj, :mymeth){ 'mymeth' }
       assert_equal 'mymeth', @myobj.mymeth
     end
