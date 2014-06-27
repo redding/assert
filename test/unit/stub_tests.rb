@@ -35,7 +35,7 @@ class Assert::Stub
     end
 
     should "complain when called if no do block was given" do
-      assert_raises Assert::StubError do
+      assert_raises Assert::NotStubbedError do
         @myobj.mymeth
       end
 
@@ -56,14 +56,14 @@ class Assert::Stub
     end
 
     should "complain if stubbed and called with no `do` proc given" do
-      assert_raises(Assert::StubError){ @myobj.mymeth }
+      assert_raises(Assert::NotStubbedError){ @myobj.mymeth }
     end
 
     should "complain if stubbed and called with mismatched arity" do
       Assert::Stub.new(@myobj, :myval){ 'myval' }
-      assert_raises(Assert::StubError){ @myobj.myval }
+      assert_raises(Assert::StubArityError){ @myobj.myval }
       assert_nothing_raised { @myobj.myval(1) }
-      assert_raises(Assert::StubError){ @myobj.myval(1,2) }
+      assert_raises(Assert::StubArityError){ @myobj.myval(1,2) }
 
       Assert::Stub.new(@myobj, :myargs){ 'myargs' }
       assert_nothing_raised { @myobj.myargs }
@@ -71,17 +71,17 @@ class Assert::Stub
       assert_nothing_raised { @myobj.myargs(1,2) }
 
       Assert::Stub.new(@myobj, :myvalargs){ 'myvalargs' }
-      assert_raises(Assert::StubError){ @myobj.myvalargs }
-      assert_raises(Assert::StubError){ @myobj.myvalargs(1) }
+      assert_raises(Assert::StubArityError){ @myobj.myvalargs }
+      assert_raises(Assert::StubArityError){ @myobj.myvalargs(1) }
       assert_nothing_raised { @myobj.myvalargs(1,2) }
       assert_nothing_raised { @myobj.myvalargs(1,2,3) }
     end
 
     should "complain if stubbed with mismatched arity" do
-      assert_raises(Assert::StubError) do
+      assert_raises(Assert::StubArityError) do
         Assert::Stub.new(@myobj, :myval).with(){ 'myval' }
       end
-      assert_raises(Assert::StubError) do
+      assert_raises(Assert::StubArityError) do
         Assert::Stub.new(@myobj, :myval).with(1,2){ 'myval' }
       end
       assert_nothing_raised do
@@ -98,10 +98,10 @@ class Assert::Stub
         Assert::Stub.new(@myobj, :myargs).with(1){ 'myargs' }
       end
 
-      assert_raises(Assert::StubError) do
+      assert_raises(Assert::StubArityError) do
         Assert::Stub.new(@myobj, :myvalargs).with(){ 'myvalargs' }
       end
-      assert_raises(Assert::StubError) do
+      assert_raises(Assert::StubArityError) do
         Assert::Stub.new(@myobj, :myvalargs).with(1){ 'myvalargs' }
       end
       assert_nothing_raised do
@@ -191,6 +191,24 @@ class Assert::Stub
 
   end
 
+  class MutatingArgsStubTests < UnitTests
+    desc "with args that are mutated after they've been used to stub"
+    setup do
+      @arg = ChangeHashObject.new
+
+      @stub = Assert::Stub.new(@myobj, :myval)
+      @stub.with(@arg){ true }
+
+      @arg.change!
+    end
+    subject{ @stub }
+
+    should "not raise a stub error when called" do
+      assert_nothing_raised{ @stub.call(@arg) }
+    end
+
+  end
+
   class NullStubTests < UnitTests
     desc "NullStub"
     setup do
@@ -200,6 +218,20 @@ class Assert::Stub
 
     should have_imeths :teardown
 
+  end
+
+  class ChangeHashObject
+    def initialize
+      @value = nil
+    end
+
+    def hash
+      @value.hash
+    end
+
+    def change!
+      @value = 1
+    end
   end
 
 end

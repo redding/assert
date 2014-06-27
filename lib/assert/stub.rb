@@ -19,6 +19,8 @@ module Assert
   end
 
   StubError = Class.new(ArgumentError)
+  NotStubbedError = Class.new(StubError)
+  StubArityError = Class.new(StubError)
 
   class Stub
 
@@ -44,18 +46,21 @@ module Assert
         inspect_lookup_stubs.tap do |stubs|
           err_msg += "\nStubs:\n#{stubs}" if !stubs.empty?
         end
-        raise StubError, err_msg
+        raise NotStubbedError, err_msg
       end
       @lookup = Hash.new{ |hash, key| self.do }
     end
 
     def call(*args, &block)
-      raise StubError, "artiy mismatch" unless arity_matches?(args)
+      raise StubArityError, "artiy mismatch" unless arity_matches?(args)
+      @lookup[args].call(*args, &block)
+    rescue NotStubbedError => exception
+      @lookup.rehash
       @lookup[args].call(*args, &block)
     end
 
     def with(*args, &block)
-      raise StubError, "artiy mismatch" unless arity_matches?(args)
+      raise StubArityError, "artiy mismatch" unless arity_matches?(args)
       @lookup[args] = block
     end
 
