@@ -32,14 +32,17 @@ module Assert
       "--#{object.object_id}--#{method_name}--"
     end
 
-    attr_reader :method_name, :name, :do
+    attr_reader :method_name, :name, :ivar_name, :do
 
     def initialize(object, method_name, &block)
-      @metaclass = class << object; self; end
+      @object = object
+      @metaclass = class << @object; self; end
       @method_name = method_name.to_s
-      @name = "__assert_stub__#{@method_name}"
+      @name = "__assert_stub__#{@object.object_id}_#{@method_name}"
+      @ivar_name = "@__assert_stub_#{@object.object_id}_" \
+                   "#{@method_name.to_sym.object_id}"
 
-      setup(object)
+      setup
 
       @do = block || Proc.new do |*args, &block|
         err_msg = "#{inspect_call(args)} not stubbed."
@@ -70,17 +73,22 @@ module Assert
 
     def teardown
       @metaclass.send(:undef_method, @method_name)
+      @object.send(:remove_instance_variable, @ivar_name)
       @metaclass.send(:alias_method, @method_name, @name)
       @metaclass.send(:undef_method, @name)
     end
 
     protected
 
-    def setup(object)
-      unless object.respond_to?(@method_name)
-        raise StubError, "#{object.inspect} does not respond to `#{@method_name}`"
+    def setup
+      unless @object.respond_to?(@method_name)
+        raise StubError, "#{@object.inspect} does not respond to `#{@method_name}`"
       end
-      if !object.methods.map(&:to_s).include?(@method_name)
+      is_constant = @object.kind_of?(Module)
+      local_object_methods = @object.methods(false).map(&:to_s)
+      all_object_methods = @object.methods.map(&:to_s)
+      if (is_constant && !local_object_methods.include?(@method_name)) ||
+         (!is_constant && !all_object_methods.include?(@method_name))
         @metaclass.class_eval <<-method
           def #{@method_name}(*args, &block)
             super(*args, &block)
@@ -88,15 +96,17 @@ module Assert
         method
       end
 
-      if !object.respond_to?(@name) # already stubbed
+      if !local_object_methods.include?(@name) # already stubbed
         @metaclass.send(:alias_method, @name, @method_name)
       end
-      @method = object.method(@name)
+      @method = @object.method(@name)
 
-      stub = self
-      @metaclass.send(:define_method, @method_name) do |*args, &block|
-        stub.call(*args, &block)
-      end
+      @object.instance_variable_set(@ivar_name, self)
+      @metaclass.class_eval <<-stub_method
+        def #{@method_name}(*args, &block)
+          #{@ivar_name}.call(*args, &block)
+        end
+      stub_method
     end
 
     private
