@@ -19,7 +19,7 @@ class Assert::Stub
     end
     subject{ @stub }
 
-    should have_readers :method_name, :name, :do
+    should have_readers :method_name, :name, :ivar_name, :do
     should have_writers :do
     should have_cmeths :key
 
@@ -31,7 +31,11 @@ class Assert::Stub
 
     should "know its names" do
       assert_equal 'mymeth', subject.method_name
-      assert_equal "__assert_stub__#{subject.method_name}", subject.name
+      expected = "__assert_stub__#{@myobj.object_id}_#{subject.method_name}"
+      assert_equal expected, subject.name
+      expected = "@__assert_stub_#{@myobj.object_id}_" \
+                 "#{subject.method_name.to_sym.object_id}"
+      assert_equal expected, subject.ivar_name
     end
 
     should "complain when called if no do block was given" do
@@ -181,6 +185,12 @@ class Assert::Stub
       assert_equal 'four-five-six', mydelegator.myvalargs(4,5,6)
     end
 
+    should "store and remove itself on the object it stubs" do
+      assert_equal subject, @myobj.instance_variable_get(subject.ivar_name)
+      subject.teardown
+      assert_nil @myobj.instance_variable_get(subject.ivar_name)
+    end
+
     should "be removable" do
       assert_equal 1, @myobj.myval(1)
       stub = Assert::Stub.new(@myobj, :myval){ |val| val.to_s }
@@ -205,6 +215,34 @@ class Assert::Stub
 
     should "not raise a stub error when called" do
       assert_nothing_raised{ @stub.call(@arg) }
+    end
+
+  end
+
+  class StubInheritedMethodAfterStubbedOnParentTests < UnitTests
+    desc "stubbing an inherited method after its stubbed on the parent class"
+    setup do
+      @parent_class = Class.new
+      @child_class = Class.new(@parent_class)
+
+      @parent_stub = Assert::Stub.new(@parent_class, :new)
+      @child_stub = Assert::Stub.new(@child_class, :new)
+    end
+
+    should "allow stubbing them independently of each other" do
+      assert_nothing_raised do
+        @parent_stub.with(1, 2){ 'parent' }
+        @child_stub.with(1, 2){ 'child' }
+      end
+      assert_equal 'parent', @parent_class.new(1, 2)
+      assert_equal 'child', @child_class.new(1, 2)
+    end
+
+    should "not raise any errors when tearing down the parent before the child" do
+      assert_nothing_raised do
+        @parent_stub.teardown
+        @child_stub.teardown
+      end
     end
 
   end
