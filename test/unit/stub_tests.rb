@@ -199,6 +199,12 @@ class Assert::Stub
       assert_equal 1, @myobj.myval(1)
     end
 
+    should "have a readable inspect" do
+      expected = "#<#{subject.class}:#{'0x0%x' % (subject.object_id << 1)}" \
+                 " @object=#{@myobj} @method_name=#{subject.method_name.inspect}>"
+      assert_equal expected, subject.inspect
+    end
+
   end
 
   class MutatingArgsStubTests < UnitTests

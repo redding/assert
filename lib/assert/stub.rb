@@ -78,6 +78,12 @@ module Assert
       @metaclass.send(:undef_method, @name)
     end
 
+    def inspect
+      "#<#{self.class}:#{'0x0%x' % (object_id << 1)}" \
+      " @object=#{@object} @method_name=#{@method_name.inspect}" \
+      ">"
+    end
+
     protected
 
     def setup
