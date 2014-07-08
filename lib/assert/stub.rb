@@ -104,10 +104,9 @@ module Assert
       all_object_methods = object.methods.map(&:to_s)
       if (is_constant && !local_object_methods.include?(@method_name)) ||
          (!is_constant && !all_object_methods.include?(@method_name))
+        params_list = ParameterList.new(object, @method_name)
         @metaclass.class_eval <<-method
-          def #{@method_name}(*args, &block)
-            super(*args, &block)
-          end
+          def #{@method_name}(#{params_list}); super; end
         method
       end
 
@@ -145,6 +144,37 @@ module Assert
         "at least #{(arity + 1).abs}"
       else
         arity
+      end
+    end
+
+    module ParameterList
+      LETTERS = ('a'..'z').to_a.freeze
+
+      def self.new(object, method_name)
+        arity = get_arity(object, method_name)
+        params = build_params_from_arity(arity)
+        params << '*args' if arity < 0
+        params << '&block'
+        params.join(', ')
+      end
+
+      private
+
+      def self.get_arity(object, method_name)
+        object.method(method_name).arity
+      rescue NameError
+        -1
+      end
+
+      def self.build_params_from_arity(arity)
+        number = arity < 0 ? (arity + 1).abs : arity
+        (0..(number - 1)).map{ |param_index| get_param_name(param_index) }
+      end
+
+      def self.get_param_name(param_index)
+        param_index += LETTERS.size # avoid getting 0 for the number of letters
+        number_of_letters, letter_index = param_index.divmod(LETTERS.size)
+        LETTERS[letter_index] * number_of_letters
       end
     end
 
