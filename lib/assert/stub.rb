@@ -55,7 +55,12 @@ module Assert
     end
 
     def call(*args, &block)
-      raise StubArityError, "artiy mismatch" unless arity_matches?(args)
+      unless arity_matches?(args)
+        message = "arity mismatch on `#{@method_name}`: " \
+                  "expected #{number_of_args(@method.arity)}, " \
+                  "called with #{args.size}"
+        raise StubArityError, message
+      end
       @lookup[args].call(*args, &block)
     rescue NotStubbedError => exception
       @lookup.rehash
@@ -63,7 +68,12 @@ module Assert
     end
 
     def with(*args, &block)
-      raise StubArityError, "artiy mismatch" unless arity_matches?(args)
+      unless arity_matches?(args)
+        message = "arity mismatch on `#{@method_name}`: " \
+                  "expected #{number_of_args(@method.arity)}, " \
+                  "stubbed with #{args.size}"
+        raise StubArityError, message
+      end
       @lookup[args] = block
     end
 
@@ -129,6 +139,14 @@ module Assert
 
     def inspect_call(args)
       "`#{@method_name}(#{args.map(&:inspect).join(',')})`"
+    end
+
+    def number_of_args(arity)
+      if arity < 0
+        "at least #{(arity + 1).abs}"
+      else
+        arity
+      end
     end
 
   end
