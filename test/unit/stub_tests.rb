@@ -1,6 +1,8 @@
 require 'assert'
 require 'assert/stub'
 
+require 'assert/factory'
+
 class Assert::Stub
 
   class UnitTests < Assert::Context
@@ -261,6 +263,43 @@ class Assert::Stub
     subject{ @ns }
 
     should have_imeths :teardown
+
+  end
+
+  class ParameterListTests < UnitTests
+    desc "ParameterList"
+    setup do
+      many_args = (0..ParameterList::LETTERS.size).map do
+        Assert::Factory.string
+      end.join(', ')
+      @object = Class.new
+      # use `class_eval` with string to easily define methods with many params
+      @object.class_eval <<-methods
+        def self.noargs; end
+        def self.anyargs(*args); end
+        def self.manyargs(#{many_args}); end
+        def self.minargs(#{many_args}, *args); end
+      methods
+    end
+    subject{ ParameterList }
+
+    should "build a parameter list for a method that takes no args" do
+      assert_equal '&block', subject.new(@object, 'noargs')
+    end
+
+    should "build a parameter list for a method that takes any args" do
+      assert_equal '*args, &block', subject.new(@object, 'anyargs')
+    end
+
+    should "build a parameter list for a method that takes many args" do
+      expected = "#{ParameterList::LETTERS.join(', ')}, aa, &block"
+      assert_equal expected, subject.new(@object, 'manyargs')
+    end
+
+    should "build a parameter list for a method that takes a minimum number of args" do
+      expected = "#{ParameterList::LETTERS.join(', ')}, aa, *args, &block"
+      assert_equal expected, subject.new(@object, 'minargs')
+    end
 
   end
 
