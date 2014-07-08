@@ -528,6 +528,154 @@ class Assert::Stub
 
   end
 
+  class DelegateClassTests < SystemTests
+    desc "a class that delegates another object"
+    setup do
+      @class = DelegateClass
+      Assert.stub(@class, :noargs){ 'default' }
+      Assert.stub(@class, :noargs).with{ 'none' }
+
+      Assert.stub(@class, :withargs){ 'default' }
+      Assert.stub(@class, :withargs).with(1){ 'one' }
+
+      Assert.stub(@class, :anyargs){ 'default' }
+      Assert.stub(@class, :anyargs).with(1, 2){ 'one-two' }
+
+      Assert.stub(@class, :minargs){ 'default' }
+      Assert.stub(@class, :minargs).with(1, 2){ 'one-two' }
+      Assert.stub(@class, :minargs).with(1, 2, 3){ 'one-two-three' }
+
+      Assert.stub(@class, :withblock){ 'default' }
+    end
+    subject{ @class }
+
+    should "allow stubbing a method that doesn't take args" do
+      assert_equal 'none', subject.noargs
+    end
+
+    should "allow stubbing a method that takes args" do
+      assert_equal 'one',     subject.withargs(1)
+      assert_equal 'default', subject.withargs(2)
+    end
+
+    should "allow stubbing a method that takes any args" do
+      assert_equal 'default', subject.anyargs
+      assert_equal 'default', subject.anyargs(1)
+      assert_equal 'one-two', subject.anyargs(1, 2)
+    end
+
+    should "allow stubbing a method that takes a minimum number of args" do
+      assert_equal 'one-two',       subject.minargs(1, 2)
+      assert_equal 'one-two-three', subject.minargs(1, 2, 3)
+      assert_equal 'default',       subject.minargs(1, 2, 4)
+      assert_equal 'default',       subject.minargs(1, 2, 3, 4)
+    end
+
+    should "allow stubbing a method that takes a block" do
+      assert_equal 'default', subject.withblock
+      assert_equal 'default', subject.withblock{ 'my-block' }
+    end
+
+    should "allow stubbing methods with invalid arity" do
+      assert_nothing_raised{ Assert.stub(subject, :noargs).with(1){ } }
+
+      assert_nothing_raised{ Assert.stub(subject, :withargs).with{ } }
+      assert_nothing_raised{ Assert.stub(subject, :withargs).with(1, 2){ } }
+
+      assert_nothing_raised{ Assert.stub(subject, :minargs).with{ } }
+      assert_nothing_raised{ Assert.stub(subject, :minargs).with(1){ } }
+
+      assert_nothing_raised{ Assert.stub(subject, :withblock).with(1){ } }
+    end
+
+    should "allow calling methods with invalid arity" do
+      assert_nothing_raised{ subject.noargs(1) }
+
+      assert_nothing_raised{ subject.withargs }
+      assert_nothing_raised{ subject.withargs(1, 2) }
+
+      assert_nothing_raised{ subject.minargs }
+      assert_nothing_raised{ subject.minargs(1) }
+
+      assert_nothing_raised{ subject.withblock(1) }
+    end
+
+  end
+
+  class DelegateInstanceTests < SystemTests
+    desc "an instance that delegates another object"
+    setup do
+      @instance = DelegateClass.new
+      Assert.stub(@instance, :noargs){ 'default' }
+      Assert.stub(@instance, :noargs).with{ 'none' }
+
+      Assert.stub(@instance, :withargs){ 'default' }
+      Assert.stub(@instance, :withargs).with(1){ 'one' }
+
+      Assert.stub(@instance, :anyargs){ 'default' }
+      Assert.stub(@instance, :anyargs).with(1, 2){ 'one-two' }
+
+      Assert.stub(@instance, :minargs){ 'default' }
+      Assert.stub(@instance, :minargs).with(1, 2){ 'one-two' }
+      Assert.stub(@instance, :minargs).with(1, 2, 3){ 'one-two-three' }
+
+      Assert.stub(@instance, :withblock){ 'default' }
+    end
+    subject{ @instance }
+
+    should "allow stubbing a method that doesn't take args" do
+      assert_equal 'none', subject.noargs
+    end
+
+    should "allow stubbing a method that takes args" do
+      assert_equal 'one',     subject.withargs(1)
+      assert_equal 'default', subject.withargs(2)
+    end
+
+    should "allow stubbing a method that takes any args" do
+      assert_equal 'default', subject.anyargs
+      assert_equal 'default', subject.anyargs(1)
+      assert_equal 'one-two', subject.anyargs(1, 2)
+    end
+
+    should "allow stubbing a method that takes a minimum number of args" do
+      assert_equal 'one-two',       subject.minargs(1, 2)
+      assert_equal 'one-two-three', subject.minargs(1, 2, 3)
+      assert_equal 'default',       subject.minargs(1, 2, 4)
+      assert_equal 'default',       subject.minargs(1, 2, 3, 4)
+    end
+
+    should "allow stubbing a method that takes a block" do
+      assert_equal 'default', subject.withblock
+      assert_equal 'default', subject.withblock{ 'my-block' }
+    end
+
+    should "allow stubbing methods with invalid arity" do
+      assert_nothing_raised{ Assert.stub(subject, :noargs).with(1){ } }
+
+      assert_nothing_raised{ Assert.stub(subject, :withargs).with{ } }
+      assert_nothing_raised{ Assert.stub(subject, :withargs).with(1, 2){ } }
+
+      assert_nothing_raised{ Assert.stub(subject, :minargs).with{ } }
+      assert_nothing_raised{ Assert.stub(subject, :minargs).with(1){ } }
+
+      assert_nothing_raised{ Assert.stub(subject, :withblock).with(1){ } }
+    end
+
+    should "allow calling methods with invalid arity" do
+      assert_nothing_raised{ subject.noargs(1) }
+
+      assert_nothing_raised{ subject.withargs }
+      assert_nothing_raised{ subject.withargs(1, 2) }
+
+      assert_nothing_raised{ subject.minargs }
+      assert_nothing_raised{ subject.minargs(1) }
+
+      assert_nothing_raised{ subject.withblock(1) }
+    end
+
+  end
+
   class ParentAndChildClassTests < SystemTests
     desc "for a parent method stubbed on both the parent and child"
     setup do
@@ -579,6 +727,28 @@ class Assert::Stub
     def minargs(a, b, *args); end
     def withblock(&block); end
 
+  end
+
+  class DelegateClass
+    def self.respond_to?(*args)
+      TestClass.respond_to?(*args) || super
+    end
+
+    def self.method_missing(name, *args, &block)
+      TestClass.respond_to?(name) ? TestClass.send(name, *args, &block) : super
+    end
+
+    def initialize
+      @delegate = TestClass.new
+    end
+
+    def respond_to?(*args)
+      @delegate.respond_to?(*args) || super
+    end
+
+    def method_missing(name, *args, &block)
+      @delegate.respond_to?(name) ? @delegate.send(name, *args, &block) : super
+    end
   end
 
 end
