@@ -185,10 +185,10 @@ class Assert::Stub
       assert_equal 'four-five-six', mydelegator.myvalargs(4,5,6)
     end
 
-    should "store and remove itself on the object it stubs" do
-      assert_equal subject, @myobj.instance_variable_get(subject.ivar_name)
+    should "store and remove itself on asserts main module" do
+      assert_equal subject, Assert.instance_variable_get(subject.ivar_name)
       subject.teardown
-      assert_nil @myobj.instance_variable_get(subject.ivar_name)
+      assert_nil Assert.instance_variable_get(subject.ivar_name)
     end
 
     should "be removable" do
@@ -201,7 +201,7 @@ class Assert::Stub
 
     should "have a readable inspect" do
       expected = "#<#{subject.class}:#{'0x0%x' % (subject.object_id << 1)}" \
-                 " @object=#{@myobj} @method_name=#{subject.method_name.inspect}>"
+                 " @method_name=#{subject.method_name.inspect}>"
       assert_equal expected, subject.inspect
     end
 

@@ -35,14 +35,13 @@ module Assert
     attr_reader :method_name, :name, :ivar_name, :do
 
     def initialize(object, method_name, &block)
-      @object = object
-      @metaclass = class << @object; self; end
+      @metaclass = class << object; self; end
       @method_name = method_name.to_s
-      @name = "__assert_stub__#{@object.object_id}_#{@method_name}"
-      @ivar_name = "@__assert_stub_#{@object.object_id}_" \
+      @name = "__assert_stub__#{object.object_id}_#{@method_name}"
+      @ivar_name = "@__assert_stub_#{object.object_id}_" \
                    "#{@method_name.to_sym.object_id}"
 
-      setup
+      setup(object)
 
       @do = block || Proc.new do |*args, &block|
         err_msg = "#{inspect_call(args)} not stubbed."
@@ -83,26 +82,26 @@ module Assert
 
     def teardown
       @metaclass.send(:undef_method, @method_name)
-      @object.send(:remove_instance_variable, @ivar_name)
+      Assert.send(:remove_instance_variable, @ivar_name)
       @metaclass.send(:alias_method, @method_name, @name)
       @metaclass.send(:undef_method, @name)
     end
 
     def inspect
       "#<#{self.class}:#{'0x0%x' % (object_id << 1)}" \
-      " @object=#{@object} @method_name=#{@method_name.inspect}" \
+      " @method_name=#{@method_name.inspect}" \
       ">"
     end
 
     protected
 
-    def setup
-      unless @object.respond_to?(@method_name)
-        raise StubError, "#{@object.inspect} does not respond to `#{@method_name}`"
+    def setup(object)
+      unless object.respond_to?(@method_name)
+        raise StubError, "#{object.inspect} does not respond to `#{@method_name}`"
       end
-      is_constant = @object.kind_of?(Module)
-      local_object_methods = @object.methods(false).map(&:to_s)
-      all_object_methods = @object.methods.map(&:to_s)
+      is_constant = object.kind_of?(Module)
+      local_object_methods = object.methods(false).map(&:to_s)
+      all_object_methods = object.methods.map(&:to_s)
       if (is_constant && !local_object_methods.include?(@method_name)) ||
          (!is_constant && !all_object_methods.include?(@method_name))
         @metaclass.class_eval <<-method
@@ -115,12 +114,12 @@ module Assert
       if !local_object_methods.include?(@name) # already stubbed
         @metaclass.send(:alias_method, @name, @method_name)
       end
-      @method = @object.method(@name)
+      @method = object.method(@name)
 
-      @object.instance_variable_set(@ivar_name, self)
+      Assert.instance_variable_set(@ivar_name, self)
       @metaclass.class_eval <<-stub_method
         def #{@method_name}(*args, &block)
-          #{@ivar_name}.call(*args, &block)
+          Assert.instance_variable_get("#{@ivar_name}").call(*args, &block)
         end
       stub_method
     end
