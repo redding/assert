@@ -306,10 +306,10 @@ If you just want to disable this feature completely:
 Assert.configure do |config|
 
   # run nothing if the `-c` flag is given
-  config.changed_proc Proc.new{ |test_paths| [] }
+  config.changed_proc Proc.new{ |config, test_paths| [] }
 
   # run all test paths if the `-c` flag is given
-  config.changed_proc Proc.new{ |test_paths| test_paths }
+  config.changed_proc Proc.new{ |config, test_paths| test_paths }
 
 end
 ```
@@ -425,7 +425,7 @@ Assert.configure do |config|
 end
 ```
 
-However, the view hanlder you use is itself configurable.  Define you own view handler class and specify it in your user/local settings:
+However, the view handler you use is itself configurable.  Define you own view handler class and specify it in your user/local settings:
 
 ```ruby
 class MyCustomView < Assert::View::Base
