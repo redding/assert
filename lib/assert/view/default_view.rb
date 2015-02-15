@@ -31,11 +31,27 @@ module Assert::View
       end
     end
 
+    def before_test(test)
+      if show_test_verbose_info?
+        puts  "#{test.name.inspect} (#{test.context_class})"
+        puts  "    #{test.file_line}"
+        print "    "
+      end
+    end
+
     def on_result(result)
       result_abbrev = self.send("#{result.to_sym}_abbrev")
       styled_abbrev = ansi_styled_msg(result_abbrev, result_ansi_styles(result))
 
       print styled_abbrev
+    end
+
+    def after_test(test)
+      if show_test_verbose_info?
+        print " #{test_run_time(test)} seconds,"\
+              " #{test.result_count} results,"\
+              " #{test_result_rate(test)} results/s\n"
+      end
     end
 
     def on_finish
