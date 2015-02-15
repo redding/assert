@@ -258,7 +258,7 @@ end
 Using the CLI:
 
 ```sh
-$ assert [-t|--halt-on-fail|--no-halt-on-fail]
+$ assert [-h|--halt-on-fail|--no-halt-on-fail]
 ```
 
 ### Changed Only

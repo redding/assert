@@ -34,7 +34,7 @@ module Assert
           :abbrev => 'o'
         }
         option 'halt_on_fail', 'halt a test when it fails', {
-          :abbrev => 't'
+          :abbrev => 'h'
         }
         option 'changed_only', 'only run test files with changes', {
           :abbrev => 'c'
