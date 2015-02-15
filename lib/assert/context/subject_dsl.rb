@@ -10,9 +10,7 @@ class Assert::Context
       else
         parent = self.superclass.desc if self.superclass.respond_to?(:desc)
         own = self.descriptions
-        [parent, *own].compact.reject do |p|
-          p.to_s.empty?
-        end.join(" ")
+        [parent, *own].compact.reject(&:empty?).join(" ")
       end
     end
     alias_method :desc, :description

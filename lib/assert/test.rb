@@ -8,12 +8,14 @@ module Assert
     # a Test is some code/method to run in the scope of a Context.  After a
     # a test runs, it should have some assertions which are its results.
 
-    attr_reader :name, :context_info, :config, :code
+    attr_reader :context_info, :config
+    attr_reader :name, :file, :line_number, :code
     attr_accessor :results, :output, :run_time
 
     def initialize(name, suite_ci, config, opts = nil, &block)
       @context_info = suite_ci
-      @name, @config = name_from_context(name), config
+      @config = config
+      @name, @file, @line_number = name_file_line_from_context(@context_info, name)
 
       o = opts || {}
       @code = o[:code] || block || Proc.new{}
@@ -138,10 +140,16 @@ module Assert
       StringIO.new(@output, "a+")
     end
 
-    def name_from_context(name)
-      [ self.context_class.description,
-        name
-      ].compact.reject{|p| p.empty?}.join(" ")
+    def name_file_line_from_context(context_info, name)
+      [ [ context_info.klass.description,
+          name
+        ].compact.reject(&:empty?).join(" "),
+        *parse_file_line_number(context_info.called_from)
+      ]
+    end
+
+    def parse_file_line_number(called_from)
+      context_info.called_from.match(/(.+)\:(.+)/)[1..2]
     end
 
     def get_rate(count, time)
