@@ -70,13 +70,13 @@ module Assert::View
     #                  the test is passed as an arg
     # * `on_finish`:   called when the test suite is finished running
 
-    def before_load;       end
-    def after_load;        end
-    def on_start;          end
-    def before_test(test); end
-    def on_result(result); end
-    def after_test(test);  end
-    def on_finish;         end
+    def before_load(test_files); end
+    def after_load;              end
+    def on_start;                end
+    def before_test(test);       end
+    def on_result(result);       end
+    def after_test(test);        end
+    def on_finish;               end
 
     # IO capture
 

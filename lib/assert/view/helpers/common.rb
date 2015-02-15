@@ -78,7 +78,7 @@ module Assert::View::Helpers
     end
 
     # get all the result details for a set of tests
-    def result_details_for(tests, result_order=:normal)
+    def result_details_for(tests, result_order = :normal)
       test_index = 0
       tests.collect do |test|
         test_index += 1
@@ -92,7 +92,7 @@ module Assert::View::Helpers
     end
 
     # get all the result details for a set of tests matching a file or context
-    def matched_result_details_for(match, tests, result_order=:normal)
+    def matched_result_details_for(match, tests, result_order = :normal)
       context_match = match.kind_of?(Class) && match.ancestors.include?(Assert::Context)
       file_match = match.kind_of?(String)
 
@@ -187,6 +187,7 @@ module Assert::View::Helpers
     end
 
     module ClassMethods
+
       def option(name, *default_vals)
         default = default_vals.size > 1 ? default_vals : default_vals.first
         define_method(name) do |*args|
@@ -196,6 +197,7 @@ module Assert::View::Helpers
           (val = instance_variable_get("@#{name}")).nil? ? default : val
         end
       end
+
     end
 
   end

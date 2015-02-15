@@ -216,7 +216,7 @@ end
 Using the CLI:
 
 ```sh
-$ assert [-s|--seed] 1234
+$ assert [-s|--runner-seed] 1234
 ```
 
 Using an ENV var:
@@ -445,7 +445,7 @@ Each view should implement the callback handler methods to output information at
 
 Available callbacks from the runner, and when they are called:
 
-* `before_load`: at the beginning, before the suite is loaded
+* `before_load`: at the beginning, before the suite is loaded, the test files are passed as an arg
 * `after_load`: after the suite is loaded, just before `on_start`
 * `on_start`: when a loaded test suite starts running
 * `before_test`: before a test starts running, the test is passed as an arg
