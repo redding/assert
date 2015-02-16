@@ -62,7 +62,7 @@ module Assert
         puts "#{exception.message}\n\n"
         puts  Assert.config.debug ? exception.backtrace.join("\n") : help
         exit(1)
-      rescue Exception => exception
+      rescue StandardError => exception
         puts "#{exception.class}: #{exception.message}"
         puts exception.backtrace.join("\n")
         exit(1)

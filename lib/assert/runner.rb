@@ -13,24 +13,29 @@ module Assert
     def run(suite, view)
       raise ArgumentError if !suite.kind_of?(Suite)
 
-      view.fire(:on_start)
-      suite.setup
+      begin
+        view.fire(:on_start)
+        suite.setup
 
-      suite.start_time = Time.now
-      tests_to_run(suite).each do |test|
-        view.fire(:before_test, test)
-        test.run{ |result| view.fire(:on_result, result) }
-        view.fire(:after_test, test)
+        suite.start_time = Time.now
+        tests_to_run(suite).each do |test|
+          view.fire(:before_test, test)
+          test.run{ |result| view.fire(:on_result, result) }
+          view.fire(:after_test, test)
+        end
+        suite.end_time = Time.now
+
+        suite.teardown
+        view.fire(:on_finish)
+      rescue Interrupt => err
+        view.fire(:on_interrupt, err)
+        raise(err)
       end
-      suite.end_time = Time.now
-
-      suite.teardown
-      view.fire(:on_finish)
 
       suite.count(:failed) + suite.count(:errored)
     end
 
-    protected
+    private
 
     def tests_to_run(suite)
       srand self.config.runner_seed

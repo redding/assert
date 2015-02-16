@@ -58,17 +58,19 @@ module Assert::View
     # and sent to the io stream.
 
     # available callbacks from the runner:
-    # * `before_load`: called at the beginning, before the suite is loaded
-    # * `after_load`:  called after the suite is loaded, just before `on_start`
-    #                  functionally equivalent to `on_start`
-    # * `on_start`:    called when a loaded test suite starts running
-    # * `before_test`: called before a test starts running
-    #                  the test is passed as an arg
-    # * `on_result`:   called when a running tests generates a result
-    #                  the result is passed as an arg
-    # * `after_test`:  called after a test finishes running
-    #                  the test is passed as an arg
-    # * `on_finish`:   called when the test suite is finished running
+    # * `before_load`:  called at the beginning, before the suite is loaded
+    # * `after_load`:   called after the suite is loaded, just before `on_start`
+    #                   functionally equivalent to `on_start`
+    # * `on_start`:     called when a loaded test suite starts running
+    # * `before_test`:  called before a test starts running
+    #                   the test is passed as an arg
+    # * `on_result`:    called when a running tests generates a result
+    #                   the result is passed as an arg
+    # * `after_test`:   called after a test finishes running
+    #                   the test is passed as an arg
+    # * `on_finish`:    called when the test suite is finished running
+    # * `on_interrupt`: called when the test suite is interrupted while running
+    #                   the interrupt exception is passed as an arg
 
     def before_load(test_files); end
     def after_load;              end
@@ -77,6 +79,7 @@ module Assert::View
     def on_result(result);       end
     def after_test(test);        end
     def on_finish;               end
+    def on_interrupt(err);       end
 
     # IO capture
 
