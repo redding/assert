@@ -16,7 +16,8 @@ class Assert::View::Base
 
     # accessors, base methods
     should have_imeths :is_tty?, :view, :config, :suite, :fire
-    should have_imeths :before_load, :after_load, :on_start, :on_finish
+    should have_imeths :before_load, :after_load
+    should have_imeths :on_start, :on_finish, :on_interrupt
     should have_imeths :before_test, :after_test, :on_result
 
     # common methods

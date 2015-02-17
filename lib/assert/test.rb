@@ -2,6 +2,7 @@ require 'stringio'
 require 'assert/result'
 
 module Assert
+
   class Test
 
     # a Test is some code/method to run in the scope of a Context.  After a
@@ -69,7 +70,7 @@ module Assert
       "#<#{self.class}:#{'0x0%x' % (object_id << 1)} #{attributes_string}>"
     end
 
-    protected
+    private
 
     def run_test_main(scope)
       begin
@@ -143,11 +144,10 @@ module Assert
       ].compact.reject{|p| p.empty?}.join(" ")
     end
 
-    private
-
     def get_rate(count, time)
       time == 0 ? 0.0 : (count.to_f / time.to_f)
     end
 
   end
+
 end

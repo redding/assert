@@ -40,25 +40,7 @@ module Assert::View
 
     def on_finish
       if tests?
-        print "\n"
-        puts
-
-        # output detailed results for the tests in reverse test/result order
-        tests = suite.ordered_tests.reverse
-        result_details_for(tests, :reversed).each do |details|
-          if show_result_details?(details.result)
-            # output the styled result details
-            result = details.result
-            puts ansi_styled_msg(result.to_s, result_ansi_styles(result))
-
-            # output any captured stdout
-            output = details.output
-            puts captured_output(output) if output && !output.empty?
-
-            # add an empty line between each result detail
-            puts
-          end
-        end
+        dump_test_results
       end
 
       # show profile output
@@ -80,6 +62,34 @@ module Assert::View
       puts "#{result_count_statement}: #{styled_results_sentence}"
       puts
       puts "(#{run_time} seconds, #{test_rate} tests/s, #{result_rate} results/s)"
+    end
+
+    def on_interrupt(err)
+      dump_test_results
+    end
+
+    private
+
+    def dump_test_results
+      print "\n"
+      puts
+
+      # output detailed results for the tests in reverse test/result order
+      tests = suite.ordered_tests.reverse
+      result_details_for(tests, :reversed).each do |details|
+        if show_result_details?(details.result)
+          # output the styled result details
+          result = details.result
+          puts ansi_styled_msg(result.to_s, result_ansi_styles(result))
+
+          # output any captured stdout
+          output = details.output
+          puts captured_output(output) if output && !output.empty?
+
+          # add an empty line between each result detail
+          puts
+        end
+      end
     end
 
   end
