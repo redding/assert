@@ -15,15 +15,11 @@ class Assert::Test
     end
     subject{ @test }
 
-    should have_readers :name, :context_info, :config, :code
+    should have_readers :context_info, :config
+    should have_readers :name, :file, :line_number, :code
     should have_accessors :results, :output, :run_time
     should have_imeths :run, :result_count, :result_rate, :context_class
     should have_imeths *Assert::Result.types.keys.collect{ |k| "#{k}_results" }
-
-    should "build its name from the context description" do
-      exp_name = "context class should do something amazing"
-      assert_equal exp_name, subject.name
-    end
 
     should "know it's context class" do
       assert_equal @context_class, subject.context_class
@@ -32,6 +28,15 @@ class Assert::Test
     should "know its config" do
       cust_config = Assert::Config.new
       assert_equal cust_config, Factory.test(cust_config).config
+    end
+
+    should "know its name, file and line number" do
+      exp = "context class should do something amazing"
+      assert_equal exp, subject.name
+
+      exp_file, exp_line = @context_info.called_from.split(':')
+      assert_equal exp_file, subject.file
+      assert_equal exp_line, subject.line_number
     end
 
     should "get its code from any passed opt, falling back on any given block" do

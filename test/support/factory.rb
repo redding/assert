@@ -1,12 +1,14 @@
 require 'assert/config'
+require 'assert/factory'
 require 'assert/result'
 require 'assert/suite'
 require 'assert/test'
 
 module Factory
+  extend Assert::Factory
 
   def self.context_info_called_from
-    "/path/to_file.rb:1234"
+    "#{Factory.path}.rb:#{Factory.integer}"
   end
 
   def self.context_info(context_klass = nil)

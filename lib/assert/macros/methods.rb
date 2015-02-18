@@ -13,7 +13,7 @@ module Assert::Macros
         called_from = (methods.last.kind_of?(Array) ? methods.pop : caller).first
         Assert::Macro.new do
           methods.each{ |m| _methods_macro_instance_methods << [m, called_from] }
-          _methods_macro_test
+          _methods_macro_test called_from
         end
       end
       alias_method :have_instance_methods, :have_instance_method
@@ -24,7 +24,7 @@ module Assert::Macros
         called_from = (methods.last.kind_of?(Array) ? methods.pop : caller).first
         Assert::Macro.new do
           methods.each{ |m| _methods_macro_not_instance_methods << [m, called_from] }
-          _methods_macro_test
+          _methods_macro_test called_from
         end
       end
       alias_method :not_have_instance_methods, :not_have_instance_method
@@ -35,7 +35,7 @@ module Assert::Macros
         called_from = (methods.last.kind_of?(Array) ? methods.pop : caller).first
         Assert::Macro.new do
           methods.each{ |m| _methods_macro_class_methods << [m, called_from] }
-          _methods_macro_test
+          _methods_macro_test called_from
         end
       end
       alias_method :have_class_methods, :have_class_method
@@ -46,7 +46,7 @@ module Assert::Macros
         called_from = (methods.last.kind_of?(Array) ? methods.pop : caller).first
         Assert::Macro.new do
           methods.each{ |m| _methods_macro_not_class_methods << [m, called_from] }
-          _methods_macro_test
+          _methods_macro_test called_from
         end
       end
       alias_method :not_have_class_methods, :not_have_class_method
@@ -99,8 +99,8 @@ module Assert::Macros
 
       # private
 
-      def _methods_macro_test
-        @_methods_macro_test ||= should "respond to methods" do
+      def _methods_macro_test(called_from)
+        @_methods_macro_test ||= should "respond to methods", called_from do
 
           self.class._methods_macro_instance_methods.each do |(method, called_from)|
             msg = "#{subject.class.name} does not have instance method ##{method}"
