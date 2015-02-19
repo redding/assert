@@ -1,4 +1,5 @@
 require 'stringio'
+require 'assert/file_line'
 require 'assert/result'
 
 module Assert
@@ -9,13 +10,13 @@ module Assert
     # a test runs, it should have some assertions which are its results.
 
     attr_reader :context_info, :config
-    attr_reader :name, :file, :line_number, :code
+    attr_reader :name, :file_line, :code
     attr_accessor :results, :output, :run_time
 
     def initialize(name, suite_ci, config, opts = nil, &block)
       @context_info = suite_ci
       @config = config
-      @name, @file, @line_number = name_file_line_from_context(@context_info, name)
+      @name, @file_line = name_file_line_from_context(@context_info, name)
 
       o = opts || {}
       @code = o[:code] || block || Proc.new{}
@@ -26,9 +27,9 @@ module Assert
       @result_rate = 0
     end
 
-    def context_class
-      self.context_info.klass
-    end
+    def context_class; self.context_info.klass; end
+    def file;          self.file_line.file;     end
+    def line_number;   self.file_line.line;     end
 
     def run(&result_callback)
       @results = Result::Set.new(result_callback)
@@ -144,12 +145,8 @@ module Assert
       [ [ context_info.klass.description,
           name
         ].compact.reject(&:empty?).join(" "),
-        *parse_file_line_number(context_info.called_from)
+        FileLine.parse(context_info.called_from)
       ]
-    end
-
-    def parse_file_line_number(called_from)
-      context_info.called_from.match(/(.+)\:(.+)/)[1..2]
     end
 
     def get_rate(count, time)

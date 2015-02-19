@@ -2,6 +2,7 @@ require 'assert'
 require 'assert/test'
 
 require 'assert/config'
+require 'assert/file_line'
 
 class Assert::Test
 
@@ -16,12 +17,13 @@ class Assert::Test
     subject{ @test }
 
     should have_readers :context_info, :config
-    should have_readers :name, :file, :line_number, :code
+    should have_readers :name, :file_line, :code
     should have_accessors :results, :output, :run_time
-    should have_imeths :run, :result_count, :result_rate, :context_class
+    should have_imeths :context_class, :file, :line_number
+    should have_imeths :run, :result_count, :result_rate
     should have_imeths *Assert::Result.types.keys.collect{ |k| "#{k}_results" }
 
-    should "know it's context class" do
+    should "know its context class" do
       assert_equal @context_class, subject.context_class
     end
 
@@ -30,13 +32,15 @@ class Assert::Test
       assert_equal cust_config, Factory.test(cust_config).config
     end
 
-    should "know its name, file and line number" do
+    should "know its name, file line, file and number" do
       exp = "context class should do something amazing"
       assert_equal exp, subject.name
 
-      exp_file, exp_line = @context_info.called_from.split(':')
-      assert_equal exp_file, subject.file
-      assert_equal exp_line, subject.line_number
+      exp = Assert::FileLine.new(*@context_info.called_from.split(':'))
+      assert_equal exp, subject.file_line
+
+      assert_equal subject.file_line.file, subject.file
+      assert_equal subject.file_line.line, subject.line_number
     end
 
     should "get its code from any passed opt, falling back on any given block" do
