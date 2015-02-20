@@ -27,6 +27,7 @@ class Assert::View::Base
     should have_imeths :suite_contexts, :ordered_suite_contexts
     should have_imeths :suite_files, :ordered_suite_files
     should have_imeths :ordered_profile_tests, :show_test_profile_info?
+    should have_imeths :show_test_verbose_info?
     should have_imeths :result_details_for, :matched_result_details_for, :show_result_details?
     should have_imeths :ocurring_result_types, :result_summary_msg
     should have_imeths :all_pass_result_summary_msg, :results_summary_sentence

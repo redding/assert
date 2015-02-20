@@ -225,6 +225,24 @@ Using an ENV var:
 $ ASSERT_RUNNER_SEED=1234 assert
 ```
 
+### Verbose Output
+
+By default, Assert shows terse runtime test result information.  It provides a setting to turn on/off more verbose information:
+
+In user/local settings file:
+
+```ruby
+Assert.configure do |config|
+  config.verbose true
+end
+```
+
+Using the CLI:
+
+```sh
+$ assert [-v|--verbose|--no-verbose]
+```
+
 ### Capture Output
 
 By default, Assert shows any output on `$stdout` produced while running a test.  It provides a setting to override whether to show this output or to 'capture' it and display it in the test result details:

@@ -77,6 +77,10 @@ module Assert::View::Helpers
       !!config.profile
     end
 
+    def show_test_verbose_info?
+      !!config.verbose
+    end
+
     # get all the result details for a set of tests
     def result_details_for(tests, result_order = :normal)
       test_index = 0

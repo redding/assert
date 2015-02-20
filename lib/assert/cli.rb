@@ -45,6 +45,9 @@ module Assert
         option 'profile', 'output test profile info', {
           :abbrev => 'e'
         }
+        option 'verbose', 'output verbose runtime test info', {
+          :abbrev => 'v'
+        }
         # show loaded test files, cli err backtraces, etc
         option 'debug', 'run in debug mode'
       end
