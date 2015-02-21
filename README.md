@@ -470,6 +470,7 @@ Available callbacks from the runner, and when they are called:
 * `on_result`: when a running tests generates a result, the result is passed as an arg
 * `after_test`: after a test finishes running, the test is passed as an arg
 * `on_finish`: when the test suite is finished running
+* `on_interrupt`: called when the test suite is interrupted while running
 
 Beyond that, each view can do as it sees fit.  Initialize how you wish, take whatever settings you'd like, and output results as you see fit, given the available callbacks.
 
