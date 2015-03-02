@@ -13,8 +13,8 @@ class Assert::Config
     should have_imeths :suite, :view, :runner
     should have_imeths :test_dir, :test_helper, :test_file_suffixes, :runner_seed
     should have_imeths :changed_proc, :pp_proc, :use_diff_proc, :run_diff_proc
-    should have_imeths :capture_output, :halt_on_fail, :changed_only, :pp_objects
-    should have_imeths :debug, :profile, :verbose
+    should have_imeths :capture_output, :halt_on_fail, :changed_only, :changed_ref
+    should have_imeths :pp_objects, :debug, :profile, :verbose
     should have_imeths :apply
 
     should "default the view, suite, and runner" do
@@ -38,13 +38,14 @@ class Assert::Config
     end
 
     should "default the mode flags" do
-      assert_not subject.capture_output
-      assert     subject.halt_on_fail
-      assert_not subject.changed_only
-      assert_not subject.pp_objects
-      assert_not subject.debug
-      assert_not subject.profile
-      assert_not subject.verbose
+      assert_not   subject.capture_output
+      assert       subject.halt_on_fail
+      assert_not   subject.changed_only
+      assert_empty subject.changed_ref
+      assert_not   subject.pp_objects
+      assert_not   subject.debug
+      assert_not   subject.profile
+      assert_not   subject.verbose
     end
 
     should "apply settings given from a hash" do
