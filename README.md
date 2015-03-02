@@ -297,16 +297,26 @@ Using the CLI:
 $ assert [-c|--changed-only|--no-changed-only]
 ```
 
+You can also optionally send a "reference" value to evaluate changes against.  This can be any value and it is passed to the proc that detects changes (see below).  Using the default git changed proc, this value would be any commit reference (ie HEAD, master, etc).
+
+Using the CLI:
+
+```sh
+$ assert -c [-r|--changed-ref] REF_VALUE
+```
+
+Note: This option has no effect unless used with the `-c` option.  One practical use of this is to test changes 1) after they have been staged (`assert -cr HEAD`) or 2) after they have been committed to a branch (`assert -cr master`) (for example).
+
 #### Changed Test File Detection
 
 The changed files are detected using two git commands by default:
 
 ```sh
-git diff --no-ext-diff --name-only        # changed files
+git diff --no-ext-diff --name-only {ref}  # changed files
 git ls-files --others --exclude-standard  # added files
 ```
 
-The git cmds have ` -- #{test_paths}` appended to them to scope their results to just the test paths specified by the CLI and are run together using ` && `.
+The git cmds have ` -- #{test_paths}` appended to them to scope their results to just the test paths specified by the CLI and are run together using ` && `.  The `{ref}` above is any reference value given using the `-r` CLI opt.
 
 This, of course, assumes you are working in a git repository.  If you are not or you want to use custom logic to determine the changed files, configure a custom proc.  The proc should take two parameters: the config and an array of test paths specified by the CLI.
 

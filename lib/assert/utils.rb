@@ -63,8 +63,8 @@ module Assert
       Proc.new do |config, test_paths|
         files = []
         cmd = [
-          "git diff --no-ext-diff --name-only",       # changed files
-          "git ls-files --others --exclude-standard"  # added files
+          "git diff --no-ext-diff --name-only #{config.changed_ref}", # changed files
+          "git ls-files --others --exclude-standard"                  # added files
         ].map{ |c| "#{c} -- #{test_paths.join(' ')}" }.join(' && ')
         Assert::CLI.bench('Load only changed files') do
           files = `#{cmd}`.split("\n")

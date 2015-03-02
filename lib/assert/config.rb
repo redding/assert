@@ -16,8 +16,8 @@ module Assert
     settings :view, :suite, :runner
     settings :test_dir, :test_helper, :test_file_suffixes, :runner_seed
     settings :changed_proc, :pp_proc, :use_diff_proc, :run_diff_proc
-    settings :capture_output, :halt_on_fail, :changed_only, :pp_objects
-    settings :debug, :profile, :verbose
+    settings :capture_output, :halt_on_fail, :changed_only, :changed_ref
+    settings :pp_objects, :debug, :profile, :verbose
 
     def initialize(settings = nil)
       @suite  = Assert::Suite.new(self)
@@ -38,6 +38,7 @@ module Assert
       @capture_output = false
       @halt_on_fail   = true
       @changed_only   = false
+      @changed_ref    = ''
       @pp_objects     = false
       @debug          = false
       @profile        = false
