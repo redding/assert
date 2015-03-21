@@ -27,14 +27,8 @@ module Assert
     def initialize(*args)
       @args = args
       @cli = CLIRB.new do
-        option 'runner_seed', 'Use a given seed to run tests', {
+        option 'runner_seed', 'use a given seed to run tests', {
           :abbrev => 's', :value => Fixnum
-        }
-        option 'capture_output', 'capture stdout and display in result details', {
-          :abbrev => 'o'
-        }
-        option 'halt_on_fail', 'halt a test when it fails', {
-          :abbrev => 'h'
         }
         option 'changed_only', 'only run test files with changes', {
           :abbrev => 'c'
@@ -45,21 +39,34 @@ module Assert
         option 'pp_objects', 'pretty-print objects in fail messages', {
           :abbrev => 'p'
         }
+        option 'capture_output', 'capture stdout and display in result details', {
+          :abbrev => 'o'
+        }
+        option 'halt_on_fail', 'halt a test when it fails', {
+          :abbrev => 'h'
+        }
         option 'profile', 'output test profile info', {
           :abbrev => 'e'
         }
         option 'verbose', 'output verbose runtime test info', {
           :abbrev => 'v'
         }
+        option 'list', 'list test files on $stdout', {
+          :abbrev => 'l'
+        }
         # show loaded test files, cli err backtraces, etc
-        option 'debug', 'run in debug mode'
+        option 'debug', 'run in debug mode', {
+          :abbrev => 'd'
+        }
       end
     end
 
     def run
       begin
         @cli.parse!(@args)
-        Assert::AssertRunner.new(Assert.config, @cli.args, @cli.opts).run
+        catch(:halt) do
+          Assert::AssertRunner.new(Assert.config, @cli.args, @cli.opts).run
+        end
       rescue CLIRB::HelpExit
         puts help
       rescue CLIRB::VersionExit

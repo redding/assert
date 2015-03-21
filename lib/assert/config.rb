@@ -14,10 +14,10 @@ module Assert
     end
 
     settings :view, :suite, :runner
-    settings :test_dir, :test_helper, :test_file_suffixes, :runner_seed
+    settings :test_dir, :test_helper, :test_file_suffixes
     settings :changed_proc, :pp_proc, :use_diff_proc, :run_diff_proc
-    settings :capture_output, :halt_on_fail, :changed_only, :changed_ref
-    settings :pp_objects, :debug, :profile, :verbose
+    settings :runner_seed, :changed_only, :changed_ref, :pp_objects
+    settings :capture_output, :halt_on_fail, :profile, :verbose, :list, :debug
 
     def initialize(settings = nil)
       @suite  = Assert::Suite.new(self)
@@ -27,22 +27,23 @@ module Assert
       @test_dir    = "test"
       @test_helper = "helper.rb"
       @test_file_suffixes = ['_tests.rb', '_test.rb']
-      @runner_seed   = begin; srand; srand % 0xFFFF; end.to_i
 
       @changed_proc  = Assert::U.git_changed_proc
       @pp_proc       = Assert::U.stdlib_pp_proc
       @use_diff_proc = Assert::U.default_use_diff_proc
       @run_diff_proc = Assert::U.syscmd_diff_proc
 
-      # mode flags
-      @capture_output = false
-      @halt_on_fail   = true
+      # option settings
+      @runner_seed    = begin; srand; srand % 0xFFFF; end.to_i
       @changed_only   = false
       @changed_ref    = ''
       @pp_objects     = false
-      @debug          = false
+      @capture_output = false
+      @halt_on_fail   = true
       @profile        = false
       @verbose        = false
+      @list           = false
+      @debug          = false
 
       self.apply(settings || {})
     end

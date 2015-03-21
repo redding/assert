@@ -27,6 +27,11 @@ module Assert
         Assert::CLI.bench('Require test helper'){ require h }
       end
 
+      if self.config.list
+        $stdout.puts test_files
+        halt
+      end
+
       # load the test files
       self.config.view.fire(:before_load, test_files)
       Assert::CLI.bench("Require #{test_files.count} test files") do
@@ -43,7 +48,11 @@ module Assert
       self.config.runner.run(self.config.suite, self.config.view)
     end
 
-    protected
+    private
+
+    def halt
+      throw(:halt)
+    end
 
     def apply_user_settings
       safe_require("#{ENV['HOME']}/#{USER_SETTINGS_FILE}") if ENV['HOME']
@@ -60,8 +69,6 @@ module Assert
     def apply_env_settings
       self.config.runner_seed ENV['ASSERT_RUNNER_SEED'].to_i if ENV['ASSERT_RUNNER_SEED']
     end
-
-    private
 
     def test_files(test_paths)
       file_paths = if self.config.changed_only
