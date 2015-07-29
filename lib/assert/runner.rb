@@ -39,7 +39,7 @@ module Assert
 
     def tests_to_run(suite)
       srand self.config.runner_seed
-      suite.tests.sort.sort_by { rand suite.tests.size }
+      suite.tests.sort.sort_by{ rand suite.tests.size }
     end
 
   end

@@ -6,37 +6,6 @@ module Assert::View::Helpers
       receiver.class_eval{ extend ClassMethods }
     end
 
-    def runner_seed
-      self.config.runner_seed
-    end
-
-    def count(type)
-      self.suite.count(type)
-    end
-
-    def tests?
-      self.count(:tests) > 0
-    end
-
-    def all_pass?
-      self.count(:pass) == self.count(:results)
-    end
-
-    # get the formatted suite run time
-    def run_time(format = '%.6f')
-      format % self.suite.run_time
-    end
-
-    # get the formatted suite test rate
-    def test_rate(format = '%.6f')
-      format % self.suite.test_rate
-    end
-
-    # get the formatted suite result rate
-    def result_rate(format = '%.6f')
-      format % self.suite.result_rate
-    end
-
     # get the formatted run time for an idividual test
     def test_run_time(test, format = '%.6f')
       format % test.run_time
@@ -47,38 +16,8 @@ module Assert::View::Helpers
       format % test.result_rate
     end
 
-    # get a uniq list of contexts for the test suite
-    def suite_contexts
-      @suite_contexts ||= self.suite.tests.inject([]) do |contexts, test|
-        contexts << test.context_info.klass
-      end.uniq
-    end
-
-    def ordered_suite_contexts
-      self.suite_contexts.sort{|a,b| a.to_s <=> b.to_s}
-    end
-
-    # get a uniq list of files containing contexts for the test suite
-    def suite_files
-      @suite_files ||= self.suite.tests.inject([]) do |files, test|
-        files << test.context_info.file
-      end.uniq
-    end
-
-    def ordered_suite_files
-      self.suite_files.sort{|a,b| a.to_s <=> b.to_s}
-    end
-
     def ordered_profile_tests
       suite.ordered_tests.sort{ |a, b| a.run_time <=> b.run_time }
-    end
-
-    def show_test_profile_info?
-      !!config.profile
-    end
-
-    def show_test_verbose_info?
-      !!config.verbose
     end
 
     # get all the result details for a set of tests
