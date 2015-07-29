@@ -65,7 +65,7 @@ class Assert::Suite
     end
 
     should "know its ordered results" do
-      assert_equal subject.test_count, subject.ordered_tests.size
+      assert_equal subject.result_count, subject.ordered_results.size
     end
 
     should "know how many pass results it has" do

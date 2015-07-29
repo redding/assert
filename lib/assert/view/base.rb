@@ -1,13 +1,15 @@
 require 'assert/config'
+require 'assert/config_helpers'
 require 'assert/suite'
 require 'assert/result'
 
 module Assert::View
 
   class Base
+    include Assert::ConfigHelpers
 
     # include a bunch of common helper methods
-
+    # TODO: move these to 'view helpers'
     require 'assert/view/helpers/common'
     include Helpers::Common
 

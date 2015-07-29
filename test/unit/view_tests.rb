@@ -1,7 +1,10 @@
 require 'assert'
-require 'assert/suite'
 require 'assert/view/base'
+
 require 'stringio'
+require 'assert/config_helpers'
+require 'assert/suite'
+require 'assert/view/helpers/common'
 
 class Assert::View::Base
 
@@ -21,18 +24,21 @@ class Assert::View::Base
     should have_imeths :before_test, :after_test, :on_result
 
     # common methods
-    should have_imeths :runner_seed, :count, :tests?, :all_pass?
-    should have_imeths :run_time, :test_rate, :result_rate
     should have_imeths :test_run_time, :test_result_rate
-    should have_imeths :suite_contexts, :ordered_suite_contexts
-    should have_imeths :suite_files, :ordered_suite_files
-    should have_imeths :ordered_profile_tests, :show_test_profile_info?
-    should have_imeths :show_test_verbose_info?
+    should have_imeths :ordered_profile_tests
     should have_imeths :result_details_for, :matched_result_details_for, :show_result_details?
     should have_imeths :ocurring_result_types, :result_summary_msg
     should have_imeths :all_pass_result_summary_msg, :results_summary_sentence
     should have_imeths :test_count_statement, :result_count_statement
     should have_imeths :to_sentence
+
+    should "include the config helpers" do
+      assert_includes Assert::ConfigHelpers, subject.class
+    end
+
+    should "include the common view helpers" do
+      assert_includes Assert::View::Helpers::Common, subject.class
+    end
 
     should "default its result abbreviations" do
       assert_equal '.', subject.pass_abbrev

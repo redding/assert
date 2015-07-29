@@ -14,8 +14,8 @@ module Assert
       @config = config
       @tests = []
       @test_methods = []
-      @start_time = 0
-      @end_time = 0
+      @start_time = Time.now
+      @end_time = @start_time
     end
 
     def run_time
@@ -33,7 +33,7 @@ module Assert
     alias_method :ordered_tests, :tests
 
     def results
-      tests.inject([]) {|results, test| results += test.results}
+      tests.inject([]){ |results, test| results += test.results }
     end
     alias_method :ordered_results, :results
 
