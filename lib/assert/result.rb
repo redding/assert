@@ -21,14 +21,14 @@ module Assert::Result
 
     attr_reader :test, :message, :backtrace
 
-    def initialize(test, message, backtrace=nil)
+    def initialize(test, message, backtrace = nil)
       @test = test
       @backtrace = Backtrace.new(backtrace)
       @message = message && !message.empty? ? message : nil
     end
 
     Assert::Result.types.keys.each do |meth|
-      define_method("#{meth}?") { false }
+      define_method("#{meth}?"){ false }
     end
 
     def test_name
@@ -96,7 +96,7 @@ module Assert::Result
   class Fail < Base
 
     # fail results can be generated manually or by raising Assert::Result::TestFailure
-    def initialize(test, message_or_exception, backtrace=nil)
+    def initialize(test, message_or_exception, backtrace = nil)
       if message_or_exception.kind_of?(TestFailure)
         super(test, message_or_exception.message, message_or_exception.backtrace || [])
       elsif message_or_exception.kind_of?(Exception)

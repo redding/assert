@@ -32,6 +32,10 @@ module Assert
 
     alias_method :ordered_tests, :tests
 
+    def ordered_tests_by_run_time
+      self.ordered_tests.sort{ |a, b| a.run_time <=> b.run_time }
+    end
+
     def results
       tests.inject([]){ |results, test| results += test.results }
     end

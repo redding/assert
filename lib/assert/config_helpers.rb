@@ -63,6 +63,13 @@ module Assert
       !!self.config.verbose
     end
 
+    # return a list of result symbols that have actually occurred
+    def ocurring_result_types
+      @result_types ||= [:pass, :fail, :ignore, :skip, :error].select do |sym|
+        self.count(sym) > 0
+      end
+    end
+
   end
 
 end

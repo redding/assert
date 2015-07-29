@@ -42,7 +42,7 @@ class Assert::Context
     setup do
       @skip_msg = "I need to implement this in the future."
       begin; @context.skip(@skip_msg); rescue Exception => @exception; end
-      @result = Factory.skip_result("something", @exception)
+      @result = Factory.skip_result(@exception)
     end
     subject{ @result }
 

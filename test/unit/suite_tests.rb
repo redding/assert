@@ -14,7 +14,8 @@ class Assert::Suite
     subject{ @suite }
 
     should have_accessors :config, :tests, :test_methods, :start_time, :end_time
-    should have_imeths :ordered_tests, :results, :ordered_results
+    should have_imeths :ordered_tests, :ordered_tests_by_run_time
+    should have_imeths :results, :ordered_results
     should have_imeths :run_time, :test_rate, :result_rate
     should have_imeths :count, :test_count, :result_count
     should have_imeths :setup, :startup, :teardown, :shutdown
@@ -57,7 +58,12 @@ class Assert::Suite
     end
 
     should "know its ordered tests" do
-      assert_equal subject.test_count, subject.ordered_tests.size
+      assert_equal subject.tests, subject.ordered_tests
+    end
+
+    should "know its tests ordered by run time" do
+      exp = subject.ordered_tests.sort{ |a, b| a.run_time <=> b.run_time }
+      assert_equal exp, subject.ordered_tests_by_run_time
     end
 
     should "know how many results it has" do
@@ -65,7 +71,7 @@ class Assert::Suite
     end
 
     should "know its ordered results" do
-      assert_equal subject.result_count, subject.ordered_results.size
+      assert_equal subject.results, subject.ordered_results
     end
 
     should "know how many pass results it has" do
