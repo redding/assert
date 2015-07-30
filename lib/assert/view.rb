@@ -31,6 +31,13 @@ module Assert
 
       # setup options and their default values
 
+      option 'styled',        false
+      option 'pass_styles'    # none
+      option 'fail_styles'    # none
+      option 'error_styles'   # none
+      option 'skip_styles'    # none
+      option 'ignore_styles'  # none
+
       option 'pass_abbrev',   '.'
       option 'fail_abbrev',   'F'
       option 'ignore_abbrev', 'I'
@@ -49,10 +56,6 @@ module Assert
         @output_io.sync = true if @output_io.respond_to?(:sync=)
       end
 
-      def is_tty?
-        !!@output_io.isatty
-      end
-
       def view
         self
       end
@@ -65,8 +68,15 @@ module Assert
         @suite ||= Assert.suite
       end
 
-      def fire(callback, *args)
-        self.send(callback, *args)
+      def is_tty?
+        !!@output_io.isatty
+      end
+
+      def ansi_styled_msg(msg, result_or_sym)
+        return msg if !self.is_tty? || !self.styled
+        code = Assert::ViewHelpers::Ansi.code_for(*self.send("#{result_or_sym.to_sym}_styles"))
+        return msg if code.empty?
+        code + msg + Assert::ViewHelpers::Ansi.code_for(:reset)
       end
 
       # Callbacks
@@ -74,6 +84,10 @@ module Assert
       # define callback handlers to output information.  handlers are
       # instance_eval'd in the scope of the view instance.  any stdout is captured
       # and sent to the io stream.
+
+      def fire(callback, *args)
+        self.send(callback, *args)
+      end
 
       # available callbacks from the runner:
       # * `before_load`:  called at the beginning, before the suite is loaded

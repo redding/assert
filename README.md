@@ -438,7 +438,7 @@ Use this if you prefer a 3rd-party tool (like awesome_print or something) over t
 
 You can run a test suite and get a feel for what this default outputs.  The view has a few options you can tweak:
 
-* `styled`: whether to apply ANSI styles to the output, default `true`
+* `styled`: whether to apply ansi styles to the output, default `true`
 * `pass_styles`: how to style pass result output, default `:green`
 * `fail_styles`: default `:red, :bold`
 * `error_styles`: default `:yellow, :bold`

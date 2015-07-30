@@ -161,6 +161,30 @@ module Assert::ViewHelpers
 
   end
 
+  class AnsiTests < UnitTests
+    desc "Ansi"
+    subject{ Ansi }
+
+    should have_imeths :code_for
+
+    should "know its codes" do
+      assert_not_empty subject::CODES
+    end
+
+    should "map its code style names to ansi code strings" do
+      styles = Factory.integer(3).times.map{ subject::CODES.keys.choice }
+      exp = styles.map{ |n| "\e[#{subject::CODES[n]}m" }.join('')
+      assert_equal exp, subject.code_for(*styles)
+
+      styles = Factory.integer(3).times.map{ Factory.string }
+      assert_equal '', subject.code_for(*styles)
+
+      styles = []
+      assert_equal '', subject.code_for(*styles)
+    end
+
+  end
+
   class ResultDetailsTests < UnitTests
     desc "ResultDetails"
     setup do
