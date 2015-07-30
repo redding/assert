@@ -1,6 +1,6 @@
 require 'assert'
 require 'assert/suite'
-require 'assert/view/base'
+require 'assert/view'
 require 'assert/runner'
 
 class Assert::Runner

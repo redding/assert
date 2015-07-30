@@ -1,13 +1,13 @@
-require 'assert/view/base'
+require 'assert/view'
 
-module Assert::View
+module Assert
 
   # This is the default view used by assert.  It renders ansi test output
   # designed for terminal viewing.
 
-  class DefaultView < Base
+  class DefaultView < Assert::View::Base
     require 'assert/view/helpers/ansi_styles'
-    include Helpers::AnsiStyles
+    include Assert::View::Helpers::AnsiStyles
 
     # setup options and their default values
 

@@ -1,17 +1,26 @@
 require 'assert'
-require 'assert/view/base'
+require 'assert/view'
 
 require 'stringio'
 require 'assert/suite'
 require 'assert/view_helpers'
 
-class Assert::View::Base
+module Assert::View
 
   class UnitTests < Assert::Context
-    desc "Assert::View::Base"
+    desc "Assert::View"
+    subject { Assert::View }
+
+    should have_instance_method :require_user_view
+
+  end
+
+  class BaseTests < UnitTests
+    desc "Base"
     setup do
-      @io = StringIO.new("", "w+")
+      @io     = StringIO.new("", "w+")
       @config = Factory.modes_off_config
+
       @view = Assert::View::Base.new(@io, @config, @config.suite)
     end
     subject{ @view }
@@ -37,13 +46,14 @@ class Assert::View::Base
       assert_equal !!@io.isatty, subject.is_tty?
     end
 
-  end
+    should "expose itself as `view`" do
+      assert_equal subject, subject.view
+    end
 
-  class HandlerTests < Assert::Context
-    desc "Assert::View"
-    subject { Assert::View }
-
-    should have_instance_method :require_user_view
+    should "know its config and suite" do
+      assert_equal @config,       subject.config
+      assert_equal @config.suite, subject.suite
+    end
 
   end
 

@@ -428,7 +428,7 @@ Use this if you prefer a 3rd-party tool (like awesome_print or something) over t
 
 ## Viewing Test Results
 
-`Assert::View::DefaultView` is the default handler for viewing test results.  Its output goes something like this:
+`Assert::DefaultView` is the default view for test results.  Its output goes something like this:
 
 * before the run starts, output some info about the test suite that is about to run
 * print out result abbreviations as the test results are generated
@@ -534,7 +534,7 @@ Tests produce results as they are executed.  Every `assert` statement produces a
 
 ### View
 
-A `View` object is responsible for rendering test result output.  Assert provides a `Assert::View::Base` object to provide common helpers and default runner callback handlers for building views.  Assert also provides a `Assert::View::DefaultView` that it renders its output with.  See the "Viewing Test Results" section below for more details.
+A `View` object is responsible for rendering test result output.  Assert provides a `Assert::View::Base` object to provide common helpers and default runner callback handlers for building views.  Assert also provides an `Assert::DefaultView` that it renders its output with.  See the "Viewing Test Results" section below for more details.
 
 ### Macro
 
