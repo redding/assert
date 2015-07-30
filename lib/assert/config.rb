@@ -1,3 +1,8 @@
+require 'assert/default_view'
+require 'assert/runner'
+require 'assert/suite'
+require 'assert/utils'
+
 module Assert
 
   class Config
@@ -21,7 +26,7 @@ module Assert
 
     def initialize(settings = nil)
       @suite  = Assert::Suite.new(self)
-      @view   = Assert::View::DefaultView.new($stdout, self, @suite)
+      @view   = Assert::DefaultView.new($stdout, self, @suite)
       @runner = Assert::Runner.new(self)
 
       @test_dir    = "test"

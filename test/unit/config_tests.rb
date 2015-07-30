@@ -1,6 +1,10 @@
 require 'assert'
 require 'assert/config'
 
+require 'assert/default_view'
+require 'assert/runner'
+require 'assert/suite'
+
 class Assert::Config
 
   class UnitTests < Assert::Context
@@ -18,7 +22,7 @@ class Assert::Config
     should have_imeths :debug, :apply
 
     should "default the view, suite, and runner" do
-      assert_kind_of Assert::View::DefaultView, subject.view
+      assert_kind_of Assert::DefaultView, subject.view
       assert_kind_of Assert::Suite,  subject.suite
       assert_kind_of Assert::Runner, subject.runner
     end
