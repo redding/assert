@@ -6,8 +6,6 @@ module Assert
   # designed for terminal viewing.
 
   class DefaultView < Assert::View::Base
-    require 'assert/view/helpers/ansi_styles'
-    include Assert::View::Helpers::AnsiStyles
 
     # setup options and their default values
 
@@ -37,10 +35,7 @@ module Assert
     end
 
     def on_result(result)
-      result_abbrev = self.send("#{result.to_sym}_abbrev")
-      styled_abbrev = ansi_styled_msg(result_abbrev, result_ansi_styles(result))
-
-      print styled_abbrev
+      print ansi_styled_msg(self.send("#{result.to_sym}_abbrev"), result)
     end
 
     def after_test(test)
@@ -68,8 +63,8 @@ module Assert
       end
 
       # style the summaries of each result set
-      styled_results_sentence = results_summary_sentence do |summary, sym|
-        ansi_styled_msg(summary, result_ansi_styles(sym))
+      styled_results_sentence = results_summary_sentence do |summary, result_sym|
+        ansi_styled_msg(summary, result_sym)
       end
 
       puts "#{result_count_statement}: #{styled_results_sentence}"
@@ -93,7 +88,7 @@ module Assert
         if show_result_details?(details.result)
           # output the styled result details
           result = details.result
-          puts ansi_styled_msg(result.to_s, result_ansi_styles(result))
+          puts ansi_styled_msg(result.to_s, result)
 
           # output any captured stdout
           output = details.output
