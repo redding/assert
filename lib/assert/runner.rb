@@ -1,8 +1,10 @@
+require 'assert/config_helpers'
 require 'assert/suite'
 
 module Assert
 
   class Runner
+    include Assert::ConfigHelpers
 
     attr_reader :config
 
@@ -12,6 +14,9 @@ module Assert
 
     def run(suite, view)
       raise ArgumentError if !suite.kind_of?(Suite)
+      if tests?
+        view.puts "Running tests in random order, seeded with \"#{runner_seed}\""
+      end
       view.fire(:on_start)
 
       begin
