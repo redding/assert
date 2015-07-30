@@ -26,9 +26,6 @@ module Assert
     end
 
     def on_start
-      if tests?
-        puts "Running tests in random order, seeded with \"#{runner_seed}\""
-      end
     end
 
     def before_test(test)
