@@ -61,7 +61,7 @@ module Assert::View
 
       # show profile output
       if show_test_profile_info?
-        ordered_profile_tests.each do |test|
+        suite.ordered_tests_by_run_time.each do |test|
           puts "#{test_run_time(test)} seconds,"\
                " #{test.result_count} results,"\
                " #{test_result_rate(test)} results/s --"\

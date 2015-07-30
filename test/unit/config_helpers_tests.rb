@@ -26,6 +26,7 @@ module Assert::ConfigHelpers
     should have_imeths :suite_contexts, :ordered_suite_contexts
     should have_imeths :suite_files, :ordered_suite_files
     should have_imeths :show_test_profile_info?, :show_test_verbose_info?
+    should have_imeths :ocurring_result_types
 
     should "know its runner seed" do
       assert_equal subject.config.runner_seed, subject.runner_seed
@@ -80,6 +81,13 @@ module Assert::ConfigHelpers
 
     should "know whether to show verbose info" do
       assert_equal !!subject.config.verbose, subject.show_test_verbose_info?
+    end
+
+    should "know what result types occur in a suite's results" do
+      exp = [:pass, :fail, :ignore, :skip, :error].select do |result_sym|
+        subject.count(result_sym) > 0
+      end
+      assert_equal exp, subject.ocurring_result_types
     end
 
   end

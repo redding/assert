@@ -1,17 +1,12 @@
 require 'assert/config'
-require 'assert/config_helpers'
-require 'assert/suite'
 require 'assert/result'
+require 'assert/suite'
+require 'assert/view_helpers'
 
 module Assert::View
 
   class Base
-    include Assert::ConfigHelpers
-
-    # include a bunch of common helper methods
-    # TODO: move these to 'view helpers'
-    require 'assert/view/helpers/common'
-    include Helpers::Common
+    include Assert::ViewHelpers
 
     # setup options and their default values
 

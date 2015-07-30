@@ -41,10 +41,28 @@ module Factory
     Assert::Test.new(name, context_info, config, opts, &block)
   end
 
-  # Generate a skip result for use in testing.
+  # Generate results for use in testing.
 
-  def self.skip_result(name, exception)
-    Assert::Result::Skip.new(Factory.test(name), exception)
+  def self.pass_result(msg = nil)
+    Assert::Result::Pass.new(Factory.test(Factory.string), msg || Factory.string)
+  end
+
+  def self.ignore_result(msg = nil)
+    Assert::Result::Ignore.new(Factory.test(Factory.string), msg || Factory.string)
+  end
+
+  def self.fail_result(msg = nil)
+    Assert::Result::Fail.new(Factory.test(Factory.string), msg || Factory.string)
+  end
+
+  def self.skip_result(exception = nil)
+    exception ||= Assert::Result::TestSkipped.new
+    Assert::Result::Skip.new(Factory.test(Factory.string), exception)
+  end
+
+  def self.error_result(exception = nil)
+    exception ||= StandardError.new
+    Assert::Result::Error.new(Factory.test(Factory.string), exception)
   end
 
   def self.modes_off_config
