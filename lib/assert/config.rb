@@ -26,7 +26,7 @@ module Assert
 
     def initialize(settings = nil)
       @suite  = Assert::Suite.new(self)
-      @view   = Assert::DefaultView.new($stdout, self, @suite)
+      @view   = Assert::DefaultView.new(self, $stdout)
       @runner = Assert::Runner.new(self)
 
       @test_dir    = "test"

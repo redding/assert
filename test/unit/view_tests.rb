@@ -21,12 +21,12 @@ module Assert::View
       @io     = StringIO.new("", "w+")
       @config = Factory.modes_off_config
 
-      @view = Assert::View::Base.new(@io, @config, @config.suite)
+      @view = Assert::View::Base.new(@config, @io)
     end
     subject{ @view }
 
-    should have_imeths :view, :config, :suite
-    should have_imeths :is_tty?, :ansi_styled_msg
+    should have_readers :config
+    should have_imeths :view, :is_tty?, :ansi_styled_msg
     should have_imeths :fire
     should have_imeths :before_load, :after_load
     should have_imeths :on_start, :on_finish, :on_interrupt
@@ -54,13 +54,12 @@ module Assert::View
       assert_equal 'E', subject.error_abbrev
     end
 
-    should "expose itself as `view`" do
-      assert_equal subject, subject.view
+    should "know its config" do
+      assert_equal @config, subject.config
     end
 
-    should "know its config and suite" do
-      assert_equal @config,       subject.config
-      assert_equal @config.suite, subject.suite
+    should "expose itself as `view`" do
+      assert_equal subject, subject.view
     end
 
     should "know if it is a tty" do
