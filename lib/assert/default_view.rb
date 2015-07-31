@@ -53,7 +53,7 @@ module Assert
 
       # show profile output
       if show_test_profile_info?
-        suite.ordered_tests_by_run_time.each do |test|
+        config.suite.ordered_tests_by_run_time.each do |test|
           puts "#{test_run_time(test)} seconds,"\
                " #{test.result_count} results,"\
                " #{test_result_rate(test)} results/s --"\
@@ -83,7 +83,7 @@ module Assert
       puts
 
       # output detailed results for the tests in reverse test/result order
-      tests = suite.ordered_tests.reverse
+      tests = config.suite.ordered_tests.reverse
       result_details_for(tests, :reversed).each do |details|
         if show_result_details?(details.result)
           # output the styled result details

@@ -44,28 +44,15 @@ module Assert
       option 'skip_abbrev',   'S'
       option 'error_abbrev',  'E'
 
-      attr_reader :config, :suite
+      attr_reader :config
 
-      def initialize(output_io, *args)
-        @output_io = output_io
-        @suite, @config = [
-          args.last.kind_of?(Assert::Suite)  ? args.pop : nil,
-          args.last.kind_of?(Assert::Config) ? args.pop : nil
-        ]
-
+      def initialize(config, output_io)
+        @config , @output_io, = config, output_io
         @output_io.sync = true if @output_io.respond_to?(:sync=)
       end
 
       def view
         self
-      end
-
-      def config
-        @config ||= Assert.config
-      end
-
-      def suite
-        @suite ||= Assert.suite
       end
 
       def is_tty?
