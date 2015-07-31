@@ -45,7 +45,7 @@ module Assert
     end
 
     def run
-      self.config.runner.run(self.config.suite, self.config.view)
+      self.config.runner.run
     end
 
     private

@@ -22,8 +22,8 @@ class Assert::Runner
     desc "when init"
     setup do
       @config = Factory.modes_off_config
-      @suite  = Assert::Suite.new(@config)
-      @view   = Assert::View::Base.new(StringIO.new("", "w+"), @suite)
+      @config.suite Assert::Suite.new(@config)
+      @config.view  Assert::View::Base.new(@config, StringIO.new("", "w+"))
 
       @runner = Assert::Runner.new(@config)
     end
@@ -37,7 +37,7 @@ class Assert::Runner
     end
 
     should "return an integer exit code" do
-      assert_equal 0, subject.run(@suite, @view)
+      assert_equal 0, subject.run
     end
 
   end

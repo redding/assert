@@ -12,7 +12,8 @@ module Assert
       @config = config
     end
 
-    def run(suite, view)
+    def run
+      suite, view = @config.suite, @config.view
       raise ArgumentError if !suite.kind_of?(Suite)
       if tests?
         view.puts "Running tests in random order, seeded with \"#{runner_seed}\""
