@@ -163,22 +163,6 @@ module Assert::Result
 
   end
 
-  # Utility Classes
-
-  class Set < ::Array
-    attr_accessor :callback
-
-    def initialize(callback=nil)
-      @callback = callback
-      super()
-    end
-
-    def <<(result)
-      super
-      @callback.call(result) if @callback
-    end
-  end
-
   class Backtrace < ::Array
     def initialize(value = nil)
       super([*(value || "No backtrace")])

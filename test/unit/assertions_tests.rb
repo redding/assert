@@ -8,7 +8,7 @@ module Assert::Assertions
     setup do
       @context_class = Factory.modes_off_context_class
       @test = Factory.test
-      @context = @context_class.new(@test, @test.config)
+      @context = @context_class.new(@test, @test.config, proc{ |r| })
     end
     subject{ @context }
 

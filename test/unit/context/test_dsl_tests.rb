@@ -147,7 +147,7 @@ module Assert::Context::TestDSL
       context_class = Factory.modes_off_context_class &build_block
       context_info  = Factory.context_info(context_class)
       test = Factory.test("whatever", context_info)
-      context_class.new(test, test.config)
+      context_class.new(test, test.config, proc{ |r| })
     end
 
     def capture_err(err_class, &block)
