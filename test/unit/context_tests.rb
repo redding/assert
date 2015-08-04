@@ -180,7 +180,7 @@ class Assert::Context
     should "return a pass result given a `true` assertion" do
       result = subject.assert(true, @fail_desc){ @what_failed }
       assert_kind_of Assert::Result::Pass, result
-      assert_nil result.message
+      assert_equal '', result.message
     end
 
     should "return a fail result given a `false` assertion" do
@@ -219,7 +219,7 @@ class Assert::Context
     should "return a pass result given a `false` assertion" do
       result = subject.assert_not(false, @fail_desc)
       assert_kind_of Assert::Result::Pass, result
-      assert_nil result.message
+      assert_equal '', result.message
     end
 
     should "return a fail result given a `true` assertion" do

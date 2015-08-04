@@ -7,7 +7,7 @@ class Assert::Context
 
   module TestDSL
 
-    def test(desc_or_macro, called_from=nil, first_caller=nil, &block)
+    def test(desc_or_macro, called_from = nil, first_caller = nil, &block)
       if desc_or_macro.kind_of?(Assert::Macro)
         instance_eval(&desc_or_macro)
       elsif block_given?
@@ -21,7 +21,7 @@ class Assert::Context
       end
     end
 
-    def test_eventually(desc_or_macro, called_from=nil, first_caller=nil, &block)
+    def test_eventually(desc_or_macro, called_from = nil, first_caller = nil, &block)
       ci = Assert::Suite::ContextInfo.new(self, called_from, first_caller || caller.first)
       test_name = desc_or_macro.kind_of?(Assert::Macro) ? desc_or_macro.name : desc_or_macro
       skip_block = block.nil? ? Proc.new { skip 'TODO' } : Proc.new { skip }
@@ -31,14 +31,14 @@ class Assert::Context
     end
     alias_method :test_skip, :test_eventually
 
-    def should(desc_or_macro, called_from=nil, first_caller=nil, &block)
+    def should(desc_or_macro, called_from = nil, first_caller = nil, &block)
       if !desc_or_macro.kind_of?(Assert::Macro)
         desc_or_macro = "should #{desc_or_macro}"
       end
       test(desc_or_macro, called_from, first_caller || caller.first, &block)
     end
 
-    def should_eventually(desc_or_macro, called_from=nil, first_caller=nil, &block)
+    def should_eventually(desc_or_macro, called_from = nil, first_caller = nil, &block)
       if !desc_or_macro.kind_of?(Assert::Macro)
         desc_or_macro = "should #{desc_or_macro}"
       end

@@ -267,140 +267,91 @@ class Assert::Test
   end
 
   class WithSetupsTests < SystemTests
-    desc "that has tests that depend on setups"
+    desc "that has setup logic"
     setup do
-      assert_style_msg = @asm = "set by assert style setup"
-      testunit_style_msg = @tusm = "set by test/unit style setup"
       @context_class = Factory.context_class do
-        # assert style setup
-        setup do
-          # get msgs into test scope
-          @assert_style_msg = assert_style_msg
-          @testunit_style_msg = testunit_style_msg
-
-          @setup_asm = @assert_style_msg
-        end
-        # classic test/unit style setup
-        def setup; @setup_tusm = @testunit_style_msg; end
+        # assert style
+        setup{ pass 'assert style setup' }
+        # test/unit style
+        def setup; pass 'test/unit style setup'; end
       end
-      @test = Factory.test("something", Factory.context_info(@context_class)) do
-        assert @assert_style_msg
-        assert @testunit_style_msg
-
-        @__running_test__.pass_results.first.
-          instance_variable_set("@message", @setup_asm)
-
-        @__running_test__.pass_results.last.
-          instance_variable_set("@message", @setup_tusm)
-      end
+      @test = Factory.test("t", Factory.context_info(@context_class)){ pass 'TEST' }
       @test.run
     end
 
-    should "have a passing result for each setup type" do
-      assert_equal 2, subject.result_count
-      assert_equal 2, subject.result_count(:pass)
-    end
+    should "execute all setup logic when run" do
+      assert_equal 3, subject.result_count(:pass)
 
-    should "have run the assert style setup" do
-      assert_equal @asm, subject.pass_results.first.message
-    end
-
-    should "have run the test/unit style setup" do
-      assert_equal @tusm, subject.pass_results.last.message
+      exp = ['assert style setup', 'test/unit style setup', 'TEST']
+      assert_equal exp, subject.results.map(&:message)
     end
 
   end
 
   class WithTeardownsTests < SystemTests
-    desc "that has tests that depend on teardowns"
+    desc "that has teardown logic"
     setup do
-      assert_style_msg = @asm = "set by assert style teardown"
-      testunit_style_msg = @tusm = "set by test/unit style teardown"
       @context_class = Factory.context_class do
-        setup do
-          # get msgs into test scope
-          @assert_style_msg = assert_style_msg
-          @testunit_style_msg = testunit_style_msg
-        end
-        # assert style teardown
-        teardown do
-          @__running_test__.pass_results.first.
-            instance_variable_set("@message", @assert_style_msg)
-        end
-        # classic test/unit style teardown
-        def teardown
-          @__running_test__.pass_results.last.
-            instance_variable_set("@message", @testunit_style_msg)
-        end
+        # assert style
+        teardown{ pass 'assert style teardown' }
+        # test/unit style
+        def teardown; pass 'test/unit style teardown'; end
       end
-      @test = Factory.test("something amazing", Factory.context_info(@context_class)) do
-        assert(true) # first pass result
-        assert(true) # last pass result
-      end
+      @test = Factory.test("t", Factory.context_info(@context_class)){ pass 'TEST' }
       @test.run
     end
 
-    should "have a passing result for each teardown type" do
-      assert_equal 2, subject.result_count
-      assert_equal 2, subject.result_count(:pass)
-    end
+    should "execute all teardown logic when run" do
+      assert_equal 3, subject.result_count(:pass)
 
-    should "have run the assert style teardown" do
-      assert_equal @asm, subject.pass_results.first.message
-    end
-
-    should "have run test/unit style teardown" do
-      assert_equal @tusm, subject.pass_results.last.message
+      exp = ['TEST', 'test/unit style teardown', 'assert style teardown']
+      assert_equal exp, subject.results.map(&:message)
     end
 
   end
 
   class WithAroundsTests < SystemTests
-    desc "that has arounds (in addition to setups/teardowns)"
+    desc "that has around logic (in addition to setups/teardowns)"
     setup do
-      @parent_class = Factory.modes_off_context_class do
+      @parent_context_class = Factory.modes_off_context_class do
         around do |block|
-          @__running_test__.output += "p-around start, "
+          pass "parent around start"
           block.call
-          @__running_test__.output += "p-around end."
+          pass "parent around end"
         end
-        setup{ @__running_test__.output += "p-setup, " }
-        teardown{ @__running_test__.output += "p-teardown, " }
+        setup{ pass "parent setup" }
+        teardown{ pass "parent teardown" }
       end
-
-      @context_class = Factory.modes_off_context_class(@parent_class) do
-        attr_accessor :out_status
-
-        setup{ @__running_test__.output += "c-setup1, " }
+      @context_class = Factory.modes_off_context_class(@parent_context_class) do
+        setup{ pass "child setup1" }
         around do |block|
-          @__running_test__.output += "c-around1 start, "
+          pass "child around1 start"
           block.call
-          @__running_test__.output += "c-around1 end, "
+          pass "child around1 end"
         end
-        teardown{ @__running_test__.output += "c-teardown1, " }
-        setup{ @__running_test__.output += "c-setup2, " }
+        teardown{ pass "child teardown1" }
+        setup{ pass "child setup2" }
         around do |block|
-          @__running_test__.output += "c-around2 start, "
+          pass "child around2 start"
           block.call
-          @__running_test__.output += "c-around2 end, "
+          pass "child around2 end"
         end
-        teardown{ @__running_test__.output += "c-teardown2, " }
+        teardown{ pass "child teardown2" }
       end
-
-
-      @test = Factory.test("something amazing", Factory.context_info(@context_class)) do
-        @__running_test__.output += "TEST, "
-      end
+      @test = Factory.test("t", Factory.context_info(@context_class)){ pass "TEST" }
       @test.run
     end
 
     should "run the arounds outside of the setups/teardowns/test" do
-      exp = "p-around start, c-around1 start, c-around2 start, "\
-            "p-setup, c-setup1, c-setup2, "\
-            "TEST, "\
-            "c-teardown1, c-teardown2, p-teardown, "\
-            "c-around2 end, c-around1 end, p-around end."
-      assert_equal exp, subject.output
+      assert_equal 13, subject.result_count(:pass)
+
+      exp = [
+        'parent around start', 'child around1 start', 'child around2 start',
+        'parent setup', 'child setup1', 'child setup2', 'TEST',
+        'child teardown1', 'child teardown2', 'parent teardown',
+        'child around2 end', 'child around1 end', 'parent around end'
+      ]
+      assert_equal exp, subject.results.map(&:message)
     end
 
   end

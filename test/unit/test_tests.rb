@@ -3,6 +3,7 @@ require 'assert/test'
 
 require 'assert/config'
 require 'assert/file_line'
+require 'assert/result'
 
 class Assert::Test
 
@@ -19,7 +20,7 @@ class Assert::Test
     should have_readers :context_info, :config, :code, :results, :data
     should have_imeths :name, :file_line, :output, :output=, :run_time
     should have_imeths :result_rate, :result_count
-    should have_imeths *Assert::Result.types.keys.collect{ |k| "#{k}_results" }
+    should have_imeths *Assert::Result.types.keys.map{ |k| "#{k}_results" }
     should have_imeths :context_class, :file, :line_number
     should have_imeths :run, :capture_result
 
