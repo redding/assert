@@ -11,7 +11,9 @@ class Assert::Context
     setup do
       @test = Factory.test
       @context_class = @test.context_class
-      @context = @context_class.new(@test, @test.config)
+      @callback_result = nil
+      @result_callback = proc{ |result| @callback_result = result }
+      @context = @context_class.new(@test, @test.config, @result_callback)
     end
     subject{ @context }
 
@@ -52,6 +54,10 @@ class Assert::Context
       assert_equal @skip_msg, subject.message
     end
 
+    should "not call the result callback" do
+      assert_nil @callback_result
+    end
+
   end
 
   class IgnoreTests < UnitTests
@@ -65,6 +71,10 @@ class Assert::Context
     should "create an ignore result and set its message" do
       assert_kind_of Assert::Result::Ignore, subject
       assert_equal @ignore_msg, subject.message
+    end
+
+    should "call the result callback" do
+      assert_equal @result, @callback_result
     end
 
   end
@@ -82,6 +92,10 @@ class Assert::Context
       assert_equal @pass_msg, subject.message
     end
 
+    should "call the result callback" do
+      assert_equal @result, @callback_result
+    end
+
   end
 
   class FlunkTests < UnitTests
@@ -95,6 +109,10 @@ class Assert::Context
     should "create a fail result and set its message" do
       assert_kind_of Assert::Result::Fail, subject
       assert_equal @flunk_msg, subject.message
+    end
+
+    should "call the result callback" do
+      assert_equal @result, @callback_result
     end
 
   end
@@ -118,13 +136,17 @@ class Assert::Context
       assert_equal fail_msg, result.message
     end
 
+    should "call the result callback" do
+      assert_equal @result, @callback_result
+    end
+
   end
 
-  class HaltOnFailTests < FailTests
-    desc "when halting on fails"
+  class HaltOnFailTests < UnitTests
+    desc "failing when halting on fails"
     setup do
       @halt_config = Assert::Config.new(:halt_on_fail => true)
-      @context = @context_class.new(@test, @halt_config)
+      @context = @context_class.new(@test, @halt_config, @result_callback)
       @fail_msg = "something failed"
     end
     subject{ @result }
@@ -140,6 +162,10 @@ class Assert::Context
 
       result = Assert::Result::Fail.new(Factory.test("something"), err)
       assert_equal @fail_msg, result.message
+    end
+
+    should "not call the result callback" do
+      assert_nil @callback_result
     end
 
   end
@@ -225,7 +251,7 @@ class Assert::Context
       @context_class = Factory.modes_off_context_class do
         subject{ @something = expected }
       end
-      @context = @context_class.new(@test, @test.config)
+      @context = @context_class.new(@test, @test.config, proc{ |result| })
       @subject = @context.subject
     end
     subject{ @subject }

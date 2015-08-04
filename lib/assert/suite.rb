@@ -66,7 +66,7 @@ module Assert
       self.tests.size
     end
 
-    def result_count(type=nil)
+    def result_count(type = nil)
       if type
         self.tests.inject(0) do |count, test|
           count += test.result_count(type)
@@ -136,7 +136,7 @@ module Assert
     class ContextInfo
       attr_reader :called_from, :klass, :file
 
-      def initialize(klass, called_from=nil, first_caller=nil)
+      def initialize(klass, called_from = nil, first_caller = nil)
         @called_from = called_from || first_caller
         @klass = klass
         @file = @called_from.gsub(/\:[0-9]+.*$/, '') if @called_from

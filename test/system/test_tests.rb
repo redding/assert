@@ -1,11 +1,15 @@
 require 'assert'
 
-class RunningSystemTests < Assert::Context
-  desc "Running a test (with no halt-on-fail) that"
-  subject{ @test }
+class Assert::Test
 
-  class NothingTests < RunningSystemTests
-    desc "does nothing"
+  class SystemTests < Assert::Context
+    desc "Assert::Test"
+    subject{ @test }
+
+  end
+
+  class NoResultsTests < SystemTests
+    desc "when producing no results"
     setup do
       @test = Factory.test
       @test.run
@@ -17,8 +21,8 @@ class RunningSystemTests < Assert::Context
 
   end
 
-  class PassTests < RunningSystemTests
-    desc "passes a single assertion"
+  class PassTests < SystemTests
+    desc "when passing a single assertion"
     setup do
       @test = Factory.test{ assert(1 == 1) }
       @test.run
@@ -34,8 +38,8 @@ class RunningSystemTests < Assert::Context
 
   end
 
-  class FailTests < RunningSystemTests
-    desc "fails a single assertion"
+  class FailTests < SystemTests
+    desc "when failing a single assertion"
     setup do
       @test = Factory.test{ assert(1 == 0) }
       @test.run
@@ -51,8 +55,8 @@ class RunningSystemTests < Assert::Context
 
   end
 
-  class SkipTests < RunningSystemTests
-    desc "skips once"
+  class SkipTests < SystemTests
+    desc "when skipping once"
     setup do
       @test = Factory.test{ skip }
       @test.run
@@ -68,8 +72,8 @@ class RunningSystemTests < Assert::Context
 
   end
 
-  class ErrorTests < RunningSystemTests
-    desc "errors once"
+  class ErrorTests < SystemTests
+    desc "when erroring once"
     setup do
       @test = Factory.test{ raise("WHAT") }
       @test.run
@@ -85,8 +89,8 @@ class RunningSystemTests < Assert::Context
 
   end
 
-  class MixedTests < RunningSystemTests
-    desc "has 1 pass and 1 fail assertion"
+  class MixedTests < SystemTests
+    desc "when passing 1 assertion and failing 1 assertion"
     setup do
       @test = Factory.test do
         assert(1 == 1)
@@ -109,8 +113,8 @@ class RunningSystemTests < Assert::Context
 
   end
 
-  class MixedSkipTests < RunningSystemTests
-    desc "has 1 pass and 1 fail assertion with a skip call in between"
+  class MixedSkipTests < SystemTests
+    desc "when passing 1 assertion and failing 1 assertion with a skip call in between"
     setup do
       @test = Factory.test do
         assert(1 == 1)
@@ -142,8 +146,8 @@ class RunningSystemTests < Assert::Context
 
   end
 
-  class MixedErrorTests < RunningSystemTests
-    desc "has 1 pass and 1 fail assertion with an exception raised in between"
+  class MixedErrorTests < SystemTests
+    desc "when passing 1 assertion and failing 1 assertion with an exception raised in between"
     setup do
       @test = Factory.test do
         assert(1 == 1)
@@ -153,12 +157,12 @@ class RunningSystemTests < Assert::Context
       @test.run
     end
 
-    should "have an error for its last result" do
-      assert_kind_of Assert::Result::Error, subject.results.last
-    end
-
     should "have 2 total results" do
       assert_equal 2, subject.result_count
+    end
+
+    should "have an error for its last result" do
+      assert_kind_of Assert::Result::Error, subject.results.last
     end
 
     should "have 1 pass result" do
@@ -175,8 +179,8 @@ class RunningSystemTests < Assert::Context
 
   end
 
-  class MixedPassTests < RunningSystemTests
-    desc "has 1 pass and 1 fail assertion with a pass call in between"
+  class MixedPassTests < SystemTests
+    desc "when passing 1 assertion and failing 1 assertion with a pass call in between"
     setup do
       @test = Factory.test do
         assert(1 == 1)
@@ -186,26 +190,26 @@ class RunningSystemTests < Assert::Context
       @test.run
     end
 
-    should "have a pass for its last result" do
-      assert_kind_of Assert::Result::Fail, subject.results.last
-    end
-
     should "have 3 total results" do
       assert_equal 3, subject.result_count
+    end
+
+    should "have a fail for its last result" do
+      assert_kind_of Assert::Result::Fail, subject.results.last
     end
 
     should "have 2 pass results" do
       assert_equal 2, subject.result_count(:pass)
     end
 
-    should "have 1 fail results" do
+    should "have 1 fail result" do
       assert_equal 1, subject.result_count(:fail)
     end
 
   end
 
-  class MixedFailTests < RunningSystemTests
-    desc "has 1 pass and 1 fail assertion with a fail call in between"
+  class MixedFailTests < SystemTests
+    desc "when failing 1 assertion and passing 1 assertion with a fail call in between"
     setup do
       @test = Factory.test do
         assert(1 == 0)
@@ -215,15 +219,15 @@ class RunningSystemTests < Assert::Context
       @test.run
     end
 
-    should "have a fail for its last result" do
-      assert_kind_of Assert::Result::Pass, subject.results.last
-    end
-
     should "have 3 total results" do
       assert_equal 3, subject.result_count
     end
 
-    should "have 1 pass results" do
+    should "have a pass for its last result" do
+      assert_kind_of Assert::Result::Pass, subject.results.last
+    end
+
+    should "have 1 pass result" do
       assert_equal 1, subject.result_count(:pass)
     end
 
@@ -233,8 +237,8 @@ class RunningSystemTests < Assert::Context
 
   end
 
-  class MixedFlunkTests < RunningSystemTests
-    desc "has 1 pass and 1 fail assertion with a flunk call in between"
+  class MixedFlunkTests < SystemTests
+    desc "has failing 1 assertion and passing 1 assertion with a flunk call in between"
     setup do
       @test = Factory.test do
         assert(1 == 0)
@@ -244,12 +248,12 @@ class RunningSystemTests < Assert::Context
       @test.run
     end
 
-    should "have a fail for its last result" do
-      assert_kind_of Assert::Result::Pass, subject.results.last
-    end
-
     should "have 3 total results" do
       assert_equal 3, subject.result_count
+    end
+
+    should "have a pass for its last result" do
+      assert_kind_of Assert::Result::Pass, subject.results.last
     end
 
     should "have 1 pass results" do
@@ -262,8 +266,8 @@ class RunningSystemTests < Assert::Context
 
   end
 
-  class WithSetupsTests < RunningSystemTests
-    desc "has tests that depend on setups"
+  class WithSetupsTests < SystemTests
+    desc "that has tests that depend on setups"
     setup do
       assert_style_msg = @asm = "set by assert style setup"
       testunit_style_msg = @tusm = "set by test/unit style setup"
@@ -307,8 +311,8 @@ class RunningSystemTests < Assert::Context
 
   end
 
-  class WithTeardownsTests < RunningSystemTests
-    desc "has tests that depend on teardowns"
+  class WithTeardownsTests < SystemTests
+    desc "that has tests that depend on teardowns"
     setup do
       assert_style_msg = @asm = "set by assert style teardown"
       testunit_style_msg = @tusm = "set by test/unit style teardown"
@@ -351,8 +355,8 @@ class RunningSystemTests < Assert::Context
 
   end
 
-  class WithAroundsTests < RunningSystemTests
-    desc "has arounds (in addition to setups/teardowns)"
+  class WithAroundsTests < SystemTests
+    desc "that has arounds (in addition to setups/teardowns)"
     setup do
       @parent_class = Factory.modes_off_context_class do
         around do |block|

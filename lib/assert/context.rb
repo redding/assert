@@ -44,8 +44,10 @@ module Assert
       end
     end
 
-    def initialize(running_test, config)
-      @__running_test__, @__assert_config__ = running_test, config
+    def initialize(running_test, config, result_callback)
+      @__running_test__    = running_test
+      @__assert_config__   = config
+      @__result_callback__ = result_callback
     end
 
     # check if the assertion is a truthy value, if so create a new pass result, otherwise
@@ -75,7 +77,7 @@ module Assert
 
     # adds a Pass result to the end of the test's results
     # does not break test execution
-    def pass(pass_msg=nil)
+    def pass(pass_msg = nil)
       capture_result do |test, backtrace|
         Assert::Result::Pass.new(test, pass_msg, backtrace)
       end
@@ -83,7 +85,7 @@ module Assert
 
     # adds an Ignore result to the end of the test's results
     # does not break test execution
-    def ignore(ignore_msg=nil)
+    def ignore(ignore_msg = nil)
       capture_result do |test, backtrace|
         Assert::Result::Ignore.new(test, ignore_msg, backtrace)
       end
@@ -103,7 +105,7 @@ module Assert
     alias_method :flunk, :fail
 
     # adds a Skip result to the end of the test's results and breaks test execution
-    def skip(skip_msg=nil)
+    def skip(skip_msg = nil)
       raise(Result::TestSkipped, skip_msg || '')
     end
 
@@ -147,7 +149,7 @@ module Assert
     def capture_result
       if block_given?
         result = yield __running_test__, caller
-        __running_test__.results << result
+        __running_test__.capture_result(result, @__result_callback__)
         result
       end
     end
