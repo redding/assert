@@ -294,7 +294,7 @@ module Assert
         end
       end
 
-      def exception_details(raised_msg=nil, no_raised_msg=nil)
+      def exception_details(raised_msg = nil, no_raised_msg = nil)
         if @exception
           backtrace = Assert::Result::Backtrace.new(@exception.backtrace)
           [ raised_msg,

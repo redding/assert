@@ -44,15 +44,15 @@ module Factory
   # Generate results for use in testing.
 
   def self.pass_result(msg = nil)
-    Assert::Result::Pass.new(Factory.test(Factory.string), msg || Factory.string)
+    Assert::Result::Pass.new(Factory.test(Factory.string), msg || Factory.string, [])
   end
 
   def self.ignore_result(msg = nil)
-    Assert::Result::Ignore.new(Factory.test(Factory.string), msg || Factory.string)
+    Assert::Result::Ignore.new(Factory.test(Factory.string), msg || Factory.string, [])
   end
 
   def self.fail_result(msg = nil)
-    Assert::Result::Fail.new(Factory.test(Factory.string), msg || Factory.string)
+    Assert::Result::Fail.new(Factory.test(Factory.string), msg || Factory.string, [])
   end
 
   def self.skip_result(exception = nil)
