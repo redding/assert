@@ -107,7 +107,7 @@ module Assert
       # run any assert style 'setup do' setups
       self.context_class.send('run_setups', scope)
 
-      # run any classic test/unit style 'def setup' setups
+      # run any test/unit style 'def setup' setups
       scope.setup if scope.respond_to?(:setup)
     end
 
@@ -120,11 +120,11 @@ module Assert
     end
 
     def run_test_teardown(scope)
-      # run any classic test/unit style 'def teardown' teardowns
-      scope.teardown if scope.respond_to?(:teardown)
-
       # run any assert style 'teardown do' teardowns
       self.context_class.send('run_teardowns', scope)
+
+      # run any test/unit style 'def teardown' teardowns
+      scope.teardown if scope.respond_to?(:teardown)
     end
 
     def capture_output(&block)
