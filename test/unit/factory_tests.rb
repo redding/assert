@@ -63,6 +63,15 @@ module Assert::Factory
       assert_equal 1, subject.text(1).length
     end
 
+    should "return a random string using `slug`" do
+      assert_kind_of String, subject.slug
+      assert_equal 5, subject.slug.length
+    end
+
+    should "allow passing a maximum length using `slug`" do
+      assert_equal 1, subject.slug(1).length
+    end
+
     should "return a random hex string using `hex`" do
       assert_kind_of String, subject.hex
       assert_match /\A[0-9a-f]{10}\Z/, subject.hex
@@ -70,17 +79,6 @@ module Assert::Factory
 
     should "allow passing a maximum length using `hex`" do
       assert_equal 1, subject.hex(1).length
-    end
-
-    should "return a random slug string using `slug`" do
-      assert_kind_of String, subject.slug
-      segments = subject.slug.split('-')
-      assert_equal 2, segments.size
-      segments.each{ |s| assert_match /\A[a-z]{4}\Z/, s }
-    end
-
-    should "allow passing a maximum length using `slug`" do
-      assert_equal 1, subject.slug(1).length
     end
 
     should "return a random file name string using `file_name`" do

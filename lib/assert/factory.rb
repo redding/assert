@@ -33,7 +33,7 @@ module Assert
     end
 
     def string(length = nil)
-      self.type_cast(Random.string(length), :string)
+      self.type_cast(Random.string(length || 10), :string)
     end
 
     def text(length = nil)
@@ -41,7 +41,7 @@ module Assert
     end
 
     def slug(length = nil)
-      self.type_cast(Random.slug_string(length), :string)
+      self.type_cast(Random.string(length || 5), :string)
     end
 
     def hex(length = nil)
@@ -120,11 +120,6 @@ module Assert
       DICTIONARY = [*'a'..'z'].freeze
       def self.string(length = nil)
         [*0..((length || 10) - 1)].map{ |n| DICTIONARY[rand(DICTIONARY.size)] }.join
-      end
-
-      def self.slug_string(length = nil)
-        length ||= 8
-        self.string(length).scan(/.{1,4}/).join('-')
       end
 
       def self.hex_string(length = nil)
