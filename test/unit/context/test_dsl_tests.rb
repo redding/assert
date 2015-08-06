@@ -17,10 +17,11 @@ module Assert::Context::TestDSL
       assert_equal 1, context_class.suite.tests.size
 
       exp_test_name = @test_desc
-      built_test = context_class.suite.tests.first
+      built_test    = context_class.suite.tests.first
+
       assert_kind_of Assert::Test, built_test
       assert_equal exp_test_name, built_test.name
-      assert_equal @test_block, built_test.code
+      assert_equal @test_block,   built_test.code
     end
 
     should "build a test using `should` with a desc and code block" do
@@ -30,10 +31,11 @@ module Assert::Context::TestDSL
       assert_equal 1, context_class.suite.tests.size
 
       exp_test_name = "should #{@test_desc}"
-      built_test = context_class.suite.tests.last
+      built_test    = context_class.suite.tests.last
+
       assert_kind_of Assert::Test, built_test
       assert_equal exp_test_name, built_test.name
-      assert_equal @test_block, built_test.code
+      assert_equal @test_block,   built_test.code
     end
 
     should "build a test that skips with no msg when `test_eventually` called" do
@@ -43,8 +45,9 @@ module Assert::Context::TestDSL
         context.instance_eval(&context.class.suite.tests.last.code)
       end
 
-      assert_equal 1, context.class.suite.tests.size
-      assert_equal "", err.message
+      assert_equal 1,      context.class.suite.tests.size
+      assert_equal 'TODO', err.message
+      assert_equal 1,      err.backtrace.size
     end
 
     should "build a test that skips with no msg  when `should_eventually` called" do
@@ -54,8 +57,9 @@ module Assert::Context::TestDSL
         context.instance_eval(&context.class.suite.tests.last.code)
       end
 
-      assert_equal 1, context.class.suite.tests.size
-      assert_equal "", err.message
+      assert_equal 1,      context.class.suite.tests.size
+      assert_equal 'TODO', err.message
+      assert_equal 1,      err.backtrace.size
     end
 
     should "skip with the msg \"TODO\" when `test` called with no block" do
@@ -65,8 +69,9 @@ module Assert::Context::TestDSL
         context.instance_eval(&context.class.suite.tests.last.code)
       end
 
-      assert_equal 1, context.class.suite.tests.size
-      assert_equal "TODO", err.message
+      assert_equal 1,      context.class.suite.tests.size
+      assert_equal 'TODO', err.message
+      assert_equal 1,      err.backtrace.size
     end
 
     should "skip with the msg \"TODO\" when `should` called with no block" do
@@ -76,8 +81,9 @@ module Assert::Context::TestDSL
         context.instance_eval(&context.class.suite.tests.last.code)
       end
 
-      assert_equal 1, context.class.suite.tests.size
-      assert_equal "TODO", err.message
+      assert_equal 1,      context.class.suite.tests.size
+      assert_equal 'TODO', err.message
+      assert_equal 1,      err.backtrace.size
     end
 
     should "skip with the msg \"TODO\" when `test_eventually` called with no block" do
@@ -87,8 +93,9 @@ module Assert::Context::TestDSL
         context.instance_eval(&context.class.suite.tests.last.code)
       end
 
-      assert_equal 1, context.class.suite.tests.size
-      assert_equal "TODO", err.message
+      assert_equal 1,      context.class.suite.tests.size
+      assert_equal 'TODO', err.message
+      assert_equal 1,      err.backtrace.size
     end
 
     should "skip with the msg \"TODO\" when `should_eventually` called with no block" do
@@ -98,8 +105,9 @@ module Assert::Context::TestDSL
         context.instance_eval(&context.class.suite.tests.last.code)
       end
 
-      assert_equal 1, context.class.suite.tests.size
-      assert_equal "TODO", err.message
+      assert_equal 1,      context.class.suite.tests.size
+      assert_equal 'TODO', err.message
+      assert_equal 1,      err.backtrace.size
     end
 
     should "build a test from a macro using `test`" do

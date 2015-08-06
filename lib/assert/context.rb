@@ -107,8 +107,10 @@ module Assert
     alias_method :flunk, :fail
 
     # adds a Skip result to the end of the test's results and breaks test execution
-    def skip(skip_msg = nil)
-      raise(Result::TestSkipped, skip_msg || '')
+    def skip(skip_msg = nil, called_from = nil)
+      err = Result::TestSkipped.new(skip_msg || '')
+      err.set_backtrace([called_from]) if called_from
+      raise(err)
     end
 
     # alter the backtraces of fail results generated in the given block
