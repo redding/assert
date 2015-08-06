@@ -304,7 +304,7 @@ class Assert::Test
     should "execute all teardown logic when run" do
       assert_equal 3, subject.result_count(:pass)
 
-      exp = ['TEST', 'test/unit style teardown', 'assert style teardown']
+      exp = ['TEST', 'assert style teardown', 'test/unit style teardown']
       assert_equal exp, subject.results.map(&:message)
     end
 

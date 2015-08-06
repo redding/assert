@@ -33,7 +33,7 @@ module Assert
 
         if self.suite.test_methods.include?(klass_method_name)
           puts "WARNING: redefining '#{klass_method_name}'"
-          puts "  from: #{called_from}"
+          puts "  from: #{caller.first}"
         else
           self.suite.test_methods << klass_method_name
         end
