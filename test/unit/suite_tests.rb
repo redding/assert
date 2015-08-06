@@ -176,7 +176,7 @@ class Assert::Suite
   end
 
   class ContextInfoTests < UnitTests
-    desc "a suite's context info"
+    desc "ContextInfo"
     setup do
       @caller = caller
       @klass  = Assert::Context
@@ -185,6 +185,7 @@ class Assert::Suite
     subject{ @info }
 
     should have_readers :called_from, :klass, :file
+    should have_imeths :test_name
 
     should "set its klass on init" do
       assert_equal @klass, subject.klass
@@ -205,6 +206,18 @@ class Assert::Suite
     should "not have any file info if no caller is given" do
       info = Assert::Suite::ContextInfo.new(@klass)
       assert_nil info.file
+    end
+
+    should "know how to build the contextual test name for a given name" do
+      desc = Factory.string
+      name = Factory.string
+
+      assert_equal name, subject.test_name(name)
+      assert_equal '',   subject.test_name('')
+      assert_equal '',   subject.test_name(nil)
+
+      Assert.stub(subject.klass, :description){ desc }
+      assert_equal "#{desc} #{name}", subject.test_name(name)
     end
 
   end

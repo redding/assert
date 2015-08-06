@@ -100,7 +100,7 @@ module Assert::Macros
       # private
 
       def _methods_macro_test(called_from)
-        @_methods_macro_test ||= should "respond to methods", called_from do
+        @_methods_macro_test ||= test "should respond to methods", called_from do
 
           self.class._methods_macro_instance_methods.each do |(method, called_from)|
             msg = "#{subject.class.name} does not have instance method ##{method}"

@@ -10,61 +10,145 @@ class Assert::Test
   class UnitTests < Assert::Context
     desc "Assert::Test"
     setup do
-      @test_code = lambda{ assert(true) }
       @context_class = Factory.modes_off_context_class{ desc "context class" }
       @context_info  = Factory.context_info(@context_class)
-      @test = Factory.test("should do something amazing", @context_info, :code => @test_code)
+      @config        = Factory.modes_off_config
+      @test_code     = proc{ assert(true) }
+    end
+    subject{ Assert::Test }
+
+    should have_imeths :result_count_meth, :name_file_line_context_data
+    should have_imeths :for_block, :for_method
+
+    should "know the result count method name for a given type" do
+      type = Factory.string
+      exp = "#{type}_result_count".to_sym
+      assert_equal exp, subject.result_count_meth(type)
+    end
+
+    should "know how to build the name and file line given context" do
+      test_name = Factory.string
+      data = subject.name_file_line_context_data(@context_info, test_name)
+
+      exp = @context_info.test_name(test_name)
+      assert_equal exp, data[:name]
+
+      exp = @context_info.called_from
+      assert_equal exp, data[:file_line]
+    end
+
+    should "build tests for a block" do
+      name = Factory.string
+      test = subject.for_block(name, @context_info, @config, &@test_code)
+
+      exp = Assert::FileLine.parse(@context_info.called_from)
+      assert_equal exp, test.file_line
+
+      exp = @context_info.test_name(name)
+      assert_equal exp, test.name
+
+      assert_equal @context_info, test.context_info
+      assert_equal @config,       test.config
+      assert_equal @test_code,    test.code
+    end
+
+    should "build tests for a method" do
+      meth = 'a_test_method'
+      test = subject.for_method(meth, @context_info, @config)
+
+      exp = Assert::FileLine.parse(@context_info.called_from)
+      assert_equal exp, test.file_line
+
+      exp = @context_info.test_name(meth)
+      assert_equal exp, test.name
+
+      assert_equal @context_info, test.context_info
+      assert_equal @config,       test.config
+
+      assert_kind_of Proc, test.code
+      self.instance_eval(&test.code)
+      assert_true @a_test_method_called
+    end
+
+    def a_test_method
+      @a_test_method_called = true
+    end
+
+  end
+
+  class InitWithDataTests < UnitTests
+    desc "when init with data"
+    setup do
+      @file_line = Assert::FileLine.new(Factory.string, Factory.integer.to_s)
+      @meta_data = {
+        :file_line => @file_line.to_s,
+        :name      => Factory.string,
+        :output    => Factory.string,
+        :run_time  => Factory.float(1.0),
+      }
+      @meta_data[:total_result_count] = Factory.integer(100)
+      Assert::Result.types.keys.each do |type|
+        @meta_data[Assert::Test.result_count_meth(type)] = Factory.integer(100)
+      end
+      @run_data = {
+        :context_info => @context_info,
+        :config       => @config,
+        :code         => @test_code
+      }
+
+      @test = Assert::Test.new(@meta_data.merge(@run_data))
     end
     subject{ @test }
 
-    should have_readers :context_info, :config, :code, :results, :data
-    should have_imeths :name, :file_line, :output, :output=, :run_time
-    should have_imeths :result_rate, :result_count
+    should have_readers :file_line, :name, :output, :run_time, :total_result_count
+    should have_imeths *Assert::Result.types.keys.map{ |k| Assert::Test.result_count_meth(k) }
+    should have_readers :context_info, :config, :code, :results
+    should have_imeths :data, :context_class, :file, :line_number
+    should have_imeths :result_rate, :result_count, :capture_result, :run
     should have_imeths *Assert::Result.types.keys.map{ |k| "#{k}_results" }
-    should have_imeths :context_class, :file, :line_number
-    should have_imeths :run, :capture_result
 
-    should "know its config" do
-      cust_config = Assert::Config.new
-      assert_equal cust_config, Factory.test(cust_config).config
+    should "use any given attrs" do
+      assert_equal @file_line,             subject.file_line
+      assert_equal @meta_data[:name],      subject.name
+      assert_equal @meta_data[:output],    subject.output
+      assert_equal @meta_data[:run_time],  subject.run_time
+
+      assert_equal @meta_data[:total_result_count], subject.total_result_count
+
+      Assert::Result.types.keys.each do |type|
+        n = Assert::Test.result_count_meth(type)
+        assert_equal @meta_data[n], subject.send(n)
+      end
+
+      assert_equal @context_info, subject.context_info
+      assert_equal @config,       subject.config
+      assert_equal @test_code,    subject.code
     end
 
-    should "get its code from any passed opt, falling back on any given block" do
-      assert_equal @test_code, subject.code
+    should "default its attrs" do
+      test = Assert::Test.new
 
-      given_block = Proc.new{ assert(false) }
-      assert_equal given_block, Factory.test(&given_block).code
+      assert_equal Assert::FileLine.parse(''), test.file_line
+      assert_equal '', test.name
+      assert_equal '', test.output
+      assert_equal 0,  test.run_time
+      assert_equal 0,  test.total_result_count
 
-      assert_kind_of Proc, Factory.test.code
+      Assert::Result.types.keys.each do |type|
+        assert_equal 0, test.send(Assert::Test.result_count_meth(type))
+      end
+
+      assert_nil test.context_info
+      assert_nil test.config
+      assert_nil test.code
     end
 
     should "have no results before running" do
       assert_empty subject.results
     end
 
-    should "know its data and set its name and file line on the data" do
-      assert_kind_of Data, subject.data
-
-      data = subject.data
-      exp = "context class should do something amazing"
-      assert_equal exp, data.name
-
-      exp = Assert::FileLine.new(*@context_info.called_from.split(':'))
-      assert_equal exp, data.file_line
-    end
-
-    should "know its data related attrs" do
-      assert_equal subject.data.name,        subject.name
-      assert_equal subject.data.file_line,   subject.file_line
-      assert_equal subject.data.output,      subject.output
-      assert_equal subject.data.run_time,    subject.run_time
-      assert_equal subject.data.result_rate, subject.result_rate
-    end
-
-    should "write its output to its data" do
-      out = Factory.string
-      subject.output = out
-      assert_equal out, subject.data.output
+    should "know its data hash" do
+      assert_equal @meta_data, subject.data
     end
 
     should "know its context class" do
@@ -76,29 +160,44 @@ class Assert::Test
       assert_equal subject.file_line.line, subject.line_number
     end
 
-    should "have a zero run time and result rate by default" do
-      assert_equal 0, subject.run_time
-      assert_equal 0, subject.result_rate
+    should "know its result rate" do
+      count = Factory.integer(100)
+      time  = Factory.float(1.0) + 1.0
+
+      Assert.stub(subject, :result_count){ count }
+      Assert.stub(subject, :run_time){ time }
+      exp = count / time
+      assert_equal exp, subject.result_rate
+
+      Assert.stub(subject, :run_time){ 0 }
+      assert_equal 0.0, subject.result_rate
+
+      Assert.stub(subject, :run_time){ 0.0 }
+      assert_equal 0.0, subject.result_rate
     end
 
-    should "have a non-zero run time and result rate after it is run" do
-      subject.run
-      assert_not_equal 0, subject.run_time
-      assert_not_equal 0, subject.result_rate
+    should "know its result counts" do
+      assert_equal subject.total_result_count, subject.result_count
+
+      Assert::Result.types.keys.each do |type|
+        exp = subject.send(Assert::Test.result_count_meth(type))
+        assert_equal exp, subject.result_count(type)
+      end
     end
 
     should "capture results" do
-      result = Factory.pass_result
-      data_capture_result = nil
-      Assert.stub(subject.data, :capture_result){ |r| data_capture_result = r }
-      callback_result = nil
-      callback = proc{ |r| callback_result = r}
+      result           = Factory.pass_result
+      prev_total_count = subject.total_result_count
+      prev_pass_count  = subject.pass_result_count
+      callback_result  = nil
+      callback         = proc{ |r| callback_result = r}
 
       subject.capture_result(result, callback)
 
-      assert_equal result, subject.results.last
-      assert_equal result, data_capture_result
-      assert_equal result, callback_result
+      assert_equal result,               subject.results.last
+      assert_equal prev_total_count + 1, subject.total_result_count
+      assert_equal prev_pass_count  + 1, subject.pass_result_count
+      assert_equal result,               callback_result
     end
 
     should "have a custom inspect that only shows limited attributes" do
@@ -340,100 +439,6 @@ class Assert::Test
                 "std out from a method an assert called\n"\
                 "std out from the teardown\n"
       assert_equal(exp_out, @test.output)
-    end
-
-  end
-
-  class DataTests < UnitTests
-    desc "Data"
-    setup do
-      @given_data = {
-        :name      => Factory.string,
-        :file_line => Factory.string,
-        :output    => Factory.string,
-        :run_time  => Factory.float(1.0)
-      }
-      @given_data[:total_result_count] = Factory.integer(100)
-      Assert::Result.types.keys.each do |type|
-        @given_data[Data.result_count_meth(type)] = Factory.integer(100)
-      end
-
-      @data = Data.new(@given_data)
-    end
-    subject{ @data }
-
-    should have_accessors :name, :file_line, :output, :run_time, :total_result_count
-    should have_imeths *Assert::Result.types.keys.collect{ |k| Data.result_count_meth(k) }
-    should have_cmeths :result_count_meth
-
-    should "know the result count method name for a given type" do
-      type = Factory.string
-      exp = "#{type}_result_count".to_sym
-      assert_equal exp, Data.result_count_meth(type)
-    end
-
-    should "use any given attrs" do
-      assert_equal @given_data[:name],      subject.name
-      assert_equal @given_data[:file_line], subject.file_line
-      assert_equal @given_data[:output],    subject.output
-      assert_equal @given_data[:run_time],  subject.run_time
-
-      assert_equal @given_data[:total_result_count], subject.total_result_count
-
-      Assert::Result.types.keys.each do |type|
-        n = Data.result_count_meth(type)
-        assert_equal @given_data[n], subject.send(n)
-      end
-    end
-
-    should "default its attrs" do
-      data = Data.new
-
-      assert_nil data.name
-      assert_nil data.file_line
-
-      assert_equal '', data.output
-      assert_equal 0,  data.run_time
-      assert_equal 0,  data.total_result_count
-
-      Assert::Result.types.keys.each do |type|
-        assert_equal 0, data.send(Data.result_count_meth(type))
-      end
-    end
-
-    should "know its result rate" do
-      count = Factory.integer(100)
-      time  = Factory.float(1.0) + 1.0
-
-      Assert.stub(subject, :result_count){ count }
-      Assert.stub(subject, :run_time){ time }
-      exp = count / time
-      assert_equal exp, subject.result_rate
-
-      Assert.stub(subject, :run_time){ 0 }
-      assert_equal 0.0, subject.result_rate
-
-      Assert.stub(subject, :run_time){ 0.0 }
-      assert_equal 0.0, subject.result_rate
-    end
-
-    should "know its result counts" do
-      assert_equal subject.total_result_count, subject.result_count
-
-      Assert::Result.types.keys.each do |type|
-        exp = subject.send(Data.result_count_meth(type))
-        assert_equal exp, subject.result_count(type)
-      end
-    end
-
-    should "increment its result counts when capturing a result" do
-      prev_total_count = subject.total_result_count
-      prev_pass_count  = subject.pass_result_count
-
-      subject.capture_result(Factory.pass_result)
-
-      assert_equal prev_total_count + 1, subject.total_result_count
-      assert_equal prev_pass_count  + 1, subject.pass_result_count
     end
 
   end

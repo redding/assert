@@ -134,6 +134,7 @@ module Assert
     end
 
     class ContextInfo
+
       attr_reader :called_from, :klass, :file
 
       def initialize(klass, called_from = nil, first_caller = nil)
@@ -141,6 +142,11 @@ module Assert
         @klass = klass
         @file = @called_from.gsub(/\:[0-9]+.*$/, '') if @called_from
       end
+
+      def test_name(name)
+        [klass.description.to_s, name.to_s].compact.reject(&:empty?).join(' ')
+      end
+
     end
 
   end

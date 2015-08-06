@@ -21,6 +21,20 @@ class Assert::FileLine
       assert_equal @line, file_line.line
     end
 
+    should "handle parsing bad data gracefully" do
+      file_line = subject.parse(@file)
+      assert_equal '', file_line.file
+      assert_equal '', file_line.line
+
+      file_line = subject.parse('')
+      assert_equal '', file_line.file
+      assert_equal '', file_line.line
+
+      file_line = subject.parse(nil)
+      assert_equal '', file_line.file
+      assert_equal '', file_line.line
+    end
+
   end
 
   class InitTests < UnitTests
@@ -35,6 +49,14 @@ class Assert::FileLine
     should "know its file and line" do
       assert_equal @file, subject.file
       assert_equal @line, subject.line
+
+      file_line = Assert::FileLine.new(@file)
+      assert_equal @file, file_line.file
+      assert_equal '',    file_line.line
+
+      file_line = Assert::FileLine.new
+      assert_equal '', file_line.file
+      assert_equal '', file_line.line
     end
 
     should "know its string representation" do

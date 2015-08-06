@@ -38,9 +38,11 @@ module Assert
           self.suite.test_methods << klass_method_name
         end
 
-        ci = Suite::ContextInfo.new(self, nil, caller.first)
-        test = Test.new(method_name.to_s, ci, self.suite.config, :code => method_name)
-        self.suite.tests << test
+        self.suite.tests << Test.for_method(
+          method_name.to_s,
+          Suite::ContextInfo.new(self, nil, caller.first),
+          self.suite.config
+        )
       end
     end
 
@@ -79,7 +81,7 @@ module Assert
     # does not break test execution
     def pass(pass_msg = nil)
       capture_result do |test, backtrace|
-        Assert::Result::Pass.new(test, pass_msg, backtrace)
+        Assert::Result::Pass.for_test(test, pass_msg, backtrace)
       end
     end
 
@@ -87,7 +89,7 @@ module Assert
     # does not break test execution
     def ignore(ignore_msg = nil)
       capture_result do |test, backtrace|
-        Assert::Result::Ignore.new(test, ignore_msg, backtrace)
+        Assert::Result::Ignore.for_test(test, ignore_msg, backtrace)
       end
     end
 
@@ -98,7 +100,7 @@ module Assert
         raise Result::TestFailure, message || ''
       else
         capture_result do |test, backtrace|
-          Assert::Result::Fail.new(test, message || '', backtrace)
+          Assert::Result::Fail.for_test(test, message || '', backtrace)
         end
       end
     end
