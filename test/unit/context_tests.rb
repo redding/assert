@@ -160,7 +160,7 @@ class Assert::Context
       assert_kind_of Assert::Result::TestFailure, err
       assert_equal @fail_msg, err.message
 
-      result = Assert::Result::Fail.new(Factory.test("something"), err)
+      result = Assert::Result::Fail.for_test(Factory.test("something"), err)
       assert_equal @fail_msg, result.message
     end
 
@@ -274,7 +274,7 @@ class Assert::Context
       begin
         @context.with_backtrace(@from_bt, &@from_block)
       rescue Assert::Result::TestSkipped => e
-        @test.results << Assert::Result::Skip.new(@test, e)
+        @test.results << Assert::Result::Skip.for_test(@test, e)
       end
 
       assert_equal 5, @test.results.size

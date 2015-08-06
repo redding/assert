@@ -6,60 +6,110 @@ module Assert
 
   class Test
 
-    # a Test is some code/method to run in the scope of a Context.  After a
-    # a test runs, it should have some assertions which are its results.
+    # a Test is some code/method to run in the scope of a Context that may
+    # produce results
 
-    attr_reader :context_info, :config, :code, :results, :data
-
-    def initialize(name, suite_ci, config, opts = nil, &block)
-      o = opts || {}
-      @context_info = suite_ci
-      @config       = config
-      @code         = o[:code] || block || Proc.new{}
-      @results      = []
-      @data         = Data.new
-
-      @data.name, @data.file_line = name_file_line_from_context(@context_info, name)
+    def self.result_count_meth(type)
+      "#{type}_result_count".to_sym
     end
 
-    def name;         self.data.name;         end
-    def file_line;    self.data.file_line;    end
-    def output;       self.data.output;       end
-    def output=(val); self.data.output = val; end
-    def run_time;     self.data.run_time;     end
-    def result_rate;  self.data.result_rate;  end
+    def self.name_file_line_context_data(ci, name)
+      { :name      => ci.test_name(name),
+        :file_line => ci.called_from
+      }
+    end
 
-    def result_count(type = nil)
-      self.data.result_count(type)
+    def self.for_block(name, context_info, config, &block)
+      self.new(self.name_file_line_context_data(context_info, name).merge({
+        :context_info => context_info,
+        :config       => config,
+        :code         => block
+      }))
+    end
+
+    def self.for_method(method_name, context_info, config)
+      self.new(self.name_file_line_context_data(context_info, method_name).merge({
+        :context_info => context_info,
+        :config       => config,
+        :code         => proc{ self.send(method_name) }
+      }))
+    end
+
+    attr_reader :results
+    attr_writer :total_result_count
+
+    def initialize(build_data = nil)
+      @build_data, @results = build_data || {}, []
+    end
+
+    def file_line; @file_line ||= FileLine.parse((@build_data[:file_line] || '').to_s); end
+    def name;      @name      ||= (@build_data[:name]                     || '');       end
+    def output;    @output    ||= (@build_data[:output]                   || '');       end
+    def run_time;  @run_time  ||= (@build_data[:run_time]                 || 0);        end
+
+    def total_result_count
+      @total_result_count ||= (@build_data[:total_result_count] || 0)
+    end
+
+    Assert::Result.types.keys.each do |type|
+      n = result_count_meth(type)
+      define_method(n) do
+        instance_variable_get("@#{n}") || instance_variable_set("@#{n}", @build_data[n] || 0)
+      end
+    end
+
+    def context_info; @context_info ||= @build_data[:context_info]; end
+    def config;       @config       ||= @build_data[:config];       end
+    def code;         @code         ||= @build_data[:code];         end
+
+    def data
+      { :file_line => self.file_line.to_s,
+        :name      => self.name.to_s,
+        :output    => self.output.to_s,
+        :run_time  => self.run_time
+      }.merge(result_count_data(:total_result_count => self.total_result_count))
     end
 
     def context_class; self.context_info.klass; end
     def file;          self.file_line.file;     end
     def line_number;   self.file_line.line;     end
 
+    def result_rate
+      get_rate(self.result_count, self.run_time)
+    end
+
+    def result_count(type = nil)
+      if Assert::Result.types.keys.include?(type)
+        self.send(result_count_meth(type))
+      else
+        self.total_result_count
+      end
+    end
+
+    def capture_result(result, callback)
+      self.results << result
+      self.total_result_count += 1
+      n = result_count_meth(result.to_sym)
+      instance_variable_set("@#{n}", (instance_variable_get("@#{n}") || 0) + 1)
+      callback.call(result)
+    end
+
     def run(&result_callback)
       result_callback ||= proc{ |result| } # do nothing by default
       scope = self.context_class.new(self, self.config, result_callback)
       start_time = Time.now
       capture_output do
-        self.context_class.send('run_arounds', scope) do
-          run_test_main(scope, result_callback)
+        self.context_class.send('run_arounds', scope) do # TODO: why `send`?
+          run_test(scope, result_callback)
         end
       end
-      @data.run_time = Time.now - start_time
-
+      @run_time = Time.now - start_time
       @results
-    end
-
-    def capture_result(result, callback)
-      self.results << result
-      self.data.capture_result(result)
-      callback.call(result)
     end
 
     Assert::Result.types.each do |name, klass|
       define_method "#{name}_results" do
-        @results.select{|r| r.kind_of?(klass) }
+        self.results.select{|r| r.kind_of?(klass) }
       end
     end
 
@@ -76,55 +126,38 @@ module Assert
 
     private
 
-    def run_test_main(scope, result_callback)
+    def run_test(scope, result_callback)
       begin
-        run_test_setup(scope)
-        run_test_code(scope)
+        # run any assert style 'setup do' setups
+        self.context_class.send('run_setups', scope) # TODO: why `send`?
+        # run any test/unit style 'def setup' setups
+        scope.setup if scope.respond_to?(:setup)
+        # run the code block
+        scope.instance_eval(&(self.code || proc{}))
       rescue Result::TestFailure => err
-        capture_result(Result::Fail.new(self, err), result_callback)
+        capture_result(Result::Fail.for_test(self, err), result_callback)
       rescue Result::TestSkipped => err
-        capture_result(Result::Skip.new(self, err), result_callback)
+        capture_result(Result::Skip.for_test(self, err), result_callback)
       rescue SignalException => err
         raise(err)
       rescue Exception => err
-        capture_result(Result::Error.new(self, err), result_callback)
+        capture_result(Result::Error.for_test(self, err), result_callback)
       ensure
         begin
-          run_test_teardown(scope)
+          # run any assert style 'teardown do' teardowns
+          self.context_class.send('run_teardowns', scope) # TODO: why `send`?
+          # run any test/unit style 'def teardown' teardowns
+          scope.teardown if scope.respond_to?(:teardown)
         rescue Result::TestFailure => err
-          capture_result(Result::Fail.new(self, err), result_callback)
+          capture_result(Result::Fail.for_test(self, err), result_callback)
         rescue Result::TestSkipped => err
-          capture_result(Result::Skip.new(self, err), result_callback)
+          capture_result(Result::Skip.for_test(self, err), result_callback)
         rescue SignalException => err
           raise(err)
         rescue Exception => err
-          capture_result(Result::Error.new(self, err), result_callback)
+          capture_result(Result::Error.for_test(self, err), result_callback)
         end
       end
-    end
-
-    def run_test_setup(scope)
-      # run any assert style 'setup do' setups
-      self.context_class.send('run_setups', scope)
-
-      # run any test/unit style 'def setup' setups
-      scope.setup if scope.respond_to?(:setup)
-    end
-
-    def run_test_code(scope)
-      if @code.kind_of?(::Proc)
-        scope.instance_eval(&@code)
-      elsif scope.respond_to?(@code.to_s)
-        scope.send(@code.to_s)
-      end
-    end
-
-    def run_test_teardown(scope)
-      # run any assert style 'teardown do' teardowns
-      self.context_class.send('run_teardowns', scope)
-
-      # run any test/unit style 'def teardown' teardowns
-      scope.teardown if scope.respond_to?(:teardown)
     end
 
     def capture_output(&block)
@@ -139,69 +172,22 @@ module Assert
     end
 
     def capture_io
-      StringIO.new(@data.output, "a+")
+      StringIO.new(self.output, "a+")
     end
 
-    def name_file_line_from_context(context_info, name)
-      [ [ context_info.klass.description,
-          name
-        ].compact.reject(&:empty?).join(" "),
-        FileLine.parse(context_info.called_from)
-      ]
+    def result_count_data(seed)
+      Assert::Result.types.keys.inject(seed) do |d, t|
+        d[result_count_meth(t)] = self.send(result_count_meth(t))
+        d
+      end
     end
 
-    class Data
+    def result_count_meth(type)
+      self.class.result_count_meth(type)
+    end
 
-      def self.result_count_meth(type)
-        "#{type}_result_count".to_sym
-      end
-
-      attr_accessor :name, :file_line, :output, :run_time, :total_result_count
-      attr_accessor *Assert::Result.types.keys.map{ |type| result_count_meth(type) }
-
-      def initialize(data = nil)
-        data ||= {}
-
-        @name      = data[:name]
-        @file_line = data[:file_line]
-        @output    = data[:output] || ''
-        @run_time  = data[:run_time] || 0
-
-        @total_result_count = data[:total_result_count] || 0
-        Assert::Result.types.keys.each do |type|
-          n = result_count_meth(type)
-          instance_variable_set("@#{n}", data[n] || 0)
-        end
-      end
-
-      def result_rate
-        get_rate(self.result_count, self.run_time)
-      end
-
-      def result_count(type = nil)
-        if Assert::Result.types.keys.include?(type)
-          self.send(result_count_meth(type))
-        else
-          self.total_result_count
-        end
-      end
-
-      def capture_result(result)
-        self.total_result_count += 1
-        n = result_count_meth(result.to_sym)
-        self.send("#{n}=", self.send(n) + 1)
-      end
-
-      private
-
-      def result_count_meth(type)
-        self.class.result_count_meth(type)
-      end
-
-      def get_rate(count, time)
-        time == 0 ? 0.0 : (count.to_f / time.to_f)
-      end
-
+    def get_rate(count, time)
+      time == 0 ? 0.0 : (count.to_f / time.to_f)
     end
 
   end

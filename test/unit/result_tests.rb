@@ -10,7 +10,7 @@ module Assert::Result
     end
     subject{ Assert::Result }
 
-    should have_imeths :types
+    should have_imeths :types, :new
 
     should "know its types" do
       exp = {
@@ -21,6 +21,15 @@ module Assert::Result
         :error  => Error
       }
       assert_equal exp, subject.types
+
+      assert_equal Base, subject.types[Factory.string]
+    end
+
+    should "create results from data hashes" do
+      type   = Assert::Result.types.keys.choice
+      exp    = Assert::Result.types[type].new(:type => type)
+
+      assert_equal exp, Assert::Result.new(:type => type)
     end
 
   end
@@ -28,54 +37,67 @@ module Assert::Result
   class BaseTests < UnitTests
     desc "Base"
     setup do
-      @message = Factory.text
-      @bt      = Factory.integer(3).times.map{ Factory.string }
-
-      @result = Assert::Result::Base.new(@test, @message, @bt)
+      @given_data = {
+        :type      => Factory.string,
+        :name      => Factory.string,
+        :test_name => Factory.string,
+        :message   => Factory.string,
+        :backtrace => Backtrace.new(caller),
+        :trace     => Factory.string
+      }
+      @result = Base.new(@given_data)
     end
     subject{ @result }
 
-    should have_cmeths :type, :name
-    should have_readers :test, :data
+    should have_cmeths :type, :name, :for_test
     should have_imeths :type, :name, :test_name, :message, :backtrace, :trace
-    should have_imeths :to_sym, :to_s
     should have_imeths *Assert::Result.types.keys.map{ |k| "#{k}?" }
-    should have_imeth :set_backtrace
+    should have_imeths :set_backtrace, :data, :to_sym, :to_s
 
     should "know its class-level type/name" do
       assert_equal :unknown, subject.class.type
       assert_equal '',       subject.class.name
     end
 
-    should "know its test" do
-      assert_equal @test, subject.test
-    end
+    should "know how to build a result for a given test" do
+      message = Factory.text
+      bt      = Factory.integer(3).times.map{ Factory.string }
+      result  = Base.for_test(@test, message, bt)
 
-    should "know its data and its data related attrs" do
-      assert_kind_of Data, subject.data
-
-      data          = subject.data
-      exp_backtrace = Backtrace.new(@bt)
+      exp_backtrace = Backtrace.new(bt)
       exp_trace     = exp_backtrace.filtered.first.to_s
 
-      assert_equal subject.class.type, data.type
-      assert_equal subject.class.name, data.name
-      assert_equal @test.name,         data.test_name
-      assert_equal @message,           data.message
-      assert_equal exp_backtrace,      data.backtrace
-      assert_equal exp_trace,          data.trace
+      assert_equal @test.name,    result.test_name
+      assert_equal message,       result.message
+      assert_equal exp_backtrace, result.backtrace
+      assert_equal exp_trace,     result.trace
+    end
 
-      assert_equal data.type,      subject.type
-      assert_equal data.name,      subject.name
-      assert_equal data.test_name, subject.test_name
-      assert_equal data.message,   subject.message
-      assert_equal data.backtrace, subject.backtrace
-      assert_equal data.trace,     subject.trace
-      assert_equal data.to_sym,    subject.to_sym
-      assert_equal data.to_s,      subject.to_s
+    should "use any given attrs" do
+      assert_equal @given_data[:type].to_sym, subject.type
+      assert_equal @given_data[:name],        subject.name
+      assert_equal @given_data[:test_name],   subject.test_name
+      assert_equal @given_data[:message],     subject.message
+      assert_equal @given_data[:backtrace],   subject.backtrace
+      assert_equal @given_data[:trace],       subject.trace
+    end
 
+    should "default its attrs" do
+      result = Base.new({})
+
+      assert_equal :unknown,          result.type
+      assert_equal '',                result.name
+      assert_equal '',                result.test_name
+      assert_equal '',                result.message
+      assert_equal Backtrace.new([]), result.backtrace
+      assert_equal '',                result.trace
+    end
+
+    should "know if it is a certain type of result" do
       Assert::Result.types.keys.each do |type|
-        assert_equal data.send("#{type}?"), subject.send("#{type}?")
+        assert_false subject.send("#{type}?")
+        Assert.stub(subject, :type){ type }
+        assert_true subject.send("#{type}?")
       end
     end
 
@@ -90,8 +112,40 @@ module Assert::Result
       assert_equal exp_trace,     subject.trace
     end
 
+    should "know its data" do
+      exp = {
+        :type      => subject.type,
+        :name      => subject.name,
+        :test_name => subject.test_name,
+        :message   => subject.message,
+        :backtrace => subject.backtrace,
+        :trace     => subject.trace,
+      }
+      assert_equal exp, subject.data
+    end
+
+    should "know its symbol representation" do
+      assert_equal subject.type, subject.to_sym
+    end
+
+    should "know its string representation" do
+      str = subject.to_s
+
+      assert_includes subject.name.upcase, str
+      assert_includes subject.test_name,   str
+      assert_includes subject.message,     str
+      assert_includes subject.trace,       str
+
+      assert_equal 3, str.split("\n").count
+
+      Assert.stub(subject, :message){ '' }
+      Assert.stub(subject, :trace){ '' }
+
+      assert_equal 1, subject.to_s.split("\n").count
+    end
+
     should "know if it is equal to another result" do
-      other = Assert::Result::Base.new(@test, @message, @bt)
+      other = Assert::Result::Base.new(@given_data)
       assert_equal other, subject
 
       Assert.stub(other, [:type, :message].choice){ Factory.string }
@@ -109,11 +163,12 @@ module Assert::Result
   class PassTests < UnitTests
     desc "Pass"
     setup do
-      @result = Assert::Result::Pass.new(@test, '', [])
+      @result = Pass.new({})
     end
     subject { @result }
 
-    should "know its class-level type/name" do
+    should "know its type/name" do
+      assert_equal :pass,  subject.type
       assert_equal :pass,  subject.class.type
       assert_equal 'Pass', subject.class.name
     end
@@ -123,11 +178,12 @@ module Assert::Result
   class IgnoreTests < UnitTests
     desc "Ignore"
     setup do
-      @result = Assert::Result::Ignore.new(@test, '', [])
+      @result = Ignore.new({})
     end
     subject { @result }
 
-    should "know its class-level type/name" do
+    should "know its type/name" do
+      assert_equal :ignore,  subject.type
       assert_equal :ignore,  subject.class.type
       assert_equal 'Ignore', subject.class.name
     end
@@ -147,30 +203,29 @@ module Assert::Result
   class FailTests < UnitTests
     desc "Fail"
     setup do
-      @result = Assert::Result::Fail.new(@test, '', [])
+      @result = Fail.new({})
     end
     subject { @result }
 
-    should "know its class-level type/name" do
+    should "know its type/name" do
+      assert_equal :fail,  subject.type
       assert_equal :fail,  subject.class.type
       assert_equal 'Fail', subject.class.name
     end
 
-    should "allow building from TestFailure exceptions" do
+    should "allow creating for a test with TestFailure exceptions" do
       err = TestFailure.new
       err.set_backtrace(caller)
+      result = Fail.for_test(@test, err)
 
-      result = Assert::Result::Fail.new(@test, err)
       assert_equal err.message, result.message
 
       exp_bt = Backtrace.new(err.backtrace)
       assert_equal exp_bt, result.backtrace
     end
 
-    should "not allow building from non-TestFailure exceptions" do
-      assert_raises ArgumentError do
-        result = Assert::Result::Fail.new(@test, RuntimeError.new)
-      end
+    should "not allow creating for a test with non-TestFailure exceptions" do
+      assert_raises(ArgumentError){ Fail.for_test(@test, RuntimeError.new) }
     end
 
   end
@@ -188,28 +243,29 @@ module Assert::Result
   class SkipTests < UnitTests
     desc "Skip"
     setup do
-      @err = TestSkipped.new
-      @err.set_backtrace(caller)
-      @result = Assert::Result::Skip.new(@test, @err)
+      @result = Skip.new({})
     end
     subject { @result }
 
-    should "know its class-level type/name" do
+    should "know its type/name" do
+      assert_equal :skip,  subject.type
       assert_equal :skip,  subject.class.type
       assert_equal 'Skip', subject.class.name
     end
 
-    should "use the TestSkipped err attrs for its attrs" do
-      assert_equal @err.message, subject.message
+    should "allow creating for a test with TestSkipped exceptions" do
+      err = TestSkipped.new
+      err.set_backtrace(caller)
+      result = Skip.for_test(@test, err)
 
-      exp_bt = Backtrace.new(@err.backtrace)
-      assert_equal exp_bt, subject.backtrace
+      assert_equal err.message, result.message
+
+      exp_bt = Backtrace.new(err.backtrace)
+      assert_equal exp_bt, result.backtrace
     end
 
-    should "not allow building from non-TestSkipped exceptions" do
-      assert_raises ArgumentError do
-        result = Assert::Result::Skip.new(@test, RuntimeError.new)
-      end
+    should "not allow creating for a test with non-TestSkipped exceptions" do
+      assert_raises(ArgumentError){ Skip.for_test(@test, RuntimeError.new) }
     end
 
   end
@@ -217,9 +273,7 @@ module Assert::Result
   class ErrorTests < UnitTests
     desc "Error"
     setup do
-      @err = Exception.new
-      @err.set_backtrace(caller)
-      @result = Assert::Result::Error.new(@test, @err)
+      @result = Error.new({})
     end
     subject { @result }
 
@@ -228,84 +282,21 @@ module Assert::Result
       assert_equal 'Error', subject.class.name
     end
 
-    should "use the errors attrs for its attrs" do
-      exp_msg = "#{@err.message} (#{@err.class.name})"
-      assert_equal exp_msg, subject.message
+    should "allow creating for a test with exceptions" do
+      err = Exception.new
+      err.set_backtrace(caller)
+      result = Error.for_test(@test, err)
 
-      exp_bt = Backtrace.new(@err.backtrace)
-      assert_equal exp_bt, subject.backtrace
+      exp_msg = "#{err.message} (#{err.class.name})"
+      assert_equal exp_msg, result.message
+
+      exp_bt = Backtrace.new(err.backtrace)
+      assert_equal exp_bt,      result.backtrace
+      assert_equal exp_bt.to_s, result.trace
     end
 
-    should "use the unfiltered backtrace as its trace" do
-      assert_equal Backtrace.new(@err.backtrace).to_s, subject.trace
-    end
-
-    should "not allow building without an exception" do
-      assert_raises ArgumentError do
-        result = Assert::Result::Error.new(@test, Factory.string)
-      end
-    end
-
-  end
-
-  class DataTests < UnitTests
-    desc "Data"
-    setup do
-      @given_data = {
-        :type      => Factory.string,
-        :name      => Factory.string,
-        :test_name => Factory.string,
-        :message   => Factory.string,
-        :backtrace => Backtrace.new(caller),
-        :trace     => Factory.string
-      }
-
-      @data = Data.new(@given_data)
-    end
-    subject{ @data }
-
-    should have_accessors :type, :name, :test_name, :message, :backtrace, :trace
-    should have_imeths :to_sym, :to_s
-    should have_imeths *Assert::Result.types.keys.map{ |k| "#{k}?" }
-
-    should "use any given attrs" do
-      assert_equal @given_data[:type].to_sym, subject.type
-      assert_equal @given_data[:name],        subject.name
-      assert_equal @given_data[:test_name],   subject.test_name
-      assert_equal @given_data[:message],     subject.message
-      assert_equal @given_data[:backtrace],   subject.backtrace
-      assert_equal @given_data[:trace],       subject.trace
-    end
-
-    should "default its attrs" do
-      data = Data.new
-
-      assert_equal :unknown, data.type
-      assert_equal '',       data.name
-      assert_equal '',       data.test_name
-      assert_equal '',       data.message
-      assert_equal [],       data.backtrace
-      assert_equal '',       data.trace
-    end
-
-    should "know its symbol representation" do
-      assert_equal subject.type, subject.to_sym
-    end
-
-    should "know its string representation" do
-      str = subject.to_s
-
-      assert_includes subject.name.upcase, str
-      assert_includes subject.test_name,   str
-      assert_includes subject.message,     str
-      assert_includes subject.trace,       str
-
-      assert_equal 3, str.split("\n").count
-
-      subject.message = ''
-      subject.trace   = ''
-
-      assert_equal 1, subject.to_s.split("\n").count
+    should "not allow creating for a test without an exception" do
+      assert_raises(ArgumentError){ Error.for_test(@test, Factory.string) }
     end
 
   end
@@ -317,14 +308,23 @@ module Assert::Result
     end
     subject { @backtrace }
 
-    should have_instance_methods :to_s, :filtered
+    should have_cmeths :parse
+    should have_imeths :to_s, :filtered
+
+    should "be parseable from its string representation" do
+      assert_equal subject, Backtrace.parse(subject.to_s)
+    end
 
     should "be an Array" do
       assert_kind_of ::Array, subject
     end
 
+    should "know its DELIM" do
+      assert_equal "\n", Backtrace::DELIM
+    end
+
     should "render as a string by joining on the newline" do
-      assert_equal subject.join("\n"), subject.to_s
+      assert_equal subject.join(Backtrace::DELIM), subject.to_s
     end
 
     should "another backtrace when filtered" do

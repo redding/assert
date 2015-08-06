@@ -32,37 +32,36 @@ module Factory
   # Generate a no-op test for use in testing.
 
   def self.test(*args, &block)
-    opts, config, context_info, name = [
-      args.last.kind_of?(::Hash) ? args.pop.dup : {},
+    config, context_info, name = [
       args.last.kind_of?(Assert::Config) ? args.pop : self.modes_off_config,
       args.last.kind_of?(Assert::Suite::ContextInfo) ? args.pop : self.context_info,
       args.last.kind_of?(::String) ? args.pop : 'a test'
     ]
-    Assert::Test.new(name, context_info, config, opts, &block)
+    Assert::Test.for_block(name, context_info, config, &block)
   end
 
   # Generate results for use in testing.
 
   def self.pass_result(msg = nil)
-    Assert::Result::Pass.new(Factory.test(Factory.string), msg || Factory.string, [])
+    Assert::Result::Pass.for_test(Factory.test(Factory.string), msg || Factory.string, [])
   end
 
   def self.ignore_result(msg = nil)
-    Assert::Result::Ignore.new(Factory.test(Factory.string), msg || Factory.string, [])
+    Assert::Result::Ignore.for_test(Factory.test(Factory.string), msg || Factory.string, [])
   end
 
   def self.fail_result(msg = nil)
-    Assert::Result::Fail.new(Factory.test(Factory.string), msg || Factory.string, [])
+    Assert::Result::Fail.for_test(Factory.test(Factory.string), msg || Factory.string, [])
   end
 
   def self.skip_result(exception = nil)
     exception ||= Assert::Result::TestSkipped.new
-    Assert::Result::Skip.new(Factory.test(Factory.string), exception)
+    Assert::Result::Skip.for_test(Factory.test(Factory.string), exception)
   end
 
   def self.error_result(exception = nil)
     exception ||= StandardError.new
-    Assert::Result::Error.new(Factory.test(Factory.string), exception)
+    Assert::Result::Error.for_test(Factory.test(Factory.string), exception)
   end
 
   def self.modes_off_config

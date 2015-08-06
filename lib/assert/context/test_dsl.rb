@@ -11,23 +11,26 @@ class Assert::Context
       if desc_or_macro.kind_of?(Assert::Macro)
         instance_eval(&desc_or_macro)
       elsif block_given?
-        ci = Assert::Suite::ContextInfo.new(self, called_from, first_caller || caller.first)
-        test_name = desc_or_macro
-
         # create a test from the given code block
-        self.suite.tests << Assert::Test.new(test_name, ci, self.suite.config, &block)
+        self.suite.tests << Assert::Test.for_block(
+          desc_or_macro.kind_of?(Assert::Macro) ? desc_or_macro.name : desc_or_macro,
+          Assert::Suite::ContextInfo.new(self, called_from, first_caller || caller.first),
+          self.suite.config,
+          &block
+        )
       else
         test_eventually(desc_or_macro, called_from, first_caller || caller.first, &block)
       end
     end
 
     def test_eventually(desc_or_macro, called_from = nil, first_caller = nil, &block)
-      ci = Assert::Suite::ContextInfo.new(self, called_from, first_caller || caller.first)
-      test_name = desc_or_macro.kind_of?(Assert::Macro) ? desc_or_macro.name : desc_or_macro
-      skip_block = block.nil? ? Proc.new { skip 'TODO' } : Proc.new { skip }
-
       # create a test from a proc that just skips
-      self.suite.tests << Assert::Test.new(test_name, ci, self.suite.config, &skip_block)
+      self.suite.tests << Assert::Test.for_block(
+        desc_or_macro.kind_of?(Assert::Macro) ? desc_or_macro.name : desc_or_macro,
+        Assert::Suite::ContextInfo.new(self, called_from, first_caller || caller.first),
+        self.suite.config,
+        &(block.nil? ? Proc.new { skip 'TODO' } : Proc.new { skip })
+      )
     end
     alias_method :test_skip, :test_eventually
 
