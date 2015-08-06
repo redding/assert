@@ -58,6 +58,15 @@ class Assert::Context
       assert_nil @callback_result
     end
 
+    should "use any given called from arg as the exception backtrace" do
+      assert_not_equal 1, @exception.backtrace.size
+
+      called_from = Factory.string
+      begin; @context.skip(@skip_msg, called_from); rescue Exception => exception; end
+      assert_equal 1,           exception.backtrace.size
+      assert_equal called_from, exception.backtrace.first
+    end
+
   end
 
   class IgnoreTests < UnitTests
