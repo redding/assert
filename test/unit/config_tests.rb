@@ -1,9 +1,9 @@
 require 'assert'
 require 'assert/config'
 
+require 'assert/default_suite'
 require 'assert/default_view'
 require 'assert/runner'
-require 'assert/suite'
 
 class Assert::Config
 
@@ -22,14 +22,14 @@ class Assert::Config
     should have_imeths :debug, :apply
 
     should "default the view, suite, and runner" do
-      assert_kind_of Assert::DefaultView, subject.view
-      assert_kind_of Assert::Suite,  subject.suite
-      assert_kind_of Assert::Runner, subject.runner
+      assert_kind_of Assert::DefaultView,  subject.view
+      assert_kind_of Assert::DefaultSuite, subject.suite
+      assert_kind_of Assert::Runner,       subject.runner
     end
 
     should "default the test dir/helper/suffixes" do
-      assert_equal 'test', subject.test_dir
-      assert_equal 'helper.rb', subject.test_helper
+      assert_equal 'test',                    subject.test_dir
+      assert_equal 'helper.rb',               subject.test_helper
       assert_equal ['_tests.rb', "_test.rb"], subject.test_file_suffixes
     end
 

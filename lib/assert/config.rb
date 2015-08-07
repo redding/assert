@@ -1,6 +1,6 @@
+require 'assert/default_suite'
 require 'assert/default_view'
 require 'assert/runner'
-require 'assert/suite'
 require 'assert/utils'
 
 module Assert
@@ -25,7 +25,7 @@ module Assert
     settings :capture_output, :halt_on_fail, :profile, :verbose, :list, :debug
 
     def initialize(settings = nil)
-      @suite  = Assert::Suite.new(self)
+      @suite  = Assert::DefaultSuite.new(self)
       @view   = Assert::DefaultView.new(self, $stdout)
       @runner = Assert::Runner.new(self)
 

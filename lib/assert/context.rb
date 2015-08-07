@@ -3,6 +3,7 @@ require 'assert/context/setup_dsl'
 require 'assert/context/subject_dsl'
 require 'assert/context/suite_dsl'
 require 'assert/context/test_dsl'
+require 'assert/context_info'
 require 'assert/macros/methods'
 require 'assert/result'
 require 'assert/suite'
@@ -40,7 +41,7 @@ module Assert
 
         self.suite.tests << Test.for_method(
           method_name.to_s,
-          Suite::ContextInfo.new(self, nil, caller.first),
+          ContextInfo.new(self, nil, caller.first),
           self.suite.config
         )
       end
