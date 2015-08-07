@@ -33,7 +33,7 @@ module Assert
       end
 
       # load the test files
-      self.config.view.fire(:before_load, test_files)
+      self.config.view.before_load(test_files)
       Assert::CLI.bench("Require #{test_files.count} test files") do
         test_files.each{ |p| require p }
       end
@@ -41,7 +41,7 @@ module Assert
         puts Assert::CLI.debug_msg("Test files:")
         test_files.each{ |f| puts Assert::CLI.debug_msg("  #{f}") }
       end
-      self.config.view.fire(:after_load)
+      self.config.view.after_load
     end
 
     def run
