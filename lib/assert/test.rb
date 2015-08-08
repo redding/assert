@@ -99,7 +99,7 @@ module Assert
       scope = self.context_class.new(self, self.config, result_callback)
       start_time = Time.now
       capture_output do
-        self.context_class.send('run_arounds', scope) do # TODO: why `send`?
+        self.context_class.run_arounds(scope) do
           run_test(scope, result_callback)
         end
       end
@@ -129,7 +129,7 @@ module Assert
     def run_test(scope, result_callback)
       begin
         # run any assert style 'setup do' setups
-        self.context_class.send('run_setups', scope) # TODO: why `send`?
+        self.context_class.run_setups(scope)
         # run any test/unit style 'def setup' setups
         scope.setup if scope.respond_to?(:setup)
         # run the code block
@@ -145,7 +145,7 @@ module Assert
       ensure
         begin
           # run any assert style 'teardown do' teardowns
-          self.context_class.send('run_teardowns', scope) # TODO: why `send`?
+          self.context_class.run_teardowns(scope)
           # run any test/unit style 'def teardown' teardowns
           scope.teardown if scope.respond_to?(:teardown)
         rescue Result::TestFailure => err
