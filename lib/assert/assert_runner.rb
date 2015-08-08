@@ -34,7 +34,7 @@ module Assert
 
       # load the test files
       self.config.view.before_load(test_files)
-      Assert::CLI.bench("Require #{test_files.count} test files") do
+      Assert::CLI.bench("Require #{test_files.size} test files") do
         test_files.each{ |p| require p }
       end
       if self.config.debug

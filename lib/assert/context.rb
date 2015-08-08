@@ -117,13 +117,13 @@ module Assert
     # alter the backtraces of fail results generated in the given block
     def with_backtrace(bt, &block)
       bt ||= []
-      current_results.count.tap do |count|
+      current_results.size.tap do |size|
         begin
           instance_eval(&block)
         rescue Result::TestSkipped, Result::TestFailure => e
           e.set_backtrace(bt); raise(e)
         ensure
-          current_results[count..-1].each{ |r| r.set_backtrace(bt) }
+          current_results[size..-1].each{ |r| r.set_backtrace(bt) }
         end
       end
     end

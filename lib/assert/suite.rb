@@ -66,19 +66,21 @@ module Assert
       end
     end
 
-    # Test Handling
+    # Test data
 
-    def ordered_tests;                      end
-    def reversed_ordered_tests;             end
-    def ordered_tests_by_run_time;          end
-    def reversed_ordered_tests_by_run_time; end
-    def test_count;                         end
+    def ordered_tests;              end
+    def reversed_tests;             end
+    def ordered_tests_by_run_time;  end
+    def reversed_tests_by_run_time; end
+    def test_count;                 end
 
-    # Result Handling
+    # Result data
 
-    def ordered_results;          end
-    def reversed_ordered_results; end
-    def result_count(type = nil); end
+    def ordered_results;           end
+    def reversed_results;          end
+    def ordered_results_for_dump;  end
+    def reversed_results_for_dump; end
+    def result_count(type = nil);  end
 
     # Callbacks
 

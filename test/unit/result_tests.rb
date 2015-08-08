@@ -42,6 +42,7 @@ module Assert::Result
         :name      => Factory.string,
         :test_name => Factory.string,
         :message   => Factory.string,
+        :output    => Factory.text,
         :backtrace => Backtrace.new(caller),
         :trace     => Factory.string
       }
@@ -50,7 +51,7 @@ module Assert::Result
     subject{ @result }
 
     should have_cmeths :type, :name, :for_test
-    should have_imeths :type, :name, :test_name, :message, :backtrace, :trace
+    should have_imeths :type, :name, :test_name, :message, :output, :backtrace, :trace
     should have_imeths *Assert::Result.types.keys.map{ |k| "#{k}?" }
     should have_imeths :set_backtrace, :data, :to_sym, :to_s
 
@@ -78,6 +79,7 @@ module Assert::Result
       assert_equal @given_data[:name],        subject.name
       assert_equal @given_data[:test_name],   subject.test_name
       assert_equal @given_data[:message],     subject.message
+      assert_equal @given_data[:output],      subject.output
       assert_equal @given_data[:backtrace],   subject.backtrace
       assert_equal @given_data[:trace],       subject.trace
     end
@@ -89,6 +91,7 @@ module Assert::Result
       assert_equal '',                result.name
       assert_equal '',                result.test_name
       assert_equal '',                result.message
+      assert_equal '',                result.output
       assert_equal Backtrace.new([]), result.backtrace
       assert_equal '',                result.trace
     end
@@ -118,6 +121,7 @@ module Assert::Result
         :name      => subject.name,
         :test_name => subject.test_name,
         :message   => subject.message,
+        :output    => subject.output,
         :backtrace => subject.backtrace,
         :trace     => subject.trace,
       }

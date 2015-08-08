@@ -54,8 +54,7 @@ module Assert::ViewHelpers
     subject{ @helpers }
 
     should have_imeths :test_run_time, :test_result_rate
-    should have_imeths :result_details_for, :matched_result_details_for
-    should have_imeths :show_result_details?, :captured_output
+    should have_imeths :captured_output
     should have_imeths :test_count_statement, :result_count_statement
     should have_imeths :to_sentence
     should have_imeths :all_pass_result_summary_msg, :result_summary_msg
@@ -72,25 +71,6 @@ module Assert::ViewHelpers
       exp = format % test.result_rate
       assert_equal exp, subject.test_result_rate(test, format)
       assert_equal exp, subject.test_result_rate(test)
-    end
-
-    # note: not formally testing the result details for methods as the views
-    # will break if these are broken.
-
-    should "know whether to show result details" do
-      assert_false subject.show_result_details?(Factory.pass_result)
-
-      assert_true subject.show_result_details?(Factory.fail_result)
-      assert_true subject.show_result_details?(Factory.error_result)
-
-      skip_res, ignore_res = Factory.skip_result, Factory.ignore_result
-      assert_true subject.show_result_details?(skip_res)
-      assert_true subject.show_result_details?(ignore_res)
-
-      Assert.stub(skip_res,   :message){ nil}
-      Assert.stub(ignore_res, :message){ nil}
-      assert_false subject.show_result_details?(skip_res)
-      assert_false subject.show_result_details?(ignore_res)
     end
 
     should "know how to build captured output" do
@@ -181,28 +161,6 @@ module Assert::ViewHelpers
 
       styles = []
       assert_equal '', subject.code_for(*styles)
-    end
-
-  end
-
-  class ResultDetailsTests < UnitTests
-    desc "ResultDetails"
-    setup do
-      @result = Factory.string
-      @test   = Factory.test
-      @index  = Factory.integer
-
-      @details = ResultDetails.new(@result, @test, @index)
-    end
-    subject{ @details }
-
-    should have_readers :result, :test_index, :test, :output
-
-    should "know its attrs" do
-      assert_equal @result,      subject.result
-      assert_equal @test,        subject.test
-      assert_equal @index,       subject.test_index
-      assert_equal @test.output, subject.output
     end
 
   end

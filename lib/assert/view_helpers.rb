@@ -38,43 +38,6 @@ module Assert
         format % test.result_rate
       end
 
-      # get all the result details for a set of tests
-      def result_details_for(tests, result_order = :normal)
-        test_index = 0
-        tests.collect do |test|
-          test_index += 1
-
-          details = test.results.collect do |result|
-            ResultDetails.new(result, test, test_index)
-          end
-          details.reverse! if result_order == :reversed
-          details
-        end.compact.flatten
-      end
-
-      # get all the result details for a set of tests matching a file or context
-      def matched_result_details_for(match, tests, result_order = :normal)
-        context_match = match.kind_of?(Class) && match.ancestors.include?(Assert::Context)
-        file_match = match.kind_of?(String)
-
-        matching_tests = if context_match
-          tests.select {|test| test.context_info.klass == match}
-        elsif file_match
-          tests.select {|test| test.context_info.file == match}
-        else
-          tests
-        end
-
-        result_details_for(matching_tests, result_order)
-      end
-
-      # only show result details for failed or errored results
-      # show result details if a skip or passed result was issues w/ a message
-      def show_result_details?(result)
-        [:fail, :error].include?(result.to_sym) ||
-        !!([:skip, :ignore].include?(result.to_sym) && result.message)
-      end
-
       # show any captured output
       def captured_output(output)
         "--- stdout ---\n"\
@@ -216,19 +179,6 @@ module Assert
 
       def self.code_for(*style_names)
         style_names.map{ |n| "\e[#{CODES[n]}m" if CODES.key?(n) }.compact.join('')
-      end
-
-    end
-
-    class ResultDetails
-
-      attr_reader :result, :test_index, :test, :output
-
-      def initialize(result, test, test_index)
-        @result     = result
-        @test       = test
-        @test_index = test_index
-        @output     = test.output
       end
 
     end

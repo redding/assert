@@ -82,22 +82,17 @@ module Assert
       print "\n"
       puts
 
-      # output detailed results for the tests in reverse test/result order
-      tests = config.suite.ordered_tests.reverse
-      result_details_for(tests, :reversed).each do |details|
-        if show_result_details?(details.result)
-          # output the styled result details
-          result = details.result
-          puts ansi_styled_msg(result.to_s, result)
+      config.suite.reversed_results_for_dump.each do |result|
+        # output the styled result details
+        puts ansi_styled_msg(result.to_s, result)
 
-          # output any captured stdout
-          output = details.output
-          puts captured_output(output) if output && !output.empty?
+        # output any captured stdout
+        puts captured_output(result.output) if result.output && !result.output.empty?
 
-          # add an empty line between each result detail
-          puts
-        end
+        # add an empty line between each result detail
+        puts
       end
+
     end
 
   end

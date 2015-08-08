@@ -32,7 +32,7 @@ module Assert::Context::SuiteDSL
       @context_class = Factory.context_class(@parent_class)
     end
 
-    should "default to it's parents subject block" do
+    should "default to it's parent's suite" do
       assert_equal @custom_suite, subject.suite
     end
 

@@ -28,11 +28,11 @@ class Assert::DefaultSuite
     end
 
     should "know its test and result attrs" do
-      assert_equal 6, subject.tests.count
+      assert_equal 6, subject.tests.size
       assert_kind_of Assert::Test, subject.tests.first
 
-      assert_equal subject.tests.count, subject.test_count
-      assert_equal subject.tests,       subject.ordered_tests
+      assert_equal subject.tests.size, subject.test_count
+      assert_equal subject.tests,      subject.ordered_tests
 
       exp = subject.ordered_tests.sort{ |a, b| a.run_time <=> b.run_time }
       assert_equal exp, subject.ordered_tests_by_run_time
