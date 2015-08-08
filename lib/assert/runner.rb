@@ -18,26 +18,26 @@ module Assert
       if tests?
         view.puts "Running tests in random order, seeded with \"#{runner_seed}\""
       end
-      view.fire(:on_start)
+      view.on_start
 
       begin
         suite.setup
 
         suite.start_time = Time.now
         tests_to_run(suite).each do |test|
-          view.fire(:before_test, test)
-          test.run{ |result| view.fire(:on_result, result) }
-          view.fire(:after_test, test)
+          view.before_test(test)
+          test.run{ |result| view.on_result(result) }
+          view.after_test(test)
         end
         suite.end_time = Time.now
 
         suite.teardown
       rescue Interrupt => err
-        view.fire(:on_interrupt, err)
+        view.on_interrupt(err)
         raise(err)
       end
 
-      view.fire(:on_finish)
+      view.on_finish
       suite.count(:failed) + suite.count(:errored)
     end
 

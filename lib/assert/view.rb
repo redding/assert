@@ -68,13 +68,8 @@ module Assert
 
       # Callbacks
 
-      # define callback handlers to output information.  handlers are
-      # instance_eval'd in the scope of the view instance.  any stdout is captured
-      # and sent to the io stream.
-
-      def fire(callback, *args)
-        self.send(callback, *args)
-      end
+      # define callback handlers to output information.  These will be called
+      # by the test runner.
 
       # available callbacks from the runner:
       # * `before_load`:  called at the beginning, before the suite is loaded

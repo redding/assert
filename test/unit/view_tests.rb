@@ -27,7 +27,6 @@ module Assert::View
 
     should have_readers :config
     should have_imeths :view, :is_tty?, :ansi_styled_msg
-    should have_imeths :fire
     should have_imeths :before_load, :after_load
     should have_imeths :on_start, :on_finish, :on_interrupt
     should have_imeths :before_test, :after_test, :on_result
