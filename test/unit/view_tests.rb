@@ -5,7 +5,7 @@ require 'stringio'
 require 'assert/suite'
 require 'assert/view_helpers'
 
-module Assert::View
+class Assert::View
 
   class UnitTests < Assert::Context
     desc "Assert::View"
@@ -13,15 +13,19 @@ module Assert::View
 
     should have_instance_method :require_user_view
 
+    should "include the view helpers" do
+      assert_includes Assert::ViewHelpers, subject
+    end
+
   end
 
-  class BaseTests < UnitTests
-    desc "Base"
+  class InitTests < UnitTests
+    desc "when init"
     setup do
       @io     = StringIO.new("", "w+")
       @config = Factory.modes_off_config
 
-      @view = Assert::View::Base.new(@config, @io)
+      @view = Assert::View.new(@config, @io)
     end
     subject{ @view }
 
@@ -30,10 +34,6 @@ module Assert::View
     should have_imeths :before_load, :after_load
     should have_imeths :on_start, :on_finish, :on_interrupt
     should have_imeths :before_test, :after_test, :on_result
-
-    should "include the view helpers" do
-      assert_includes Assert::ViewHelpers, subject.class
-    end
 
     should "default its style options" do
       assert_false subject.styled

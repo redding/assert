@@ -5,7 +5,7 @@ module Assert
   # This is the default view used by assert.  It renders ansi test output
   # designed for terminal viewing.
 
-  class DefaultView < Assert::View::Base
+  class DefaultView < Assert::View
 
     # setup options and their default values
 
