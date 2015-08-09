@@ -456,7 +456,7 @@ end
 However, the view handler you use is itself configurable.  Define you own view handler class and specify it in your user/local settings:
 
 ```ruby
-class MyCustomView < Assert::View::Base
+class MyCustomView < Assert::View
   # define your view here...
 end
 
@@ -467,7 +467,7 @@ end
 
 ### Anatomy of a View
 
-A view class handles the logic and templating of test result output.  A view class should inherit from `Assert::View::Base`.  This defines default callback handlers for the test runner and gives access to a bunch of common helpers for reading test result data.
+A view class handles the logic and templating of test result output.  A view class should inherit from `Assert::View`.  This defines default callback handlers for the test runner and gives access to a bunch of common helpers for reading test result data.
 
 Each view should implement the callback handler methods to output information at different points during the running of a test suite.  Callbacks have access to any view methods and should output information using `puts` and `prints`.  See the `DefaultView` template for a usage example.
 
@@ -534,7 +534,7 @@ Tests produce results as they are executed.  Every `assert` statement produces a
 
 ### View
 
-A `View` object is responsible for rendering test result output.  Assert provides a `Assert::View::Base` object to provide common helpers and default runner callback handlers for building views.  Assert also provides an `Assert::DefaultView` that it renders its output with.  See the "Viewing Test Results" section below for more details.
+A `View` object is responsible for rendering test result output.  Assert provides a `Assert::View` object to provide common helpers and default runner callback handlers for building views.  Assert also provides an `Assert::DefaultView` that it renders its output with.  See the "Viewing Test Results" section below for more details.
 
 ### Macro
 
