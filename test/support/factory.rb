@@ -1,7 +1,7 @@
 require 'assert/config'
+require 'assert/default_suite'
 require 'assert/factory'
 require 'assert/result'
-require 'assert/suite'
 require 'assert/test'
 
 module Factory
@@ -12,7 +12,7 @@ module Factory
   end
 
   def self.context_info(context_klass = nil)
-    Assert::Suite::ContextInfo.new(context_klass || self.context_class, context_info_called_from)
+    Assert::ContextInfo.new(context_klass || self.context_class, context_info_called_from)
   end
 
   # Generate an anonymous `Context` inherited from `Assert::Context` by default.
@@ -34,7 +34,7 @@ module Factory
   def self.test(*args, &block)
     config, context_info, name = [
       args.last.kind_of?(Assert::Config) ? args.pop : self.modes_off_config,
-      args.last.kind_of?(Assert::Suite::ContextInfo) ? args.pop : self.context_info,
+      args.last.kind_of?(Assert::ContextInfo) ? args.pop : self.context_info,
       args.last.kind_of?(::String) ? args.pop : 'a test'
     ]
     Assert::Test.for_block(name, context_info, config, &block)
@@ -75,7 +75,7 @@ module Factory
   end
 
   def self.modes_off_suite
-    Assert::Suite.new(self.modes_off_config)
+    Assert::DefaultSuite.new(self.modes_off_config)
   end
 
   def self.modes_off_context_class(*args, &block)

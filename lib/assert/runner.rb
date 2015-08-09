@@ -21,7 +21,7 @@ module Assert
       view.on_start
 
       begin
-        suite.setup
+        suite.setups.each(&:call)
 
         suite.start_time = Time.now
         tests_to_run(suite).each do |test|
@@ -31,7 +31,7 @@ module Assert
         end
         suite.end_time = Time.now
 
-        suite.teardown
+        suite.teardowns.each(&:call)
       rescue Interrupt => err
         view.on_interrupt(err)
         raise(err)
