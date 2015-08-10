@@ -47,21 +47,20 @@ module Assert
     end
 
     def count(thing)
-      case thing
-      when :tests
+      if thing == :tests
         test_count
-      when :results
+      elsif thing == :results
         result_count
-      when :passed, :pass
+      elsif thing == :pass   || thing == :passed
         result_count(:pass)
-      when :failed, :fail
+      elsif thing == :fail   || thing == :failed
         result_count(:fail)
-      when :ignored, :ignore
-        result_count(:ignore)
-      when :skipped, :skip
-        result_count(:skip)
-      when :errored, :error
+      elsif thing == :error  || thing == :errored
         result_count(:error)
+      elsif thing == :skip   || thing == :skipped
+        result_count(:skip)
+      elsif thing == :ignore || thing == :ignored
+        result_count(:ignore)
       else
         0
       end
