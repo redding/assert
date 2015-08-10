@@ -14,7 +14,7 @@ class Assert::Config
     end
     subject{ @config }
 
-    should have_imeths :suite, :view, :runner
+    should have_imeths :view, :suite, :runner
     should have_imeths :test_dir, :test_helper, :test_file_suffixes
     should have_imeths :changed_proc, :pp_proc, :use_diff_proc, :run_diff_proc
     should have_imeths :runner_seed, :changed_only, :changed_ref, :pp_objects
@@ -22,9 +22,9 @@ class Assert::Config
     should have_imeths :debug, :apply
 
     should "default the view, suite, and runner" do
-      assert_kind_of Assert::DefaultView,  subject.view
-      assert_kind_of Assert::DefaultSuite, subject.suite
-      assert_kind_of Assert::Runner,       subject.runner
+      assert_kind_of Assert::DefaultView,   subject.view
+      assert_kind_of Assert::DefaultSuite,  subject.suite
+      assert_kind_of Assert::DefaultRunner, subject.runner
     end
 
     should "default the test dir/helper/suffixes" do

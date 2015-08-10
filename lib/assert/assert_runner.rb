@@ -33,7 +33,10 @@ module Assert
       end
 
       # load the test files
-      self.config.view.before_load(test_files)
+      runner, suite, view = self.config.runner, self.config.suite, self.config.view
+      runner.before_load(test_files)
+      suite.before_load(test_files)
+      view.before_load(test_files)
       Assert::CLI.bench("Require #{test_files.size} test files") do
         test_files.each{ |p| require p }
       end
@@ -41,7 +44,9 @@ module Assert
         puts Assert::CLI.debug_msg("Test files:")
         test_files.each{ |f| puts Assert::CLI.debug_msg("  #{f}") }
       end
-      self.config.view.after_load
+      runner.after_load
+      suite.after_load
+      view.after_load
     end
 
     def run

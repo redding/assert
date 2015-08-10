@@ -1,52 +1,74 @@
 require 'assert/config_helpers'
 require 'assert/suite'
+require 'assert/view'
 
 module Assert
 
   class Runner
     include Assert::ConfigHelpers
 
-    attr_reader :config
+    attr_reader :config, :suite, :view
 
     def initialize(config)
       @config = config
     end
 
     def run
-      suite, view = @config.suite, @config.view
-      raise ArgumentError if !suite.kind_of?(Suite)
-      if tests?
-        view.puts "Running tests in random order, seeded with \"#{runner_seed}\""
-      end
-      view.on_start
+      @suite, @view = @config.suite, @config.view
+
+      self.on_start
+      self.suite.on_start
+      self.view.on_start
 
       begin
-        suite.setups.each(&:call)
-
-        suite.start_time = Time.now
-        tests_to_run(suite).each do |test|
-          view.before_test(test)
-          test.run{ |result| view.on_result(result) }
-          view.after_test(test)
+        self.suite.setups.each(&:call)
+        self.suite.start_time = Time.now
+        self.run! do |test|
+          self.before_test(test)
+          self.suite.before_test(test)
+          self.view.before_test(test)
+          test.run do |result|
+            self.on_result(result)
+            self.suite.on_result(result)
+            self.view.on_result(result)
+          end
+          self.after_test(test)
+          self.suite.after_test(test)
+          self.view.after_test(test)
         end
-        suite.end_time = Time.now
-
-        suite.teardowns.each(&:call)
+        self.suite.end_time = Time.now
+        self.suite.teardowns.each(&:call)
       rescue Interrupt => err
-        view.on_interrupt(err)
+        self.on_interrupt(err)
+        self.suite.on_interrupt(err)
+        self.view.on_interrupt(err)
         raise(err)
       end
 
-      view.on_finish
-      suite.count(:failed) + suite.count(:errored)
+      self.on_finish
+      self.suite.on_finish
+      self.view.on_finish
+
+      self.suite.count(:failed) + self.suite.count(:errored)
     end
 
-    private
-
-    def tests_to_run(suite)
-      srand self.config.runner_seed
-      suite.tests.sort.sort_by{ rand suite.tests.size }
+    def run!
+      # runners should override as needed and yeild tests to the given block
     end
+
+    # Callbacks
+
+    # define callback handlers to do special behavior during the test run.  These
+    # will be called by the test runner
+
+    def before_load(test_files); end
+    def after_load;              end
+    def on_start;                end
+    def before_test(test);       end
+    def on_result(result);       end
+    def after_test(test);        end
+    def on_finish;               end
+    def on_interrupt(err);       end
 
   end
 
