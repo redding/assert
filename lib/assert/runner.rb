@@ -45,11 +45,11 @@ module Assert
         raise(err)
       end
 
-      self.on_finish
-      self.suite.on_finish
-      self.view.on_finish
-
-      self.suite.count(:failed) + self.suite.count(:errored)
+      (self.suite.count(:fail) + self.suite.count(:error)).tap do
+        self.view.on_finish
+        self.suite.on_finish
+        self.on_finish
+      end
     end
 
     def run!
