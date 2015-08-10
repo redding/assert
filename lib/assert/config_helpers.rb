@@ -33,28 +33,6 @@ module Assert
       format % self.config.suite.result_rate
     end
 
-    # get a uniq list of contexts for the test suite
-    def suite_contexts
-      @suite_contexts ||= self.config.suite.tests.inject([]) do |contexts, test|
-        contexts << test.context_info.klass
-      end.uniq
-    end
-
-    def ordered_suite_contexts
-      self.suite_contexts.sort{ |a,b| a.to_s <=> b.to_s }
-    end
-
-    # get a uniq list of files containing contexts for the test suite
-    def suite_files
-      @suite_files ||= self.config.suite.tests.inject([]) do |files, test|
-        files << test.context_info.file
-      end.uniq
-    end
-
-    def ordered_suite_files
-      self.suite_files.sort{ |a,b| a.to_s <=> b.to_s }
-    end
-
     def show_test_profile_info?
       !!self.config.profile
     end

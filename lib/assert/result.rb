@@ -32,6 +32,7 @@ module Assert::Result
       self.new({
         :test_name => test.name,
         :message   => message,
+        :output    => test.output,
         :backtrace => Backtrace.new(bt)
       })
     end
@@ -44,6 +45,7 @@ module Assert::Result
     def name;      @name      ||= (@build_data[:name]      || self.class.name.to_s);        end
     def test_name; @test_name ||= (@build_data[:test_name] || '');                          end
     def message;   @message   ||= (@build_data[:message]   || '');                          end
+    def output;    @output    ||= (@build_data[:output]    || '');                          end
     def backtrace; @backtrace ||= (@build_data[:backtrace] || Backtrace.new([]));           end
     def trace;     @trace     ||= (@build_data[:trace]     || build_trace(self.backtrace)); end
 
@@ -63,6 +65,7 @@ module Assert::Result
         :name      => self.name,
         :test_name => self.test_name,
         :message   => self.message,
+        :output    => self.output,
         :backtrace => self.backtrace,
         :trace     => self.trace,
       }
