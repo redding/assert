@@ -67,7 +67,7 @@ class Assert::View
 
     should "know how to build ansi styled messages" do
       msg = Factory.string
-      result = [:pass, :fail, :error, :skip, :ignore].choice
+      result = [:pass, :fail, :error, :skip, :ignore].sample
 
       Assert.stub(subject, :is_tty?){ false }
       Assert.stub(subject, :styled){ false }
@@ -86,7 +86,7 @@ class Assert::View
       Assert.stub(subject, "#{result}_styles"){ [] }
       assert_equal msg, subject.ansi_styled_msg(msg, result)
 
-      styles = Factory.integer(3).times.map{ Assert::ViewHelpers::Ansi::CODES.keys.choice }
+      styles = Factory.integer(3).times.map{ Assert::ViewHelpers::Ansi::CODES.keys.sample }
       Assert.stub(subject, "#{result}_styles"){ styles }
       exp_code = Assert::ViewHelpers::Ansi.code_for(*styles)
       exp = exp_code + msg + Assert::ViewHelpers::Ansi.code_for(:reset)

@@ -26,7 +26,7 @@ module Assert::Result
     end
 
     should "create results from data hashes" do
-      type   = Assert::Result.types.keys.choice
+      type   = Assert::Result.types.keys.sample
       exp    = Assert::Result.types[type].new(:type => type)
 
       assert_equal exp, Assert::Result.new(:type => type)
@@ -152,7 +152,7 @@ module Assert::Result
       other = Assert::Result::Base.new(@given_data)
       assert_equal other, subject
 
-      Assert.stub(other, [:type, :message].choice){ Factory.string }
+      Assert.stub(other, [:type, :message].sample){ Factory.string }
       assert_not_equal other, subject
     end
 

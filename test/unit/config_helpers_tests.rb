@@ -14,7 +14,7 @@ module Assert::ConfigHelpers
         def config
           # use the assert config since it has tests, contexts, etc
           # also maybe use a fresh config that is empty
-          @config ||= [Assert.config, Assert::Config.new].choice
+          @config ||= [Assert.config, Assert::Config.new].sample
         end
       end
       @helpers = @helpers_class.new
@@ -31,7 +31,7 @@ module Assert::ConfigHelpers
     end
 
     should "know how to count things on the suite" do
-      thing = [:pass, :fail, :results, :tests].choice
+      thing = [:pass, :fail, :results, :tests].sample
       assert_equal subject.config.suite.count(thing), subject.count(thing)
     end
 
