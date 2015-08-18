@@ -19,7 +19,7 @@ module Assert::ViewHelpers
         def config
           # use the assert config since it has tests, contexts, etc
           # also maybe use a fresh config that is empty
-          @config ||= [Assert.config, Assert::Config.new].choice
+          @config ||= [Assert.config, Assert::Config.new].sample
         end
       end
     end
@@ -119,7 +119,7 @@ module Assert::ViewHelpers
       assert_equal exp, subject.result_summary_msg(res_type)
 
       Assert.stub(subject, :all_pass?){ false }
-      res_type = [:pass, :ignore, :fail, :skip, :error].choice
+      res_type = [:pass, :ignore, :fail, :skip, :error].sample
       exp = "#{subject.count(res_type)} #{res_type.to_s}"
       assert_equal exp, subject.result_summary_msg(res_type)
     end
@@ -152,7 +152,7 @@ module Assert::ViewHelpers
     end
 
     should "map its code style names to ansi code strings" do
-      styles = Factory.integer(3).times.map{ subject::CODES.keys.choice }
+      styles = Factory.integer(3).times.map{ subject::CODES.keys.sample }
       exp = styles.map{ |n| "\e[#{subject::CODES[n]}m" }.join('')
       assert_equal exp, subject.code_for(*styles)
 
