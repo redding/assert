@@ -35,7 +35,7 @@ Running tests in random order, seeded with "56382"
 
 ## What Assert is not
 
-* **Rspec**
+* **RSpec/spec-anything**: define tests using assertion statements
 * **Unit/Functional/Integration/etc**: Assert is agnostic - you define whatever kinds of tests you like (one or more of the above) and assert runs them in context
 * **Mock/Spec/BDD/etc**: Assert is the framework and there are a variety of 3rd party tools to do such things - feel free to use whatever you like
 
@@ -43,15 +43,25 @@ Running tests in random order, seeded with "56382"
 
 Assert is a assertion style testing framework, meaning you use assertion statements to define your tests and create results.  Assert uses class-based contexts so if you want to nest your contexts, use inheritance.
 
-**Note**: Assert is tested using itself.  The tests are a pretty good place to look for examples and usage patterns.
+### Features
+
+* `assert` [executable](https://github.com/redding/assert#cli) for running tests
+* run tests by tab completing test file paths
+* run only test files that have been modified
+* random order test execution
+* class-based contexts
+* multiple before/setup & after/teardown blocks
+* around blocks
+* full backtrace for errors
+* optionally pretty print objects in failure descriptions
+* [stubbing API](https://github.com/redding/assert#stub)
+* [factory API](https://github.com/redding/assert#factory)
+* `skip` to skip tests
+* `Ctrl+c` stops tests and prints failures
 
 ## Defining tests
 
-TODO
-
-## Factory
-
-TODO
+**Note**: Assert is tested using itself.  The tests are a good place to look for examples and usage patterns.
 
 ## Stub
 
@@ -100,14 +110,61 @@ myobj.myval(456)
   # => 456
 ```
 
-Assert comes with a simple stubbing API - all it does is replace method calls.  In general it tries
-to be friendly and complain if stubbing doesn't match up with the object/method being stubbed:
+Assert comes with a stubbing API - all it does is replace method calls.  In general it tries to be friendly and complain if stubbing doesn't match up with the object/method being stubbed:
 
 * each stub takes a block that is called in place of the method
 * complains if you stub a method that the object doesn't respond to
 * complains if you stub with an arity mismatch
 * no methods added to `Object`
 * stubs are auto-unstubbed on test teardown
+
+## Factory
+
+```ruby
+require 'assert/factory'
+
+Assert::Factory.integer    #=> 15742
+Assert::Factory.integer(3) #=> 2
+Assert::Factory.float      #=> 87.2716908041922
+Assert::Factory.float(3)   #=> 2.5466638138805
+
+Assert::Factory.date       #=> #<Date: 4915123/2,0,2299161>
+Assert::Factory.time       #=> Wed Sep 07 10:37:22 -0500 2016
+Assert::Factory.datetime   #=> #<DateTime: 302518290593/43200,0,2299161>
+
+Assert::Factory.string     #=> "boxsrbazeq"
+Assert::Factory.string(3)  #=> "rja"
+Assert::Factory.text       #=> "khcwyizmymajfzzxlfwz"
+Assert::Factory.text(3)    #=> "qcy"
+Assert::Factory.slug       #=> "licia"
+Assert::Factory.slug(3)    #=> "luu"
+Assert::Factory.hex        #=> "48797adb33"
+Assert::Factory.hex(3)     #=> "2fe"
+Assert::Factory.url        #=> "/cdqz/hqeq/zbsl"
+Assert::Factory.email      #=> "vyojvtxght@gmrin.com"
+
+Assert::Factory.file_name  #=> "kagahm.ybb"
+Assert::Factory.path       #=> "jbzf/omyk/vbha"
+Assert::Factory.dir_path   #=> "fxai/lwnq/urqu"
+Assert::Factory.file_path  #=> "bcno/pzxg/gois/mpvlfo.wdr"
+
+Assert::Factory.binary     #=> "\000\000\003S"
+Assert::Factory.boolean    #=> false
+```
+
+`Assert::Factory` is an API for generating randomized data.  The randomization is tied to the runner seed so re-running tests with the same seed should produce the same random values.
+
+You can also extend on your own factory class:
+
+```ruby
+module Factory
+  extend Assert::Factory
+
+  def self.data
+    { Factory.string => Factory.string }
+  end
+end
+```
 
 ## CLI
 
@@ -134,7 +191,7 @@ As an example, say your test folder has a file structure like so:
 * `$ assert test/complex/fast_tests.rb` - runs all tests in fast_tests.rb
 * `$ assert test/basic test/comp` - runs all tests in basic_tests.rb, complex_tests.rb, fast_tests.rb and slow_tests.rb
 
-All you need to do is pass some sort of existing file path (hint: use tab-completion) and Assert will find any test files and run the tests in them.
+All you need to do is pass some sort of existing file path (use tab-completion!) and Assert will find any test files and run the tests in them.
 
 ## Configuring Assert
 
@@ -555,4 +612,4 @@ If submitting a Pull Request, please:
 
 One note: please respect that Assert itself is intended to be the flexible, base-level, framework-type logic that should change little if at all.  Pull requests for niche functionality or personal testing philosphy stuff will likely not be accepted.
 
-If you wish to extend Assert for your niche purpose/desire/philosophy, please do so in it's own gem (preferrably named `assert-<whatever>`) that uses Assert as a dependency.  When you do, tell us about it and we'll add it to this README with a short description.
+If you wish to extend Assert for your niche purpose/desire/philosophy, please do so in it's own gem (preferrably named `assert-<whatever>`) that uses Assert as a dependency.
