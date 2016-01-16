@@ -8,8 +8,8 @@ Gem::Specification.new do |gem|
   gem.version     = Assert::VERSION
   gem.authors     = ["Kelly Redding", "Collin Redding"]
   gem.email       = ["kelly@kellyredding.com", "collin.redding@me.com"]
-  gem.description = %q{Test::Unit style testing framework, just better than Test::Unit.}
   gem.summary     = %q{Test::Unit style testing framework, just better than Test::Unit.}
+  gem.description = %q{Test::Unit style testing framework, just better than Test::Unit.}
   gem.homepage    = "http://github.com/redding/assert"
   gem.license     = 'MIT'
 
