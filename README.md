@@ -1,7 +1,5 @@
 # The Assert Testing Framework
 
-Test::Unit style testing framework, just better than Test::Unit.
-
 ## Usage
 
 ```ruby
@@ -34,19 +32,16 @@ Running tests in random order, seeded with "56382"
 * **Framework**: you define tests and the context they run in - Assert runs them.  Everything is pure ruby so use any 3rd party testing tools you like.  Create 3rd party tools that extend Assert behavior.
 * **First Class**: everything is a first class object and can be extended to your liking (and should be)
 * **MVC**: tests and how they are defined (M) and executed (C) are distinct from how you view the test results (V).
-* **Backwards compatible**: (assuming a few minor tweaks) with Test::Unit test suites
 
 ## What Assert is not
 
 * **Rspec**
-* **Unit/Functional/Integration/etc**: Assert is agnostic - you define whatever kinds of tests you like (one or more of the above) and assert runs them in context.
-* **Mock/Spec/BDD/etc**: Assert is the framework and there are a variety of 3rd party tools to do such things - feel free to use whatever you like.
+* **Unit/Functional/Integration/etc**: Assert is agnostic - you define whatever kinds of tests you like (one or more of the above) and assert runs them in context
+* **Mock/Spec/BDD/etc**: Assert is the framework and there are a variety of 3rd party tools to do such things - feel free to use whatever you like
 
 ## Description
 
-Assert is a Test::Unit style testing framework.  This means you can write tests in Assert the same way you would with test-unit.
-
-In addition, Assert adds some helpers and syntax sugar to enhance the way tests are written. Most are taken from ideas in [Shoulda](https://github.com/thoughtbot/shoulda) and [Leftright](https://github.com/jordi/leftright/).  Assert uses class-based contexts so if you want to nest your contexts, use inheritance.
+Assert is a assertion style testing framework, meaning you use assertion statements to define your tests and create results.  Assert uses class-based contexts so if you want to nest your contexts, use inheritance.
 
 **Note**: Assert is tested using itself.  The tests are a pretty good place to look for examples and usage patterns.
 
