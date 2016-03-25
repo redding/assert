@@ -95,12 +95,13 @@ Assert.stub(myobj, :myval){ 'stub-meth' }
 Assert.stub(myobj, :myval).with(123){ |val| val.to_s }
 myobj.myval
   # => StubError: arity mismatch
-myobj.mymeth(123)
+myobj.myval(123)
   # => '123'
-myobj.mymeth(456)
-  # => StubError: `mymeth(456)` not stubbed.
+myobj.myval(456)
+  # => StubError: `myval(456)` not stubbed.
 
 Assert.unstub(myobj, :mymeth)
+Assert.unstub(myobj, :myval)
 
 myobj.mymeth
   # => 'meth'
