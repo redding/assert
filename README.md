@@ -41,7 +41,7 @@ Running tests in random order, seeded with "56382"
 
 ## Description
 
-Assert is a assertion style testing framework, meaning you use assertion statements to define your tests and create results.  Assert uses class-based contexts so if you want to nest your contexts, use inheritance.
+Assert is an assertion style testing framework, meaning you use assertion statements to define your tests and create results.  Assert uses class-based contexts so if you want to nest your contexts, use inheritance.
 
 ### Features
 
@@ -116,7 +116,7 @@ Assert comes with a stubbing API - all it does is replace method calls.  In gene
 * each stub takes a block that is called in place of the method
 * complains if you stub a method that the object doesn't respond to
 * complains if you stub with an arity mismatch
-* no methods added to `Object`
+* no methods are added to `Object` to support stubbing
 * stubs are auto-unstubbed on test teardown
 
 ## Factory
