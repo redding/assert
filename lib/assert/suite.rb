@@ -11,6 +11,10 @@ module Assert
     # A suite is a set of tests to run.  When a test class subclasses
     # the Context class, that test class is pushed to the suite.
 
+    # TODO: just store "suite tests" and "suite results"
+    # both will be "structs" of just the data needed for presentation
+    # don't store all of the tests and all results on the tests
+    # unshift tests as they are run (for later garbage collection)
     attr_reader :config, :tests, :test_methods, :setups, :teardowns
     attr_accessor :start_time, :end_time
 
@@ -48,6 +52,7 @@ module Assert
       get_rate(self.result_count, self.run_time)
     end
 
+    # TODO: replace this count method with explict count methods for each type
     def count(thing)
       if thing == :tests
         test_count

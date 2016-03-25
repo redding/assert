@@ -28,11 +28,13 @@ module Assert
 
     module InstanceMethods
 
+      # TODO: get from the suite as test won't store this data
       # get the formatted run time for an idividual test
       def test_run_time(test, format = '%.6f')
         format % test.run_time
       end
 
+      # TODO: get from the suite as test won't store this data
       # get the formatted result rate for an individual test
       def test_result_rate(test, format = '%.6f')
         format % test.result_rate
@@ -50,10 +52,12 @@ module Assert
         "assert -t #{test_id.gsub(Dir.pwd, '.')}"
       end
 
+      # TODO: remove `count` method
       def test_count_statement
         "#{self.count(:tests)} test#{'s' if self.count(:tests) != 1}"
       end
 
+      # TODO: remove `count` method
       def result_count_statement
         "#{self.count(:results)} result#{'s' if self.count(:results) != 1}"
       end
@@ -99,6 +103,7 @@ module Assert
 
     end
 
+    # TODO: move to an ansi view helper mixin
     module Ansi
 
       # Table of supported styles/codes (http://en.wikipedia.org/wiki/ANSI_escape_code)

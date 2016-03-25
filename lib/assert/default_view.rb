@@ -9,6 +9,8 @@ module Assert
   class DefaultView < Assert::View
     include Assert::ViewHelpers::Ansi
 
+    # TODO: mixin the ansi view helper mixin
+
     # setup options and their default values
 
     option 'styled',        true
