@@ -17,8 +17,8 @@ module Assert
 
     def run
       self.on_start
-      self.suite.on_start
-      self.view.on_start
+      self.suite.on_start # TODO: reset test/result counts
+      self.view.on_start  # TODO: reset display result list
 
       if self.single_test?
         self.view.print "Running test: #{self.single_test_file_line}"
@@ -32,14 +32,14 @@ module Assert
         self.suite.setups.each(&:call)
         tests_to_run.each do |test|
           self.before_test(test)
-          self.suite.before_test(test)
+          self.suite.before_test(test) # TODO: increment test count; optionally store test run
           self.view.before_test(test)
           test.run do |result|
             self.on_result(result)
-            self.suite.on_result(result)
-            self.view.on_result(result)
+            self.suite.on_result(result) # TODO: increment result count
+            self.view.on_result(result)  # TODO: optionally store result data for display
           end
-          self.after_test(test)
+          self.after_test(test) # TODO: delete suite test; optionally store test run
           self.suite.after_test(test)
           self.view.after_test(test)
         end
@@ -52,6 +52,7 @@ module Assert
         raise(err)
       end
 
+      # TODO: remove `count` method: `self.suite.fail_result_count`
       (self.suite.count(:fail) + self.suite.count(:error)).tap do
         self.view.on_finish
         self.suite.on_finish
