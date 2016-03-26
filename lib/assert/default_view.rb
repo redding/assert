@@ -1,4 +1,5 @@
 require 'assert/view'
+require 'assert/view_helpers'
 
 module Assert
 
@@ -6,6 +7,7 @@ module Assert
   # designed for terminal viewing.
 
   class DefaultView < Assert::View
+    include Assert::ViewHelpers::Ansi
 
     # setup options and their default values
 

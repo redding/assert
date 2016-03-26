@@ -181,6 +181,13 @@ module Assert
         style_names.map{ |n| "\e[#{CODES[n]}m" if CODES.key?(n) }.compact.join('')
       end
 
+      def ansi_styled_msg(msg, result_or_sym)
+        return msg if !self.is_tty? || !self.styled
+        code = Assert::ViewHelpers::Ansi.code_for(*self.send("#{result_or_sym.to_sym}_styles"))
+        return msg if code.empty?
+        code + msg + Assert::ViewHelpers::Ansi.code_for(:reset)
+      end
+
     end
 
   end

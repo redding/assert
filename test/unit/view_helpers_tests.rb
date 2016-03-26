@@ -1,9 +1,11 @@
 require 'assert'
 require 'assert/view_helpers'
 
+require 'stringio'
 require 'assert/config'
 require 'assert/config_helpers'
 require 'assert/result'
+require 'assert/view'
 
 module Assert::ViewHelpers
 
@@ -161,6 +163,46 @@ module Assert::ViewHelpers
 
       styles = []
       assert_equal '', subject.code_for(*styles)
+    end
+
+  end
+
+  class AnsiInitTests < UnitTests
+    desc "when mixed in on a view"
+    setup do
+      view_class = Class.new(Assert::View){ include Ansi }
+      @view = view_class.new(Factory.modes_off_config, StringIO.new("", "w+"))
+    end
+    subject{ @view }
+
+    should have_imeths :ansi_styled_msg
+
+    should "know how to build ansi styled messages" do
+      msg = Factory.string
+      result = [:pass, :fail, :error, :skip, :ignore].sample
+
+      Assert.stub(subject, :is_tty?){ false }
+      Assert.stub(subject, :styled){ false }
+      assert_equal msg, subject.ansi_styled_msg(msg, result)
+
+      Assert.stub(subject, :is_tty?){ false }
+      Assert.stub(subject, :styled){ true }
+      assert_equal msg, subject.ansi_styled_msg(msg, result)
+
+      Assert.stub(subject, :is_tty?){ true }
+      Assert.stub(subject, :styled){ false }
+      assert_equal msg, subject.ansi_styled_msg(msg, result)
+
+      Assert.stub(subject, :is_tty?){ true }
+      Assert.stub(subject, :styled){ true }
+      Assert.stub(subject, "#{result}_styles"){ [] }
+      assert_equal msg, subject.ansi_styled_msg(msg, result)
+
+      styles = Factory.integer(3).times.map{ Assert::ViewHelpers::Ansi::CODES.keys.sample }
+      Assert.stub(subject, "#{result}_styles"){ styles }
+      exp_code = Assert::ViewHelpers::Ansi.code_for(*styles)
+      exp = exp_code + msg + Assert::ViewHelpers::Ansi.code_for(:reset)
+      assert_equal exp, subject.ansi_styled_msg(msg, result)
     end
 
   end
