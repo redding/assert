@@ -21,8 +21,8 @@ module Assert
       self.view.on_start
 
       begin
-        self.suite.setups.each(&:call)
         self.suite.start_time = Time.now
+        self.suite.setups.each(&:call)
         self.run! do |test|
           self.before_test(test)
           self.suite.before_test(test)
@@ -36,8 +36,8 @@ module Assert
           self.suite.after_test(test)
           self.view.after_test(test)
         end
-        self.suite.end_time = Time.now
         self.suite.teardowns.each(&:call)
+        self.suite.end_time = Time.now
       rescue Interrupt => err
         self.on_interrupt(err)
         self.suite.on_interrupt(err)
