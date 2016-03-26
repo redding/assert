@@ -7,15 +7,15 @@ module Assert
   class Runner
     include Assert::ConfigHelpers
 
-    attr_reader :config, :suite, :view
+    attr_reader :config
 
     def initialize(config)
       @config = config
     end
 
-    def run
-      @suite, @view = @config.suite, @config.view
+    def runner; self; end
 
+    def run
       self.on_start
       self.suite.on_start
       self.view.on_start

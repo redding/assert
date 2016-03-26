@@ -2,6 +2,7 @@ require 'assert'
 require 'assert/view'
 
 require 'stringio'
+require 'assert/config_helpers'
 require 'assert/suite'
 require 'assert/view_helpers'
 
@@ -12,6 +13,10 @@ class Assert::View
     subject { Assert::View }
 
     should have_instance_method :require_user_view
+
+    should "include the config helpers" do
+      assert_includes Assert::ConfigHelpers, subject
+    end
 
     should "include the view helpers" do
       assert_includes Assert::ViewHelpers, subject
@@ -57,7 +62,7 @@ class Assert::View
       assert_equal @config, subject.config
     end
 
-    should "expose itself as `view`" do
+    should "override the config helper's view value with itself" do
       assert_equal subject, subject.view
     end
 

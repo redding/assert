@@ -32,7 +32,7 @@ class Assert::Suite
 
     should have_readers :config, :tests, :test_methods
     should have_accessors :start_time, :end_time
-    should have_imeths :setup, :startup, :teardown, :shutdown
+    should have_imeths :suite, :setup, :startup, :teardown, :shutdown
     should have_imeths :run_time, :test_rate, :result_rate, :count
     should have_imeths :ordered_tests, :reversed_tests
     should have_imeths :ordered_tests_by_run_time, :reversed_tests_by_run_time
@@ -46,6 +46,10 @@ class Assert::Suite
 
     should "know its config" do
       assert_equal @config, subject.config
+    end
+
+    should "override the config helper's suite value with itself" do
+      assert_equal subject, subject.suite
     end
 
     should "default its attrs" do

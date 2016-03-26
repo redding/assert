@@ -30,8 +30,8 @@ class Assert::Runner
     end
     subject { @runner }
 
-    should have_readers :config, :suite, :view
-    should have_imeths :run, :run!
+    should have_readers :config
+    should have_imeths :runner, :run, :run!
     should have_imeths :before_load, :after_load
     should have_imeths :on_start, :on_finish, :on_interrupt
     should have_imeths :before_test, :after_test, :on_result
@@ -40,9 +40,8 @@ class Assert::Runner
       assert_equal @config, subject.config
     end
 
-    should "not have set its suite and view" do
-      assert_nil subject.suite
-      assert_nil subject.view
+    should "override the config helper's runner value with itself" do
+      assert_equal subject, subject.runner
     end
 
   end
@@ -74,11 +73,6 @@ class Assert::Runner
 
     should "return an integer exit code" do
       assert_equal 0, @result
-    end
-
-    should "have set its suite and view" do
-      assert_equal @config.suite, subject.suite
-      assert_equal @config.view,  subject.view
     end
 
     should "run all callback on itself, the suite and the view" do

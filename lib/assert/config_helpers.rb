@@ -2,6 +2,10 @@ module Assert
 
   module ConfigHelpers
 
+    def runner; self.config.runner; end
+    def suite;  self.config.suite;  end
+    def view;   self.config.view;   end
+
     def runner_seed
       self.config.runner_seed
     end
@@ -18,18 +22,15 @@ module Assert
       self.count(:pass) == self.count(:results)
     end
 
-    # get the formatted suite run time
-    def run_time(format = '%.6f')
+    def formatted_run_time(format = '%.6f')
       format % self.config.suite.run_time
     end
 
-    # get the formatted suite test rate
-    def test_rate(format = '%.6f')
+    def formatted_test_rate(format = '%.6f')
       format % self.config.suite.test_rate
     end
 
-    # get the formatted suite result rate
-    def result_rate(format = '%.6f')
+    def formatted_result_rate(format = '%.6f')
       format % self.config.suite.result_rate
     end
 

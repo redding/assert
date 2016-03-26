@@ -1,10 +1,12 @@
 require 'assert/config'
+require 'assert/config_helpers'
 require 'assert/suite'
 require 'assert/view_helpers'
 
 module Assert
 
   class View
+    include Assert::ConfigHelpers
     include Assert::ViewHelpers
 
     # this method is used to bring in custom user-specific views
@@ -49,9 +51,7 @@ module Assert
       @output_io.sync = true if @output_io.respond_to?(:sync=)
     end
 
-    def view
-      self
-    end
+    def view; self; end
 
     def is_tty?
       !!@output_io.isatty
