@@ -10,6 +10,14 @@ module Assert
       self.config.runner_seed
     end
 
+    def single_test?
+      self.config.single_test?
+    end
+
+    def single_test_file_line
+      self.config.single_test_file_line
+    end
+
     def count(type)
       self.config.suite.count(type)
     end

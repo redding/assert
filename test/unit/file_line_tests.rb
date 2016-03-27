@@ -23,8 +23,12 @@ class Assert::FileLine
 
     should "handle parsing bad data gracefully" do
       file_line = subject.parse(@file)
-      assert_equal '', file_line.file
-      assert_equal '', file_line.line
+      assert_equal @file, file_line.file
+      assert_equal '',    file_line.line
+
+      file_line = subject.parse(@line)
+      assert_equal @line, file_line.file
+      assert_equal '',    file_line.line
 
       file_line = subject.parse('')
       assert_equal '', file_line.file

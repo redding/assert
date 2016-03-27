@@ -17,7 +17,8 @@ module Assert
         apply_env_settings
       end
 
-      files = test_files(test_paths.empty? ? [*self.config.test_dir] : test_paths)
+      paths = test_paths.empty? ? [*self.config.test_dir] : test_paths
+      files = lookup_test_files(paths)
       init(files, path_of(self.config.test_dir, files.first))
     end
 
@@ -75,9 +76,11 @@ module Assert
       self.config.runner_seed ENV['ASSERT_RUNNER_SEED'].to_i if ENV['ASSERT_RUNNER_SEED']
     end
 
-    def test_files(test_paths)
+    def lookup_test_files(test_paths)
       file_paths = if self.config.changed_only
         changed_test_files(test_paths)
+      elsif self.config.single_test?
+        globbed_test_files(self.config.single_test_file_path)
       else
         globbed_test_files(test_paths)
       end
@@ -106,9 +109,8 @@ module Assert
       require settings_file if File.exists?(settings_file)
     end
 
-    # this method inspects a test path and finds the test dir path.
-
     def path_of(segment, a_path)
+      # this method inspects a test path and finds the test dir path.
       full_path = File.expand_path(a_path || '.', Dir.pwd)
       seg_pos = full_path.index(segment_regex(segment))
       File.join(seg_pos && (seg_pos > 0) ? full_path[0..(seg_pos-1)] : full_path, segment)

@@ -22,7 +22,8 @@ module Assert::ConfigHelpers
     subject{ @helpers }
 
     should have_imeths :runner, :suite, :view
-    should have_imeths :runner_seed, :count, :tests?, :all_pass?
+    should have_imeths :runner_seed, :single_test?, :single_test_file_line
+    should have_imeths :count, :tests?, :all_pass?
     should have_imeths :formatted_run_time
     should have_imeths :formatted_test_rate, :formatted_result_rate
     should have_imeths :show_test_profile_info?, :show_test_verbose_info?
@@ -36,6 +37,19 @@ module Assert::ConfigHelpers
 
     should "know its runner seed" do
       assert_equal subject.config.runner_seed, subject.runner_seed
+    end
+
+    should "know if it is in single test mode" do
+      Assert.stub(subject.config, :single_test?){ true }
+      assert_true subject.single_test?
+
+      Assert.stub(subject.config, :single_test?){ false }
+      assert_false subject.single_test?
+    end
+
+    should "know its single test file line" do
+      exp = subject.config.single_test_file_line
+      assert_equal exp, subject.single_test_file_line
     end
 
     should "know how to count things on the suite" do
