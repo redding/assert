@@ -1,6 +1,7 @@
 require 'assert/default_runner'
 require 'assert/default_suite'
 require 'assert/default_view'
+require 'assert/file_line'
 require 'assert/utils'
 
 module Assert
@@ -21,8 +22,9 @@ module Assert
     settings :view, :suite, :runner
     settings :test_dir, :test_helper, :test_file_suffixes
     settings :changed_proc, :pp_proc, :use_diff_proc, :run_diff_proc
-    settings :runner_seed, :changed_only, :changed_ref, :pp_objects
-    settings :capture_output, :halt_on_fail, :profile, :verbose, :list, :debug
+    settings :runner_seed, :changed_only, :changed_ref, :single_test
+    settings :pp_objects, :capture_output, :halt_on_fail, :profile
+    settings :verbose, :list, :debug
 
     def initialize(settings = nil)
       @view   = Assert::DefaultView.new(self, $stdout)
@@ -42,6 +44,7 @@ module Assert
       @runner_seed    = begin; srand; srand % 0xFFFF; end.to_i
       @changed_only   = false
       @changed_ref    = ''
+      @single_test    = ''
       @pp_objects     = false
       @capture_output = false
       @halt_on_fail   = true
@@ -59,6 +62,21 @@ module Assert
           self.send(name.to_s, settings[name])
         end
       end
+      @single_test_file_line = nil
+    end
+
+    def single_test?
+      !self.single_test.empty?
+    end
+
+    def single_test_file_line
+      @single_test_file_line ||= Assert::FileLine.parse(
+        File.expand_path(self.single_test, Dir.pwd)
+      )
+    end
+
+    def single_test_file_path
+      self.single_test_file_line.file if self.single_test_file_line
     end
 
   end

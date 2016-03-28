@@ -8,7 +8,7 @@ module Factory
   extend Assert::Factory
 
   def self.context_info_called_from
-    "#{Factory.path}_tests.rb:#{Factory.integer}"
+    File.expand_path("#{Factory.path}_tests.rb:#{Factory.integer}", Dir.pwd)
   end
 
   def self.context_info(context_klass = nil)

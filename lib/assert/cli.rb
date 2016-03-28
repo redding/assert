@@ -36,6 +36,9 @@ module Assert
         option 'changed_ref', 'reference for changes, use with `-c` opt', {
           :abbrev => 'r', :value => ''
         }
+        option 'single_test', 'only run the test on the given file/line', {
+          :abbrev => 't', :value => ''
+        }
         option 'pp_objects', 'pretty-print objects in fail messages', {
           :abbrev => 'p'
         }
