@@ -28,10 +28,10 @@ class Assert::Runner
 
       @runner = Assert::Runner.new(@config)
     end
-    subject { @runner }
+    subject{ @runner }
 
     should have_readers :config
-    should have_imeths :runner, :run, :run!
+    should have_imeths :runner, :run
     should have_imeths :before_load, :after_load
     should have_imeths :on_start, :on_finish, :on_interrupt
     should have_imeths :before_test, :after_test, :on_result
@@ -60,8 +60,10 @@ class Assert::Runner
       suite_class  = Class.new(Assert::DefaultSuite){ include CallbackMixin }
       view_class   = Class.new(Assert::View){ include CallbackMixin }
 
+      @view_output = ""
+
       @config.suite suite_class.new(@config)
-      @config.view  view_class.new(@config, StringIO.new("", "w+"))
+      @config.view  view_class.new(@config, StringIO.new(@view_output, "w+"))
 
       ci = Factory.context_info(Factory.modes_off_context_class)
       @test = Factory.test("should pass", ci){ assert(1==1) }
@@ -75,7 +77,7 @@ class Assert::Runner
       assert_equal 0, @result
     end
 
-    should "run all callback on itself, the suite and the view" do
+    should "run all callbacks on itself, the suite and the view" do
       # itself
       assert_true subject.on_start_called
       assert_equal @test, subject.before_test_called
@@ -98,6 +100,17 @@ class Assert::Runner
       assert_instance_of Assert::Result::Pass, view.on_result_called
       assert_equal @test, view.after_test_called
       assert_true view.on_finish_called
+    end
+
+    should "descibe running the tests in random order if there are tests" do
+      exp = "Running tests in random order, " \
+            "seeded with \"#{subject.runner_seed}\"\n"
+      assert_includes exp, @view_output
+
+      @view_output.gsub!(/./, '')
+      @config.suite.tests.clear
+      subject.run
+      assert_not_includes exp, @view_output
     end
 
   end
