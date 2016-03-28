@@ -21,10 +21,18 @@ module Assert::ConfigHelpers
     end
     subject{ @helpers }
 
+    should have_imeths :runner, :suite, :view
     should have_imeths :runner_seed, :count, :tests?, :all_pass?
-    should have_imeths :run_time, :test_rate, :result_rate
+    should have_imeths :formatted_run_time
+    should have_imeths :formatted_test_rate, :formatted_result_rate
     should have_imeths :show_test_profile_info?, :show_test_verbose_info?
     should have_imeths :ocurring_result_types
+
+    should "know the config's runner, suite and view" do
+      assert_equal subject.config.runner, subject.runner
+      assert_equal subject.config.suite,  subject.suite
+      assert_equal subject.config.view,   subject.view
+    end
 
     should "know its runner seed" do
       assert_equal subject.config.runner_seed, subject.runner_seed
@@ -44,13 +52,13 @@ module Assert::ConfigHelpers
       format = '%.6f'
 
       exp = format % subject.config.suite.run_time
-      assert_equal exp, subject.run_time(format)
+      assert_equal exp, subject.formatted_run_time(format)
 
       exp = format % subject.config.suite.test_rate
-      assert_equal exp, subject.test_rate(format)
+      assert_equal exp, subject.formatted_test_rate(format)
 
       exp = format % subject.config.suite.result_rate
-      assert_equal exp, subject.result_rate(format)
+      assert_equal exp, subject.formatted_result_rate(format)
     end
 
     should "know whether to show test profile info" do

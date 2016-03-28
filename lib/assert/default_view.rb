@@ -69,7 +69,9 @@ module Assert
 
       puts "#{result_count_statement}: #{styled_results_sentence}"
       puts
-      puts "(#{run_time} seconds, #{test_rate} tests/s, #{result_rate} results/s)"
+      puts "(#{formatted_run_time} seconds, " \
+           "#{formatted_test_rate} tests/s, " \
+           "#{formatted_result_rate} results/s)"
     end
 
     def on_interrupt(err)

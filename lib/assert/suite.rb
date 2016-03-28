@@ -24,6 +24,8 @@ module Assert
       @end_time     = @start_time
     end
 
+    def suite; self; end
+
     def setup(&block)
       self.setups << (block || proc{})
     end
