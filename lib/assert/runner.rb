@@ -20,10 +20,15 @@ module Assert
       self.suite.on_start
       self.view.on_start
 
+      if self.tests?
+        self.view.puts "Running tests in random order, " \
+                       "seeded with \"#{self.runner_seed}\""
+      end
+
       begin
         self.suite.start_time = Time.now
         self.suite.setups.each(&:call)
-        self.run! do |test|
+        tests_to_run.each do |test|
           self.before_test(test)
           self.suite.before_test(test)
           self.view.before_test(test)
@@ -52,13 +57,9 @@ module Assert
       end
     end
 
-    def run!
-      # runners should override as needed and yeild tests to the given block
-    end
-
     # Callbacks
 
-    # define callback handlers to do special behavior during the test run.  These
+    # define callback handlers to do special behavior during the test run. These
     # will be called by the test runner
 
     def before_load(test_files); end
@@ -69,6 +70,13 @@ module Assert
     def after_test(test);        end
     def on_finish;               end
     def on_interrupt(err);       end
+
+    private
+
+    def tests_to_run
+      srand self.runner_seed
+      self.suite.tests.sort.sort_by{ rand self.suite.tests.size }
+    end
 
   end
 
