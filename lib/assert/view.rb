@@ -57,13 +57,6 @@ module Assert
       !!@output_io.isatty
     end
 
-    def ansi_styled_msg(msg, result_or_sym)
-      return msg if !self.is_tty? || !self.styled
-      code = Assert::ViewHelpers::Ansi.code_for(*self.send("#{result_or_sym.to_sym}_styles"))
-      return msg if code.empty?
-      code + msg + Assert::ViewHelpers::Ansi.code_for(:reset)
-    end
-
     # Callbacks
 
     # define callback handlers to output information.  These will be called
