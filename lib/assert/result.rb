@@ -31,6 +31,7 @@ module Assert::Result
     def self.for_test(test, message, bt)
       self.new({
         :test_name => test.name,
+        :test_id   => test.file_line.to_s,
         :message   => message,
         :output    => test.output,
         :backtrace => Backtrace.new(bt)
@@ -44,6 +45,7 @@ module Assert::Result
     def type;      @type      ||= (@build_data[:type]      || self.class.type).to_sym;      end
     def name;      @name      ||= (@build_data[:name]      || self.class.name.to_s);        end
     def test_name; @test_name ||= (@build_data[:test_name] || '');                          end
+    def test_id;   @test_id   ||= (@build_data[:test_id]   || '');                          end
     def message;   @message   ||= (@build_data[:message]   || '');                          end
     def output;    @output    ||= (@build_data[:output]    || '');                          end
     def backtrace; @backtrace ||= (@build_data[:backtrace] || Backtrace.new([]));           end
@@ -64,6 +66,7 @@ module Assert::Result
       { :type      => self.type,
         :name      => self.name,
         :test_name => self.test_name,
+        :test_id   => self.test_id,
         :message   => self.message,
         :output    => self.output,
         :backtrace => self.backtrace,

@@ -45,6 +45,11 @@ module Assert
         "--------------"
       end
 
+      # show any captured output
+      def re_run_test_cmd(test_id)
+        "assert -t #{test_id.gsub(Dir.pwd, '.')}"
+      end
+
       def test_count_statement
         "#{self.count(:tests)} test#{'s' if self.count(:tests) != 1}"
       end

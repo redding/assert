@@ -56,7 +56,7 @@ module Assert::ViewHelpers
     subject{ @helpers }
 
     should have_imeths :test_run_time, :test_result_rate
-    should have_imeths :captured_output
+    should have_imeths :captured_output, :re_run_test_cmd
     should have_imeths :test_count_statement, :result_count_statement
     should have_imeths :to_sentence
     should have_imeths :all_pass_result_summary_msg, :result_summary_msg
@@ -81,6 +81,12 @@ module Assert::ViewHelpers
             "#{output}"\
             "--------------"
       assert_equal exp, subject.captured_output(output)
+    end
+
+    should "know how to build the re-run test cmd" do
+      test_id = "#{Dir.pwd}/#{Factory.string}_tests.rb:#{Factory.integer}"
+      exp = "assert -t #{test_id.gsub(Dir.pwd, '.')}"
+      assert_equal exp, subject.re_run_test_cmd(test_id)
     end
 
     should "know its test count and result count statements" do

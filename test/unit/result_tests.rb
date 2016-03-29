@@ -41,6 +41,7 @@ module Assert::Result
         :type      => Factory.string,
         :name      => Factory.string,
         :test_name => Factory.string,
+        :test_id   => Factory.string,
         :message   => Factory.string,
         :output    => Factory.text,
         :backtrace => Backtrace.new(caller),
@@ -51,7 +52,8 @@ module Assert::Result
     subject{ @result }
 
     should have_cmeths :type, :name, :for_test
-    should have_imeths :type, :name, :test_name, :message, :output, :backtrace, :trace
+    should have_imeths :type, :name, :test_name, :test_id
+    should have_imeths :message, :output, :backtrace, :trace
     should have_imeths *Assert::Result.types.keys.map{ |k| "#{k}?" }
     should have_imeths :set_backtrace, :data, :to_sym, :to_s
 
@@ -68,7 +70,9 @@ module Assert::Result
       exp_backtrace = Backtrace.new(bt)
       exp_trace     = exp_backtrace.filtered.first.to_s
 
-      assert_equal @test.name,    result.test_name
+      assert_equal @test.name,           result.test_name
+      assert_equal @test.file_line.to_s, result.test_id
+
       assert_equal message,       result.message
       assert_equal exp_backtrace, result.backtrace
       assert_equal exp_trace,     result.trace
@@ -78,6 +82,7 @@ module Assert::Result
       assert_equal @given_data[:type].to_sym, subject.type
       assert_equal @given_data[:name],        subject.name
       assert_equal @given_data[:test_name],   subject.test_name
+      assert_equal @given_data[:test_id],     subject.test_id
       assert_equal @given_data[:message],     subject.message
       assert_equal @given_data[:output],      subject.output
       assert_equal @given_data[:backtrace],   subject.backtrace
@@ -90,6 +95,7 @@ module Assert::Result
       assert_equal :unknown,          result.type
       assert_equal '',                result.name
       assert_equal '',                result.test_name
+      assert_equal '',                result.test_id
       assert_equal '',                result.message
       assert_equal '',                result.output
       assert_equal Backtrace.new([]), result.backtrace
@@ -120,6 +126,7 @@ module Assert::Result
         :type      => subject.type,
         :name      => subject.name,
         :test_name => subject.test_name,
+        :test_id   => subject.test_id,
         :message   => subject.message,
         :output    => subject.output,
         :backtrace => subject.backtrace,
