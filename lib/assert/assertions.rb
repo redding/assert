@@ -179,6 +179,7 @@ module Assert
       desc = exceptions.last.kind_of?(String) ? exceptions.pop : nil
       err = RaisedException.new(exceptions, &block)
       assert(err.raised?, desc){ err.msg }
+      err.exception
     end
     alias_method :assert_raise, :assert_raises
 

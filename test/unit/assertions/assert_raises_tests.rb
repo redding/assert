@@ -35,6 +35,19 @@ module Assert::Assertions
       messages.each_with_index{ |msg, n| assert_match /^#{exp[n]}/, msg }
     end
 
+    should "return any raised exception instance" do
+      error     = nil
+      error_msg = Factory.string
+      test = Factory.test do
+        error = assert_raises(RuntimeError){ raise(RuntimeError, error_msg) }
+      end
+      test.run
+
+      assert_not_nil error
+      assert_kind_of RuntimeError, error
+      assert_equal error_msg, error.message
+    end
+
   end
 
   class AssertNothingRaisedTests < Assert::Context
