@@ -46,6 +46,13 @@ module Assert::Assertions
       assert_not_nil error
       assert_kind_of RuntimeError, error
       assert_equal error_msg, error.message
+
+      test = Factory.test do
+        error = assert_raises(RuntimeError){ }
+      end
+      test.run
+
+      assert_nil error
     end
 
   end
