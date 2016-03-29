@@ -256,7 +256,7 @@ end
 
 ### Test Order
 
-The default runner object runs tests in random order.  To run tests in a consistant order, specify a custom runner seed:
+The default runner object runs tests in random order.  To run tests in a consistant order, pass a custom runner seed:
 
 In user/local settings file:
 
@@ -276,6 +276,24 @@ Using an ENV var:
 
 ```sh
 $ ASSERT_RUNNER_SEED=1234 assert
+```
+
+### Run a single test
+
+You can choose to run just a single test so that you can focus on making it pass without the overhead/noise from the output of the other tests in the file.
+
+It is recommended that you only use this setting from the CLI.  To run just a single test, pass its file path and line number:
+
+```sh
+$ assert [-t|--single-test] ./path/for/tests.rb:123
+```
+
+**Note**: by default Assert outputs, in the details of each non-passing result, the cmd to re-run the result's test:
+
+```
+FAIL: should pass
+./test/unit/test_tests.rb:124
+assert -t ./test/unit/test_tests.rb:123
 ```
 
 ### Verbose Output
