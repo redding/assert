@@ -13,8 +13,8 @@ module Assert
       Assert::CLI.bench('Apply settings') do
         apply_user_settings
         apply_local_settings
-        apply_option_settings(test_options)
         apply_env_settings
+        apply_option_settings(test_options)
       end
 
       paths = test_paths.empty? ? [*self.config.test_dir] : test_paths
@@ -68,12 +68,12 @@ module Assert
       safe_require(ENV['ASSERT_LOCALFILE'] || path_of(LOCAL_SETTINGS_FILE, Dir.pwd))
     end
 
-    def apply_option_settings(options)
-      self.config.apply(options)
-    end
-
     def apply_env_settings
       self.config.runner_seed ENV['ASSERT_RUNNER_SEED'].to_i if ENV['ASSERT_RUNNER_SEED']
+    end
+
+    def apply_option_settings(options)
+      self.config.apply(options)
     end
 
     def lookup_test_files(test_paths)

@@ -202,25 +202,25 @@ Assert.configure do |config|
 end
 ```
 
-Assert uses a config pattern for specifying settings.  Using this pattern, you can configure settings, extensions, custom views, etc.  Settings can be configured in 4 different scopes and are applied in this order: User, Local, CLI, ENV.
+Assert uses a config pattern for specifying settings.  Using this pattern, you can configure settings, extensions, custom views, etc.  Settings can be configured in 4 different scopes and are applied in this order: User, Local, ENV, CLI.
 
 ### User settings
 
-Assert will look for and require the file `$HOME/.assert/init.rb`.  Use this file to specify user settings.  User settings can be overridden by Local, CLI, and ENV settings.
+Assert will look for and require the file `$HOME/.assert/init.rb`.  Use this file to specify user settings.  User settings can be overridden by Local, ENV, and CLI settings.
 
 ### Local settings
 
-Assert will look for and require the file `./.assert.rb`.  Use this file to specify project settings.  Local settings can be overridden by CLI, and ENV settings.
+Assert will look for and require the file `./.assert.rb`.  Use this file to specify project settings.  Local settings can be overridden by ENV, and CLI settings.
 
 To specify a custom local settings file path, use the `ASSERT_LOCALFILE` env var.
 
-### CLI settings
-
-Assert accepts options from its CLI.  Use these options to specify runtime settings.  CLI settings can be overridden by ENV settings.
-
 ### ENV settings
 
-Assert uses ENV vars to drive certain settings.  Use these vars to specify absolute runtime settings.  ENV settings are always applied last and cannot be overridden.
+Assert uses ENV vars to drive certain settings.  Use these vars to specify specific environment settings.  ENV settings can be overridden by CLI settings.
+
+### CLI settings
+
+Assert accepts options from its CLI.  Use these options to specify absolute runtime settings.  CLI settings are always applied last and cannot be overridden.
 
 ## Running Tests
 
@@ -266,16 +266,16 @@ Assert.configure do |config|
 end
 ```
 
-Using the CLI:
-
-```sh
-$ assert [-s|--runner-seed] 1234
-```
-
 Using an ENV var:
 
 ```sh
 $ ASSERT_RUNNER_SEED=1234 assert
+```
+
+Using the CLI:
+
+```sh
+$ assert [-s|--runner-seed] 1234
 ```
 
 ### Run a single test
