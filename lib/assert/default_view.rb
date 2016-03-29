@@ -93,6 +93,9 @@ module Assert
         # output any captured stdout
         puts captured_output(result.output) if result.output && !result.output.empty?
 
+        # output re-run CLI cmd
+        puts re_run_test_cmd(result.test_id)
+
         # add an empty line between each result detail
         puts
       end
