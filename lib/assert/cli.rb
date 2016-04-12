@@ -11,16 +11,25 @@ module Assert
       args.include?('-d') || args.include?('--debug')
     end
 
-    def self.debug_msg(msg, time_in_ms = nil)
-      "[DEBUG] #{msg}#{" (#{time_in_ms} ms)" if time_in_ms}"
+    def self.debug_msg(msg)
+      "[DEBUG] #{msg}"
     end
 
-    def self.bench(msg, &block)
+    def self.debug_start_msg(msg)
+      debug_msg("#{msg}...".ljust(30))
+    end
+
+    def self.debug_finish_msg(time_in_ms)
+      " (#{time_in_ms} ms)"
+    end
+
+    def self.bench(start_msg, &block)
       if !Assert.config.debug
         block.call; return
       end
+      print debug_start_msg(start_msg)
       RoundedMillisecondTime.new(Benchmark.measure(&block).real).tap do |time_in_ms|
-        puts debug_msg(msg, time_in_ms)
+        puts debug_finish_msg(time_in_ms)
       end
     end
 

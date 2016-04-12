@@ -10,7 +10,7 @@ module Assert
 
     def initialize(config, test_paths, test_options)
       @config = config
-      Assert::CLI.bench('Apply settings') do
+      Assert::CLI.bench('Applying settings') do
         apply_user_settings
         apply_local_settings
         apply_env_settings
@@ -25,7 +25,7 @@ module Assert
     def init(test_files, test_dir)
       # load any test helper file
       if test_dir && (h = File.join(test_dir, self.config.test_helper)) && File.exists?(h)
-        Assert::CLI.bench('Require test helper'){ require h }
+        Assert::CLI.bench('Requiring test helper'){ require h }
       end
 
       if self.config.list
@@ -38,7 +38,7 @@ module Assert
       runner.before_load(test_files)
       suite.before_load(test_files)
       view.before_load(test_files)
-      Assert::CLI.bench("Require #{test_files.size} test files") do
+      Assert::CLI.bench("Requiring #{test_files.size} test files") do
         test_files.each{ |p| require p }
       end
       if self.config.debug
