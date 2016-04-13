@@ -96,6 +96,8 @@ module Assert
     end
 
     should "be able to call a stub's original method" do
+      assert_raises(NotStubbedError){ Assert.stub_send(@myobj, :mymeth) }
+
       Assert.stub(@myobj, :mymeth){ @stub_value }
 
       assert_equal @stub_value, @myobj.mymeth

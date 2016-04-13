@@ -4,22 +4,28 @@ module Assert
     @stubs ||= {}
   end
 
-  def self.stub(*args, &block)
-    (self.stubs[Assert::Stub.key(*args)] ||= Assert::Stub.new(*args)).tap do |s|
-      s.do = block
-    end
+  def self.stub(obj, meth, &block)
+    (self.stubs[Assert::Stub.key(obj, meth)] ||= begin
+      orig_caller = caller
+      Assert::Stub.new(obj, meth, orig_caller)
+    end).tap{ |s| s.do = block }
   end
 
-  def self.unstub(*args)
-    (self.stubs.delete(Assert::Stub.key(*args)) || Assert::Stub::NullStub.new).teardown
+  def self.unstub(obj, meth)
+    (self.stubs.delete(Assert::Stub.key(obj, meth)) || Assert::Stub::NullStub.new).teardown
   end
 
   def self.unstub!
     self.stubs.keys.each{ |key| self.stubs.delete(key).teardown }
   end
 
-  def self.stub_send(object, method_name, *args, &block)
-    self.stubs[Assert::Stub.key(object, method_name)].call_method(*args, &block)
+  def self.stub_send(obj, meth, *args, &block)
+    orig_caller = caller
+    stub = self.stubs.fetch(Assert::Stub.key(obj, meth)) do
+      msg = "`#{meth}` not stubbed"
+      raise NotStubbedError.new(msg).tap{ |e| e.set_backtrace(orig_caller) }
+    end
+    stub.call_method(args, &block)
   end
 
   StubError = Class.new(ArgumentError)
@@ -38,52 +44,49 @@ module Assert
 
     attr_reader :method_name, :name, :ivar_name, :do
 
-    def initialize(object, method_name, &block)
+    def initialize(object, method_name, orig_caller = nil, &block)
+      orig_caller ||= caller
       @metaclass = class << object; self; end
       @method_name = method_name.to_s
       @name = "__assert_stub__#{object.object_id}_#{@method_name}"
       @ivar_name = "@__assert_stub_#{object.object_id}_" \
                    "#{@method_name.to_sym.object_id}"
 
-      setup(object)
+      setup(object, orig_caller)
 
-      @do = block || Proc.new do |*args, &block|
-        err_msg = "#{inspect_call(args)} not stubbed."
-        inspect_lookup_stubs.tap do |stubs|
-          err_msg += "\nStubs:\n#{stubs}" if !stubs.empty?
-        end
-        raise NotStubbedError, err_msg
-      end
-      @lookup = Hash.new{ |hash, key| self.do }
+      @do     = block
+      @lookup = {}
     end
 
     def do=(block)
       @do = block || @do
     end
 
-    def call_method(*args, &block)
+    def call_method(args, &block)
       @method.call(*args, &block)
     end
 
-    def call(*args, &block)
+    def call(args, orig_caller = nil, &block)
+      orig_caller ||= caller
       unless arity_matches?(args)
-        message = "arity mismatch on `#{@method_name}`: " \
-                  "expected #{number_of_args(@method.arity)}, " \
-                  "called with #{args.size}"
-        raise StubArityError, message
+        msg = "arity mismatch on `#{@method_name}`: " \
+              "expected #{number_of_args(@method.arity)}, " \
+              "called with #{args.size}"
+        raise StubArityError.new(msg).tap{ |e| e.set_backtrace(orig_caller) }
       end
-      @lookup[args].call(*args, &block)
+      lookup(args, orig_caller).call(*args, &block)
     rescue NotStubbedError => exception
       @lookup.rehash
-      @lookup[args].call(*args, &block)
+      lookup(args, orig_caller).call(*args, &block)
     end
 
     def with(*args, &block)
+      orig_caller = caller
       unless arity_matches?(args)
-        message = "arity mismatch on `#{@method_name}`: " \
-                  "expected #{number_of_args(@method.arity)}, " \
-                  "stubbed with #{args.size}"
-        raise StubArityError, message
+        msg = "arity mismatch on `#{@method_name}`: " \
+              "expected #{number_of_args(@method.arity)}, " \
+              "stubbed with #{args.size}"
+        raise StubArityError.new(msg).tap{ |e| e.set_backtrace(orig_caller) }
       end
       @lookup[args] = block
     end
@@ -103,9 +106,10 @@ module Assert
 
     protected
 
-    def setup(object)
+    def setup(object, orig_caller)
       unless object.respond_to?(@method_name)
-        raise StubError, "#{object.inspect} does not respond to `#{@method_name}`"
+        msg = "#{object.inspect} does not respond to `#{@method_name}`"
+        raise StubError.new(msg).tap{ |e| e.set_backtrace(orig_caller) }
       end
       is_constant = object.kind_of?(Module)
       local_object_methods = object.methods(false).map(&:to_s)
@@ -126,12 +130,24 @@ module Assert
       Assert.instance_variable_set(@ivar_name, self)
       @metaclass.class_eval <<-stub_method
         def #{@method_name}(*args, &block)
-          Assert.instance_variable_get("#{@ivar_name}").call(*args, &block)
+          Assert.instance_variable_get("#{@ivar_name}").call(args, caller, &block)
         end
       stub_method
     end
 
     private
+
+    def lookup(args, orig_caller)
+      @lookup.fetch(args) do
+        self.do || begin
+          msg = "#{inspect_call(args)} not stubbed."
+          inspect_lookup_stubs.tap do |stubs|
+            msg += "\nStubs:\n#{stubs}" if !stubs.empty?
+          end
+          raise NotStubbedError.new(msg).tap{ |e| e.set_backtrace(orig_caller) }
+        end
+      end
+    end
 
     def arity_matches?(args)
       return true if @method.arity == args.size # mandatory args
