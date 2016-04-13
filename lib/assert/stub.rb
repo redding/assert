@@ -18,6 +18,10 @@ module Assert
     self.stubs.keys.each{ |key| self.stubs.delete(key).teardown }
   end
 
+  def self.stub_send(object, method_name, *args, &block)
+    self.stubs[Assert::Stub.key(object, method_name)].call_method(*args, &block)
+  end
+
   StubError = Class.new(ArgumentError)
   NotStubbedError = Class.new(StubError)
   StubArityError = Class.new(StubError)
@@ -53,6 +57,14 @@ module Assert
       @lookup = Hash.new{ |hash, key| self.do }
     end
 
+    def do=(block)
+      @do = block || @do
+    end
+
+    def call_method(*args, &block)
+      @method.call(*args, &block)
+    end
+
     def call(*args, &block)
       unless arity_matches?(args)
         message = "arity mismatch on `#{@method_name}`: " \
@@ -74,10 +86,6 @@ module Assert
         raise StubArityError, message
       end
       @lookup[args] = block
-    end
-
-    def do=(block)
-      @do = block || @do
     end
 
     def teardown
