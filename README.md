@@ -89,6 +89,8 @@ myobj.mymeth(123)
   # => StubError: arity mismatch
 Assert.stub(myobj, :mymeth).with(123){ 'stub-meth' }
   # => StubError: arity mismatch
+Assert.stub_send(myobj, :mymeth) # call to the original method post-stub
+  # => 'meth'
 
 Assert.stub(myobj, :myval){ 'stub-meth' }
   # => StubError: arity mismatch
@@ -99,6 +101,10 @@ myobj.myval(123)
   # => '123'
 myobj.myval(456)
   # => StubError: `myval(456)` not stubbed.
+Assert.stub_send(myobj, :myval, 123) # call to the original method post-stub
+  # => 123
+Assert.stub_send(myobj, :myval, 456)
+  # => 456
 
 Assert.unstub(myobj, :mymeth)
 Assert.unstub(myobj, :myval)

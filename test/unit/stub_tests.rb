@@ -24,6 +24,7 @@ class Assert::Stub
     should have_readers :method_name, :name, :ivar_name, :do
     should have_writers :do
     should have_cmeths :key
+    should have_imeths :call_method, :call, :with, :teardown
 
     should "generate a key given an object and method name" do
       obj = @myobj
@@ -185,6 +186,54 @@ class Assert::Stub
       assert_equal '[4, 5, 6]', mydelegator.myvalargs(4,5,6)
       stub.with(4,5,6){ 'four-five-six' }
       assert_equal 'four-five-six', mydelegator.myvalargs(4,5,6)
+    end
+
+    should "call to the original method" do
+      subject.teardown
+
+      # no args
+      stub = Assert::Stub.new(@myobj, :mymeth){ 'mymeth' }
+      assert_equal 'mymeth', stub.call
+      assert_equal 'meth',   stub.call_method
+
+      # static args
+      stub = Assert::Stub.new(@myobj, :myval){ |val| val.to_s }
+      assert_equal '1', stub.call(1)
+      assert_equal 1,   stub.call_method(1)
+      assert_equal '2', stub.call(2)
+      assert_equal 2,   stub.call_method(2)
+      stub.with(2){ 'two' }
+      assert_equal 'two', stub.call(2)
+      assert_equal 2,     stub.call_method(2)
+
+      # dynamic args
+      stub = Assert::Stub.new(@myobj, :myargs){ |*args| args.join(',') }
+      assert_equal '1,2',   stub.call(1,2)
+      assert_equal [1,2],   stub.call_method(1,2)
+      assert_equal '3,4,5', stub.call(3,4,5)
+      assert_equal [3,4,5], stub.call_method(3,4,5)
+      stub.with(3,4,5){ 'three-four-five' }
+      assert_equal 'three-four-five', stub.call(3,4,5)
+      assert_equal [3,4,5],           stub.call_method(3,4,5)
+
+      # mixed static/dynamic args
+      stub = Assert::Stub.new(@myobj, :myvalargs){ |*args| args.join(',') }
+      assert_equal '1,2,3',    stub.call(1,2,3)
+      assert_equal [1,2, [3]], stub.call_method(1,2,3)
+      assert_equal '3,4,5',    stub.call(3,4,5)
+      assert_equal [3,4,[5]],  stub.call_method(3,4,5)
+      stub.with(3,4,5){ 'three-four-five' }
+      assert_equal 'three-four-five', stub.call(3,4,5)
+      assert_equal [3,4,[5]],         stub.call_method(3,4,5)
+
+      # blocks
+      blkcalled = false
+      blk = proc{ blkcalled = true }
+      stub = Assert::Stub.new(@myobj, :myblk){ blkcalled = 'true' }
+      stub.call(&blk)
+      assert_equal 'true', blkcalled
+      stub.call_method(&blk)
+      assert_equal true, blkcalled
     end
 
     should "store and remove itself on asserts main module" do
