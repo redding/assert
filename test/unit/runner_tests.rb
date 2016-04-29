@@ -129,7 +129,8 @@ class Assert::Runner
       @view_output.gsub!(/./, '')
       subject.run
 
-      exp = "Running test: #{subject.single_test_file_line}\n"
+      exp = "Running test: #{subject.single_test_file_line}, " \
+            "seeded with \"#{subject.runner_seed}\"\n"
       assert_includes exp, @view_output
     end
 
