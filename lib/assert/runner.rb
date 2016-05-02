@@ -21,11 +21,11 @@ module Assert
       self.view.on_start
 
       if self.single_test?
-        self.view.puts "Running test: #{self.single_test_file_line}"
+        self.view.print "Running test: #{self.single_test_file_line}"
       elsif self.tests?
-        self.view.puts "Running tests in random order, " \
-                       "seeded with \"#{self.runner_seed}\""
+        self.view.print "Running tests in random order"
       end
+      self.view.puts ", seeded with \"#{self.runner_seed}\""
 
       begin
         self.suite.start_time = Time.now
@@ -76,11 +76,11 @@ module Assert
     private
 
     def tests_to_run
+      srand self.runner_seed
       if self.single_test?
         [ self.suite.tests.find{ |t| t.file_line == self.single_test_file_line }
         ].compact
       else
-        srand self.runner_seed
         self.suite.tests.sort.sort_by{ rand self.suite.tests.size }
       end
     end
