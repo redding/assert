@@ -8,6 +8,7 @@ module Assert
 
     TEST_METHOD_REGEX = /^test./.freeze
 
+    # TODO: improve this comment
     # A suite is a set of tests to run.  When a test class subclasses
     # the Context class, that test class is pushed to the suite.
 
@@ -52,26 +53,13 @@ module Assert
       get_rate(self.result_count, self.run_time)
     end
 
-    # TODO: replace this count method with explict count methods for each type
-    def count(thing)
-      if thing == :tests
-        test_count
-      elsif thing == :results
-        result_count
-      elsif thing == :pass   || thing == :passed
-        result_count(:pass)
-      elsif thing == :fail   || thing == :failed
-        result_count(:fail)
-      elsif thing == :error  || thing == :errored
-        result_count(:error)
-      elsif thing == :skip   || thing == :skipped
-        result_count(:skip)
-      elsif thing == :ignore || thing == :ignored
-        result_count(:ignore)
-      else
-        0
-      end
-    end
+    def test_count;          end
+    def result_count;        end
+    def pass_result_count;   end
+    def fail_result_count;   end
+    def error_result_count;  end
+    def skip_result_count;   end
+    def ignore_result_count; end
 
     # Test data
 
@@ -79,7 +67,6 @@ module Assert
     def reversed_tests;             end
     def ordered_tests_by_run_time;  end
     def reversed_tests_by_run_time; end
-    def test_count;                 end
 
     # Result data
 
@@ -87,7 +74,6 @@ module Assert
     def reversed_results;          end
     def ordered_results_for_dump;  end
     def reversed_results_for_dump; end
-    def result_count(type = nil);  end
 
     # Callbacks
 

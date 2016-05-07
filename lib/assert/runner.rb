@@ -17,7 +17,7 @@ module Assert
 
     def run
       self.on_start
-      self.suite.on_start # TODO: reset test/result counts
+      self.suite.on_start
       self.view.on_start  # TODO: reset display result list
 
       if self.single_test?
@@ -36,16 +36,16 @@ module Assert
         # TODO: maybe while/pop off tests_to_run so tests get gc'd
         tests_to_run.each do |test|
           self.before_test(test)
-          self.suite.before_test(test) # TODO: increment test count; optionally store test run
-          self.view.before_test(test)
+          self.suite.before_test(test)
+          self.view.before_test(test) # TODO: optionally store test presentation info
           test.run do |result|
             self.on_result(result)
-            self.suite.on_result(result) # TODO: increment result count
-            self.view.on_result(result)  # TODO: optionally store result data for display
+            self.suite.on_result(result)
+            self.view.on_result(result) # TODO: optionally store result presentation info
           end
-          self.after_test(test) # TODO: delete suite test; optionally store test run
+          self.after_test(test)
           self.suite.after_test(test)
-          self.view.after_test(test)
+          self.view.after_test(test) # TODO: optionally store test presentation info
         end
         self.suite.teardowns.each(&:call)
         self.suite.end_time = Time.now
@@ -56,8 +56,7 @@ module Assert
         raise(err)
       end
 
-      # TODO: remove `count` method: `self.suite.fail_result_count`
-      (self.suite.count(:fail) + self.suite.count(:error)).tap do
+      (self.fail_result_count + self.error_result_count).tap do
         self.view.on_finish
         self.suite.on_finish
         self.on_finish

@@ -52,10 +52,6 @@ class Assert::Runner
       callback_mixin = Module.new
       @runner_class = Class.new(Assert::Runner) do
         include CallbackMixin
-
-        def run!(&block)
-          self.suite.tests.each(&block)
-        end
       end
       suite_class  = Class.new(Assert::DefaultSuite){ include CallbackMixin }
       view_class   = Class.new(Assert::View){ include CallbackMixin }
@@ -73,8 +69,18 @@ class Assert::Runner
       @result = @runner.run
     end
 
-    should "return an integer exit code" do
+    should "return the fail+error result count as an integer exit code" do
       assert_equal 0, @result
+
+      fail_count  = Factory.integer
+      error_count = Factory.integer
+      Assert.stub(subject, :fail_result_count){ fail_count }
+      Assert.stub(subject, :error_result_count){ error_count }
+      Assert.stub(@test, :run){ } # no-op
+      result = @runner.run
+
+      exp = fail_count + error_count
+      assert_equal exp, result
     end
 
     should "run all callbacks on itself, the suite and the view" do
