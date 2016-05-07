@@ -39,11 +39,11 @@ module Assert
           self.suite.test_methods << klass_method_name
         end
 
-        self.suite.tests << Test.for_method(
+        self.suite.on_test(Test.for_method(
           method_name.to_s,
           ContextInfo.new(self, nil, caller.first),
           self.suite.config
-        )
+        ))
       end
     end
 

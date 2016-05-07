@@ -52,9 +52,8 @@ module Assert
         "assert -t #{test_id.gsub(Dir.pwd, '.')}"
       end
 
-      # TODO: remove `count` method
-      def test_count_statement
-        "#{self.count(:tests)} test#{'s' if self.count(:tests) != 1}"
+      def tests_to_run_count_statement
+        "#{self.tests_to_run_count} test#{'s' if self.tests_to_run_count != 1}"
       end
 
       # TODO: remove `count` method
@@ -103,7 +102,6 @@ module Assert
 
     end
 
-    # TODO: move to an ansi view helper mixin
     module Ansi
 
       # Table of supported styles/codes (http://en.wikipedia.org/wiki/ANSI_escape_code)

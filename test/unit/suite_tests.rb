@@ -30,7 +30,7 @@ class Assert::Suite
     end
     subject{ @suite }
 
-    should have_readers :config, :tests, :test_methods
+    should have_readers :config, :test_methods, :setups, :teardowns
     should have_accessors :start_time, :end_time
     should have_imeths :suite, :setup, :startup, :teardown, :shutdown
     should have_imeths :run_time, :test_rate, :result_rate, :count
@@ -40,7 +40,7 @@ class Assert::Suite
     should have_imeths :ordered_results, :reversed_results
     should have_imeths :ordered_results_for_dump, :reversed_results_for_dump
     should have_imeths :result_count
-    should have_imeths :before_load, :after_load
+    should have_imeths :before_load, :on_test, :after_load
     should have_imeths :on_start, :on_finish, :on_interrupt
     should have_imeths :before_test, :after_test, :on_result
 
@@ -48,17 +48,23 @@ class Assert::Suite
       assert_equal @config, subject.config
     end
 
-    should "override the config helper's suite value with itself" do
-      assert_equal subject, subject.suite
-    end
-
     should "default its attrs" do
-      assert_equal [], subject.tests
       assert_equal [], subject.test_methods
       assert_equal [], subject.setups
       assert_equal [], subject.teardowns
 
       assert_equal subject.start_time, subject.end_time
+    end
+
+    should "override the config helper's suite value with itself" do
+      assert_equal subject, subject.suite
+    end
+
+    should "not provide any tests-to-run implementations" do
+      assert_nil subject.tests_to_run
+      assert_nil subject.tests_to_run?
+      assert_nil subject.tests_to_run_count
+      assert_nil subject.clear_tests_to_run
     end
 
     should "know its run time and rates" do

@@ -23,6 +23,7 @@ module Assert::ConfigHelpers
 
     should have_imeths :runner, :suite, :view
     should have_imeths :runner_seed, :single_test?, :single_test_file_line
+    should have_imeths :tests_to_run?, :tests_to_run_count
     should have_imeths :count, :tests?, :all_pass?
     should have_imeths :formatted_run_time
     should have_imeths :formatted_test_rate, :formatted_result_rate
@@ -50,6 +51,14 @@ module Assert::ConfigHelpers
     should "know its single test file line" do
       exp = subject.config.single_test_file_line
       assert_equal exp, subject.single_test_file_line
+    end
+
+    should "know its tests-to-run attrs" do
+      exp = subject.config.suite.tests_to_run?
+      assert_equal exp, subject.tests_to_run?
+
+      exp = subject.config.suite.tests_to_run_count
+      assert_equal exp, subject.tests_to_run_count
     end
 
     should "know how to count things on the suite" do

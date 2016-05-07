@@ -57,7 +57,7 @@ module Assert::ViewHelpers
 
     should have_imeths :test_run_time, :test_result_rate
     should have_imeths :captured_output, :re_run_test_cmd
-    should have_imeths :test_count_statement, :result_count_statement
+    should have_imeths :tests_to_run_count_statement, :result_count_statement
     should have_imeths :to_sentence
     should have_imeths :all_pass_result_summary_msg, :result_summary_msg
     should have_imeths :results_summary_sentence
@@ -89,9 +89,9 @@ module Assert::ViewHelpers
       assert_equal exp, subject.re_run_test_cmd(test_id)
     end
 
-    should "know its test count and result count statements" do
-      exp = "#{subject.count(:tests)} test#{'s' if subject.count(:tests) != 1}"
-      assert_equal exp, subject.test_count_statement
+    should "know its tests-to-run count and result count statements" do
+      exp = "#{subject.tests_to_run_count} test#{'s' if subject.tests_to_run_count != 1}"
+      assert_equal exp, subject.tests_to_run_count_statement
 
       exp = "#{subject.count(:results)} result#{'s' if subject.count(:results) != 1}"
       assert_equal exp, subject.result_count_statement

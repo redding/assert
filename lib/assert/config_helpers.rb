@@ -18,6 +18,9 @@ module Assert
       self.config.single_test_file_line
     end
 
+    def tests_to_run?;      self.config.suite.tests_to_run?;      end
+    def tests_to_run_count; self.config.suite.tests_to_run_count; end
+
     # TODO: remove the count method
     def count(type)
       self.config.suite.count(type)

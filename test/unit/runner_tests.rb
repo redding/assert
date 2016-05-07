@@ -67,7 +67,7 @@ class Assert::Runner
 
       @ci = Factory.context_info(Factory.modes_off_context_class)
       @test = Factory.test("should pass", @ci){ assert(1==1) }
-      @config.suite.tests << @test
+      @config.suite.on_test(@test)
 
       @runner = @runner_class.new(@config)
       @result = @runner.run
@@ -115,7 +115,7 @@ class Assert::Runner
 
     should "run only a single test if a single test is configured" do
       other_test = Factory.test("should also pass", @ci){ assert(1==1) }
-      @config.suite.tests << other_test
+      @config.suite.on_test(other_test)
 
       @config.single_test @test.file_line.to_s
 

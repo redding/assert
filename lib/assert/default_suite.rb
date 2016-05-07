@@ -2,9 +2,22 @@ require 'assert/suite'
 
 module Assert
 
+  # TODO: make this comment/description more accurate once accumulation work done
   # This is the default suite used by assert.  It stores test/result data in-memory.
 
   class DefaultSuite < Assert::Suite
+
+    attr_reader :tests
+
+    def initialize(config)
+      super
+      @tests = []
+    end
+
+    def tests_to_run;       @tests;          end
+    def tests_to_run?;      @tests.size > 0; end
+    def tests_to_run_count; @tests.size;     end
+    def clear_tests_to_run; @tests.clear;    end
 
     # Test data
 
@@ -57,7 +70,9 @@ module Assert
 
     # Callbacks
 
-    # no custom callbacks
+    def on_test(test)
+      @tests << test
+    end
 
   end
 
