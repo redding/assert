@@ -48,9 +48,11 @@ module Assert
     def run_time;  @run_time  ||= (@build_data[:run_time]                 || 0);        end
 
     def total_result_count
+    # TODO: won't be needed b/c we won't be storing this state on the test
       @total_result_count ||= (@build_data[:total_result_count] || 0)
     end
 
+    # TODO: won't be needed b/c we won't be storing this state on the test
     Assert::Result.types.keys.each do |type|
       n = result_count_meth(type)
       define_method(n) do
@@ -63,6 +65,7 @@ module Assert
     def code;         @code         ||= @build_data[:code];         end
 
     def data
+      # TODO: don't merge result count data, that state will be stored on the suite
       { :file_line => self.file_line.to_s,
         :name      => self.name.to_s,
         :output    => self.output.to_s,
@@ -74,10 +77,12 @@ module Assert
     def file;          self.file_line.file;     end
     def line_number;   self.file_line.line;     end
 
+    # TODO: should be able to remove this once this state is on the suite
     def result_rate
       get_rate(self.result_count, self.run_time)
     end
 
+    # TODO: remove once this state is stored on the suite
     def result_count(type = nil)
       if Assert::Result.types.keys.include?(type)
         self.send(result_count_meth(type))
@@ -87,10 +92,14 @@ module Assert
     end
 
     def capture_result(result, callback)
+      # TODO: don't store state on run, just call the callback
+      # let the suite accumulate the test/result data
       self.results << result
       self.total_result_count += 1
       n = result_count_meth(result.to_sym)
       instance_variable_set("@#{n}", (instance_variable_get("@#{n}") || 0) + 1)
+
+      # TODO: this should be all we need to do in the end
       callback.call(result)
     end
 
@@ -107,6 +116,7 @@ module Assert
       @results
     end
 
+    # TODO: don't store results on the test class, result data will be stored on the suite
     Assert::Result.types.each do |name, klass|
       define_method "#{name}_results" do
         self.results.select{|r| r.kind_of?(klass) }
@@ -118,6 +128,7 @@ module Assert
     end
 
     def inspect
+      # TODO: remove :results from this
       attributes_string = ([ :name, :context_info, :results ].collect do |attr|
         "@#{attr}=#{self.send(attr).inspect}"
       end).join(" ")
@@ -175,6 +186,7 @@ module Assert
       StringIO.new(self.output, "a+")
     end
 
+    # TODO: should be able to remove this once this state is on the suite
     def result_count_data(seed)
       Assert::Result.types.keys.inject(seed) do |d, t|
         d[result_count_meth(t)] = self.send(result_count_meth(t))
@@ -182,10 +194,12 @@ module Assert
       end
     end
 
+    # TODO: should be able to remove this once this state is on the suite
     def result_count_meth(type)
       self.class.result_count_meth(type)
     end
 
+    # TODO: should be able to remove this once this state is on the suite
     def get_rate(count, time)
       time == 0 ? 0.0 : (count.to_f / time.to_f)
     end
