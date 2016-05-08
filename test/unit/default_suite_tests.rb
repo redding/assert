@@ -18,13 +18,28 @@ class Assert::DefaultSuite
         Factory.test("should ignored", ci){ ignore },
         Factory.test("should skip",    ci){ skip; ignore; assert(1==1) },
         Factory.test("should error",   ci){ raise Exception; ignore; assert(1==1) }
-      ].each{ |test| @suite.tests << test }
+      ].each{ |test| @suite.on_test(test) }
       @suite.tests.each(&:run)
     end
     subject{ @suite }
 
+    should have_readers :tests
+
     should "be a Suite" do
       assert_kind_of Assert::Suite, subject
+    end
+
+    should "know its tests-to-run atts" do
+      assert_equal 6, subject.tests_to_run.size
+      assert_equal 6, subject.tests_to_run_count
+      assert_kind_of Assert::Test, subject.tests.first
+      assert_true subject.tests_to_run?
+
+      subject.clear_tests_to_run
+
+      assert_equal 0, subject.tests_to_run.size
+      assert_equal 0, subject.tests_to_run_count
+      assert_false subject.tests_to_run?
     end
 
     should "know its test and result attrs" do

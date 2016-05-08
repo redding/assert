@@ -11,16 +11,11 @@ module Assert
     # A suite is a set of tests to run.  When a test class subclasses
     # the Context class, that test class is pushed to the suite.
 
-    # TODO: just store "suite tests" and "suite results"
-    # both will be "structs" of just the data needed for presentation
-    # don't store all of the tests and all results on the tests
-    # unshift tests as they are run (for later garbage collection)
-    attr_reader :config, :tests, :test_methods, :setups, :teardowns
+    attr_reader :config, :test_methods, :setups, :teardowns
     attr_accessor :start_time, :end_time
 
     def initialize(config)
       @config       = config
-      @tests        = []
       @test_methods = []
       @setups       = []
       @teardowns    = []
@@ -39,6 +34,11 @@ module Assert
       self.teardowns << (block || proc{})
     end
     alias_method :shutdown, :teardown
+
+    def tests_to_run;       end
+    def tests_to_run?;      end
+    def tests_to_run_count; end
+    def clear_tests_to_run; end
 
     def run_time
       @end_time - @start_time
@@ -95,6 +95,7 @@ module Assert
     # will be called by the test runner
 
     def before_load(test_files); end
+    def on_test(test);           end
     def after_load;              end
     def on_start;                end
     def before_test(test);       end

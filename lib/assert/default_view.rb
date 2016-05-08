@@ -9,8 +9,6 @@ module Assert
   class DefaultView < Assert::View
     include Assert::ViewHelpers::Ansi
 
-    # TODO: mixin the ansi view helper mixin
-
     # setup options and their default values
 
     option 'styled',        true
@@ -24,7 +22,7 @@ module Assert
     end
 
     def after_load
-      puts "Loaded suite (#{test_count_statement})"
+      puts "Loaded suite (#{tests_to_run_count_statement})"
     end
 
     def on_start
