@@ -55,25 +55,11 @@ module Assert::ViewHelpers
     end
     subject{ @helpers }
 
-    should have_imeths :test_run_time, :test_result_rate
     should have_imeths :captured_output, :re_run_test_cmd
     should have_imeths :tests_to_run_count_statement, :result_count_statement
     should have_imeths :to_sentence
     should have_imeths :all_pass_result_summary_msg, :result_summary_msg
     should have_imeths :results_summary_sentence
-
-    should "know a test's formatted run time and result rate" do
-      test   = Factory.test
-      format = '%.6f'
-
-      exp = format % test.run_time
-      assert_equal exp, subject.test_run_time(test, format)
-      assert_equal exp, subject.test_run_time(test)
-
-      exp = format % test.result_rate
-      assert_equal exp, subject.test_result_rate(test, format)
-      assert_equal exp, subject.test_result_rate(test)
-    end
 
     should "know how to build captured output" do
       output = Factory.string

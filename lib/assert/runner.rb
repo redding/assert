@@ -18,7 +18,7 @@ module Assert
     def run
       self.on_start
       self.suite.on_start
-      self.view.on_start  # TODO: reset display result list
+      self.view.on_start
 
       if self.single_test?
         self.view.print "Running test: #{self.single_test_file_line}"
@@ -37,15 +37,15 @@ module Assert
         tests_to_run.each do |test|
           self.before_test(test)
           self.suite.before_test(test)
-          self.view.before_test(test) # TODO: optionally store test presentation info
+          self.view.before_test(test)
           test.run do |result|
             self.on_result(result)
             self.suite.on_result(result)
-            self.view.on_result(result) # TODO: optionally store result presentation info
+            self.view.on_result(result)
           end
           self.after_test(test)
           self.suite.after_test(test)
-          self.view.after_test(test) # TODO: optionally store test presentation info
+          self.view.after_test(test)
         end
         self.suite.teardowns.each(&:call)
         self.suite.end_time = Time.now

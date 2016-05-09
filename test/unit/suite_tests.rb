@@ -22,7 +22,7 @@ class Assert::Suite
 
   end
 
-  class InitTests < Assert::Context
+  class InitTests < UnitTests
     desc "when init"
     setup do
       @config = Factory.modes_off_config
@@ -39,8 +39,6 @@ class Assert::Suite
     should have_imeths :test_count, :result_count, :pass_result_count
     should have_imeths :fail_result_count, :error_result_count
     should have_imeths :skip_result_count, :ignore_result_count
-    should have_imeths :ordered_tests, :reversed_tests
-    should have_imeths :ordered_tests_by_run_time, :reversed_tests_by_run_time
     should have_imeths :before_load, :on_test, :after_load
     should have_imeths :on_start, :on_finish, :on_interrupt
     should have_imeths :before_test, :after_test, :on_result
@@ -92,13 +90,6 @@ class Assert::Suite
       assert_nil subject.error_result_count
       assert_nil subject.skip_result_count
       assert_nil subject.ignore_result_count
-    end
-
-    should "not provide any test or result attrs" do
-      assert_nil subject.ordered_tests
-      assert_nil subject.reversed_tests
-      assert_nil subject.ordered_tests_by_run_time
-      assert_nil subject.reversed_tests_by_run_time
     end
 
     should "add setup procs" do

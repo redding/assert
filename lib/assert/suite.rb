@@ -62,13 +62,6 @@ module Assert
     def skip_result_count;   end
     def ignore_result_count; end
 
-    # Test data
-
-    def ordered_tests;              end
-    def reversed_tests;             end
-    def ordered_tests_by_run_time;  end
-    def reversed_tests_by_run_time; end
-
     # Callbacks
 
     # define callback handlers to do special behavior during the test run.  These
@@ -88,12 +81,6 @@ module Assert
       "#<#{self.class}:#{'0x0%x' % (object_id << 1)}"\
       " test_count=#{self.test_count.inspect}"\
       " result_count=#{self.result_count.inspect}>"
-    end
-
-    private
-
-    def get_rate(count, time)
-      time == 0 ? 0.0 : (count.to_f / time.to_f)
     end
 
   end
