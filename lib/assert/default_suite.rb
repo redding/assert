@@ -16,10 +16,17 @@ module Assert
       reset_run_data
     end
 
-    def tests_to_run;       @tests;          end
     def tests_to_run?;      @tests.size > 0; end
     def tests_to_run_count; @tests.size;     end
     def clear_tests_to_run; @tests.clear;    end
+
+    def find_test_to_run(file_line)
+      @tests.find{ |t| t.file_line == file_line }
+    end
+
+    def sorted_tests_to_run(&sort_by_proc)
+      @tests.sort.sort_by(&sort_by_proc)
+    end
 
     def test_count;          @test_count;          end
     def result_count;        @result_count;        end

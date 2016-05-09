@@ -82,10 +82,11 @@ module Assert
     def tests_to_run
       srand self.runner_seed
       if self.single_test?
-        [ self.suite.tests_to_run.find{ |t| t.file_line == self.single_test_file_line }
-        ].compact
+        [self.suite.find_test_to_run(self.single_test_file_line)].compact
       else
-        self.suite.tests_to_run.sort.sort_by{ rand self.suite.tests_to_run_count }
+        # TODO: implies tests are always stored in memory?
+        # TODO: move this back to base suite definition?
+        self.suite.sorted_tests_to_run{ rand self.tests_to_run_count }
       end
     end
 

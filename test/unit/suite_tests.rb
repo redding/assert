@@ -33,8 +33,8 @@ class Assert::Suite
     should have_readers :config, :test_methods, :setups, :teardowns
     should have_accessors :start_time, :end_time
     should have_imeths :suite, :setup, :startup, :teardown, :shutdown
-    should have_imeths :tests_to_run, :tests_to_run?
-    should have_imeths :tests_to_run_count, :clear_tests_to_run
+    should have_imeths :tests_to_run?, :tests_to_run_count, :clear_tests_to_run
+    should have_imeths :find_test_to_run, :sorted_tests_to_run
     should have_imeths :run_time, :test_rate, :result_rate
     should have_imeths :test_count, :result_count, :pass_result_count
     should have_imeths :fail_result_count, :error_result_count
@@ -64,10 +64,11 @@ class Assert::Suite
     end
 
     should "not provide any tests-to-run implementations" do
-      assert_nil subject.tests_to_run
       assert_nil subject.tests_to_run?
       assert_nil subject.tests_to_run_count
       assert_nil subject.clear_tests_to_run
+      assert_nil subject.find_test_to_run(Factory.string)
+      assert_nil subject.sorted_tests_to_run{ }
     end
 
     should "know its run time and rates" do
