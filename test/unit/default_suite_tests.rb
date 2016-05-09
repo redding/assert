@@ -11,14 +11,14 @@ class Assert::DefaultSuite
       @config = Factory.modes_off_config
       @suite  = Assert::DefaultSuite.new(@config)
 
-      ci = Factory.context_info(Factory.modes_off_context_class)
+      ci = proc{ Factory.context_info(Factory.modes_off_context_class) }
       @tests = [
-        Factory.test("should nothing", ci){ },
-        Factory.test("should pass",    ci){ assert(1==1); refute(1==0) },
-        Factory.test("should fail",    ci){ ignore; assert(1==0); refute(1==1) },
-        Factory.test("should ignored", ci){ ignore },
-        Factory.test("should skip",    ci){ skip; ignore; assert(1==1) },
-        Factory.test("should error",   ci){ raise Exception; ignore; assert(1==1) }
+        Factory.test("should nothing", ci.call){ },
+        Factory.test("should pass",    ci.call){ assert(1==1); refute(1==0) },
+        Factory.test("should fail",    ci.call){ ignore; assert(1==0); refute(1==1) },
+        Factory.test("should ignore",  ci.call){ ignore },
+        Factory.test("should skip",    ci.call){ skip; ignore; assert(1==1) },
+        Factory.test("should error",   ci.call){ raise Exception; ignore; assert(1==1) }
       ]
       @tests.each{ |test| @suite.on_test(test) }
       @suite.tests.each(&:run)
@@ -33,16 +33,25 @@ class Assert::DefaultSuite
     end
 
     should "know its tests-to-run atts" do
-      assert_equal 6, subject.tests_to_run.size
-      assert_equal 6, subject.tests_to_run_count
-      assert_kind_of Assert::Test, subject.tests.first
+      assert_equal @tests.size, subject.tests_to_run_count
       assert_true subject.tests_to_run?
 
       subject.clear_tests_to_run
 
-      assert_equal 0, subject.tests_to_run.size
       assert_equal 0, subject.tests_to_run_count
       assert_false subject.tests_to_run?
+    end
+
+    should "find a test to run given a file line" do
+      test = @tests.sample
+      assert_same test, subject.find_test_to_run(test.file_line)
+    end
+
+    should "know its sorted tests to run" do
+      sorted_tests = subject.sorted_tests_to_run{ 1 }
+      assert_equal @tests.size, sorted_tests.size
+      assert_kind_of Assert::Test, sorted_tests.first
+      assert_same sorted_tests.first, subject.sorted_tests_to_run{ 1 }.first
     end
 
     should "default its test/result counts" do

@@ -36,10 +36,11 @@ module Assert
     end
     alias_method :shutdown, :teardown
 
-    def tests_to_run;       end
-    def tests_to_run?;      end
-    def tests_to_run_count; end
-    def clear_tests_to_run; end
+    def tests_to_run?;                      end
+    def tests_to_run_count;                 end
+    def clear_tests_to_run;                 end
+    def find_test_to_run(file_line);        end
+    def sorted_tests_to_run(&sort_by_proc); end
 
     def run_time
       @end_time - @start_time
