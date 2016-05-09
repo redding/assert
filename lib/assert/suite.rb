@@ -69,13 +69,6 @@ module Assert
     def ordered_tests_by_run_time;  end
     def reversed_tests_by_run_time; end
 
-    # Result data
-
-    def ordered_results;           end
-    def reversed_results;          end
-    def ordered_results_for_dump;  end
-    def reversed_results_for_dump; end
-
     # Callbacks
 
     # define callback handlers to do special behavior during the test run.  These

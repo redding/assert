@@ -51,6 +51,10 @@ module Assert::Result
     def backtrace; @backtrace ||= (@build_data[:backtrace] || Backtrace.new([]));           end
     def trace;     @trace     ||= (@build_data[:trace]     || build_trace(self.backtrace)); end
 
+    def file_line
+      @file_line ||= self.backtrace.filtered.first.to_s
+    end
+
     Assert::Result.types.keys.each do |type|
       define_method("#{type}?"){ self.type == type }
     end

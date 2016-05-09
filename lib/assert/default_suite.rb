@@ -55,27 +55,6 @@ module Assert
       self.ordered_tests_by_run_time.reverse
     end
 
-    def ordered_results
-      self.ordered_tests.inject([]){ |results, test| results += test.results }
-    end
-
-    def reversed_results
-      self.ordered_results.reverse
-    end
-
-    # dump failed or errored results,
-    # dump skipped or ignored results if they have a message
-    def ordered_results_for_dump
-      self.ordered_results.select do |result|
-        [:fail, :error].include?(result.to_sym) ||
-        !!([:skip, :ignore].include?(result.to_sym) && result.message)
-      end
-    end
-
-    def reversed_results_for_dump
-      self.ordered_results_for_dump.reverse
-    end
-
     # Callbacks
 
     def on_test(test)

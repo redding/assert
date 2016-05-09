@@ -185,30 +185,30 @@ module Assert::ViewHelpers
 
     should "know how to build ansi styled messages" do
       msg = Factory.string
-      result = [:pass, :fail, :error, :skip, :ignore].sample
+      result_type = [:pass, :fail, :error, :skip, :ignore].sample
 
       Assert.stub(subject, :is_tty?){ false }
       Assert.stub(subject, :styled){ false }
-      assert_equal msg, subject.ansi_styled_msg(msg, result)
+      assert_equal msg, subject.ansi_styled_msg(msg, result_type)
 
       Assert.stub(subject, :is_tty?){ false }
       Assert.stub(subject, :styled){ true }
-      assert_equal msg, subject.ansi_styled_msg(msg, result)
+      assert_equal msg, subject.ansi_styled_msg(msg, result_type)
 
       Assert.stub(subject, :is_tty?){ true }
       Assert.stub(subject, :styled){ false }
-      assert_equal msg, subject.ansi_styled_msg(msg, result)
+      assert_equal msg, subject.ansi_styled_msg(msg, result_type)
 
       Assert.stub(subject, :is_tty?){ true }
       Assert.stub(subject, :styled){ true }
-      Assert.stub(subject, "#{result}_styles"){ [] }
-      assert_equal msg, subject.ansi_styled_msg(msg, result)
+      Assert.stub(subject, "#{result_type}_styles"){ [] }
+      assert_equal msg, subject.ansi_styled_msg(msg, result_type)
 
       styles = Factory.integer(3).times.map{ Assert::ViewHelpers::Ansi::CODES.keys.sample }
-      Assert.stub(subject, "#{result}_styles"){ styles }
+      Assert.stub(subject, "#{result_type}_styles"){ styles }
       exp_code = Assert::ViewHelpers::Ansi.code_for(*styles)
       exp = exp_code + msg + Assert::ViewHelpers::Ansi.code_for(:reset)
-      assert_equal exp, subject.ansi_styled_msg(msg, result)
+      assert_equal exp, subject.ansi_styled_msg(msg, result_type)
     end
 
   end

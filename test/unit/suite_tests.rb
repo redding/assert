@@ -41,8 +41,6 @@ class Assert::Suite
     should have_imeths :skip_result_count, :ignore_result_count
     should have_imeths :ordered_tests, :reversed_tests
     should have_imeths :ordered_tests_by_run_time, :reversed_tests_by_run_time
-    should have_imeths :ordered_results, :reversed_results
-    should have_imeths :ordered_results_for_dump, :reversed_results_for_dump
     should have_imeths :before_load, :on_test, :after_load
     should have_imeths :on_start, :on_finish, :on_interrupt
     should have_imeths :before_test, :after_test, :on_result
@@ -101,11 +99,6 @@ class Assert::Suite
       assert_nil subject.reversed_tests
       assert_nil subject.ordered_tests_by_run_time
       assert_nil subject.reversed_tests_by_run_time
-
-      assert_nil subject.ordered_results
-      assert_nil subject.reversed_results
-      assert_nil subject.ordered_results_for_dump
-      assert_nil subject.reversed_results_for_dump
     end
 
     should "add setup procs" do
