@@ -38,24 +38,24 @@ module Assert::Result
     desc "Base"
     setup do
       @given_data = {
-        :type      => Factory.string,
-        :name      => Factory.string,
-        :test_name => Factory.string,
-        :test_id   => Factory.string,
-        :message   => Factory.string,
-        :output    => Factory.text,
-        :backtrace => Backtrace.new(caller),
-        :trace     => Factory.string
+        :type           => Factory.string,
+        :name           => Factory.string,
+        :test_name      => Factory.string,
+        :test_file_line => Factory.string,
+        :message        => Factory.string,
+        :output         => Factory.text,
+        :backtrace      => Backtrace.new(caller),
+        :trace          => Factory.string
       }
       @result = Base.new(@given_data)
     end
     subject{ @result }
 
     should have_cmeths :type, :name, :for_test
-    should have_imeths :type, :name, :test_name, :test_id
+    should have_imeths :type, :name, :test_name, :test_file_line, :test_id
     should have_imeths :message, :output, :backtrace, :trace, :file_line
     should have_imeths *Assert::Result.types.keys.map{ |k| "#{k}?" }
-    should have_imeths :set_backtrace, :data, :to_sym, :to_s
+    should have_imeths :set_backtrace, :to_sym, :to_s
 
     should "know its class-level type/name" do
       assert_equal :unknown, subject.class.type
@@ -79,14 +79,15 @@ module Assert::Result
     end
 
     should "use any given attrs" do
-      assert_equal @given_data[:type].to_sym, subject.type
-      assert_equal @given_data[:name],        subject.name
-      assert_equal @given_data[:test_name],   subject.test_name
-      assert_equal @given_data[:test_id],     subject.test_id
-      assert_equal @given_data[:message],     subject.message
-      assert_equal @given_data[:output],      subject.output
-      assert_equal @given_data[:backtrace],   subject.backtrace
-      assert_equal @given_data[:trace],       subject.trace
+      assert_equal @given_data[:type].to_sym,    subject.type
+      assert_equal @given_data[:name],           subject.name
+      assert_equal @given_data[:test_name],      subject.test_name
+      assert_equal @given_data[:test_file_line], subject.test_file_line
+      assert_equal @given_data[:test_file_line], subject.test_id
+      assert_equal @given_data[:message],        subject.message
+      assert_equal @given_data[:output],         subject.output
+      assert_equal @given_data[:backtrace],      subject.backtrace
+      assert_equal @given_data[:trace],          subject.trace
     end
 
     should "default its attrs" do
@@ -95,6 +96,7 @@ module Assert::Result
       assert_equal :unknown,          result.type
       assert_equal '',                result.name
       assert_equal '',                result.test_name
+      assert_equal '',                result.test_file_line
       assert_equal '',                result.test_id
       assert_equal '',                result.message
       assert_equal '',                result.output
@@ -124,20 +126,6 @@ module Assert::Result
 
       assert_equal exp_backtrace, subject.backtrace
       assert_equal exp_trace,     subject.trace
-    end
-
-    should "know its data" do
-      exp = {
-        :type      => subject.type,
-        :name      => subject.name,
-        :test_name => subject.test_name,
-        :test_id   => subject.test_id,
-        :message   => subject.message,
-        :output    => subject.output,
-        :backtrace => subject.backtrace,
-        :trace     => subject.trace,
-      }
-      assert_equal exp, subject.data
     end
 
     should "know its symbol representation" do

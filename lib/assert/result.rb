@@ -30,11 +30,11 @@ module Assert::Result
 
     def self.for_test(test, message, bt)
       self.new({
-        :test_name => test.name,
-        :test_id   => test.file_line.to_s,
-        :message   => message,
-        :output    => test.output,
-        :backtrace => Backtrace.new(bt)
+        :test_name      => test.name,
+        :test_file_line => test.file_line.to_s,
+        :message        => message,
+        :output         => test.output,
+        :backtrace      => Backtrace.new(bt)
       })
     end
 
@@ -42,14 +42,38 @@ module Assert::Result
       @build_data = build_data
     end
 
-    def type;      @type      ||= (@build_data[:type]      || self.class.type).to_sym;      end
-    def name;      @name      ||= (@build_data[:name]      || self.class.name.to_s);        end
-    def test_name; @test_name ||= (@build_data[:test_name] || '');                          end
-    def test_id;   @test_id   ||= (@build_data[:test_id]   || '');                          end
-    def message;   @message   ||= (@build_data[:message]   || '');                          end
-    def output;    @output    ||= (@build_data[:output]    || '');                          end
-    def backtrace; @backtrace ||= (@build_data[:backtrace] || Backtrace.new([]));           end
-    def trace;     @trace     ||= (@build_data[:trace]     || build_trace(self.backtrace)); end
+    def type
+      @type ||= (@build_data[:type] || self.class.type).to_sym
+    end
+
+    def name
+      @name ||= (@build_data[:name] || self.class.name.to_s)
+    end
+
+    def test_name
+      @test_name ||= (@build_data[:test_name] || '')
+    end
+
+    def test_file_line
+      @test_file_line ||= (@build_data[:test_file_line] || '')
+    end
+    alias_method :test_id, :test_file_line
+
+    def message
+      @message ||= (@build_data[:message] || '')
+    end
+
+    def output
+      @output ||= (@build_data[:output] || '')
+    end
+
+    def backtrace
+      @backtrace ||= (@build_data[:backtrace] || Backtrace.new([]))
+    end
+
+    def trace
+      @trace ||= (@build_data[:trace] || build_trace(self.backtrace))
+    end
 
     def file_line
       @file_line ||= self.backtrace.filtered.first.to_s
@@ -64,18 +88,6 @@ module Assert::Result
     def set_backtrace(bt)
       @backtrace = Backtrace.new(bt)
       @trace     = build_trace(@backtrace)
-    end
-
-    def data
-      { :type      => self.type,
-        :name      => self.name,
-        :test_name => self.test_name,
-        :test_id   => self.test_id,
-        :message   => self.message,
-        :output    => self.output,
-        :backtrace => self.backtrace,
-        :trace     => self.trace,
-      }
     end
 
     def to_sym; self.type; end
