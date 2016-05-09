@@ -18,6 +18,11 @@ module Assert
     option 'skip_styles',   :cyan
     option 'ignore_styles', :magenta
 
+    def initialize(*args)
+      super
+      @results_to_dump = []
+    end
+
     def before_load(test_files)
     end
 
@@ -37,7 +42,8 @@ module Assert
     end
 
     def on_result(result)
-      print ansi_styled_msg(self.send("#{result.to_sym}_abbrev"), result)
+      print ansi_styled_msg(self.send("#{result.to_sym}_abbrev"), result.type)
+      @results_to_dump << ResultData.for_result(result) if dumpable_result?(result)
     end
 
     def after_test(test)
@@ -65,8 +71,8 @@ module Assert
       end
 
       # style the summaries of each result set
-      styled_results_sentence = results_summary_sentence do |summary, result_sym|
-        ansi_styled_msg(summary, result_sym)
+      styled_results_sentence = results_summary_sentence do |summary, result_type|
+        ansi_styled_msg(summary, result_type)
       end
 
       puts "#{result_count_statement}: #{styled_results_sentence}"
@@ -82,24 +88,45 @@ module Assert
 
     private
 
+    def dumpable_result?(result)
+      [:fail, :error].include?(result.type) ||
+      !!([:skip, :ignore].include?(result.type) && result.message)
+    end
+
     def dump_test_results
       print "\n"
       puts
 
-      config.suite.reversed_results_for_dump.each do |result|
+      @results_to_dump.sort.each do |result_data|
         # output the styled result details
-        puts ansi_styled_msg(result.to_s, result)
+        puts ansi_styled_msg(result_data.details, result_data.type)
 
         # output any captured stdout
-        puts captured_output(result.output) if result.output && !result.output.empty?
+        if result_data.output && !result_data.output.empty?
+          puts captured_output(result_data.output)
+        end
 
         # output re-run CLI cmd
-        puts re_run_test_cmd(result.test_id)
+        puts re_run_test_cmd(result_data.test_id)
 
-        # add an empty line between each result detail
+        # add an empty line between each dumped result
         puts
       end
+    end
 
+    class ResultData < Struct.new(:type, :details, :output, :file_line, :test_id)
+      def self.for_result(r)
+        self.new(r.type, r.to_s, r.output, r.file_line, r.test_id)
+      end
+
+      def <=>(other_result_data)
+        # show in reverse definition order
+        if other_result_data.kind_of?(ResultData)
+          other_result_data.file_line <=> self.file_line
+        else
+          super
+        end
+      end
     end
 
   end

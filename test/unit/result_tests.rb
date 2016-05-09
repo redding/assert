@@ -53,7 +53,7 @@ module Assert::Result
 
     should have_cmeths :type, :name, :for_test
     should have_imeths :type, :name, :test_name, :test_id
-    should have_imeths :message, :output, :backtrace, :trace
+    should have_imeths :message, :output, :backtrace, :trace, :file_line
     should have_imeths *Assert::Result.types.keys.map{ |k| "#{k}?" }
     should have_imeths :set_backtrace, :data, :to_sym, :to_s
 
@@ -100,6 +100,11 @@ module Assert::Result
       assert_equal '',                result.output
       assert_equal Backtrace.new([]), result.backtrace
       assert_equal '',                result.trace
+    end
+
+    should "know its file line attr" do
+      exp = subject.backtrace.filtered.first.to_s
+      assert_equal exp, subject.file_line
     end
 
     should "know if it is a certain type of result" do

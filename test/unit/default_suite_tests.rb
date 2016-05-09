@@ -134,9 +134,6 @@ class Assert::DefaultSuite
       assert_equal subject.tests, subject.ordered_tests
       exp = subject.ordered_tests.sort{ |a, b| a.run_time <=> b.run_time }
       assert_equal exp, subject.ordered_tests_by_run_time
-
-      exp = subject.ordered_tests.inject([]){ |results, t| results += t.results }
-      assert_equal exp, subject.ordered_results
     end
 
   end

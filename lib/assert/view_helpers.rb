@@ -92,9 +92,9 @@ module Assert
       # generate a sentence fragment describing the breakdown of test results
       # if a block is given, yield each msg in the breakdown for custom formatting
       def results_summary_sentence
-        summaries = self.ocurring_result_types.map do |result_sym|
-          summary_msg = self.result_summary_msg(result_sym)
-          block_given? ? yield(summary_msg, result_sym) : summary_msg
+        summaries = self.ocurring_result_types.map do |result_type|
+          summary_msg = self.result_summary_msg(result_type)
+          block_given? ? yield(summary_msg, result_type) : summary_msg
         end
         self.to_sentence(summaries)
       end
@@ -188,9 +188,9 @@ module Assert
         style_names.map{ |n| "\e[#{CODES[n]}m" if CODES.key?(n) }.compact.join('')
       end
 
-      def ansi_styled_msg(msg, result_or_sym)
+      def ansi_styled_msg(msg, result_type)
         return msg if !self.is_tty? || !self.styled
-        code = Assert::ViewHelpers::Ansi.code_for(*self.send("#{result_or_sym.to_sym}_styles"))
+        code = Assert::ViewHelpers::Ansi.code_for(*self.send("#{result_type}_styles"))
         return msg if code.empty?
         code + msg + Assert::ViewHelpers::Ansi.code_for(:reset)
       end
