@@ -33,13 +33,16 @@ class Assert::Suite
     should have_readers :config, :test_methods, :setups, :teardowns
     should have_accessors :start_time, :end_time
     should have_imeths :suite, :setup, :startup, :teardown, :shutdown
-    should have_imeths :run_time, :test_rate, :result_rate, :count
+    should have_imeths :tests_to_run, :tests_to_run?
+    should have_imeths :tests_to_run_count, :clear_tests_to_run
+    should have_imeths :run_time, :test_rate, :result_rate
+    should have_imeths :test_count, :result_count, :pass_result_count
+    should have_imeths :fail_result_count, :error_result_count
+    should have_imeths :skip_result_count, :ignore_result_count
     should have_imeths :ordered_tests, :reversed_tests
     should have_imeths :ordered_tests_by_run_time, :reversed_tests_by_run_time
-    should have_imeths :test_count
     should have_imeths :ordered_results, :reversed_results
     should have_imeths :ordered_results_for_dump, :reversed_results_for_dump
-    should have_imeths :result_count
     should have_imeths :before_load, :on_test, :after_load
     should have_imeths :on_start, :on_finish, :on_interrupt
     should have_imeths :before_test, :after_test, :on_result
@@ -83,18 +86,25 @@ class Assert::Suite
       assert_equal (subject.result_count / subject.run_time), subject.result_rate
     end
 
+    should "not provide any test/result count implementations" do
+      assert_nil subject.test_count
+      assert_nil subject.pass_result_count
+      assert_nil subject.fail_result_count
+      assert_nil subject.error_result_count
+      assert_nil subject.skip_result_count
+      assert_nil subject.ignore_result_count
+    end
+
     should "not provide any test or result attrs" do
       assert_nil subject.ordered_tests
       assert_nil subject.reversed_tests
       assert_nil subject.ordered_tests_by_run_time
       assert_nil subject.reversed_tests_by_run_time
-      assert_nil subject.test_count
 
       assert_nil subject.ordered_results
       assert_nil subject.reversed_results
       assert_nil subject.ordered_results_for_dump
       assert_nil subject.reversed_results_for_dump
-      assert_nil subject.result_count
     end
 
     should "add setup procs" do

@@ -56,9 +56,8 @@ module Assert
         "#{self.tests_to_run_count} test#{'s' if self.tests_to_run_count != 1}"
       end
 
-      # TODO: remove `count` method
       def result_count_statement
-        "#{self.count(:results)} result#{'s' if self.count(:results) != 1}"
+        "#{self.result_count} result#{'s' if self.result_count != 1}"
       end
 
       # generate a comma-seperated sentence fragment given a list of items
@@ -72,9 +71,9 @@ module Assert
 
       # generate an appropriate result summary msg for all tests passing
       def all_pass_result_summary_msg
-        if self.count(:results) < 1
+        if self.result_count < 1
           "uhh..."
-        elsif self.count(:results) == 1
+        elsif self.result_count == 1
           "pass"
         else
           "all pass"
@@ -86,7 +85,7 @@ module Assert
         if result_type == :pass && self.all_pass?
           self.all_pass_result_summary_msg
         else
-          "#{self.count(result_type)} #{result_type.to_s}"
+          "#{self.send("#{result_type}_result_count")} #{result_type}"
         end
       end
 

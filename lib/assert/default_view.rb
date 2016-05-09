@@ -49,7 +49,7 @@ module Assert
     end
 
     def on_finish
-      if tests?
+      if self.test_count > 0
         dump_test_results
       end
 
