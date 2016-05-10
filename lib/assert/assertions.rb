@@ -264,6 +264,12 @@ module Assert
       end
     end
 
+    private
+
+    def __assert_config__
+      raise NotImplementedError # should be defined by the config mixing this in
+    end
+
     # exception raised utility classes
 
     class CheckException
