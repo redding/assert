@@ -28,18 +28,6 @@ module Assert
 
     module InstanceMethods
 
-      # TODO: get from the suite as test won't store this data
-      # get the formatted run time for an idividual test
-      def test_run_time(test, format = '%.6f')
-        format % test.run_time
-      end
-
-      # TODO: get from the suite as test won't store this data
-      # get the formatted result rate for an individual test
-      def test_result_rate(test, format = '%.6f')
-        format % test.result_rate
-      end
-
       # show any captured output
       def captured_output(output)
         "--- stdout ---\n"\

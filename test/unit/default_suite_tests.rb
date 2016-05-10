@@ -126,16 +126,6 @@ class Assert::DefaultSuite
       assert_equal 0, subject.pass_result_count
     end
 
-    # TODO: move to the view as only needed for view presentation purposes
-    should "know its test and result attrs" do
-      assert_equal 6, subject.tests.size
-      assert_kind_of Assert::Test, subject.tests.first
-
-      assert_equal subject.tests, subject.ordered_tests
-      exp = subject.ordered_tests.sort{ |a, b| a.run_time <=> b.run_time }
-      assert_equal exp, subject.ordered_tests_by_run_time
-    end
-
   end
 
 end

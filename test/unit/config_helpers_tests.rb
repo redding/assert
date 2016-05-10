@@ -29,6 +29,8 @@ module Assert::ConfigHelpers
     should have_imeths :skip_result_count, :ignore_result_count
     should have_imeths :all_pass?, :formatted_run_time
     should have_imeths :formatted_test_rate, :formatted_result_rate
+    should have_imeths :formatted_suite_run_time
+    should have_imeths :formatted_suite_test_rate, :formatted_suite_result_rate
     should have_imeths :show_test_profile_info?, :show_test_verbose_info?
     should have_imeths :ocurring_result_types
 
@@ -99,14 +101,33 @@ module Assert::ConfigHelpers
     should "know its formatted run time, test rate and result rate" do
       format = '%.6f'
 
+      run_time = Factory.float
+      exp = format % run_time
+      assert_equal exp, subject.formatted_run_time(run_time, format)
+      assert_equal exp, subject.formatted_run_time(run_time)
+
+      test_rate = Factory.float
+      exp = format % test_rate
+      assert_equal exp, subject.formatted_result_rate(test_rate, format)
+      assert_equal exp, subject.formatted_result_rate(test_rate)
+
+      result_rate = Factory.float
+      exp = format % result_rate
+      assert_equal exp, subject.formatted_result_rate(result_rate, format)
+      assert_equal exp, subject.formatted_result_rate(result_rate)
+    end
+
+    should "know its formatted suite run time, test rate and result rate" do
+      format = '%.6f'
+
       exp = format % subject.config.suite.run_time
-      assert_equal exp, subject.formatted_run_time(format)
+      assert_equal exp, subject.formatted_suite_run_time(format)
 
       exp = format % subject.config.suite.test_rate
-      assert_equal exp, subject.formatted_test_rate(format)
+      assert_equal exp, subject.formatted_suite_test_rate(format)
 
       exp = format % subject.config.suite.result_rate
-      assert_equal exp, subject.formatted_result_rate(format)
+      assert_equal exp, subject.formatted_suite_result_rate(format)
     end
 
     should "know whether to show test profile info" do

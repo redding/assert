@@ -36,25 +36,6 @@ module Assert
     def skip_result_count;   @skip_result_count;   end
     def ignore_result_count; @ignore_result_count; end
 
-    # TODO: move all these ordered methods to the view as it is only needed by
-    # the view for presentation purposes
-
-    def ordered_tests
-      self.tests
-    end
-
-    def reversed_tests
-      self.tests.reverse
-    end
-
-    def ordered_tests_by_run_time
-      self.ordered_tests.sort{ |a, b| a.run_time <=> b.run_time }
-    end
-
-    def reversed_tests_by_run_time
-      self.ordered_tests_by_run_time.reverse
-    end
-
     # Callbacks
 
     def on_test(test)

@@ -20,7 +20,7 @@ module Assert
 
     def initialize(*args)
       super
-      @results_to_dump = []
+      reset_run_data
     end
 
     def before_load(test_files)
@@ -31,12 +31,14 @@ module Assert
     end
 
     def on_start
+      reset_run_data
     end
 
     def before_test(test)
-      if show_test_verbose_info?
-        puts  "#{test.name.inspect} (#{test.context_class})"
-        puts  "    #{test.file_line}"
+      if accumulate_test_data?
+        test_data = get_test_data(test)
+        puts  "#{test_data.name.inspect} (#{test_data.context})"
+        puts  "    #{test_data.file_line}"
         print "    "
       end
     end
@@ -44,13 +46,22 @@ module Assert
     def on_result(result)
       print ansi_styled_msg(self.send("#{result.to_sym}_abbrev"), result.type)
       @results_to_dump << ResultData.for_result(result) if dumpable_result?(result)
+      if accumulate_test_data?
+        find_test_data(result.test_file_line).result_count += 1
+      end
     end
 
     def after_test(test)
-      if show_test_verbose_info?
-        print " #{test_run_time(test)} seconds,"\
-              " #{test.result_count} results,"\
-              " #{test_result_rate(test)} results/s\n"
+      if accumulate_test_data?
+        test_data = find_test_data(test.file_line)
+        test_data.run_time    = test.run_time
+        test_data.result_rate = get_rate(test_data.result_count, test_data.run_time)
+
+        if show_test_verbose_info?
+          print " #{formatted_run_time(test_data.run_time)} seconds,"\
+                " #{test_data.result_count} results,"\
+                " #{formatted_result_rate(test_data.result_rate)} results/s\n"
+        end
       end
     end
 
@@ -61,11 +72,12 @@ module Assert
 
       # show profile output
       if show_test_profile_info?
-        config.suite.ordered_tests_by_run_time.each do |test|
-          puts "#{test_run_time(test)} seconds,"\
-               " #{test.result_count} results,"\
-               " #{test_result_rate(test)} results/s --"\
-               " #{test.context_class}: #{test.name.inspect}"
+        # sort the test datas fastest to slowest
+        @test_datas.values.sort{ |a, b| a.run_time <=> b.run_time }.each do |test_data|
+          puts "#{formatted_run_time(test_data.run_time)} seconds,"\
+               " #{test_data.result_count} results,"\
+               " #{formatted_result_rate(test_data.result_rate)} results/s --"\
+               " #{test_data.context}: #{test_data.name.inspect}"
         end
         puts
       end
@@ -77,9 +89,9 @@ module Assert
 
       puts "#{result_count_statement}: #{styled_results_sentence}"
       puts
-      puts "(#{formatted_run_time} seconds, " \
-           "#{formatted_test_rate} tests/s, " \
-           "#{formatted_result_rate} results/s)"
+      puts "(#{formatted_suite_run_time} seconds, " \
+           "#{formatted_suite_test_rate} tests/s, " \
+           "#{formatted_suite_result_rate} results/s)"
     end
 
     def on_interrupt(err)
@@ -87,6 +99,18 @@ module Assert
     end
 
     private
+
+    def accumulate_test_data?
+      show_test_verbose_info? || show_test_profile_info?
+    end
+
+    def get_test_data(test)
+      @test_datas[test.file_line.to_s] ||= TestData.for_test(test)
+    end
+
+    def find_test_data(test_file_line)
+      @test_datas[test_file_line.to_s]
+    end
 
     def dumpable_result?(result)
       [:fail, :error].include?(result.type) ||
@@ -114,7 +138,20 @@ module Assert
       end
     end
 
-    class ResultData < Struct.new(:type, :details, :output, :file_line, :test_id)
+    def reset_run_data
+      @results_to_dump = []
+      @test_datas      = {}
+    end
+
+    attrs = [:name, :context, :file_line, :result_count, :run_time, :result_rate]
+    class TestData < Struct.new(*attrs)
+      def self.for_test(t)
+        self.new(t.name, t.context_class, t.file_line.to_s, 0, 0.0, 0.0)
+      end
+    end
+
+    attrs = [:type, :details, :output, :file_line, :test_id]
+    class ResultData < Struct.new(*attrs)
       def self.for_result(r)
         self.new(r.type, r.to_s, r.output, r.file_line, r.test_id)
       end
