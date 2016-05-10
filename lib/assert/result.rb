@@ -1,3 +1,5 @@
+require 'assert/file_line'
+
 module Assert; end
 module Assert::Result
 
@@ -76,8 +78,11 @@ module Assert::Result
     end
 
     def file_line
-      @file_line ||= self.backtrace.filtered.first.to_s
+      @file_line ||= Assert::FileLine.parse(self.backtrace.filtered.first.to_s)
     end
+
+    def file_name; self.file_line.file;      end
+    def line_num;  self.file_line.line.to_i; end
 
     Assert::Result.types.keys.each do |type|
       define_method("#{type}?"){ self.type == type }
