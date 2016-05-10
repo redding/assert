@@ -8,50 +8,16 @@ class Assert::DefaultSuite
   class UnitTests < Assert::Context
     desc "Assert::DefaultSuite"
     setup do
+      ci = Factory.context_info(Factory.modes_off_context_class)
+      @test = Factory.test(Factory.string, ci){ }
+
       @config = Factory.modes_off_config
       @suite  = Assert::DefaultSuite.new(@config)
-
-      ci = proc{ Factory.context_info(Factory.modes_off_context_class) }
-      @tests = [
-        Factory.test("should nothing", ci.call){ },
-        Factory.test("should pass",    ci.call){ assert(1==1); refute(1==0) },
-        Factory.test("should fail",    ci.call){ ignore; assert(1==0); refute(1==1) },
-        Factory.test("should ignore",  ci.call){ ignore },
-        Factory.test("should skip",    ci.call){ skip; ignore; assert(1==1) },
-        Factory.test("should error",   ci.call){ raise Exception; ignore; assert(1==1) }
-      ]
-      @tests.each{ |test| @suite.on_test(test) }
-      @suite.tests.each(&:run)
     end
     subject{ @suite }
 
-    # TODO: remove once ordered methods are moved to the view
-    should have_readers :tests
-
     should "be a Suite" do
       assert_kind_of Assert::Suite, subject
-    end
-
-    should "know its tests-to-run atts" do
-      assert_equal @tests.size, subject.tests_to_run_count
-      assert_true subject.tests_to_run?
-
-      subject.clear_tests_to_run
-
-      assert_equal 0, subject.tests_to_run_count
-      assert_false subject.tests_to_run?
-    end
-
-    should "find a test to run given a file line" do
-      test = @tests.sample
-      assert_same test, subject.find_test_to_run(test.file_line)
-    end
-
-    should "know its sorted tests to run" do
-      sorted_tests = subject.sorted_tests_to_run{ 1 }
-      assert_equal @tests.size, sorted_tests.size
-      assert_kind_of Assert::Test, sorted_tests.first
-      assert_same sorted_tests.first, subject.sorted_tests_to_run{ 1 }.first
     end
 
     should "default its test/result counts" do
@@ -65,7 +31,7 @@ class Assert::DefaultSuite
     end
 
     should "increment its test count on `before_test`" do
-      subject.before_test(@tests.sample)
+      subject.before_test(@test)
       assert_equal 1, subject.test_count
     end
 
@@ -112,7 +78,7 @@ class Assert::DefaultSuite
     end
 
     should "clear the run data on `on_start`" do
-      subject.before_test(@tests.sample)
+      subject.before_test(@test)
       subject.on_result(Factory.pass_result)
 
       assert_equal 1, subject.test_count

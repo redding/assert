@@ -114,7 +114,7 @@ class Assert::Runner
       assert_includes exp, @view_output
 
       @view_output.gsub!(/./, '')
-      @config.suite.tests.clear
+      @config.suite.clear_tests_to_run
       subject.run
       assert_not_includes exp, @view_output
     end
