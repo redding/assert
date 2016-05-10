@@ -12,7 +12,11 @@ class Assert::Context
       @test = Factory.test
       @context_class = @test.context_class
       @callback_result = nil
-      @result_callback = proc{ |result| @callback_result = result }
+      @test_results = []
+      @result_callback = proc do |result|
+        @callback_result = result
+        @test_results << result
+      end
       @context = @context_class.new(@test, @test.config, @result_callback)
     end
     subject{ @context }
@@ -32,9 +36,9 @@ class Assert::Context
     should have_imeths :with_backtrace, :subject
 
     def test_should_collect_context_info
-      this = @__running_test__
-      assert_match /test\/unit\/context_tests.rb$/, this.context_info.file
-      assert_equal self.class, this.context_info.klass
+      test = @__assert_running_test__
+      assert_match /test\/unit\/context_tests.rb$/, test.context_info.file
+      assert_equal self.class, test.context_info.klass
     end
 
   end
@@ -275,7 +279,7 @@ class Assert::Context
     desc "with_backtrace method"
     setup do
       @from_bt = ['called_from_here']
-      @from_block = proc { ignore; fail; pass; skip 'todo' }
+      @from_block = proc { ignore; fail; pass; skip 'todo'; }
     end
 
     should "replace the fail results from the block with the given backtrace" do
@@ -283,11 +287,11 @@ class Assert::Context
       begin
         @context.with_backtrace(@from_bt, &@from_block)
       rescue Assert::Result::TestSkipped => e
-        @test.results << Assert::Result::Skip.for_test(@test, e)
+        @test_results << Assert::Result::Skip.for_test(@test, e)
       end
 
-      assert_equal 5, @test.results.size
-      norm_fail, with_ignore, with_fail, with_pass, with_skip = @test.results
+      assert_equal 5, @test_results.size
+      norm_fail, with_ignore, with_fail, with_pass, with_skip = @test_results
 
       assert_not_equal @from_bt, norm_fail.backtrace
       assert_equal @from_bt, with_ignore.backtrace
