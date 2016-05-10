@@ -1,6 +1,8 @@
 require 'assert'
 require 'assert/result'
 
+require 'assert/file_line'
+
 module Assert::Result
 
   class UnitTests < Assert::Context
@@ -53,7 +55,8 @@ module Assert::Result
 
     should have_cmeths :type, :name, :for_test
     should have_imeths :type, :name, :test_name, :test_file_line, :test_id
-    should have_imeths :message, :output, :backtrace, :trace, :file_line
+    should have_imeths :message, :output, :backtrace, :trace
+    should have_imeths :file_line, :file_name, :line_num
     should have_imeths *Assert::Result.types.keys.map{ |k| "#{k}?" }
     should have_imeths :set_backtrace, :to_sym, :to_s
 
@@ -104,9 +107,11 @@ module Assert::Result
       assert_equal '',                result.trace
     end
 
-    should "know its file line attr" do
-      exp = subject.backtrace.filtered.first.to_s
-      assert_equal exp, subject.file_line
+    should "know its file line attrs" do
+      exp = Assert::FileLine.parse(subject.backtrace.filtered.first.to_s)
+      assert_equal exp,           subject.file_line
+      assert_equal exp.file,      subject.file_name
+      assert_equal exp.line.to_i, subject.line_num
     end
 
     should "know if it is a certain type of result" do
