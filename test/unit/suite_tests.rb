@@ -59,12 +59,13 @@ class Assert::Suite
       assert_equal subject, subject.suite
     end
 
-    should "not provide any tests-to-run implementations" do
-      assert_nil subject.tests_to_run?
-      assert_nil subject.tests_to_run_count
-      assert_nil subject.clear_tests_to_run
-      assert_nil subject.find_test_to_run(Factory.string)
-      assert_nil subject.sorted_tests_to_run{ }
+    should "not provide any test/result count implementations" do
+      assert_nil subject.test_count
+      assert_nil subject.pass_result_count
+      assert_nil subject.fail_result_count
+      assert_nil subject.error_result_count
+      assert_nil subject.skip_result_count
+      assert_nil subject.ignore_result_count
     end
 
     should "know its run time and rates" do
@@ -81,15 +82,6 @@ class Assert::Suite
       assert_equal time, subject.run_time
       assert_equal (subject.test_count / subject.run_time),   subject.test_rate
       assert_equal (subject.result_count / subject.run_time), subject.result_rate
-    end
-
-    should "not provide any test/result count implementations" do
-      assert_nil subject.test_count
-      assert_nil subject.pass_result_count
-      assert_nil subject.fail_result_count
-      assert_nil subject.error_result_count
-      assert_nil subject.skip_result_count
-      assert_nil subject.ignore_result_count
     end
 
     should "add setup procs" do
@@ -110,6 +102,45 @@ class Assert::Suite
       assert_equal 2, subject.teardowns.count
       subject.teardowns.each(&:call)
       assert_equal "teardowns have been run", status
+    end
+
+  end
+
+  class WithTestsLoadedTests < InitTests
+    desc "with tests loaded"
+    setup do
+      ci = proc{ Factory.context_info(Factory.modes_off_context_class) }
+      @tests = [
+        Factory.test("should nothing", ci.call){ },
+        Factory.test("should pass",    ci.call){ assert(1==1); refute(1==0) },
+        Factory.test("should fail",    ci.call){ ignore; assert(1==0); refute(1==1) },
+        Factory.test("should ignore",  ci.call){ ignore },
+        Factory.test("should skip",    ci.call){ skip; ignore; assert(1==1) },
+        Factory.test("should error",   ci.call){ raise Exception; ignore; assert(1==1) }
+      ]
+      @tests.each{ |test| @suite.on_test(test) }
+    end
+
+    should "know its tests-to-run attrs" do
+      assert_equal @tests.size, subject.tests_to_run_count
+      assert_true subject.tests_to_run?
+
+      subject.clear_tests_to_run
+
+      assert_equal 0, subject.tests_to_run_count
+      assert_false subject.tests_to_run?
+    end
+
+    should "find a test to run given a file line" do
+      test = @tests.sample
+      assert_same test, subject.find_test_to_run(test.file_line)
+    end
+
+    should "know its sorted tests to run" do
+      sorted_tests = subject.sorted_tests_to_run{ 1 }
+      assert_equal @tests.size, sorted_tests.size
+      assert_kind_of Assert::Test, sorted_tests.first
+      assert_same sorted_tests.first, subject.sorted_tests_to_run{ 1 }.first
     end
 
   end

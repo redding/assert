@@ -2,30 +2,15 @@ require 'assert/suite'
 
 module Assert
 
-  # TODO: make this comment/description more accurate once accumulation work done
-  # This is the default suite used by assert.  It stores test/result data in-memory.
+  # This is the default suite used by assert. In addition to the base suite
+  # behavior, it accumulates test/result counts in memory.  This data is used
+  # by the runner/view for handling and presentation purposes.
 
   class DefaultSuite < Assert::Suite
 
-    # TODO: remove once ordered methods are moved to the view
-    attr_reader :tests
-
     def initialize(config)
       super
-      @tests = []
       reset_run_data
-    end
-
-    def tests_to_run?;      @tests.size > 0; end
-    def tests_to_run_count; @tests.size;     end
-    def clear_tests_to_run; @tests.clear;    end
-
-    def find_test_to_run(file_line)
-      @tests.find{ |t| t.file_line == file_line }
-    end
-
-    def sorted_tests_to_run(&sort_by_proc)
-      @tests.sort.sort_by(&sort_by_proc)
     end
 
     def test_count;          @test_count;          end
@@ -37,10 +22,6 @@ module Assert
     def ignore_result_count; @ignore_result_count; end
 
     # Callbacks
-
-    def on_test(test)
-      @tests << test
-    end
 
     def on_start
       reset_run_data
