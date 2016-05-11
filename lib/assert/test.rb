@@ -67,15 +67,6 @@ module Assert
       @code ||= @build_data[:code]
     end
 
-    def data
-      # TODO: remove this - still needed?
-      { :file_line => self.file_line.to_s,
-        :name      => self.name.to_s,
-        :output    => self.output.to_s,
-        :run_time  => self.run_time
-      }
-    end
-
     def context_class; self.context_info.klass; end
 
     # TODO: maybe cleanup capture to simplify and not need so many layers?

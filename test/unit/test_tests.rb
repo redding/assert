@@ -92,7 +92,7 @@ class Assert::Test
 
     should have_readers :file_line, :name, :output, :run_time
     should have_readers :context_info, :config, :code
-    should have_imeths :data, :context_class, :file, :line_number
+    should have_imeths :context_class, :file, :line_number
     should have_imeths :capture_result, :run
 
     should "use any given attrs" do
@@ -117,10 +117,6 @@ class Assert::Test
       assert_nil test.context_info
       assert_nil test.config
       assert_nil test.code
-    end
-
-    should "know its data hash" do
-      assert_equal @meta_data, subject.data
     end
 
     should "know its context class" do
