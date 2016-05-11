@@ -6,6 +6,8 @@ require 'assert/utils'
 module Assert::Assertions
 
   class AssertEqualTests < Assert::Context
+    include Assert::Test::TestHelpers
+
     desc "`assert_equal`"
     setup do
       desc = @desc = "assert equal fail desc"
@@ -15,25 +17,27 @@ module Assert::Assertions
         assert_equal(*a)   # fail
       end
       @c = @test.config
-      @test.run
+      @test.run(&test_run_callback)
     end
     subject{ @test }
 
     should "produce results as expected" do
-      assert_equal 2, subject.result_count
-      assert_equal 1, subject.result_count(:pass)
-      assert_equal 1, subject.result_count(:fail)
+      assert_equal 2, test_run_result_count
+      assert_equal 1, test_run_result_count(:pass)
+      assert_equal 1, test_run_result_count(:fail)
     end
 
     should "have a fail message with custom and generic explanations" do
       exp = "#{@a[2]}\nExpected #{Assert::U.show(@a[1], @c)}"\
             " to be equal to #{Assert::U.show(@a[0], @c)}."
-      assert_equal exp, subject.fail_results.first.message
+      assert_equal exp, test_run_results(:fail).first.message
     end
 
   end
 
   class AssertNotEqualTests < Assert::Context
+    include Assert::Test::TestHelpers
+
     desc "`assert_not_equal`"
     setup do
       desc = @desc = "assert not equal fail desc"
@@ -43,25 +47,27 @@ module Assert::Assertions
         assert_not_equal(1, 2) # pass
       end
       @c = @test.config
-      @test.run
+      @test.run(&test_run_callback)
     end
     subject{ @test }
 
     should "produce results as expected" do
-      assert_equal 2, subject.result_count
-      assert_equal 1, subject.result_count(:pass)
-      assert_equal 1, subject.result_count(:fail)
+      assert_equal 2, test_run_result_count
+      assert_equal 1, test_run_result_count(:pass)
+      assert_equal 1, test_run_result_count(:fail)
     end
 
     should "have a fail message with custom and generic explanations" do
       exp = "#{@a[2]}\nExpected #{Assert::U.show(@a[1], @c)}"\
             " to not be equal to #{Assert::U.show(@a[0], @c)}."
-      assert_equal exp, subject.fail_results.first.message
+      assert_equal exp, test_run_results(:fail).first.message
     end
 
   end
 
   class EqualOrderTests < Assert::Context
+    include Assert::Test::TestHelpers
+
     desc "with objects that define custom equality operators"
     setup do
       is_class = Class.new do
@@ -83,6 +89,8 @@ module Assert::Assertions
   end
 
   class DiffTests < Assert::Context
+    include Assert::Test::TestHelpers
+
     desc "with objects that should use diff when showing"
     setup do
       @exp_obj = "I'm a\nstring"
@@ -105,14 +113,14 @@ module Assert::Assertions
       @test = Factory.test(@c) do
         assert_equal(exp_obj, act_obj)
       end
-      @test.run
+      @test.run(&test_run_callback)
     end
     subject{ @test }
 
     should "include diff output in the fail messages" do
       exp = "Expected does not equal actual, diff:\n"\
             "#{Assert::U.syscmd_diff_proc.call(@exp_obj_show, @act_obj_show)}"
-      assert_equal exp, subject.fail_results.first.message
+      assert_equal exp, test_run_results(:fail).first.message
     end
 
   end
@@ -124,14 +132,14 @@ module Assert::Assertions
       @test = Factory.test(@c) do
         assert_not_equal(exp_obj, exp_obj)
       end
-      @test.run
+      @test.run(&test_run_callback)
     end
     subject{ @test }
 
     should "include diff output in the fail messages" do
       exp = "Expected equals actual, diff:\n"\
             "#{Assert::U.syscmd_diff_proc.call(@exp_obj_show, @exp_obj_show)}"
-      assert_equal exp, subject.fail_results.first.message
+      assert_equal exp, test_run_results(:fail).first.message
     end
 
   end

@@ -6,6 +6,8 @@ require 'assert/utils'
 module Assert::Assertions
 
   class AssertTrueTests < Assert::Context
+    include Assert::Test::TestHelpers
+
     desc "`assert_true`"
     setup do
       desc = @desc = "assert true fail desc"
@@ -15,24 +17,26 @@ module Assert::Assertions
         assert_true(*args) # fail
       end
       @c = @test.config
-      @test.run
+      @test.run(&test_run_callback)
     end
     subject{ @test }
 
     should "produce results as expected" do
-      assert_equal 2, subject.result_count
-      assert_equal 1, subject.result_count(:pass)
-      assert_equal 1, subject.result_count(:fail)
+      assert_equal 2, test_run_result_count
+      assert_equal 1, test_run_result_count(:pass)
+      assert_equal 1, test_run_result_count(:fail)
     end
 
     should "have a fail message with custom and generic explanations" do
       exp = "#{@args[1]}\nExpected #{Assert::U.show(@args[0], @c)} to be true."
-      assert_equal exp, subject.fail_results.first.message
+      assert_equal exp, test_run_results(:fail).first.message
     end
 
   end
 
   class AssertNotTrueTests < Assert::Context
+    include Assert::Test::TestHelpers
+
     desc "`assert_not_true`"
     setup do
       desc = @desc = "assert not true fail desc"
@@ -42,24 +46,26 @@ module Assert::Assertions
         assert_not_true(*args) # fail
       end
       @c = @test.config
-      @test.run
+      @test.run(&test_run_callback)
     end
     subject{ @test }
 
     should "produce results as expected" do
-      assert_equal 2, subject.result_count
-      assert_equal 1, subject.result_count(:pass)
-      assert_equal 1, subject.result_count(:fail)
+      assert_equal 2, test_run_result_count
+      assert_equal 1, test_run_result_count(:pass)
+      assert_equal 1, test_run_result_count(:fail)
     end
 
     should "have a fail message with custom and generic explanations" do
       exp = "#{@args[1]}\nExpected #{Assert::U.show(@args[0], @c)} to not be true."
-      assert_equal exp, subject.fail_results.first.message
+      assert_equal exp, test_run_results(:fail).first.message
     end
 
   end
 
   class AssertFalseTests < Assert::Context
+    include Assert::Test::TestHelpers
+
     desc "`assert_false`"
     setup do
       desc = @desc = "assert false fail desc"
@@ -69,24 +75,26 @@ module Assert::Assertions
         assert_false(*args) # fail
       end
       @c = @test.config
-      @test.run
+      @test.run(&test_run_callback)
     end
     subject{ @test }
 
     should "produce results as expected" do
-      assert_equal 2, subject.result_count
-      assert_equal 1, subject.result_count(:pass)
-      assert_equal 1, subject.result_count(:fail)
+      assert_equal 2, test_run_result_count
+      assert_equal 1, test_run_result_count(:pass)
+      assert_equal 1, test_run_result_count(:fail)
     end
 
     should "have a fail message with custom and generic explanations" do
       exp = "#{@args[1]}\nExpected #{Assert::U.show(@args[0], @c)} to be false."
-      assert_equal exp, subject.fail_results.first.message
+      assert_equal exp, test_run_results(:fail).first.message
     end
 
   end
 
   class AssertNotFalseTests < Assert::Context
+    include Assert::Test::TestHelpers
+
     desc "`assert_not_false`"
     setup do
       desc = @desc = "assert not false fail desc"
@@ -96,19 +104,19 @@ module Assert::Assertions
         assert_not_false(*args) # fail
       end
       @c = @test.config
-      @test.run
+      @test.run(&test_run_callback)
     end
     subject{ @test }
 
     should "produce results as expected" do
-      assert_equal 2, subject.result_count
-      assert_equal 1, subject.result_count(:pass)
-      assert_equal 1, subject.result_count(:fail)
+      assert_equal 2, test_run_result_count
+      assert_equal 1, test_run_result_count(:pass)
+      assert_equal 1, test_run_result_count(:fail)
     end
 
     should "have a fail message with custom and generic explanations" do
       exp = "#{@args[1]}\nExpected #{Assert::U.show(@args[0], @c)} to not be false."
-      assert_equal exp, subject.fail_results.first.message
+      assert_equal exp, test_run_results(:fail).first.message
     end
 
   end
