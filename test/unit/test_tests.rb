@@ -264,21 +264,63 @@ class Assert::Test
 
   end
 
-  class SkipHandlingTests < UnitTests
-    setup do
-      @test = Factory.test("skip test", @context_info){ skip }
-      @test.run
+  class FailHandlingTests < UnitTests
+    include Assert::Test::TestHelpers
+
+    desc "when in halt-on-fail mode"
+
+    should "capture fail results" do
+      test = Factory.test("halt-on-fail test", @context_info) do
+        raise Assert::Result::TestFailure
+      end
+      test.run(&test_run_callback)
+
+      assert_failed(test)
     end
-    subject{ @test }
+
+    should "capture fails in the context setup" do
+      test = Factory.test("setup halt-on-fail test", @context_info){ }
+      test.context_class.setup{ raise Assert::Result::TestFailure }
+      test.run(&test_run_callback)
+
+      assert_failed(test)
+    end
+
+    should "capture fails in the context teardown" do
+      test = Factory.test("teardown halt-on-fail test", @context_info){ }
+      test.context_class.teardown{ raise Assert::Result::TestFailure }
+      test.run(&test_run_callback)
+
+      assert_failed(test)
+    end
+
+    private
+
+    def assert_failed(test)
+      with_backtrace(caller) do
+        assert_equal 1, test_run_result_count, 'too many/few fail results'
+        test_run_results.each do |result|
+          assert_kind_of Assert::Result::Fail, result, 'not a fail result'
+        end
+      end
+    end
+
+  end
+
+  class SkipHandlingTests < UnitTests
+    include Assert::Test::TestHelpers
 
     should "capture skip results" do
-      assert_skipped(subject)
+      test = Factory.test("skip test", @context_info){ skip }
+      test.run(&test_run_callback)
+
+      assert_skipped(test)
     end
 
     should "capture skips in the context setup" do
       test = Factory.test("setup skip test", @context_info){ }
       test.context_class.setup{ skip }
-      test.run
+      test.run(&test_run_callback)
 
       assert_skipped(test)
     end
@@ -286,7 +328,7 @@ class Assert::Test
     should "capture skips in the context teardown" do
       test = Factory.test("teardown skip test", @context_info){ }
       test.context_class.teardown{ skip }
-      test.run
+      test.run(&test_run_callback)
 
       assert_skipped(test)
     end
@@ -295,33 +337,31 @@ class Assert::Test
 
     def assert_skipped(test)
       with_backtrace(caller) do
-        assert_equal 1, test.skip_results.size, 'too many/few skip results'
-        test.skip_results.each do |result|
-          assert_kind_of Assert::Result::Skip, result, 'result is not a skip result'
+        assert_equal 1, test_run_result_count, 'too many/few skip results'
+        test_run_results.each do |result|
+          assert_kind_of Assert::Result::Skip, result, 'not a skip result'
         end
-        assert_equal test.skip_results.size, test.result_count(:skip), 'skip result not counted'
       end
     end
 
   end
 
   class ErrorHandlingTests < UnitTests
-    setup do
-      @test = Factory.test("error test", @context_info) do
-        raise StandardError, "WHAT"
-      end
-      @test.run
-    end
-    subject{ @test }
+    include Assert::Test::TestHelpers
 
     should "capture error results" do
-      assert_errored(subject)
+      test = Factory.test("error test", @context_info) do
+        raise StandardError, "WHAT"
+      end
+      test.run(&test_run_callback)
+
+      assert_errored(test)
     end
 
     should "capture errors in the context setup" do
       test = Factory.test("setup error test", @context_info){ }
       test.context_class.setup{ raise 'an error' }
-      test.run
+      test.run(&test_run_callback)
 
       assert_errored(test)
     end
@@ -329,7 +369,7 @@ class Assert::Test
     should "capture errors in the context teardown" do
       test = Factory.test("teardown error test", @context_info){ }
       test.context_class.teardown{ raise 'an error' }
-      test.run
+      test.run(&test_run_callback)
 
       assert_errored(test)
     end
@@ -338,26 +378,23 @@ class Assert::Test
 
     def assert_errored(test)
       with_backtrace(caller) do
-        assert_equal 1, subject.error_results.size, 'too many/few error results'
-        test.error_results.each do |result|
-          assert_kind_of Assert::Result::Error, result, 'result is not an error result'
+        assert_equal 1, test_run_result_count, 'too many/few error results'
+        test_run_results.each do |result|
+          assert_kind_of Assert::Result::Error, result, 'not an error result'
         end
-        assert_equal test.error_results.size, test.result_count(:error), 'error result not counted'
       end
     end
 
   end
 
   class SignalExceptionHandlingTests < UnitTests
-    setup do
-      @test = Factory.test("signal test", @context_info) do
-        raise SignalException, "USR1"
-      end
-    end
-    subject{ @test }
 
     should "raise any signal exceptions and not capture as an error" do
-      assert_raises(SignalException){ subject.run }
+      test = Factory.test("signal test", @context_info) do
+        raise SignalException, "USR1"
+      end
+
+      assert_raises(SignalException){ test.run }
     end
 
     should "raises signal exceptions in the context setup" do
