@@ -32,7 +32,8 @@ module Assert
     end
 
     def initialize(build_data = nil)
-      @build_data = build_data || {}
+      @build_data      = build_data || {}
+      @result_callback = nil
     end
 
     def file_line
@@ -58,6 +59,10 @@ module Assert
       @context_info ||= @build_data[:context_info]
     end
 
+    def context_class
+      self.context_info.klass
+    end
+
     def config
       @config ||= @build_data[:config]
     end
@@ -66,22 +71,14 @@ module Assert
       @code ||= @build_data[:code]
     end
 
-    def context_class; self.context_info.klass; end
-
-    # TODO: maybe cleanup capture to simplify and not need so many layers?
-    def capture_result(result, callback)
-      callback.call(result)
-    end
-
     def run(&result_callback)
-      result_callback ||= proc{ |result| } # do nothing by default
-      scope = self.context_class.new(self, self.config, result_callback)
+      @result_callback = result_callback || proc{ |result| } # noop by default
+      scope = self.context_class.new(self, self.config, @result_callback)
       start_time = Time.now
       capture_output do
-        self.context_class.run_arounds(scope) do
-          run_test(scope, result_callback)
-        end
+        self.context_class.run_arounds(scope){ run_test(scope) }
       end
+      @result_callback = nil
       @run_time = Time.now - start_time
     end
 
@@ -98,7 +95,7 @@ module Assert
 
     private
 
-    def run_test(scope, result_callback)
+    def run_test(scope)
       begin
         # run any assert style 'setup do' setups
         self.context_class.run_setups(scope)
@@ -107,13 +104,13 @@ module Assert
         # run the code block
         scope.instance_eval(&(self.code || proc{}))
       rescue Result::TestFailure => err
-        capture_result(Result::Fail.for_test(self, err), result_callback)
+        capture_result(Result::Fail, err)
       rescue Result::TestSkipped => err
-        capture_result(Result::Skip.for_test(self, err), result_callback)
+        capture_result(Result::Skip, err)
       rescue SignalException => err
         raise(err)
       rescue Exception => err
-        capture_result(Result::Error.for_test(self, err), result_callback)
+        capture_result(Result::Error, err)
       ensure
         begin
           # run any assert style 'teardown do' teardowns
@@ -121,15 +118,19 @@ module Assert
           # run any test/unit style 'def teardown' teardowns
           scope.teardown if scope.respond_to?(:teardown)
         rescue Result::TestFailure => err
-          capture_result(Result::Fail.for_test(self, err), result_callback)
+          capture_result(Result::Fail, err)
         rescue Result::TestSkipped => err
-          capture_result(Result::Skip.for_test(self, err), result_callback)
+          capture_result(Result::Skip, err)
         rescue SignalException => err
           raise(err)
         rescue Exception => err
-          capture_result(Result::Error.for_test(self, err), result_callback)
+          capture_result(Result::Error, err)
         end
       end
+    end
+
+    def capture_result(result_klass, err)
+      @result_callback.call(result_klass.for_test(self, err))
     end
 
     def capture_output(&block)
