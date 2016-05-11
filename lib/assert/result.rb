@@ -33,7 +33,7 @@ module Assert::Result
     def self.for_test(test, message, bt)
       self.new({
         :test_name      => test.name,
-        :test_file_line => test.file_line.to_s,
+        :test_file_line => test.file_line,
         :message        => message,
         :output         => test.output,
         :backtrace      => Backtrace.new(bt)
@@ -57,9 +57,15 @@ module Assert::Result
     end
 
     def test_file_line
-      @test_file_line ||= (@build_data[:test_file_line] || '')
+      @test_file_line ||= (@build_data[:test_file_line] || Assert::FileLine.parse(''))
     end
-    alias_method :test_id, :test_file_line
+
+    def test_file_name; self.test_file_line.file;      end
+    def test_line_num;  self.test_file_line.line.to_i; end
+
+    def test_id
+      self.test_file_line.to_s
+    end
 
     def message
       @message ||= (@build_data[:message] || '')
@@ -77,8 +83,16 @@ module Assert::Result
       @trace ||= (@build_data[:trace] || build_trace(self.backtrace))
     end
 
+    # we choose to implement this way instead of using an `attr_writer` to be
+    # consistant with how you override exception backtraces.
+    def set_backtrace(bt)
+      @backtrace = Backtrace.new(bt)
+      @trace     = build_trace(@backtrace)
+      @file_line = Assert::FileLine.parse(first_filtered_bt_line(@backtrace))
+    end
+
     def file_line
-      @file_line ||= Assert::FileLine.parse(self.backtrace.filtered.first.to_s)
+      @file_line ||= Assert::FileLine.parse(first_filtered_bt_line(self.backtrace))
     end
 
     def file_name; self.file_line.file;      end
@@ -86,13 +100,6 @@ module Assert::Result
 
     Assert::Result.types.keys.each do |type|
       define_method("#{type}?"){ self.type == type }
-    end
-
-    # we choose to implement this way instead of using an `attr_writer` to be
-    # consistant with how you override exception backtraces.
-    def set_backtrace(bt)
-      @backtrace = Backtrace.new(bt)
-      @trace     = build_trace(@backtrace)
     end
 
     def to_sym; self.type; end
@@ -109,14 +116,26 @@ module Assert::Result
     end
 
     def inspect
-      "#<#{self.class}:#{'0x0%x' % (object_id << 1)} @message=#{self.message.inspect}>"
+      "#<#{self.class}:#{'0x0%x' % (object_id << 1)} "\
+      "@message=#{self.message.inspect} "\
+      "@file_line=#{self.file_line.to_s.inspect} "\
+      "@test_file_line=#{self.test_file_line.to_s.inspect}>"
     end
 
     private
 
     # by default, a result's trace is the first line of its filtered backtrace
-    def build_trace(backtrace); backtrace.filtered.first.to_s; end
+    # if the filtered backtrace is empty, just use the backtrace itself (this
+    # should only occur if the result is an error from a line in assert's
+    # non-test code).  This is overridden for error results as they always show
+    # the entire backtrace
+    def build_trace(backtrace)
+      first_filtered_bt_line(backtrace)
+    end
 
+    def first_filtered_bt_line(backtrace)
+      ((fbt = backtrace.filtered).empty? ? backtrace : fbt).first.to_s
+    end
   end
 
   class Pass < Base

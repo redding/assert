@@ -150,20 +150,20 @@ module Assert
       end
     end
 
-    attrs = [:type, :details, :output, :file_name, :line_num, :test_id]
+    attrs = [:type, :details, :output, :test_id, :sort_by]
     class ResultData < Struct.new(*attrs)
       def self.for_result(r)
-        self.new(r.type, r.to_s, r.output, r.file_name, r.line_num, r.test_id)
+        self.new(r.type, r.to_s, r.output, r.test_id, self.sort_by(r))
       end
 
-      def file_name_and_line_num
-        [self.file_name, self.line_num]
+      def self.sort_by(r)
+        [r.test_file_name, r.test_line_num, r.file_name, r.line_num]
       end
 
       def <=>(other_rd)
         # show in reverse definition order
         if other_rd.kind_of?(ResultData)
-          other_rd.file_name_and_line_num <=> self.file_name_and_line_num
+          other_rd.sort_by <=> self.sort_by
         else
           super
         end

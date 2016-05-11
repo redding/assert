@@ -3,7 +3,7 @@ module Assert
   class FileLine
 
     def self.parse(file_line_path)
-      self.new(*(file_line_path.to_s.match(/(^[^\:]*)\:*(\d*)$/) || [])[1..2])
+      self.new(*(file_line_path.to_s.match(/(^[^\:]*)\:*(\d*).*$/) || [])[1..2])
     end
 
     attr_reader :file, :line

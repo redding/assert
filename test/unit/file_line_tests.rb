@@ -14,7 +14,10 @@ class Assert::FileLine
     should have_imeths :parse
 
     should "know how to parse and init from a file line path string" do
-      file_line_path = "#{@file}:#{@line}"
+      file_line_path = [
+        "#{@file}:#{@line}",
+        "#{@file}:#{@line} #{Factory.string}"
+      ].sample
       file_line = subject.parse(file_line_path)
 
       assert_equal @file, file_line.file
