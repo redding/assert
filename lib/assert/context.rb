@@ -53,8 +53,9 @@ module Assert
       @__assert_with_bt__      = nil
 
       @__assert_result_callback__ = proc do |result|
-        result.set_backtrace(@__assert_with_bt__) if !@__assert_with_bt__.nil?
+        result.set_backtrace(@__assert_with_bt__) if @__assert_with_bt__
         result_callback.call(result)
+        result
       end
     end
 
@@ -88,17 +89,13 @@ module Assert
     # adds a Pass result to the end of the test's results
     # does not break test execution
     def pass(pass_msg = nil)
-      capture_result do |test, backtrace|
-        Assert::Result::Pass.for_test(test, pass_msg, backtrace)
-      end
+      capture_result(Assert::Result::Pass, pass_msg)
     end
 
     # adds an Ignore result to the end of the test's results
     # does not break test execution
     def ignore(ignore_msg = nil)
-      capture_result do |test, backtrace|
-        Assert::Result::Ignore.for_test(test, ignore_msg, backtrace)
-      end
+      capture_result(Assert::Result::Ignore, ignore_msg)
     end
 
     # adds a Fail result to the end of the test's results
@@ -107,9 +104,7 @@ module Assert
       if halt_on_fail?
         raise Result::TestFailure, message || ''
       else
-        capture_result do |test, backtrace|
-          Assert::Result::Fail.for_test(test, message || '', backtrace)
-        end
+        capture_result(Assert::Result::Fail, message || '')
       end
     end
     alias_method :flunk, :fail
@@ -159,15 +154,10 @@ module Assert
       __assert_config__.halt_on_fail
     end
 
-    def capture_result
-      if block_given?
-        result = yield @__assert_running_test__, caller
-        @__assert_running_test__.capture_result(
-          result,
-          @__assert_result_callback__
-        )
-        result
-      end
+    def capture_result(result_klass, msg)
+      @__assert_result_callback__.call(
+        result_klass.for_test(@__assert_running_test__, msg, caller)
+      )
     end
 
     def __assert_config__

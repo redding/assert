@@ -90,10 +90,9 @@ class Assert::Test
     end
     subject{ @test }
 
-    should have_readers :file_line, :name, :output, :run_time
-    should have_readers :context_info, :config, :code
-    should have_imeths :context_class, :file_name, :line_num
-    should have_imeths :capture_result, :run
+    should have_imeths :file_line, :file_name, :line_num
+    should have_imeths :name, :output, :run_time
+    should have_imeths :context_info, :context_class, :config, :code, :run
 
     should "use any given attrs" do
       assert_equal @file_line,             subject.file_line
@@ -126,14 +125,6 @@ class Assert::Test
     should "know its file line attrs" do
       assert_equal subject.file_line.file,      subject.file_name
       assert_equal subject.file_line.line.to_i, subject.line_num
-    end
-
-    should "capture results" do
-      result           = Factory.pass_result
-      callback_result  = nil
-      subject.capture_result(result, proc{ |r| callback_result = r })
-
-      assert_equal result, callback_result
     end
 
     should "have a custom inspect that only shows limited attributes" do
