@@ -210,7 +210,9 @@ class Assert::Test
 
   end
 
-  class PassFailIgnoreTotalTests < UnitTests
+  class PassFailIgnoreHandlingTests < UnitTests
+    include Assert::Test::TestHelpers
+
     setup do
       @test = Factory.test("pass fail ignore test", @context_info) do
         ignore("something")
@@ -227,39 +229,36 @@ class Assert::Test
         assert(true)
         assert(false)
       end
-      @test.run
+      @test.run(&test_run_callback)
     end
     subject{ @test }
 
-    should "know its pass results" do
-      assert_kind_of Array, subject.pass_results
-      assert_equal 3, subject.pass_results.size
-      subject.pass_results.each do |result|
+    should "capture results in the test and any setups/teardowns" do
+      assert_equal 9, test_run_results.size
+      test_run_results.each do |result|
+        assert_kind_of Assert::Result::Base, result
+      end
+    end
+
+    should "capture pass results in the test and any setups/teardowns" do
+      assert_equal 3, test_run_results(:pass).size
+      test_run_results(:pass).each do |result|
         assert_kind_of Assert::Result::Pass, result
       end
-      assert_equal subject.pass_results.size, subject.result_count(:pass)
     end
 
-    should "know its fail results" do
-      assert_kind_of Array, subject.fail_results
-      assert_equal 3, subject.fail_results.size
-      subject.fail_results.each do |result|
+    should "capture fail results in the test and any setups/teardowns" do
+      assert_equal 3, test_run_results(:fail).size
+      test_run_results(:fail).each do |result|
         assert_kind_of Assert::Result::Fail, result
       end
-      assert_equal subject.fail_results.size, subject.result_count(:fail)
     end
 
-    should "know its ignore results" do
-      assert_kind_of Array, subject.ignore_results
-      assert_equal 3, subject.ignore_results.size
-      subject.ignore_results.each do |result|
+    should "capture ignore results in the test and any setups/teardowns" do
+      assert_equal 3, test_run_results(:ignore).size
+      test_run_results(:ignore).each do |result|
         assert_kind_of Assert::Result::Ignore, result
       end
-      assert_equal subject.ignore_results.size, subject.result_count(:ignore)
-    end
-
-    should "know the total number of results" do
-      assert_equal(9, subject.result_count)
     end
 
   end
