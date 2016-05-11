@@ -92,7 +92,7 @@ class Assert::Test
 
     should have_readers :file_line, :name, :output, :run_time
     should have_readers :context_info, :config, :code
-    should have_imeths :context_class, :file, :line_number
+    should have_imeths :context_class, :file_name, :line_num
     should have_imeths :capture_result, :run
 
     should "use any given attrs" do
@@ -123,9 +123,9 @@ class Assert::Test
       assert_equal @context_class, subject.context_class
     end
 
-    should "file line and number" do
-      assert_equal subject.file_line.file, subject.file
-      assert_equal subject.file_line.line, subject.line_number
+    should "know its file line attrs" do
+      assert_equal subject.file_line.file,      subject.file_name
+      assert_equal subject.file_line.line.to_i, subject.line_num
     end
 
     should "capture results" do

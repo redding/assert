@@ -39,9 +39,8 @@ module Assert
       @file_line ||= FileLine.parse((@build_data[:file_line] || '').to_s)
     end
 
-    # TODO: file_name, line_num like results?
-    def file;        self.file_line.file; end
-    def line_number; self.file_line.line; end
+    def file_name; self.file_line.file;      end
+    def line_num;  self.file_line.line.to_i; end
 
     def name
       @name ||= (@build_data[:name] || '')
