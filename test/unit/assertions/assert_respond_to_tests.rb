@@ -6,6 +6,8 @@ require 'assert/utils'
 module Assert::Assertions
 
   class AssertRespondToTests < Assert::Context
+    include Assert::Test::TestHelpers
+
     desc "`assert_respond_to`"
     setup do
       desc = @desc = "assert respond to fail desc"
@@ -15,26 +17,28 @@ module Assert::Assertions
         assert_respond_to(*args)   # fail
       end
       @c = @test.config
-      @test.run
+      @test.run(&test_run_callback)
     end
     subject{ @test }
 
     should "produce results as expected" do
-      assert_equal 2, subject.result_count
-      assert_equal 1, subject.result_count(:pass)
-      assert_equal 1, subject.result_count(:fail)
+      assert_equal 2, test_run_result_count
+      assert_equal 1, test_run_result_count(:pass)
+      assert_equal 1, test_run_result_count(:fail)
     end
 
     should "have a fail message with custom and generic explanations" do
       exp = "#{@args[2]}\n"\
             "Expected #{Assert::U.show(@args[1], @c)} (#{@args[1].class})"\
             " to respond to `#{@args[0]}`."
-      assert_equal exp, subject.fail_results.first.message
+      assert_equal exp, test_run_results(:fail).first.message
     end
 
   end
 
   class AssertNotRespondToTests < Assert::Context
+    include Assert::Test::TestHelpers
+
     desc "`assert_not_respond_to`"
     setup do
       desc = @desc = "assert not respond to fail desc"
@@ -44,21 +48,21 @@ module Assert::Assertions
         assert_not_respond_to(:abs, "1") # pass
       end
       @c = @test.config
-      @test.run
+      @test.run(&test_run_callback)
     end
     subject{ @test }
 
     should "produce results as expected" do
-      assert_equal 2, subject.result_count
-      assert_equal 1, subject.result_count(:pass)
-      assert_equal 1, subject.result_count(:fail)
+      assert_equal 2, test_run_result_count
+      assert_equal 1, test_run_result_count(:pass)
+      assert_equal 1, test_run_result_count(:fail)
     end
 
     should "have a fail message with custom and generic explanations" do
       exp = "#{@args[2]}\n"\
             "Expected #{Assert::U.show(@args[1], @c)} (#{@args[1].class})"\
             " to not respond to `#{@args[0]}`."
-      assert_equal exp, subject.fail_results.first.message
+      assert_equal exp, test_run_results(:fail).first.message
     end
 
   end

@@ -4,6 +4,8 @@ require 'assert/assertions'
 module Assert::Assertions
 
   class AssertRaisesTests < Assert::Context
+    include Assert::Test::TestHelpers
+
     desc "`assert_raises`"
     setup do
       d = @d = "assert raises fail desc"
@@ -14,14 +16,14 @@ module Assert::Assertions
         assert_raises(RuntimeError, d){ true }                             # fail
         assert_raises(d){ true }                                           # fail
       end
-      @test.run
+      @test.run(&test_run_callback)
     end
     subject{ @test }
 
     should "produce results as expected" do
-      assert_equal 5, subject.result_count
-      assert_equal 1, subject.result_count(:pass)
-      assert_equal 4, subject.result_count(:fail)
+      assert_equal 5, test_run_result_count
+      assert_equal 1, test_run_result_count(:pass)
+      assert_equal 4, test_run_result_count(:fail)
     end
 
     should "have a fail message with custom and generic explanations" do
@@ -31,7 +33,7 @@ module Assert::Assertions
         "#{@d}\nRuntimeError exception expected but nothing raised.",
         "#{@d}\nAn exception expected but nothing raised."
       ]
-      messages = @test.fail_results.map(&:message)
+      messages = test_run_results(:fail).map(&:message)
       messages.each_with_index{ |msg, n| assert_match /^#{exp[n]}/, msg }
     end
 
@@ -58,6 +60,8 @@ module Assert::Assertions
   end
 
   class AssertNothingRaisedTests < Assert::Context
+    include Assert::Test::TestHelpers
+
     desc "`assert_nothing_raised`"
     setup do
       d = @d = "assert nothing raised fail desc"
@@ -68,14 +72,14 @@ module Assert::Assertions
         self.send(anr, d){ raise(RuntimeError) }                               # fail
         self.send(anr){ true }                                                 # pass
       end
-      @test.run
+      @test.run(&test_run_callback)
     end
     subject{ @test }
 
     should "produce results as expected" do
-      assert_equal 4, subject.result_count
-      assert_equal 2, subject.result_count(:pass)
-      assert_equal 2, subject.result_count(:fail)
+      assert_equal 4, test_run_result_count
+      assert_equal 2, test_run_result_count(:pass)
+      assert_equal 2, test_run_result_count(:fail)
     end
 
     should "have a fail message with custom and generic explanations" do
@@ -83,7 +87,7 @@ module Assert::Assertions
         "#{@d}\nStandardError or RuntimeError exception not expected, but raised:",
         "#{@d}\nAn exception not expected, but raised:"
       ]
-      messages = @test.fail_results.map(&:message)
+      messages = test_run_results(:fail).map(&:message)
       messages.each_with_index{ |msg, n| assert_match /^#{exp[n]}/, msg }
     end
 

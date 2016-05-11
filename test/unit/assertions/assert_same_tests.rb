@@ -6,6 +6,8 @@ require 'assert/utils'
 module Assert::Assertions
 
   class AssertSameTests < Assert::Context
+    include Assert::Test::TestHelpers
+
     desc "`assert_same`"
     setup do
       klass = Class.new; object = klass.new
@@ -16,14 +18,14 @@ module Assert::Assertions
         assert_same(*args)          # fail
       end
       @c = @test.config
-      @test.run
+      @test.run(&test_run_callback)
     end
     subject{ @test }
 
     should "produce results as expected" do
-      assert_equal 2, subject.result_count
-      assert_equal 1, subject.result_count(:pass)
-      assert_equal 1, subject.result_count(:fail)
+      assert_equal 2, test_run_result_count
+      assert_equal 1, test_run_result_count(:pass)
+      assert_equal 1, test_run_result_count(:fail)
     end
 
     should "have a fail message with custom and generic explanations" do
@@ -32,12 +34,14 @@ module Assert::Assertions
             " (#<#{@args[1].class}:#{'0x0%x' % (@args[1].object_id << 1)}>)"\
             " to be the same as #{Assert::U.show(@args[0], @c)}"\
             " (#<#{@args[0].class}:#{'0x0%x' % (@args[0].object_id << 1)}>)."
-      assert_equal exp, subject.fail_results.first.message
+      assert_equal exp, test_run_results(:fail).first.message
     end
 
   end
 
   class AssertNotSameTests < Assert::Context
+    include Assert::Test::TestHelpers
+
     desc "`assert_not_same`"
     setup do
       klass = Class.new; object = klass.new
@@ -48,14 +52,14 @@ module Assert::Assertions
         assert_not_same(object, klass.new) # pass
       end
       @c = @test.config
-      @test.run
+      @test.run(&test_run_callback)
     end
     subject{ @test }
 
     should "produce results as expected" do
-      assert_equal 2, subject.result_count
-      assert_equal 1, subject.result_count(:pass)
-      assert_equal 1, subject.result_count(:fail)
+      assert_equal 2, test_run_result_count
+      assert_equal 1, test_run_result_count(:pass)
+      assert_equal 1, test_run_result_count(:fail)
     end
 
     should "have a fail message with custom and generic explanations" do
@@ -64,12 +68,14 @@ module Assert::Assertions
             " (#<#{@args[1].class}:#{'0x0%x' % (@args[1].object_id << 1)}>)"\
             " to not be the same as #{Assert::U.show(@args[0], @c)}"\
             " (#<#{@args[0].class}:#{'0x0%x' % (@args[0].object_id << 1)}>)."
-      assert_equal exp, subject.fail_results.first.message
+      assert_equal exp, test_run_results(:fail).first.message
     end
 
   end
 
   class DiffTests < Assert::Context
+    include Assert::Test::TestHelpers
+
     desc "with objects that should use diff when showing"
     setup do
       @exp_obj = "I'm a\nstring"
@@ -92,7 +98,7 @@ module Assert::Assertions
       @test = Factory.test(@c) do
         assert_same(exp_obj, act_obj)
       end
-      @test.run
+      @test.run(&test_run_callback)
     end
     subject{ @test }
 
@@ -102,7 +108,7 @@ module Assert::Assertions
             " #<#{@exp_obj.class}:#{'0x0%x' % (@exp_obj.object_id << 1)}>"\
             ", diff:\n"\
             "#{Assert::U.syscmd_diff_proc.call(@exp_obj_show, @act_obj_show)}"
-      assert_equal exp, subject.fail_results.first.message
+      assert_equal exp, test_run_results(:fail).first.message
     end
 
   end
@@ -117,7 +123,7 @@ module Assert::Assertions
       @test = Factory.test(@c) do
         assert_not_same(exp_obj, exp_obj)
       end
-      @test.run
+      @test.run(&test_run_callback)
     end
     subject{ @test }
 
@@ -127,7 +133,7 @@ module Assert::Assertions
             " #<#{@exp_obj.class}:#{'0x0%x' % (@exp_obj.object_id << 1)}>"\
             ", diff:\n"\
             "#{Assert::U.syscmd_diff_proc.call(@exp_obj_show, @act_obj_show)}"
-      assert_equal exp, subject.fail_results.first.message
+      assert_equal exp, test_run_results(:fail).first.message
     end
 
   end

@@ -3,6 +3,8 @@ require 'assert'
 class Assert::Test
 
   class SystemTests < Assert::Context
+    include Assert::Test::TestHelpers
+
     desc "Assert::Test"
     subject{ @test }
 
@@ -12,11 +14,11 @@ class Assert::Test
     desc "when producing no results"
     setup do
       @test = Factory.test
-      @test.run
+      @test.run(&test_run_callback)
     end
 
-    should "have 0 results" do
-      assert_equal 0, subject.result_count
+    should "generate 0 results" do
+      assert_equal 0, test_run_result_count
     end
 
   end
@@ -25,15 +27,15 @@ class Assert::Test
     desc "when passing a single assertion"
     setup do
       @test = Factory.test{ assert(1 == 1) }
-      @test.run
+      @test.run(&test_run_callback)
     end
 
-    should "have 1 result" do
-      assert_equal 1, subject.result_count
+    should "generate 1 result" do
+      assert_equal 1, test_run_result_count
     end
 
-    should "have 1 pass result" do
-      assert_equal 1, subject.result_count(:pass)
+    should "generate 1 pass result" do
+      assert_equal 1, test_run_result_count(:pass)
     end
 
   end
@@ -42,15 +44,15 @@ class Assert::Test
     desc "when failing a single assertion"
     setup do
       @test = Factory.test{ assert(1 == 0) }
-      @test.run
+      @test.run(&test_run_callback)
     end
 
-    should "have 1 result" do
-      assert_equal 1, subject.result_count
+    should "generate 1 result" do
+      assert_equal 1, test_run_result_count
     end
 
-    should "have 1 fail result" do
-      assert_equal 1, subject.result_count(:fail)
+    should "generate 1 fail result" do
+      assert_equal 1, test_run_result_count(:fail)
     end
 
   end
@@ -59,15 +61,15 @@ class Assert::Test
     desc "when skipping once"
     setup do
       @test = Factory.test{ skip }
-      @test.run
+      @test.run(&test_run_callback)
     end
 
-    should "have 1 result" do
-      assert_equal 1, subject.result_count
+    should "generate 1 result" do
+      assert_equal 1, test_run_result_count
     end
 
-    should "have 1 skip result" do
-      assert_equal 1, subject.result_count(:skip)
+    should "generate 1 skip result" do
+      assert_equal 1, test_run_result_count(:skip)
     end
 
   end
@@ -76,15 +78,15 @@ class Assert::Test
     desc "when erroring once"
     setup do
       @test = Factory.test{ raise("WHAT") }
-      @test.run
+      @test.run(&test_run_callback)
     end
 
-    should "have 1 result" do
-      assert_equal 1, subject.result_count
+    should "generate 1 result" do
+      assert_equal 1, test_run_result_count
     end
 
-    should "have 1 error result" do
-      assert_equal 1, subject.result_count(:error)
+    should "generate 1 error result" do
+      assert_equal 1, test_run_result_count(:error)
     end
 
   end
@@ -96,19 +98,19 @@ class Assert::Test
         assert(1 == 1)
         assert(1 == 0)
       end
-      @test.run
+      @test.run(&test_run_callback)
     end
 
-    should "have 2 total results" do
-      assert_equal 2, subject.result_count
+    should "generate 2 total results" do
+      assert_equal 2, test_run_result_count
     end
 
-    should "have 1 pass result" do
-      assert_equal 1, subject.result_count(:pass)
+    should "generate 1 pass result" do
+      assert_equal 1, test_run_result_count(:pass)
     end
 
-    should "have 1 fail result" do
-      assert_equal 1, subject.result_count(:fail)
+    should "generate 1 fail result" do
+      assert_equal 1, test_run_result_count(:fail)
     end
 
   end
@@ -121,27 +123,27 @@ class Assert::Test
         skip
         assert(1 == 0)
       end
-      @test.run
+      @test.run(&test_run_callback)
     end
 
-    should "have 2 total results" do
-      assert_equal 2, subject.result_count
+    should "generate 2 total results" do
+      assert_equal 2, test_run_result_count
     end
 
-    should "have a skip for its last result" do
-      assert_kind_of Assert::Result::Skip, subject.results.last
+    should "generate a skip for its last result" do
+      assert_kind_of Assert::Result::Skip, last_test_run_result
     end
 
-    should "have 1 pass result" do
-      assert_equal 1, subject.result_count(:pass)
+    should "generate 1 pass result" do
+      assert_equal 1, test_run_result_count(:pass)
     end
 
-    should "have 1 skip result" do
-      assert_equal 1, subject.result_count(:skip)
+    should "generate 1 skip result" do
+      assert_equal 1, test_run_result_count(:skip)
     end
 
-    should "have 0 fail results" do
-      assert_equal 0, subject.result_count(:fail)
+    should "generate 0 fail results" do
+      assert_equal 0, test_run_result_count(:fail)
     end
 
   end
@@ -154,27 +156,27 @@ class Assert::Test
         raise Exception, "something errored"
         assert(1 == 0)
       end
-      @test.run
+      @test.run(&test_run_callback)
     end
 
-    should "have 2 total results" do
-      assert_equal 2, subject.result_count
+    should "generate 2 total results" do
+      assert_equal 2, test_run_result_count
     end
 
-    should "have an error for its last result" do
-      assert_kind_of Assert::Result::Error, subject.results.last
+    should "generate an error for its last result" do
+      assert_kind_of Assert::Result::Error, last_test_run_result
     end
 
-    should "have 1 pass result" do
-      assert_equal 1, subject.result_count(:pass)
+    should "generate 1 pass result" do
+      assert_equal 1, test_run_result_count(:pass)
     end
 
-    should "have 1 error result" do
-      assert_equal 1, subject.result_count(:error)
+    should "generate 1 error result" do
+      assert_equal 1, test_run_result_count(:error)
     end
 
-    should "have 0 fail results" do
-      assert_equal 0, subject.result_count(:fail)
+    should "generate 0 fail results" do
+      assert_equal 0, test_run_result_count(:fail)
     end
 
   end
@@ -187,23 +189,23 @@ class Assert::Test
         pass
         assert(1 == 0)
       end
-      @test.run
+      @test.run(&test_run_callback)
     end
 
-    should "have 3 total results" do
-      assert_equal 3, subject.result_count
+    should "generate 3 total results" do
+      assert_equal 3, test_run_result_count
     end
 
-    should "have a fail for its last result" do
-      assert_kind_of Assert::Result::Fail, subject.results.last
+    should "generate a fail for its last result" do
+      assert_kind_of Assert::Result::Fail, last_test_run_result
     end
 
-    should "have 2 pass results" do
-      assert_equal 2, subject.result_count(:pass)
+    should "generate 2 pass results" do
+      assert_equal 2, test_run_result_count(:pass)
     end
 
-    should "have 1 fail result" do
-      assert_equal 1, subject.result_count(:fail)
+    should "generate 1 fail result" do
+      assert_equal 1, test_run_result_count(:fail)
     end
 
   end
@@ -216,23 +218,23 @@ class Assert::Test
         fail
         assert(1 == 1)
       end
-      @test.run
+      @test.run(&test_run_callback)
     end
 
-    should "have 3 total results" do
-      assert_equal 3, subject.result_count
+    should "generate 3 total results" do
+      assert_equal 3, test_run_result_count
     end
 
-    should "have a pass for its last result" do
-      assert_kind_of Assert::Result::Pass, subject.results.last
+    should "generate a pass for its last result" do
+      assert_kind_of Assert::Result::Pass, last_test_run_result
     end
 
-    should "have 1 pass result" do
-      assert_equal 1, subject.result_count(:pass)
+    should "generate 1 pass result" do
+      assert_equal 1, test_run_result_count(:pass)
     end
 
-    should "have 2 fail results" do
-      assert_equal 2, subject.result_count(:fail)
+    should "generate 2 fail results" do
+      assert_equal 2, test_run_result_count(:fail)
     end
 
   end
@@ -245,23 +247,23 @@ class Assert::Test
         flunk
         assert(1 == 1)
       end
-      @test.run
+      @test.run(&test_run_callback)
     end
 
-    should "have 3 total results" do
-      assert_equal 3, subject.result_count
+    should "generate 3 total results" do
+      assert_equal 3, test_run_result_count
     end
 
-    should "have a pass for its last result" do
-      assert_kind_of Assert::Result::Pass, subject.results.last
+    should "generate a pass for its last result" do
+      assert_kind_of Assert::Result::Pass, last_test_run_result
     end
 
-    should "have 1 pass results" do
-      assert_equal 1, subject.result_count(:pass)
+    should "generate 1 pass results" do
+      assert_equal 1, test_run_result_count(:pass)
     end
 
-    should "have 2 fail results" do
-      assert_equal 2, subject.result_count(:fail)
+    should "generate 2 fail results" do
+      assert_equal 2, test_run_result_count(:fail)
     end
 
   end
@@ -276,14 +278,14 @@ class Assert::Test
         def setup; pass 'test/unit style setup'; end
       end
       @test = Factory.test("t", Factory.context_info(@context_class)){ pass 'TEST' }
-      @test.run
+      @test.run(&test_run_callback)
     end
 
     should "execute all setup logic when run" do
-      assert_equal 3, subject.result_count(:pass)
+      assert_equal 3, test_run_result_count(:pass)
 
       exp = ['assert style setup', 'test/unit style setup', 'TEST']
-      assert_equal exp, subject.results.map(&:message)
+      assert_equal exp, test_run_result_messages
     end
 
   end
@@ -298,14 +300,14 @@ class Assert::Test
         def teardown; pass 'test/unit style teardown'; end
       end
       @test = Factory.test("t", Factory.context_info(@context_class)){ pass 'TEST' }
-      @test.run
+      @test.run(&test_run_callback)
     end
 
     should "execute all teardown logic when run" do
-      assert_equal 3, subject.result_count(:pass)
+      assert_equal 3, test_run_result_count(:pass)
 
       exp = ['TEST', 'assert style teardown', 'test/unit style teardown']
-      assert_equal exp, subject.results.map(&:message)
+      assert_equal exp, test_run_result_messages
     end
 
   end
@@ -339,11 +341,11 @@ class Assert::Test
         teardown{ pass "child teardown2" }
       end
       @test = Factory.test("t", Factory.context_info(@context_class)){ pass "TEST" }
-      @test.run
+      @test.run(&test_run_callback)
     end
 
     should "run the arounds outside of the setups/teardowns/test" do
-      assert_equal 13, subject.result_count(:pass)
+      assert_equal 13, test_run_result_count(:pass)
 
       exp = [
         'parent around start', 'child around1 start', 'child around2 start',
@@ -351,7 +353,7 @@ class Assert::Test
         'child teardown1', 'child teardown2', 'parent teardown',
         'child around2 end', 'child around1 end', 'parent around end'
       ]
-      assert_equal exp, subject.results.map(&:message)
+      assert_equal exp, test_run_result_messages
     end
 
   end
