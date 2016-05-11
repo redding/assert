@@ -108,7 +108,7 @@ class Assert::Runner
       assert_true view.on_finish_called
     end
 
-    should "descibe running the tests in random order if there are tests" do
+    should "describe running the tests in random order if there are tests" do
       exp = "Running tests in random order, " \
             "seeded with \"#{subject.runner_seed}\"\n"
       assert_includes exp, @view_output
@@ -120,17 +120,28 @@ class Assert::Runner
     end
 
     should "run only a single test if a single test is configured" do
-      other_test = Factory.test("should also pass", @ci){ assert(1==1) }
-      @config.suite.on_test(other_test)
+      test = Factory.test("should pass", @ci){ assert(1==1) }
+      @config.suite.clear_tests_to_run
+      @config.suite.on_test(test)
+      @config.single_test test.file_line.to_s
 
-      @config.single_test @test.file_line.to_s
-
-      runner = @runner_class.new(@config)
-      runner.run
-      assert_equal [@test], runner.before_test_called
+      runner = @runner_class.new(@config).tap(&:run)
+      assert_equal [test], runner.before_test_called
     end
 
-    should "descibe running only a single test if a single test is configured" do
+    should "not run any tests if a single test is configured but can't be found" do
+      test = Factory.test("should pass", @ci){ assert(1==1) }
+      @config.suite.clear_tests_to_run
+      @config.suite.on_test(test)
+      @config.single_test Factory.string
+
+      runner = @runner_class.new(@config).tap(&:run)
+      assert_nil runner.before_test_called
+    end
+
+    should "describe running only a single test if a single test is configured" do
+      @config.suite.clear_tests_to_run
+      @config.suite.on_test(@test)
       @config.single_test @test.file_line.to_s
       @view_output.gsub!(/./, '')
       subject.run
