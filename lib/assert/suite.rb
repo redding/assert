@@ -14,7 +14,6 @@ module Assert
 
     TEST_METHOD_REGEX = /^test./.freeze
 
-    # TODO: improve this comment
     # A suite is a set of tests to run.  When a test class subclasses
     # the Context class, that test class is pushed to the suite.
 

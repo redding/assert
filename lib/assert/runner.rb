@@ -32,9 +32,7 @@ module Assert
       begin
         self.suite.start_time = Time.now
         self.suite.setups.each(&:call)
-        # TODO: tests_to_run.tap{ self.suite.clear_tests_to_run }.each
-        # TODO: maybe while/pop off tests_to_run so tests get gc'd
-        tests_to_run.each do |test|
+        tests_to_run.tap{ self.suite.clear_tests_to_run }.delete_if do |test|
           self.before_test(test)
           self.suite.before_test(test)
           self.view.before_test(test)
@@ -46,6 +44,9 @@ module Assert
           self.after_test(test)
           self.suite.after_test(test)
           self.view.after_test(test)
+
+          # always delete `test` from `tests_to_run` since it has been run
+          true
         end
         self.suite.teardowns.each(&:call)
         self.suite.end_time = Time.now
@@ -84,8 +85,6 @@ module Assert
       if self.single_test?
         [self.suite.find_test_to_run(self.single_test_file_line)].compact
       else
-        # TODO: implies tests are always stored in memory?
-        # TODO: move this back to base suite definition?
         self.suite.sorted_tests_to_run{ rand self.tests_to_run_count }
       end
     end
