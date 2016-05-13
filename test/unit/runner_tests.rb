@@ -52,10 +52,6 @@ class Assert::Runner
       callback_mixin = Module.new
       @runner_class = Class.new(Assert::Runner) do
         include CallbackMixin
-
-        def run!(&block)
-          self.suite.tests.each(&block)
-        end
       end
       suite_class  = Class.new(Assert::DefaultSuite){ include CallbackMixin }
       view_class   = Class.new(Assert::View){ include CallbackMixin }
@@ -67,14 +63,24 @@ class Assert::Runner
 
       @ci = Factory.context_info(Factory.modes_off_context_class)
       @test = Factory.test("should pass", @ci){ assert(1==1) }
-      @config.suite.tests << @test
+      @config.suite.on_test(@test)
 
       @runner = @runner_class.new(@config)
       @result = @runner.run
     end
 
-    should "return an integer exit code" do
+    should "return the fail+error result count as an integer exit code" do
       assert_equal 0, @result
+
+      fail_count  = Factory.integer
+      error_count = Factory.integer
+      Assert.stub(subject, :fail_result_count){ fail_count }
+      Assert.stub(subject, :error_result_count){ error_count }
+      Assert.stub(@test, :run){ } # no-op
+      result = @runner.run
+
+      exp = fail_count + error_count
+      assert_equal exp, result
     end
 
     should "run all callbacks on itself, the suite and the view" do
@@ -102,29 +108,40 @@ class Assert::Runner
       assert_true view.on_finish_called
     end
 
-    should "descibe running the tests in random order if there are tests" do
+    should "describe running the tests in random order if there are tests" do
       exp = "Running tests in random order, " \
             "seeded with \"#{subject.runner_seed}\"\n"
       assert_includes exp, @view_output
 
       @view_output.gsub!(/./, '')
-      @config.suite.tests.clear
+      @config.suite.clear_tests_to_run
       subject.run
       assert_not_includes exp, @view_output
     end
 
     should "run only a single test if a single test is configured" do
-      other_test = Factory.test("should also pass", @ci){ assert(1==1) }
-      @config.suite.tests << other_test
+      test = Factory.test("should pass", @ci){ assert(1==1) }
+      @config.suite.clear_tests_to_run
+      @config.suite.on_test(test)
+      @config.single_test test.file_line.to_s
 
-      @config.single_test @test.file_line.to_s
-
-      runner = @runner_class.new(@config)
-      runner.run
-      assert_equal [@test], runner.before_test_called
+      runner = @runner_class.new(@config).tap(&:run)
+      assert_equal [test], runner.before_test_called
     end
 
-    should "descibe running only a single test if a single test is configured" do
+    should "not run any tests if a single test is configured but can't be found" do
+      test = Factory.test("should pass", @ci){ assert(1==1) }
+      @config.suite.clear_tests_to_run
+      @config.suite.on_test(test)
+      @config.single_test Factory.string
+
+      runner = @runner_class.new(@config).tap(&:run)
+      assert_nil runner.before_test_called
+    end
+
+    should "describe running only a single test if a single test is configured" do
+      @config.suite.clear_tests_to_run
+      @config.suite.on_test(@test)
       @config.single_test @test.file_line.to_s
       @view_output.gsub!(/./, '')
       subject.run

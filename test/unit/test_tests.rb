@@ -17,14 +17,7 @@ class Assert::Test
     end
     subject{ Assert::Test }
 
-    should have_imeths :result_count_meth, :name_file_line_context_data
-    should have_imeths :for_block, :for_method
-
-    should "know the result count method name for a given type" do
-      type = Factory.string
-      exp = "#{type}_result_count".to_sym
-      assert_equal exp, subject.result_count_meth(type)
-    end
+    should have_imeths :name_file_line_context_data, :for_block, :for_method
 
     should "know how to build the name and file line given context" do
       test_name = Factory.string
@@ -86,10 +79,7 @@ class Assert::Test
         :output    => Factory.string,
         :run_time  => Factory.float(1.0),
       }
-      @meta_data[:total_result_count] = Factory.integer(100)
-      Assert::Result.types.keys.each do |type|
-        @meta_data[Assert::Test.result_count_meth(type)] = Factory.integer(100)
-      end
+
       @run_data = {
         :context_info => @context_info,
         :config       => @config,
@@ -100,25 +90,15 @@ class Assert::Test
     end
     subject{ @test }
 
-    should have_readers :file_line, :name, :output, :run_time, :total_result_count
-    should have_imeths *Assert::Result.types.keys.map{ |k| Assert::Test.result_count_meth(k) }
-    should have_readers :context_info, :config, :code, :results
-    should have_imeths :data, :context_class, :file, :line_number
-    should have_imeths :result_rate, :result_count, :capture_result, :run
-    should have_imeths *Assert::Result.types.keys.map{ |k| "#{k}_results" }
+    should have_imeths :file_line, :file_name, :line_num
+    should have_imeths :name, :output, :run_time
+    should have_imeths :context_info, :context_class, :config, :code, :run
 
     should "use any given attrs" do
       assert_equal @file_line,             subject.file_line
       assert_equal @meta_data[:name],      subject.name
       assert_equal @meta_data[:output],    subject.output
       assert_equal @meta_data[:run_time],  subject.run_time
-
-      assert_equal @meta_data[:total_result_count], subject.total_result_count
-
-      Assert::Result.types.keys.each do |type|
-        n = Assert::Test.result_count_meth(type)
-        assert_equal @meta_data[n], subject.send(n)
-      end
 
       assert_equal @context_info, subject.context_info
       assert_equal @config,       subject.config
@@ -132,85 +112,34 @@ class Assert::Test
       assert_equal '', test.name
       assert_equal '', test.output
       assert_equal 0,  test.run_time
-      assert_equal 0,  test.total_result_count
-
-      Assert::Result.types.keys.each do |type|
-        assert_equal 0, test.send(Assert::Test.result_count_meth(type))
-      end
 
       assert_nil test.context_info
       assert_nil test.config
       assert_nil test.code
     end
 
-    should "have no results before running" do
-      assert_empty subject.results
-    end
-
-    should "know its data hash" do
-      assert_equal @meta_data, subject.data
-    end
-
     should "know its context class" do
       assert_equal @context_class, subject.context_class
     end
 
-    should "file line and number" do
-      assert_equal subject.file_line.file, subject.file
-      assert_equal subject.file_line.line, subject.line_number
-    end
-
-    should "know its result rate" do
-      count = Factory.integer(100)
-      time  = Factory.float(1.0) + 1.0
-
-      Assert.stub(subject, :result_count){ count }
-      Assert.stub(subject, :run_time){ time }
-      exp = count / time
-      assert_equal exp, subject.result_rate
-
-      Assert.stub(subject, :run_time){ 0 }
-      assert_equal 0.0, subject.result_rate
-
-      Assert.stub(subject, :run_time){ 0.0 }
-      assert_equal 0.0, subject.result_rate
-    end
-
-    should "know its result counts" do
-      assert_equal subject.total_result_count, subject.result_count
-
-      Assert::Result.types.keys.each do |type|
-        exp = subject.send(Assert::Test.result_count_meth(type))
-        assert_equal exp, subject.result_count(type)
-      end
-    end
-
-    should "capture results" do
-      result           = Factory.pass_result
-      prev_total_count = subject.total_result_count
-      prev_pass_count  = subject.pass_result_count
-      callback_result  = nil
-      callback         = proc{ |r| callback_result = r}
-
-      subject.capture_result(result, callback)
-
-      assert_equal result,               subject.results.last
-      assert_equal prev_total_count + 1, subject.total_result_count
-      assert_equal prev_pass_count  + 1, subject.pass_result_count
-      assert_equal result,               callback_result
+    should "know its file line attrs" do
+      assert_equal subject.file_line.file,      subject.file_name
+      assert_equal subject.file_line.line.to_i, subject.line_num
     end
 
     should "have a custom inspect that only shows limited attributes" do
-      attrs_string = [:name, :context_info, :results].collect do |method|
+      attrs = [:name, :context_info].collect do |method|
         "@#{method}=#{subject.send(method).inspect}"
       end.join(" ")
-      expected = "#<#{subject.class}:#{'0x0%x' % (subject.object_id << 1)} #{attrs_string}>"
-      assert_equal expected, subject.inspect
+      exp = "#<#{subject.class}:#{'0x0%x' % (subject.object_id << 1)} #{attrs}>"
+      assert_equal exp, subject.inspect
     end
 
   end
 
-  class PassFailIgnoreTotalTests < UnitTests
+  class PassFailIgnoreHandlingTests < UnitTests
+    include Assert::Test::TestHelpers
+
     setup do
       @test = Factory.test("pass fail ignore test", @context_info) do
         ignore("something")
@@ -227,58 +156,97 @@ class Assert::Test
         assert(true)
         assert(false)
       end
-      @test.run
+      @test.run(&test_run_callback)
     end
     subject{ @test }
 
-    should "know its pass results" do
-      assert_kind_of Array, subject.pass_results
-      assert_equal 3, subject.pass_results.size
-      subject.pass_results.each do |result|
+    should "capture results in the test and any setups/teardowns" do
+      assert_equal 9, test_run_results.size
+      test_run_results.each do |result|
+        assert_kind_of Assert::Result::Base, result
+      end
+    end
+
+    should "capture pass results in the test and any setups/teardowns" do
+      assert_equal 3, test_run_results(:pass).size
+      test_run_results(:pass).each do |result|
         assert_kind_of Assert::Result::Pass, result
       end
-      assert_equal subject.pass_results.size, subject.result_count(:pass)
     end
 
-    should "know its fail results" do
-      assert_kind_of Array, subject.fail_results
-      assert_equal 3, subject.fail_results.size
-      subject.fail_results.each do |result|
+    should "capture fail results in the test and any setups/teardowns" do
+      assert_equal 3, test_run_results(:fail).size
+      test_run_results(:fail).each do |result|
         assert_kind_of Assert::Result::Fail, result
       end
-      assert_equal subject.fail_results.size, subject.result_count(:fail)
     end
 
-    should "know its ignore results" do
-      assert_kind_of Array, subject.ignore_results
-      assert_equal 3, subject.ignore_results.size
-      subject.ignore_results.each do |result|
+    should "capture ignore results in the test and any setups/teardowns" do
+      assert_equal 3, test_run_results(:ignore).size
+      test_run_results(:ignore).each do |result|
         assert_kind_of Assert::Result::Ignore, result
       end
-      assert_equal subject.ignore_results.size, subject.result_count(:ignore)
     end
 
-    should "know the total number of results" do
-      assert_equal(9, subject.result_count)
+  end
+
+  class FailHandlingTests < UnitTests
+    include Assert::Test::TestHelpers
+
+    desc "when in halt-on-fail mode"
+
+    should "capture fail results" do
+      test = Factory.test("halt-on-fail test", @context_info) do
+        raise Assert::Result::TestFailure
+      end
+      test.run(&test_run_callback)
+
+      assert_failed(test)
+    end
+
+    should "capture fails in the context setup" do
+      test = Factory.test("setup halt-on-fail test", @context_info){ }
+      test.context_class.setup{ raise Assert::Result::TestFailure }
+      test.run(&test_run_callback)
+
+      assert_failed(test)
+    end
+
+    should "capture fails in the context teardown" do
+      test = Factory.test("teardown halt-on-fail test", @context_info){ }
+      test.context_class.teardown{ raise Assert::Result::TestFailure }
+      test.run(&test_run_callback)
+
+      assert_failed(test)
+    end
+
+    private
+
+    def assert_failed(test)
+      with_backtrace(caller) do
+        assert_equal 1, test_run_result_count, 'too many/few fail results'
+        test_run_results.each do |result|
+          assert_kind_of Assert::Result::Fail, result, 'not a fail result'
+        end
+      end
     end
 
   end
 
   class SkipHandlingTests < UnitTests
-    setup do
-      @test = Factory.test("skip test", @context_info){ skip }
-      @test.run
-    end
-    subject{ @test }
+    include Assert::Test::TestHelpers
 
     should "capture skip results" do
-      assert_skipped(subject)
+      test = Factory.test("skip test", @context_info){ skip }
+      test.run(&test_run_callback)
+
+      assert_skipped(test)
     end
 
     should "capture skips in the context setup" do
       test = Factory.test("setup skip test", @context_info){ }
       test.context_class.setup{ skip }
-      test.run
+      test.run(&test_run_callback)
 
       assert_skipped(test)
     end
@@ -286,7 +254,7 @@ class Assert::Test
     should "capture skips in the context teardown" do
       test = Factory.test("teardown skip test", @context_info){ }
       test.context_class.teardown{ skip }
-      test.run
+      test.run(&test_run_callback)
 
       assert_skipped(test)
     end
@@ -295,33 +263,31 @@ class Assert::Test
 
     def assert_skipped(test)
       with_backtrace(caller) do
-        assert_equal 1, test.skip_results.size, 'too many/few skip results'
-        test.skip_results.each do |result|
-          assert_kind_of Assert::Result::Skip, result, 'result is not a skip result'
+        assert_equal 1, test_run_result_count, 'too many/few skip results'
+        test_run_results.each do |result|
+          assert_kind_of Assert::Result::Skip, result, 'not a skip result'
         end
-        assert_equal test.skip_results.size, test.result_count(:skip), 'skip result not counted'
       end
     end
 
   end
 
   class ErrorHandlingTests < UnitTests
-    setup do
-      @test = Factory.test("error test", @context_info) do
-        raise StandardError, "WHAT"
-      end
-      @test.run
-    end
-    subject{ @test }
+    include Assert::Test::TestHelpers
 
     should "capture error results" do
-      assert_errored(subject)
+      test = Factory.test("error test", @context_info) do
+        raise StandardError, "WHAT"
+      end
+      test.run(&test_run_callback)
+
+      assert_errored(test)
     end
 
     should "capture errors in the context setup" do
       test = Factory.test("setup error test", @context_info){ }
       test.context_class.setup{ raise 'an error' }
-      test.run
+      test.run(&test_run_callback)
 
       assert_errored(test)
     end
@@ -329,7 +295,7 @@ class Assert::Test
     should "capture errors in the context teardown" do
       test = Factory.test("teardown error test", @context_info){ }
       test.context_class.teardown{ raise 'an error' }
-      test.run
+      test.run(&test_run_callback)
 
       assert_errored(test)
     end
@@ -338,26 +304,23 @@ class Assert::Test
 
     def assert_errored(test)
       with_backtrace(caller) do
-        assert_equal 1, subject.error_results.size, 'too many/few error results'
-        test.error_results.each do |result|
-          assert_kind_of Assert::Result::Error, result, 'result is not an error result'
+        assert_equal 1, test_run_result_count, 'too many/few error results'
+        test_run_results.each do |result|
+          assert_kind_of Assert::Result::Error, result, 'not an error result'
         end
-        assert_equal test.error_results.size, test.result_count(:error), 'error result not counted'
       end
     end
 
   end
 
   class SignalExceptionHandlingTests < UnitTests
-    setup do
-      @test = Factory.test("signal test", @context_info) do
-        raise SignalException, "USR1"
-      end
-    end
-    subject{ @test }
 
     should "raise any signal exceptions and not capture as an error" do
-      assert_raises(SignalException){ subject.run }
+      test = Factory.test("signal test", @context_info) do
+        raise SignalException, "USR1"
+      end
+
+      assert_raises(SignalException){ test.run }
     end
 
     should "raises signal exceptions in the context setup" do

@@ -1,6 +1,8 @@
 require 'assert'
 require 'assert/result'
 
+require 'assert/file_line'
+
 module Assert::Result
 
   class UnitTests < Assert::Context
@@ -38,24 +40,26 @@ module Assert::Result
     desc "Base"
     setup do
       @given_data = {
-        :type      => Factory.string,
-        :name      => Factory.string,
-        :test_name => Factory.string,
-        :test_id   => Factory.string,
-        :message   => Factory.string,
-        :output    => Factory.text,
-        :backtrace => Backtrace.new(caller),
-        :trace     => Factory.string
+        :type           => Factory.string,
+        :name           => Factory.string,
+        :test_name      => Factory.string,
+        :test_file_line => Assert::FileLine.new(Factory.string, Factory.integer),
+        :message        => Factory.string,
+        :output         => Factory.text,
+        :backtrace      => Backtrace.new(caller),
+        :trace          => Factory.string
       }
       @result = Base.new(@given_data)
     end
     subject{ @result }
 
     should have_cmeths :type, :name, :for_test
-    should have_imeths :type, :name, :test_name, :test_id
+    should have_imeths :type, :name, :test_name, :test_file_line
+    should have_imeths :test_file_name, :test_line_num, :test_id
     should have_imeths :message, :output, :backtrace, :trace
+    should have_imeths :file_line, :file_name, :line_num
     should have_imeths *Assert::Result.types.keys.map{ |k| "#{k}?" }
-    should have_imeths :set_backtrace, :data, :to_sym, :to_s
+    should have_imeths :set_backtrace, :to_sym, :to_s
 
     should "know its class-level type/name" do
       assert_equal :unknown, subject.class.type
@@ -79,27 +83,70 @@ module Assert::Result
     end
 
     should "use any given attrs" do
-      assert_equal @given_data[:type].to_sym, subject.type
-      assert_equal @given_data[:name],        subject.name
-      assert_equal @given_data[:test_name],   subject.test_name
-      assert_equal @given_data[:test_id],     subject.test_id
-      assert_equal @given_data[:message],     subject.message
-      assert_equal @given_data[:output],      subject.output
-      assert_equal @given_data[:backtrace],   subject.backtrace
-      assert_equal @given_data[:trace],       subject.trace
+      assert_equal @given_data[:type].to_sym,    subject.type
+      assert_equal @given_data[:name],           subject.name
+      assert_equal @given_data[:test_name],      subject.test_name
+      assert_equal @given_data[:test_file_line], subject.test_file_line
+      assert_equal @given_data[:message],        subject.message
+      assert_equal @given_data[:output],         subject.output
+      assert_equal @given_data[:backtrace],      subject.backtrace
+      assert_equal @given_data[:trace],          subject.trace
     end
 
     should "default its attrs" do
       result = Base.new({})
 
-      assert_equal :unknown,          result.type
-      assert_equal '',                result.name
-      assert_equal '',                result.test_name
-      assert_equal '',                result.test_id
-      assert_equal '',                result.message
-      assert_equal '',                result.output
-      assert_equal Backtrace.new([]), result.backtrace
-      assert_equal '',                result.trace
+      assert_equal :unknown,                   result.type
+      assert_equal '',                         result.name
+      assert_equal '',                         result.test_name
+      assert_equal Assert::FileLine.parse(''), result.test_file_line
+      assert_equal '',                         result.message
+      assert_equal '',                         result.output
+      assert_equal Backtrace.new([]),          result.backtrace
+      assert_equal '',                         result.trace
+    end
+
+    should "know its test file line attrs" do
+      exp = @given_data[:test_file_line]
+      assert_equal exp.file,      subject.test_file_name
+      assert_equal exp.line.to_i, subject.test_line_num
+      assert_equal exp.to_s,      subject.test_id
+    end
+
+    should "allow setting a new backtrace" do
+      new_bt        = Factory.integer(3).times.map{ Factory.string }
+      exp_backtrace = Backtrace.new(new_bt)
+      exp_trace     = exp_backtrace.filtered.first.to_s
+      subject.set_backtrace(new_bt)
+      assert_equal exp_backtrace, subject.backtrace
+      assert_equal exp_trace,     subject.trace
+
+      # test that the first bt line is used if filtered is empty
+      assert_lib_path = File.join(ROOT_PATH, "lib/#{Factory.string}:#{Factory.integer}")
+      new_bt          = Factory.integer(3).times.map{ assert_lib_path }
+      exp_backtrace   = Backtrace.new(new_bt)
+      exp_trace       = exp_backtrace.first.to_s
+      subject.set_backtrace(new_bt)
+      assert_equal exp_backtrace, subject.backtrace
+      assert_equal exp_trace,     subject.trace
+    end
+
+    should "know its file line attrs" do
+      new_bt = Factory.integer(3).times.map{ Factory.string }
+      subject.set_backtrace(new_bt)
+      exp = Assert::FileLine.parse(subject.backtrace.filtered.first.to_s)
+      assert_equal exp,           subject.file_line
+      assert_equal exp.file,      subject.file_name
+      assert_equal exp.line.to_i, subject.line_num
+
+      # test that the first bt line is used if filtered is empty
+      assert_lib_path = File.join(ROOT_PATH, "lib/#{Factory.string}:#{Factory.integer}")
+      new_bt = Factory.integer(3).times.map{ assert_lib_path }
+      subject.set_backtrace(new_bt)
+      exp = Assert::FileLine.parse(subject.backtrace.first.to_s)
+      assert_equal exp,           subject.file_line
+      assert_equal exp.file,      subject.file_name
+      assert_equal exp.line.to_i, subject.line_num
     end
 
     should "know if it is a certain type of result" do
@@ -108,31 +155,6 @@ module Assert::Result
         Assert.stub(subject, :type){ type }
         assert_true subject.send("#{type}?")
       end
-    end
-
-    should "allow setting a new backtrace" do
-      new_bt        = Factory.integer(3).times.map{ Factory.string }
-      exp_backtrace = Backtrace.new(new_bt)
-      exp_trace     = exp_backtrace.filtered.first.to_s
-
-      subject.set_backtrace(new_bt)
-
-      assert_equal exp_backtrace, subject.backtrace
-      assert_equal exp_trace,     subject.trace
-    end
-
-    should "know its data" do
-      exp = {
-        :type      => subject.type,
-        :name      => subject.name,
-        :test_name => subject.test_name,
-        :test_id   => subject.test_id,
-        :message   => subject.message,
-        :output    => subject.output,
-        :backtrace => subject.backtrace,
-        :trace     => subject.trace,
-      }
-      assert_equal exp, subject.data
     end
 
     should "know its symbol representation" do
@@ -164,8 +186,10 @@ module Assert::Result
     end
 
     should "show only its class and message when inspected" do
-      exp = "#<#{subject.class}:#{'0x0%x' % (subject.object_id << 1)}"\
-            " @message=#{subject.message.inspect}>"
+      exp = "#<#{subject.class}:#{'0x0%x' % (subject.object_id << 1)} "\
+            "@message=#{subject.message.inspect} "\
+            "@file_line=#{subject.file_line.to_s.inspect} "\
+            "@test_file_line=#{subject.test_file_line.to_s.inspect}>"
       assert_equal exp, subject.inspect
     end
 

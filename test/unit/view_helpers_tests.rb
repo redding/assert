@@ -55,25 +55,11 @@ module Assert::ViewHelpers
     end
     subject{ @helpers }
 
-    should have_imeths :test_run_time, :test_result_rate
     should have_imeths :captured_output, :re_run_test_cmd
-    should have_imeths :test_count_statement, :result_count_statement
+    should have_imeths :tests_to_run_count_statement, :result_count_statement
     should have_imeths :to_sentence
     should have_imeths :all_pass_result_summary_msg, :result_summary_msg
     should have_imeths :results_summary_sentence
-
-    should "know a test's formatted run time and result rate" do
-      test   = Factory.test
-      format = '%.6f'
-
-      exp = format % test.run_time
-      assert_equal exp, subject.test_run_time(test, format)
-      assert_equal exp, subject.test_run_time(test)
-
-      exp = format % test.result_rate
-      assert_equal exp, subject.test_result_rate(test, format)
-      assert_equal exp, subject.test_result_rate(test)
-    end
 
     should "know how to build captured output" do
       output = Factory.string
@@ -89,11 +75,11 @@ module Assert::ViewHelpers
       assert_equal exp, subject.re_run_test_cmd(test_id)
     end
 
-    should "know its test count and result count statements" do
-      exp = "#{subject.count(:tests)} test#{'s' if subject.count(:tests) != 1}"
-      assert_equal exp, subject.test_count_statement
+    should "know its tests-to-run count and result count statements" do
+      exp = "#{subject.tests_to_run_count} test#{'s' if subject.tests_to_run_count != 1}"
+      assert_equal exp, subject.tests_to_run_count_statement
 
-      exp = "#{subject.count(:results)} result#{'s' if subject.count(:results) != 1}"
+      exp = "#{subject.result_count} result#{'s' if subject.result_count != 1}"
       assert_equal exp, subject.result_count_statement
     end
 
@@ -110,13 +96,13 @@ module Assert::ViewHelpers
     end
 
     should "know its all pass result summary message" do
-      Assert.stub(subject, :count).with(:results){ 0 }
+      Assert.stub(subject, :result_count){ 0 }
       assert_equal "uhh...", subject.all_pass_result_summary_msg
 
-      Assert.stub(subject, :count).with(:results){ 1 }
+      Assert.stub(subject, :result_count){ 1 }
       assert_equal "pass", subject.all_pass_result_summary_msg
 
-      Assert.stub(subject, :count).with(:results){ Factory.integer(10)+1 }
+      Assert.stub(subject, :result_count){ Factory.integer(10)+1 }
       assert_equal "all pass", subject.all_pass_result_summary_msg
     end
 
@@ -128,7 +114,7 @@ module Assert::ViewHelpers
 
       Assert.stub(subject, :all_pass?){ false }
       res_type = [:pass, :ignore, :fail, :skip, :error].sample
-      exp = "#{subject.count(res_type)} #{res_type.to_s}"
+      exp = "#{subject.send("#{res_type}_result_count")} #{res_type.to_s}"
       assert_equal exp, subject.result_summary_msg(res_type)
     end
 
@@ -185,30 +171,30 @@ module Assert::ViewHelpers
 
     should "know how to build ansi styled messages" do
       msg = Factory.string
-      result = [:pass, :fail, :error, :skip, :ignore].sample
+      result_type = [:pass, :fail, :error, :skip, :ignore].sample
 
       Assert.stub(subject, :is_tty?){ false }
       Assert.stub(subject, :styled){ false }
-      assert_equal msg, subject.ansi_styled_msg(msg, result)
+      assert_equal msg, subject.ansi_styled_msg(msg, result_type)
 
       Assert.stub(subject, :is_tty?){ false }
       Assert.stub(subject, :styled){ true }
-      assert_equal msg, subject.ansi_styled_msg(msg, result)
+      assert_equal msg, subject.ansi_styled_msg(msg, result_type)
 
       Assert.stub(subject, :is_tty?){ true }
       Assert.stub(subject, :styled){ false }
-      assert_equal msg, subject.ansi_styled_msg(msg, result)
+      assert_equal msg, subject.ansi_styled_msg(msg, result_type)
 
       Assert.stub(subject, :is_tty?){ true }
       Assert.stub(subject, :styled){ true }
-      Assert.stub(subject, "#{result}_styles"){ [] }
-      assert_equal msg, subject.ansi_styled_msg(msg, result)
+      Assert.stub(subject, "#{result_type}_styles"){ [] }
+      assert_equal msg, subject.ansi_styled_msg(msg, result_type)
 
       styles = Factory.integer(3).times.map{ Assert::ViewHelpers::Ansi::CODES.keys.sample }
-      Assert.stub(subject, "#{result}_styles"){ styles }
+      Assert.stub(subject, "#{result_type}_styles"){ styles }
       exp_code = Assert::ViewHelpers::Ansi.code_for(*styles)
       exp = exp_code + msg + Assert::ViewHelpers::Ansi.code_for(:reset)
-      assert_equal exp, subject.ansi_styled_msg(msg, result)
+      assert_equal exp, subject.ansi_styled_msg(msg, result_type)
     end
 
   end

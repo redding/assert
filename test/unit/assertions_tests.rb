@@ -4,6 +4,8 @@ require 'assert/assertions'
 module Assert::Assertions
 
   class UnitTests < Assert::Context
+    include Assert::Test::TestHelpers
+
     desc "Assert::Context"
     setup do
       @context_class = Factory.modes_off_context_class
@@ -43,23 +45,24 @@ module Assert::Assertions
           self.send(helper, "doesn't matter")
         end
       end
-      @expected_messages = Assert::Assertions::IGNORED_ASSERTION_HELPERS.map do |helper|
-        "The assertion `#{helper}` is not supported."\
-        " Please use another assertion or the basic `assert`."
-      end
-      @results = @tests.map(&:run).flatten
+      @tests.each{ |test| test.run(&test_run_callback) }
     end
-    subject{ @results }
 
     should "have an ignored result for each helper in the constant" do
-      subject.each do |result|
+      exp = Assert::Assertions::IGNORED_ASSERTION_HELPERS.size
+      assert_equal exp, test_run_result_count
+
+      test_run_results.each do |result|
         assert_kind_of Assert::Result::Ignore, result
       end
-      assert_equal(Assert::Assertions::IGNORED_ASSERTION_HELPERS.size, subject.size)
     end
 
     should "have a custom ignore message for each helper in the constant" do
-      assert_equal(@expected_messages, subject.collect(&:message))
+      exp = Assert::Assertions::IGNORED_ASSERTION_HELPERS.map do |helper|
+        "The assertion `#{helper}` is not supported."\
+        " Please use another assertion or the basic `assert`."
+      end
+      assert_equal exp, test_run_results.collect(&:message)
     end
 
   end

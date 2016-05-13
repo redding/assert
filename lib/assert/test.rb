@@ -9,10 +9,6 @@ module Assert
     # a Test is some code/method to run in the scope of a Context that may
     # produce results
 
-    def self.result_count_meth(type)
-      "#{type}_result_count".to_sym
-    end
-
     def self.name_file_line_context_data(ci, name)
       { :name      => ci.test_name(name),
         :file_line => ci.called_from
@@ -35,82 +31,55 @@ module Assert
       }))
     end
 
-    attr_reader :results
-    attr_writer :total_result_count
-
     def initialize(build_data = nil)
-      @build_data, @results = build_data || {}, []
+      @build_data      = build_data || {}
+      @result_callback = nil
     end
 
-    def file_line; @file_line ||= FileLine.parse((@build_data[:file_line] || '').to_s); end
-    def name;      @name      ||= (@build_data[:name]                     || '');       end
-    def output;    @output    ||= (@build_data[:output]                   || '');       end
-    def run_time;  @run_time  ||= (@build_data[:run_time]                 || 0);        end
-
-    def total_result_count
-      @total_result_count ||= (@build_data[:total_result_count] || 0)
+    def file_line
+      @file_line ||= FileLine.parse((@build_data[:file_line] || '').to_s)
     end
 
-    Assert::Result.types.keys.each do |type|
-      n = result_count_meth(type)
-      define_method(n) do
-        instance_variable_get("@#{n}") || instance_variable_set("@#{n}", @build_data[n] || 0)
-      end
+    def file_name; self.file_line.file;      end
+    def line_num;  self.file_line.line.to_i; end
+
+    def name
+      @name ||= (@build_data[:name] || '')
     end
 
-    def context_info; @context_info ||= @build_data[:context_info]; end
-    def config;       @config       ||= @build_data[:config];       end
-    def code;         @code         ||= @build_data[:code];         end
-
-    def data
-      { :file_line => self.file_line.to_s,
-        :name      => self.name.to_s,
-        :output    => self.output.to_s,
-        :run_time  => self.run_time
-      }.merge(result_count_data(:total_result_count => self.total_result_count))
+    def output
+      @output ||= (@build_data[:output] || '')
     end
 
-    def context_class; self.context_info.klass; end
-    def file;          self.file_line.file;     end
-    def line_number;   self.file_line.line;     end
-
-    def result_rate
-      get_rate(self.result_count, self.run_time)
+    def run_time
+      @run_time ||= (@build_data[:run_time] || 0)
     end
 
-    def result_count(type = nil)
-      if Assert::Result.types.keys.include?(type)
-        self.send(result_count_meth(type))
-      else
-        self.total_result_count
-      end
+    def context_info
+      @context_info ||= @build_data[:context_info]
     end
 
-    def capture_result(result, callback)
-      self.results << result
-      self.total_result_count += 1
-      n = result_count_meth(result.to_sym)
-      instance_variable_set("@#{n}", (instance_variable_get("@#{n}") || 0) + 1)
-      callback.call(result)
+    def context_class
+      self.context_info.klass
+    end
+
+    def config
+      @config ||= @build_data[:config]
+    end
+
+    def code
+      @code ||= @build_data[:code]
     end
 
     def run(&result_callback)
-      result_callback ||= proc{ |result| } # do nothing by default
-      scope = self.context_class.new(self, self.config, result_callback)
+      @result_callback = result_callback || proc{ |result| } # noop by default
+      scope = self.context_class.new(self, self.config, @result_callback)
       start_time = Time.now
       capture_output do
-        self.context_class.run_arounds(scope) do
-          run_test(scope, result_callback)
-        end
+        self.context_class.run_arounds(scope){ run_test(scope) }
       end
+      @result_callback = nil
       @run_time = Time.now - start_time
-      @results
-    end
-
-    Assert::Result.types.each do |name, klass|
-      define_method "#{name}_results" do
-        self.results.select{|r| r.kind_of?(klass) }
-      end
     end
 
     def <=>(other_test)
@@ -118,7 +87,7 @@ module Assert
     end
 
     def inspect
-      attributes_string = ([ :name, :context_info, :results ].collect do |attr|
+      attributes_string = ([:name, :context_info].collect do |attr|
         "@#{attr}=#{self.send(attr).inspect}"
       end).join(" ")
       "#<#{self.class}:#{'0x0%x' % (object_id << 1)} #{attributes_string}>"
@@ -126,7 +95,7 @@ module Assert
 
     private
 
-    def run_test(scope, result_callback)
+    def run_test(scope)
       begin
         # run any assert style 'setup do' setups
         self.context_class.run_setups(scope)
@@ -135,13 +104,13 @@ module Assert
         # run the code block
         scope.instance_eval(&(self.code || proc{}))
       rescue Result::TestFailure => err
-        capture_result(Result::Fail.for_test(self, err), result_callback)
+        capture_result(Result::Fail, err)
       rescue Result::TestSkipped => err
-        capture_result(Result::Skip.for_test(self, err), result_callback)
+        capture_result(Result::Skip, err)
       rescue SignalException => err
         raise(err)
       rescue Exception => err
-        capture_result(Result::Error.for_test(self, err), result_callback)
+        capture_result(Result::Error, err)
       ensure
         begin
           # run any assert style 'teardown do' teardowns
@@ -149,15 +118,19 @@ module Assert
           # run any test/unit style 'def teardown' teardowns
           scope.teardown if scope.respond_to?(:teardown)
         rescue Result::TestFailure => err
-          capture_result(Result::Fail.for_test(self, err), result_callback)
+          capture_result(Result::Fail, err)
         rescue Result::TestSkipped => err
-          capture_result(Result::Skip.for_test(self, err), result_callback)
+          capture_result(Result::Skip, err)
         rescue SignalException => err
           raise(err)
         rescue Exception => err
-          capture_result(Result::Error.for_test(self, err), result_callback)
+          capture_result(Result::Error, err)
         end
       end
+    end
+
+    def capture_result(result_klass, err)
+      @result_callback.call(result_klass.for_test(self, err))
     end
 
     def capture_output(&block)
@@ -173,21 +146,6 @@ module Assert
 
     def capture_io
       StringIO.new(self.output, "a+")
-    end
-
-    def result_count_data(seed)
-      Assert::Result.types.keys.inject(seed) do |d, t|
-        d[result_count_meth(t)] = self.send(result_count_meth(t))
-        d
-      end
-    end
-
-    def result_count_meth(type)
-      self.class.result_count_meth(type)
-    end
-
-    def get_rate(count, time)
-      time == 0 ? 0.0 : (count.to_f / time.to_f)
     end
 
   end

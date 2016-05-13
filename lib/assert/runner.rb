@@ -22,15 +22,17 @@ module Assert
 
       if self.single_test?
         self.view.print "Running test: #{self.single_test_file_line}"
-      elsif self.tests?
+      elsif self.tests_to_run?
         self.view.print "Running tests in random order"
       end
-      self.view.puts ", seeded with \"#{self.runner_seed}\""
+      if self.tests_to_run?
+        self.view.puts ", seeded with \"#{self.runner_seed}\""
+      end
 
       begin
         self.suite.start_time = Time.now
         self.suite.setups.each(&:call)
-        tests_to_run.each do |test|
+        tests_to_run.tap{ self.suite.clear_tests_to_run }.delete_if do |test|
           self.before_test(test)
           self.suite.before_test(test)
           self.view.before_test(test)
@@ -42,6 +44,9 @@ module Assert
           self.after_test(test)
           self.suite.after_test(test)
           self.view.after_test(test)
+
+          # always delete `test` from `tests_to_run` since it has been run
+          true
         end
         self.suite.teardowns.each(&:call)
         self.suite.end_time = Time.now
@@ -52,7 +57,7 @@ module Assert
         raise(err)
       end
 
-      (self.suite.count(:fail) + self.suite.count(:error)).tap do
+      (self.fail_result_count + self.error_result_count).tap do
         self.view.on_finish
         self.suite.on_finish
         self.on_finish
@@ -78,10 +83,9 @@ module Assert
     def tests_to_run
       srand self.runner_seed
       if self.single_test?
-        [ self.suite.tests.find{ |t| t.file_line == self.single_test_file_line }
-        ].compact
+        [self.suite.find_test_to_run(self.single_test_file_line)].compact
       else
-        self.suite.tests.sort.sort_by{ rand self.suite.tests.size }
+        self.suite.sorted_tests_to_run{ rand self.tests_to_run_count }
       end
     end
 

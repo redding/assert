@@ -28,16 +28,6 @@ module Assert
 
     module InstanceMethods
 
-      # get the formatted run time for an idividual test
-      def test_run_time(test, format = '%.6f')
-        format % test.run_time
-      end
-
-      # get the formatted result rate for an individual test
-      def test_result_rate(test, format = '%.6f')
-        format % test.result_rate
-      end
-
       # show any captured output
       def captured_output(output)
         "--- stdout ---\n"\
@@ -50,12 +40,12 @@ module Assert
         "assert -t #{test_id.gsub(Dir.pwd, '.')}"
       end
 
-      def test_count_statement
-        "#{self.count(:tests)} test#{'s' if self.count(:tests) != 1}"
+      def tests_to_run_count_statement
+        "#{self.tests_to_run_count} test#{'s' if self.tests_to_run_count != 1}"
       end
 
       def result_count_statement
-        "#{self.count(:results)} result#{'s' if self.count(:results) != 1}"
+        "#{self.result_count} result#{'s' if self.result_count != 1}"
       end
 
       # generate a comma-seperated sentence fragment given a list of items
@@ -69,9 +59,9 @@ module Assert
 
       # generate an appropriate result summary msg for all tests passing
       def all_pass_result_summary_msg
-        if self.count(:results) < 1
+        if self.result_count < 1
           "uhh..."
-        elsif self.count(:results) == 1
+        elsif self.result_count == 1
           "pass"
         else
           "all pass"
@@ -83,16 +73,16 @@ module Assert
         if result_type == :pass && self.all_pass?
           self.all_pass_result_summary_msg
         else
-          "#{self.count(result_type)} #{result_type.to_s}"
+          "#{self.send("#{result_type}_result_count")} #{result_type}"
         end
       end
 
       # generate a sentence fragment describing the breakdown of test results
       # if a block is given, yield each msg in the breakdown for custom formatting
       def results_summary_sentence
-        summaries = self.ocurring_result_types.map do |result_sym|
-          summary_msg = self.result_summary_msg(result_sym)
-          block_given? ? yield(summary_msg, result_sym) : summary_msg
+        summaries = self.ocurring_result_types.map do |result_type|
+          summary_msg = self.result_summary_msg(result_type)
+          block_given? ? yield(summary_msg, result_type) : summary_msg
         end
         self.to_sentence(summaries)
       end
@@ -186,9 +176,9 @@ module Assert
         style_names.map{ |n| "\e[#{CODES[n]}m" if CODES.key?(n) }.compact.join('')
       end
 
-      def ansi_styled_msg(msg, result_or_sym)
+      def ansi_styled_msg(msg, result_type)
         return msg if !self.is_tty? || !self.styled
-        code = Assert::ViewHelpers::Ansi.code_for(*self.send("#{result_or_sym.to_sym}_styles"))
+        code = Assert::ViewHelpers::Ansi.code_for(*self.send("#{result_type}_styles"))
         return msg if code.empty?
         code + msg + Assert::ViewHelpers::Ansi.code_for(:reset)
       end
