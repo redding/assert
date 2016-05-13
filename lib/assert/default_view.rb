@@ -18,11 +18,6 @@ module Assert
     option 'skip_styles',   :cyan
     option 'ignore_styles', :magenta
 
-    def initialize(*args)
-      super
-      reset_run_data
-    end
-
     def before_load(test_files)
     end
 
@@ -32,37 +27,7 @@ module Assert
 
     def on_start
       reset_run_data
-    end
-
-    def before_test(test)
-      if accumulate_test_data?
-        test_data = get_test_data(test)
-        puts  "#{test_data.name.inspect} (#{test_data.context})"
-        puts  "    #{test_data.file_line}"
-        print "    "
-      end
-    end
-
-    def on_result(result)
-      print ansi_styled_msg(self.send("#{result.to_sym}_abbrev"), result.type)
-      @results_to_dump << ResultData.for_result(result) if dumpable_result?(result)
-      if accumulate_test_data?
-        find_test_data(result.test_file_line).result_count += 1
-      end
-    end
-
-    def after_test(test)
-      if accumulate_test_data?
-        test_data = find_test_data(test.file_line)
-        test_data.run_time    = test.run_time
-        test_data.result_rate = get_rate(test_data.result_count, test_data.run_time)
-
-        if show_test_verbose_info?
-          print " #{formatted_run_time(test_data.run_time)} seconds,"\
-                " #{test_data.result_count} results,"\
-                " #{formatted_result_rate(test_data.result_rate)} results/s\n"
-        end
-      end
+      set_callbacks
     end
 
     def on_finish
@@ -100,6 +65,50 @@ module Assert
 
     private
 
+    def reset_run_data
+      @results_to_dump = []
+      @test_datas      = {}
+    end
+
+    def set_callbacks
+      @metaclass = class << self; self; end
+      if accumulate_test_data?
+        @metaclass.class_eval <<-callbacks
+          def before_test(test)
+            test_data = get_test_data(test)
+            puts  "\#{test_data.name.inspect} (\#{test_data.context})"
+            puts  "    \#{test_data.file_line}"
+            print "    "
+          end
+
+          def on_result(result)
+            print ansi_styled_msg(self.send("\#{result.to_sym}_abbrev"), result.type)
+            @results_to_dump << ResultData.for_result(result) if dumpable_result?(result)
+            find_test_data(result.test_file_line).result_count += 1
+          end
+
+          def after_test(test)
+            test_data = find_test_data(test.file_line)
+            test_data.run_time    = test.run_time
+            test_data.result_rate = get_rate(test_data.result_count, test_data.run_time)
+
+            if show_test_verbose_info?
+              print " \#{formatted_run_time(test_data.run_time)} seconds,"\
+                    " \#{test_data.result_count} results,"\
+                    " \#{formatted_result_rate(test_data.result_rate)} results/s\n"
+            end
+          end
+        callbacks
+      else
+        @metaclass.class_eval <<-callbacks
+          def on_result(result)
+            print ansi_styled_msg(self.send("\#{result.to_sym}_abbrev"), result.type)
+            @results_to_dump << ResultData.for_result(result) if dumpable_result?(result)
+          end
+        callbacks
+      end
+    end
+
     def accumulate_test_data?
       show_test_verbose_info? || show_test_profile_info?
     end
@@ -136,11 +145,6 @@ module Assert
         # add an empty line between each dumped result
         puts
       end
-    end
-
-    def reset_run_data
-      @results_to_dump = []
-      @test_datas      = {}
     end
 
     attrs = [:name, :context, :file_line, :result_count, :run_time, :result_rate]
