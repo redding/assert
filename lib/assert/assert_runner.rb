@@ -80,7 +80,7 @@ module Assert
       file_paths = if self.config.changed_only
         changed_test_files(test_paths)
       elsif self.config.single_test?
-        globbed_test_files(self.config.single_test_file_path)
+        globbed_test_files([self.config.single_test_file_path])
       else
         globbed_test_files(test_paths)
       end
