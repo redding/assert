@@ -20,7 +20,7 @@ module Assert::Factory
     end
 
     should "allow passing a maximum value using `integer`" do
-      assert_includes subject.integer(2), [ 1, 2 ]
+      assert_includes subject.integer(2), [1, 2]
     end
 
     should "return a random float using `float`" do
@@ -30,7 +30,10 @@ module Assert::Factory
     should "allow passing a maximum value using `float`" do
       float = subject.float(2)
       assert float <= 2
-      assert float >= 1
+      assert float >= 0
+
+      float = subject.float(0)
+      assert_equal 0.0, float
     end
 
     should "return a random date using `date`" do

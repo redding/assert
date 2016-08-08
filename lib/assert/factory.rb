@@ -96,13 +96,15 @@ module Assert
     end
 
     module Random
+
+      # rand given a max int value returns integers between 0 and max-1
       def self.integer(max = nil)
         rand(max || 32_766) + 1
       end
 
       # `rand` with no args gives a float between 0 and 1
       def self.float(max = nil)
-        (self.integer((max || 100) - 1) + rand).to_f
+        (max || 100).to_f * rand
       end
 
       def self.date_string
@@ -153,6 +155,7 @@ module Assert
       def self.binary
         [ self.integer(10000) ].pack('N*')
       end
+
     end
 
   end
