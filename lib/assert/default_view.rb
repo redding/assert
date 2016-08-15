@@ -96,6 +96,8 @@ module Assert
               print " \#{formatted_run_time(test_data.run_time)} seconds,"\
                     " \#{test_data.result_count} results,"\
                     " \#{formatted_result_rate(test_data.result_rate)} results/s\n"
+            else
+              print "\n"
             end
           end
         callbacks
