@@ -50,10 +50,12 @@ module Assert
     def initialize(running_test, config, result_callback)
       @__assert_running_test__ = running_test
       @__assert_config__       = config
-      @__assert_with_bt__      = nil
+      @__assert_with_bt__      = []
 
       @__assert_result_callback__ = proc do |result|
-        result.set_backtrace(@__assert_with_bt__) if @__assert_with_bt__
+        if !@__assert_with_bt__.empty?
+          result.set_with_bt(@__assert_with_bt__.dup)
+        end
         result_callback.call(result)
         result
       end
@@ -121,12 +123,15 @@ module Assert
     def with_backtrace(bt, &block)
       bt ||= []
       begin
-        @__assert_with_bt__ = bt
+        @__assert_with_bt__.push(bt.first)
         instance_eval(&block)
       rescue Result::TestSkipped, Result::TestFailure => e
-        e.set_backtrace(@__assert_with_bt__); raise(e)
+        if e.assert_with_bt.nil? && !@__assert_with_bt__.empty?
+          e.assert_with_bt = @__assert_with_bt__.dup
+        end
+        raise(e)
       ensure
-        @__assert_with_bt__ = nil
+        @__assert_with_bt__.pop
       end
     end
 
