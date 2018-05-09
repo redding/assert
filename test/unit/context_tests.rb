@@ -36,6 +36,11 @@ class Assert::Context
     should have_imeths :skip, :pass, :fail, :flunk, :ignore
     should have_imeths :with_backtrace, :subject
 
+    should "collect context info" do
+      test = @__assert_running_test__
+      assert_match /test\/unit\/context_tests.rb$/, test.context_info.file
+      assert_equal self.class, test.context_info.klass
+    end
     private
 
     ASSERT_TEST_PATH_REGEX = /\A#{File.join(ROOT_PATH, 'test', '')}/
@@ -57,12 +62,6 @@ class Assert::Context
         assert_equal result.src_line,                 result.trace
         assert_equal result.backtrace.filtered.first, result.src_line
       end
-    end
-
-    def test_should_collect_context_info
-      test = @__assert_running_test__
-      assert_match /test\/unit\/context_tests.rb$/, test.context_info.file
-      assert_equal self.class, test.context_info.klass
     end
 
   end
