@@ -2,6 +2,7 @@ require 'assert'
 require 'assert/context'
 
 require 'assert/config'
+require 'assert/result'
 require 'assert/utils'
 
 class Assert::Context
@@ -34,6 +35,29 @@ class Assert::Context
     should have_imeths :assert, :assert_not, :refute
     should have_imeths :skip, :pass, :fail, :flunk, :ignore
     should have_imeths :with_backtrace, :subject
+
+    private
+
+    ASSERT_TEST_PATH_REGEX = /\A#{File.join(ROOT_PATH, 'test', '')}/
+
+    def assert_with_bt_set(exp_with_bt, result)
+      with_backtrace(caller) do
+        assert_true result.with_bt_set?
+
+        exp = Assert::Result::Backtrace.to_s(exp_with_bt+[(result.backtrace.filtered.first)])
+        assert_equal exp,               result.trace
+        assert_equal exp_with_bt.first, result.src_line
+      end
+    end
+
+    def assert_not_with_bt_set(result)
+      with_backtrace(caller) do
+        assert_false result.with_bt_set?
+
+        assert_equal result.src_line,                 result.trace
+        assert_equal result.backtrace.filtered.first, result.src_line
+      end
+    end
 
     def test_should_collect_context_info
       test = @__assert_running_test__
@@ -278,11 +302,11 @@ class Assert::Context
   class WithBacktraceTests < UnitTests
     desc "with_backtrace method"
     setup do
-      @from_bt = ['called_from_here']
+      @from_bt    = ['called_from_here', Factory.string]
       @from_block = proc { ignore; fail; pass; skip 'todo'; }
     end
 
-    should "replace the fail results from the block with the given backtrace" do
+    should "alter non-error block results' bt with given bt's first line" do
       @context.fail 'not affected'
       begin
         @context.with_backtrace(@from_bt, &@from_block)
@@ -293,11 +317,45 @@ class Assert::Context
       assert_equal 5, @test_results.size
       norm_fail, with_ignore, with_fail, with_pass, with_skip = @test_results
 
-      assert_not_equal @from_bt, norm_fail.backtrace
-      assert_equal @from_bt, with_ignore.backtrace
-      assert_equal @from_bt, with_fail.backtrace
-      assert_equal @from_bt, with_pass.backtrace
-      assert_equal @from_bt, with_skip.backtrace
+      assert_not_with_bt_set norm_fail
+
+      exp = [@from_bt.first]
+      assert_with_bt_set exp, with_ignore
+      assert_with_bt_set exp, with_fail
+      assert_with_bt_set exp, with_pass
+      assert_with_bt_set exp, with_ignore
+    end
+
+  end
+
+  class WithNestedBacktraceTests < UnitTests
+    desc "with_backtrace method nested"
+    setup do
+      @from_bt1            = ['called_from_here 1', Factory.string]
+      @from_bt2 = from_bt2 = ['called_from_here 2', Factory.string]
+
+      from_block2  = proc { ignore; fail; pass; skip 'todo'; }
+      @from_block1 = proc { with_backtrace(from_bt2, &from_block2) }
+    end
+
+    should "alter non-error block results' bt with nested wbt accrued first lines" do
+      @context.fail 'not affected'
+      begin
+        @context.with_backtrace(@from_bt1, &@from_block1)
+      rescue Assert::Result::TestSkipped => e
+        @test_results << Assert::Result::Skip.for_test(@test, e)
+      end
+
+      assert_equal 5, @test_results.size
+      norm_fail, with_ignore, with_fail, with_pass, with_skip = @test_results
+
+      assert_not_with_bt_set norm_fail
+
+      exp = [@from_bt1.first, @from_bt2.first]
+      assert_with_bt_set exp, with_ignore
+      assert_with_bt_set exp, with_fail
+      assert_with_bt_set exp, with_pass
+      assert_with_bt_set exp, with_ignore
     end
 
   end
