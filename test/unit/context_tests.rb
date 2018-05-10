@@ -70,7 +70,7 @@ class Assert::Context
     desc "skip method"
     setup do
       @skip_msg = "I need to implement this in the future."
-      begin; @context.skip(@skip_msg); rescue Exception => @exception; end
+      begin; @context.skip(@skip_msg); rescue StandardError => @exception; end
       @result = Factory.skip_result(@exception)
     end
     subject{ @result }
@@ -89,7 +89,7 @@ class Assert::Context
       assert_not_equal 1, @exception.backtrace.size
 
       called_from = Factory.string
-      begin; @context.skip(@skip_msg, called_from); rescue Exception => exception; end
+      begin; @context.skip(@skip_msg, called_from); rescue StandardError => exception; end
       assert_equal 1,           exception.backtrace.size
       assert_equal called_from, exception.backtrace.first
     end
@@ -188,11 +188,7 @@ class Assert::Context
     subject{ @result }
 
     should "raise an exception with the failure's message" do
-      err = begin
-        @context.fail @fail_msg
-      rescue Exception => exception
-        exception
-      end
+      begin; @context.fail(@fail_msg); rescue StandardError => err; end
       assert_kind_of Assert::Result::TestFailure, err
       assert_equal @fail_msg, err.message
 

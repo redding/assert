@@ -22,8 +22,7 @@ module Assert
   def self.stub_send(obj, meth, *args, &block)
     orig_caller = caller
     stub = self.stubs.fetch(Assert::Stub.key(obj, meth)) do
-      msg = "`#{meth}` not stubbed"
-      raise NotStubbedError.new(msg).tap{ |e| e.set_backtrace(orig_caller) }
+      raise NotStubbedError, "`#{meth}` not stubbed.", orig_caller
     end
     stub.call_method(args, &block)
   end
@@ -72,7 +71,7 @@ module Assert
         msg = "arity mismatch on `#{@method_name}`: " \
               "expected #{number_of_args(@method.arity)}, " \
               "called with #{args.size}"
-        raise StubArityError.new(msg).tap{ |e| e.set_backtrace(orig_caller) }
+        raise StubArityError, msg, orig_caller
       end
       lookup(args, orig_caller).call(*args, &block)
     rescue NotStubbedError => exception
@@ -86,7 +85,7 @@ module Assert
         msg = "arity mismatch on `#{@method_name}`: " \
               "expected #{number_of_args(@method.arity)}, " \
               "stubbed with #{args.size}"
-        raise StubArityError.new(msg).tap{ |e| e.set_backtrace(orig_caller) }
+        raise StubArityError, msg, orig_caller
       end
       @lookup[args] = block
     end
@@ -104,12 +103,12 @@ module Assert
       ">"
     end
 
-    protected
+    private
 
     def setup(object, orig_caller)
       unless object.respond_to?(@method_name)
         msg = "#{object.inspect} does not respond to `#{@method_name}`"
-        raise StubError.new(msg).tap{ |e| e.set_backtrace(orig_caller) }
+        raise StubError, msg, orig_caller
       end
       is_constant = object.kind_of?(Module)
       local_object_methods = object.methods(false).map(&:to_s)
@@ -135,8 +134,6 @@ module Assert
       stub_method
     end
 
-    private
-
     def lookup(args, orig_caller)
       @lookup.fetch(args) do
         self.do || begin
@@ -144,7 +141,7 @@ module Assert
           inspect_lookup_stubs.tap do |stubs|
             msg += "\nStubs:\n#{stubs}" if !stubs.empty?
           end
-          raise NotStubbedError.new(msg).tap{ |e| e.set_backtrace(orig_caller) }
+          raise NotStubbedError, msg, orig_caller
         end
       end
     end
