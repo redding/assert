@@ -42,7 +42,9 @@ class Assert::Stub
     end
 
     should "complain when called if no do block was given" do
-      assert_raises(Assert::NotStubbedError){ @myobj.mymeth }
+      err = assert_raises(Assert::NotStubbedError){ @myobj.mymeth }
+      assert_includes 'not stubbed.',            err.message
+      assert_includes 'test/unit/stub_tests.rb', err.backtrace.first
 
       subject.do = proc{ 'mymeth' }
       assert_nothing_raised do
@@ -55,7 +57,9 @@ class Assert::Stub
     end
 
     should "complain if stubbing a method that the object doesn't respond to" do
-      assert_raises(Assert::StubError){ Assert::Stub.new(@myobj, :some_other_meth) }
+      err = assert_raises(Assert::StubError){ Assert::Stub.new(@myobj, :some_other_meth) }
+      assert_includes 'does not respond to',     err.message
+      assert_includes 'test/unit/stub_tests.rb', err.backtrace.first
     end
 
     should "complain if stubbed and called with no `do` proc given" do
@@ -64,7 +68,10 @@ class Assert::Stub
 
     should "complain if stubbed and called with mismatched arity" do
       Assert::Stub.new(@myobj, :myval){ 'myval' }
-      assert_raises(Assert::StubArityError){ @myobj.myval }
+      err = assert_raises(Assert::StubArityError){ @myobj.myval }
+      assert_includes 'arity mismatch on',       err.message
+      assert_includes 'test/unit/stub_tests.rb', err.backtrace.first
+
       assert_nothing_raised { @myobj.myval(1) }
       assert_raises(Assert::StubArityError){ @myobj.myval(1,2) }
 
@@ -81,9 +88,12 @@ class Assert::Stub
     end
 
     should "complain if stubbed with mismatched arity" do
-      assert_raises(Assert::StubArityError) do
+      err = assert_raises(Assert::StubArityError) do
         Assert::Stub.new(@myobj, :myval).with(){ 'myval' }
       end
+      assert_includes 'arity mismatch on',       err.message
+      assert_includes 'test/unit/stub_tests.rb', err.backtrace.first
+
       assert_raises(Assert::StubArityError) do
         Assert::Stub.new(@myobj, :myval).with(1,2){ 'myval' }
       end

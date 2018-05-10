@@ -114,9 +114,7 @@ module Assert
     # adds a Skip result to the end of the test's results
     # breaks test execution
     def skip(skip_msg = nil, called_from = nil)
-      err = Result::TestSkipped.new(skip_msg || '')
-      err.set_backtrace([called_from]) if called_from
-      raise(err)
+      raise Result::TestSkipped, (skip_msg || ''), called_from
     end
 
     # alter the backtraces of fail/skip results generated in the given block
