@@ -10,7 +10,7 @@ module Assert::Macros
     module ClassMethods
 
       def have_instance_method(*methods)
-        called_from = (methods.last.kind_of?(Array) ? methods.pop : caller).first
+        called_from = (methods.last.kind_of?(Array) ? methods.pop : caller_locations).first
         Assert::Macro.new do
           methods.each{ |m| _methods_macro_instance_methods << [m, called_from] }
           _methods_macro_test called_from
@@ -21,7 +21,7 @@ module Assert::Macros
       alias_method :have_imeths, :have_instance_method
 
       def not_have_instance_method(*methods)
-        called_from = (methods.last.kind_of?(Array) ? methods.pop : caller).first
+        called_from = (methods.last.kind_of?(Array) ? methods.pop : caller_locations).first
         Assert::Macro.new do
           methods.each{ |m| _methods_macro_not_instance_methods << [m, called_from] }
           _methods_macro_test called_from
@@ -32,7 +32,7 @@ module Assert::Macros
       alias_method :not_have_imeths, :not_have_instance_method
 
       def have_class_method(*methods)
-        called_from = (methods.last.kind_of?(Array) ? methods.pop : caller).first
+        called_from = (methods.last.kind_of?(Array) ? methods.pop : caller_locations).first
         Assert::Macro.new do
           methods.each{ |m| _methods_macro_class_methods << [m, called_from] }
           _methods_macro_test called_from
@@ -43,7 +43,7 @@ module Assert::Macros
       alias_method :have_cmeths, :have_class_method
 
       def not_have_class_method(*methods)
-        called_from = (methods.last.kind_of?(Array) ? methods.pop : caller).first
+        called_from = (methods.last.kind_of?(Array) ? methods.pop : caller_locations).first
         Assert::Macro.new do
           methods.each{ |m| _methods_macro_not_class_methods << [m, called_from] }
           _methods_macro_test called_from
@@ -54,19 +54,19 @@ module Assert::Macros
       alias_method :not_have_cmeths, :not_have_class_method
 
       def have_reader(*methods)
-        methods << caller if !methods.last.kind_of?(Array)
+        methods << caller_locations if !methods.last.kind_of?(Array)
         have_instance_methods(*methods)
       end
       alias_method :have_readers, :have_reader
 
       def not_have_reader(*methods)
-        methods << caller if !methods.last.kind_of?(Array)
+        methods << caller_locations if !methods.last.kind_of?(Array)
         not_have_instance_methods(*methods)
       end
       alias_method :not_have_readers, :not_have_reader
 
       def have_writer(*methods)
-        called = methods.last.kind_of?(Array) ? methods.pop : caller
+        called = methods.last.kind_of?(Array) ? methods.pop : caller_locations
         writer_meths = methods.collect{|m| "#{m}="}
         writer_meths << called
         have_instance_methods(*writer_meths)
@@ -74,7 +74,7 @@ module Assert::Macros
       alias_method :have_writers, :have_writer
 
       def not_have_writer(*methods)
-        called = methods.last.kind_of?(Array) ? methods.pop : caller
+        called = methods.last.kind_of?(Array) ? methods.pop : caller_locations
         writer_meths = methods.collect{|m| "#{m}="}
         writer_meths << called
         not_have_instance_methods(*writer_meths)
@@ -82,7 +82,7 @@ module Assert::Macros
       alias_method :not_have_writers, :not_have_writer
 
       def have_accessor(*methods)
-        called = methods.last.kind_of?(Array) ? methods.pop : caller
+        called = methods.last.kind_of?(Array) ? methods.pop : caller_locations
         accessor_meths = methods.collect{|m| [m, "#{m}="]}.flatten
         accessor_meths << called
         have_instance_methods(*accessor_meths)
@@ -90,7 +90,7 @@ module Assert::Macros
       alias_method :have_accessors, :have_accessor
 
       def not_have_accessor(*methods)
-        called = methods.last.kind_of?(Array) ? methods.pop : caller
+        called = methods.last.kind_of?(Array) ? methods.pop : caller_locations
         accessor_meths = methods.collect{|m| [m, "#{m}="]}.flatten
         accessor_meths << called
         not_have_instance_methods(*accessor_meths)

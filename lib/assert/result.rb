@@ -265,7 +265,7 @@ module Assert::Result
     end
 
     def filtered
-      self.class.new(self.reject { |line| filter_out?(line) })
+      self.class.new(self.reject { |line| filter_out?(line.to_s) })
     end
 
     protected
