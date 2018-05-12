@@ -51,6 +51,7 @@ module Assert
       @__assert_running_test__ = running_test
       @__assert_config__       = config
       @__assert_with_bt__      = []
+      @__assert_pending__      = 0
 
       @__assert_result_callback__ = proc do |result|
         if !@__assert_with_bt__.empty?
@@ -91,7 +92,12 @@ module Assert
     # adds a Pass result to the end of the test's results
     # does not break test execution
     def pass(pass_msg = nil)
-      capture_result(Assert::Result::Pass, pass_msg)
+      if @__assert_pending__ == 0
+        capture_result(Assert::Result::Pass, pass_msg)
+      else
+        capture_result(Assert::Result::Fail, "Pending pass (make it "\
+                                             "not pending)")
+      end
     end
 
     # adds an Ignore result to the end of the test's results
@@ -103,10 +109,18 @@ module Assert
     # adds a Fail result to the end of the test's results
     # break test execution if assert is configured to halt on failures
     def fail(message = nil)
-      if halt_on_fail?
-        raise Result::TestFailure, message || ''
+      if @__assert_pending__ == 0
+        if halt_on_fail?
+          raise Result::TestFailure, message || ''
+        else
+          capture_result(Assert::Result::Fail, message || '')
+        end
       else
-        capture_result(Assert::Result::Fail, message || '')
+        if halt_on_fail?
+          raise Result::TestSkipped, "Pending fail: #{message || ''}"
+        else
+          capture_result(Assert::Result::Skip, "Pending fail: #{message || ''}")
+        end
       end
     end
     alias_method :flunk, :fail
@@ -115,6 +129,16 @@ module Assert
     # breaks test execution
     def skip(skip_msg = nil, called_from = nil)
       raise Result::TestSkipped, (skip_msg || ''), called_from
+    end
+
+    # runs block and any fails are skips and any passes are fails
+    def pending(&block)
+      begin
+        @__assert_pending__ += 1
+        instance_eval(&block)
+      ensure
+        @__assert_pending__ -= 1
+      end
     end
 
     # alter the backtraces of fail/skip results generated in the given block
