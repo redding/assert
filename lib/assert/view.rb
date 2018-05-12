@@ -74,9 +74,10 @@ module Assert
     # * `after_test`:   called after a test finishes running
     #                   the test is passed as an arg
     # * `on_finish`:    called when the test suite is finished running
+    # * `on_info`:      called when the INFO signal is triggered whil runninng
+    #                   the test suite
     # * `on_interrupt`: called when the test suite is interrupted while running
     #                   the interrupt exception is passed as an arg
-
     def before_load(test_files); end
     def after_load;              end
     def on_start;                end
@@ -84,6 +85,7 @@ module Assert
     def on_result(result);       end
     def after_test(test);        end
     def on_finish;               end
+    def on_info(test);           end
     def on_interrupt(err);       end
 
     # IO capture

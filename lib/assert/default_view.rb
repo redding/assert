@@ -59,6 +59,15 @@ module Assert
            "#{formatted_suite_result_rate} results/s)"
     end
 
+    def on_info(test)
+      dump_test_results
+
+      puts "Current test:"
+      puts test.name
+      puts test.file_line.to_s
+      puts
+    end
+
     def on_interrupt(err)
       dump_test_results
     end

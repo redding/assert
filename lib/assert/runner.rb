@@ -29,10 +29,20 @@ module Assert
         self.view.puts ", seeded with \"#{self.runner_seed}\""
       end
 
+      # if INFO signal requested (Ctrl+T on Macs), process it
+      @current_running_test = nil
+      trap("INFO") do
+        self.on_info(@current_running_test)
+        self.suite.on_info(@current_running_test)
+        self.view.on_info(@current_running_test)
+      end
+
       begin
         self.suite.start_time = Time.now
         self.suite.setups.each(&:call)
         tests_to_run.tap{ self.suite.clear_tests_to_run }.delete_if do |test|
+          @current_running_test = test
+
           self.before_test(test)
           self.suite.before_test(test)
           self.view.before_test(test)
@@ -76,6 +86,7 @@ module Assert
     def on_result(result);       end
     def after_test(test);        end
     def on_finish;               end
+    def on_info(test);           end
     def on_interrupt(err);       end
 
     private
