@@ -34,14 +34,14 @@ module Assert
 
         if self.suite.test_methods.include?(klass_method_name)
           puts "WARNING: redefining '#{klass_method_name}'"
-          puts "  from: #{caller.first}"
+          puts "  from: #{caller_locations(1,1)}"
         else
           self.suite.test_methods << klass_method_name
         end
 
         self.suite.on_test(Test.for_method(
           method_name.to_s,
-          ContextInfo.new(self, nil, caller.first),
+          ContextInfo.new(self, nil, caller_locations(1,1)),
           self.suite.config
         ))
       end
@@ -159,7 +159,7 @@ module Assert
 
     def capture_result(result_klass, msg)
       @__assert_result_callback__.call(
-        result_klass.for_test(@__assert_running_test__, msg, caller)
+        result_klass.for_test(@__assert_running_test__, msg, caller_locations)
       )
     end
 

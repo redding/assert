@@ -59,8 +59,8 @@ class Assert::Context
       with_backtrace(caller) do
         assert_false result.with_bt_set?
 
-        assert_equal result.src_line,                 result.trace
-        assert_equal result.backtrace.filtered.first, result.src_line
+        assert_equal result.src_line,                      result.trace
+        assert_equal result.backtrace.filtered.first.to_s, result.src_line
       end
     end
 
@@ -162,7 +162,7 @@ class Assert::Context
 
     should "create a fail result and set its backtrace" do
       assert_kind_of Assert::Result::Fail, subject
-      assert_equal subject.backtrace.filtered.first, subject.trace
+      assert_equal subject.backtrace.filtered.first.to_s, subject.trace
       assert_kind_of Array, subject.backtrace
     end
 

@@ -6,8 +6,7 @@ module Assert
 
   def self.stub(obj, meth, &block)
     (self.stubs[Assert::Stub.key(obj, meth)] ||= begin
-      orig_caller = caller
-      Assert::Stub.new(obj, meth, orig_caller)
+      Assert::Stub.new(obj, meth, caller_locations)
     end).tap{ |s| s.do = block }
   end
 
@@ -20,9 +19,9 @@ module Assert
   end
 
   def self.stub_send(obj, meth, *args, &block)
-    orig_caller = caller
+    orig_caller = caller_locations
     stub = self.stubs.fetch(Assert::Stub.key(obj, meth)) do
-      raise NotStubbedError, "`#{meth}` not stubbed.", orig_caller
+      raise NotStubbedError, "`#{meth}` not stubbed.", orig_caller.map(&:to_s)
     end
     stub.call_method(args, &block)
   end
@@ -44,7 +43,7 @@ module Assert
     attr_reader :method_name, :name, :ivar_name, :do
 
     def initialize(object, method_name, orig_caller = nil, &block)
-      orig_caller ||= caller
+      orig_caller ||= caller_locations
       @metaclass = class << object; self; end
       @method_name = method_name.to_s
       @name = "__assert_stub__#{object.object_id}_#{@method_name}"
@@ -66,12 +65,12 @@ module Assert
     end
 
     def call(args, orig_caller = nil, &block)
-      orig_caller ||= caller
+      orig_caller ||= caller_locations
       unless arity_matches?(args)
         msg = "arity mismatch on `#{@method_name}`: " \
               "expected #{number_of_args(@method.arity)}, " \
               "called with #{args.size}"
-        raise StubArityError, msg, orig_caller
+        raise StubArityError, msg, orig_caller.map(&:to_s)
       end
       lookup(args, orig_caller).call(*args, &block)
     rescue NotStubbedError => exception
@@ -80,12 +79,12 @@ module Assert
     end
 
     def with(*args, &block)
-      orig_caller = caller
+      orig_caller = caller_locations
       unless arity_matches?(args)
         msg = "arity mismatch on `#{@method_name}`: " \
               "expected #{number_of_args(@method.arity)}, " \
               "stubbed with #{args.size}"
-        raise StubArityError, msg, orig_caller
+        raise StubArityError, msg, orig_caller.map(&:to_s)
       end
       @lookup[args] = block
     end
@@ -108,7 +107,7 @@ module Assert
     def setup(object, orig_caller)
       unless object.respond_to?(@method_name)
         msg = "#{object.inspect} does not respond to `#{@method_name}`"
-        raise StubError, msg, orig_caller
+        raise StubError, msg, orig_caller.map(&:to_s)
       end
       is_constant = object.kind_of?(Module)
       local_object_methods = object.methods(false).map(&:to_s)
@@ -129,7 +128,7 @@ module Assert
       Assert.instance_variable_set(@ivar_name, self)
       @metaclass.class_eval <<-stub_method
         def #{@method_name}(*args, &block)
-          Assert.instance_variable_get("#{@ivar_name}").call(args, caller, &block)
+          Assert.instance_variable_get("#{@ivar_name}").call(args, caller_locations, &block)
         end
       stub_method
     end
@@ -141,7 +140,7 @@ module Assert
           inspect_lookup_stubs.tap do |stubs|
             msg += "\nStubs:\n#{stubs}" if !stubs.empty?
           end
-          raise NotStubbedError, msg, orig_caller
+          raise NotStubbedError, msg, orig_caller.map(&:to_s)
         end
       end
     end
