@@ -40,7 +40,7 @@ class Assert::Suite
     should have_imeths :fail_result_count, :error_result_count
     should have_imeths :skip_result_count, :ignore_result_count
     should have_imeths :before_load, :on_test, :after_load
-    should have_imeths :on_start, :on_finish, :on_interrupt
+    should have_imeths :on_start, :on_finish, :on_info, :on_interrupt
     should have_imeths :before_test, :after_test, :on_result
 
     should "know its config" do

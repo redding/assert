@@ -93,6 +93,7 @@ module Assert
     def on_result(result); end
     def after_test(test);  end
     def on_finish;         end
+    def on_info(test);     end
     def on_interrupt(err); end
 
     def inspect
