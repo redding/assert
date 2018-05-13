@@ -33,8 +33,8 @@ class Assert::Context
     should have_cmeths :should, :should_eventually, :should_skip
 
     should have_imeths :assert, :assert_not, :refute
-    should have_imeths :skip, :pass, :fail, :flunk, :ignore
-    should have_imeths :with_backtrace, :subject
+    should have_imeths :pass, :ignore, :fail, :flunk, :skip
+    should have_imeths :pending, :with_backtrace, :subject
 
     should "collect context info" do
       test = @__assert_running_test__
@@ -294,8 +294,53 @@ class Assert::Context
 
   end
 
+  class PendingTests < UnitTests
+    desc "`pending` method"
+    setup do
+      block2  = proc { fail; pass; }
+      @block1 = proc { pending(&block2) } # test nesting
+    end
+
+    should "make fails skips and make passes fails" do
+      @context.fail 'not affected'
+      @context.pass
+      @context.pending(&@block1)
+
+      assert_equal 4, @test_results.size
+      norm_fail, norm_pass, pending_fail, pending_pass = @test_results
+
+      assert_kind_of Assert::Result::Fail, norm_fail
+      assert_kind_of Assert::Result::Pass, norm_pass
+
+      assert_kind_of Assert::Result::Skip, pending_fail
+      assert_includes "Pending fail", pending_fail.message
+
+      assert_kind_of Assert::Result::Fail, pending_pass
+      assert_includes "Pending pass", pending_pass.message
+    end
+
+  end
+
+  class PendingWithHaltOnFailTests < PendingTests
+    desc "when halting on fails"
+    setup do
+      @halt_config = Assert::Config.new(:halt_on_fail => true)
+      @context = @context_class.new(@test, @halt_config, @result_callback)
+    end
+    subject{ @result }
+
+    should "make fails skips and stop the test" do
+      begin; @context.pending(&@block1); rescue StandardError => err; end
+      assert_kind_of Assert::Result::TestSkipped, err
+      assert_includes "Pending fail", err.message
+
+      assert_equal 0, @test_results.size # it halted before the pending pass
+    end
+
+  end
+
   class WithBacktraceTests < UnitTests
-    desc "with_backtrace method"
+    desc "`with_backtrace` method"
     setup do
       @from_bt    = ['called_from_here', Factory.string]
       @from_block = proc { ignore; fail; pass; skip 'todo'; }
@@ -324,7 +369,7 @@ class Assert::Context
   end
 
   class WithNestedBacktraceTests < UnitTests
-    desc "with_backtrace method nested"
+    desc "`with_backtrace` method nested"
     setup do
       @from_bt1            = ['called_from_here 1', Factory.string]
       @from_bt2 = from_bt2 = ['called_from_here 2', Factory.string]
