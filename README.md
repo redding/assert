@@ -65,6 +65,16 @@ Assert is an assertion style testing framework, meaning you use assertion statem
 
 ## Stub
 
+Assert comes with a stubbing API - all it does is replace method calls.  In general it tries to be friendly and complain if stubbing doesn't match up with the object/method being stubbed:
+
+* each stub takes a block that is called in place of the method
+* complains if you stub a method that the object doesn't respond to
+* complains if you stub with an arity mismatch
+* no methods are added to `Object` to support stubbing
+* stubs are auto-unstubbed on test teardown
+
+**Note**: Assert's stubbing logic has been extracted into a separate gem: [MuchStub](https://github.com/redding/much-stub/#muchstub).  However, the main `Assert.{stub|unstub|stub_send|etc}` api is still available (it just proxies MuchStub now).
+
 ```ruby
 myclass = Class.new do
   def mymeth; 'meth'; end
@@ -116,14 +126,6 @@ myobj.myval(123)
 myobj.myval(456)
   # => 456
 ```
-
-Assert comes with a stubbing API - all it does is replace method calls.  In general it tries to be friendly and complain if stubbing doesn't match up with the object/method being stubbed:
-
-* each stub takes a block that is called in place of the method
-* complains if you stub a method that the object doesn't respond to
-* complains if you stub with an arity mismatch
-* no methods are added to `Object` to support stubbing
-* stubs are auto-unstubbed on test teardown
 
 ## Factory
 
