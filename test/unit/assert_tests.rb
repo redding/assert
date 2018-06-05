@@ -2,6 +2,7 @@ require 'assert'
 
 require 'assert/config'
 require 'assert/stub'
+require 'much-stub'
 
 module Assert
 
@@ -41,7 +42,7 @@ module Assert
 
     should "build a stub" do
       stub1 = Assert.stub(@myobj, :mymeth)
-      assert_kind_of Assert::Stub, stub1
+      assert_kind_of MuchStub::Stub, stub1
     end
 
     should "lookup stubs that have been called before" do
@@ -52,7 +53,7 @@ module Assert
 
     should "set the stub's do block if given a block" do
       Assert.stub(@myobj, :mymeth)
-      assert_raises(NotStubbedError){ @myobj.mymeth }
+      assert_raises(MuchStub::NotStubbedError){ @myobj.mymeth }
       Assert.stub(@myobj, :mymeth){ @stub_value }
       assert_equal @stub_value, @myobj.mymeth
     end
@@ -96,7 +97,7 @@ module Assert
     end
 
     should "be able to call a stub's original method" do
-      err = assert_raises(NotStubbedError){ Assert.stub_send(@myobj, :mymeth) }
+      err = assert_raises(MuchStub::NotStubbedError){ Assert.stub_send(@myobj, :mymeth) }
       assert_includes 'not stubbed.',              err.message
       assert_includes 'test/unit/assert_tests.rb', err.backtrace.first
 
