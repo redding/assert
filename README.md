@@ -175,6 +175,8 @@ module Factory
 end
 ```
 
+**Note**: Assert's factory logic has been extracted into a separate gem: [MuchFactory](https://github.com/redding/much-factory/#muchfactory).  However, the main api above is still available (it just delegates to MuchFactory now).
+
 ## CLI
 
 ```sh

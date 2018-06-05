@@ -18,6 +18,7 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
 
-  gem.add_dependency("much-stub", ["~> 0.1.0"])
+  gem.add_dependency("much-factory", ["~> 0.1.0"])
+  gem.add_dependency("much-stub",    ["~> 0.1.0"])
 
 end
