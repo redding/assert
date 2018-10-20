@@ -29,12 +29,16 @@ module Assert
         self.view.puts ", seeded with \"#{self.runner_seed}\""
       end
 
-      # if INFO signal requested (Ctrl+T on Macs), process it
       @current_running_test = nil
-      trap("INFO") do
-        self.on_info(@current_running_test)
-        self.suite.on_info(@current_running_test)
-        self.view.on_info(@current_running_test)
+
+      # if SIGINFO available (ie on OSX, not on BSD) and if SIGINFO requested
+      # (Ctrl+T on Macs), process it
+      if Signal.list.keys.include?("INFO")
+        Signal.trap("INFO") do
+          self.on_info(@current_running_test)
+          self.suite.on_info(@current_running_test)
+          self.view.on_info(@current_running_test)
+        end
       end
 
       begin
