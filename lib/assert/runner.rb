@@ -1,6 +1,6 @@
-require 'assert/config_helpers'
-require 'assert/suite'
-require 'assert/view'
+require "assert/config_helpers"
+require "assert/suite"
+require "assert/view"
 
 module Assert
 

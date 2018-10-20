@@ -1,7 +1,7 @@
-require 'assert'
-require 'assert/assertions'
+require "assert"
+require "assert/assertions"
 
-require 'assert/utils'
+require "assert/utils"
 
 module Assert::Assertions
 

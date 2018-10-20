@@ -5,7 +5,7 @@
 ```ruby
 # in test/my_tests.rb
 
-require 'assert'
+require "assert"
 
 class MyTests < Assert::Context
 
@@ -77,13 +77,13 @@ Assert comes with a stubbing API - all it does is replace method calls.  In gene
 
 ```ruby
 myclass = Class.new do
-  def mymeth; 'meth'; end
+  def mymeth; "meth"; end
   def myval(val); val; end
 end
 myobj = myclass.new
 
 myobj.mymeth
-  # => 'meth'
+  # => "meth"
 myobj.myval(123)
   # => 123
 myobj.myval(456)
@@ -92,23 +92,23 @@ myobj.myval(456)
 Assert.stub(myobj, :mymeth)
 myobj.mymeth
   # => StubError: `mymeth` not stubbed.
-Assert.stub(myobj, :mymeth){ 'stub-meth' }
+Assert.stub(myobj, :mymeth){ "stub-meth" }
 myobj.mymeth
-  # => 'stub-meth'
+  # => "stub-meth"
 myobj.mymeth(123)
   # => StubError: arity mismatch
-Assert.stub(myobj, :mymeth).with(123){ 'stub-meth' }
+Assert.stub(myobj, :mymeth).with(123){ "stub-meth" }
   # => StubError: arity mismatch
 Assert.stub_send(myobj, :mymeth) # call to the original method post-stub
-  # => 'meth'
+  # => "meth"
 
-Assert.stub(myobj, :myval){ 'stub-meth' }
+Assert.stub(myobj, :myval){ "stub-meth" }
   # => StubError: arity mismatch
 Assert.stub(myobj, :myval).with(123){ |val| val.to_s }
 myobj.myval
   # => StubError: arity mismatch
 myobj.myval(123)
-  # => '123'
+  # => "123"
 myobj.myval(456)
   # => StubError: `myval(456)` not stubbed.
 Assert.stub_send(myobj, :myval, 123) # call to the original method post-stub
@@ -120,7 +120,7 @@ Assert.unstub(myobj, :mymeth)
 Assert.unstub(myobj, :myval)
 
 myobj.mymeth
-  # => 'meth'
+  # => "meth"
 myobj.myval(123)
   # => 123
 myobj.myval(456)
@@ -130,7 +130,7 @@ myobj.myval(456)
 ## Factory
 
 ```ruby
-require 'assert/factory'
+require "assert/factory"
 
 Assert::Factory.integer    #=> 15742
 Assert::Factory.integer(3) #=> 2
@@ -197,7 +197,7 @@ As an example, say your test folder has a file structure like so:
 |  |  - slow_tests.rb
 ```
 
-* `$ assert` - runs all tests ('./test' is used if no paths are given)
+* `$ assert` - runs all tests ("./test" is used if no paths are given)
 * `$ assert test/basic` - run all tests in basic_tests.rb
 * `$ assert test/complex/fast_tests.rb` - runs all tests in fast_tests.rb
 * `$ assert test/basic test/comp` - runs all tests in basic_tests.rb, complex_tests.rb, fast_tests.rb and slow_tests.rb
@@ -237,7 +237,7 @@ Assert accepts options from its CLI.  Use these options to specify absolute runt
 Assert uses its [`Assert::Runner`](/lib/assert/runner.rb) to run tests.  You can extend this default runner or use your own runner implementation.  Specify it in your user/local settings:
 
 ```ruby
-require 'my_awesome_runner_class'
+require "my_awesome_runner_class"
 
 Assert.configure do |config|
   config.runner MyAwesomeRunnerClass.new
@@ -326,7 +326,7 @@ $ assert [-v|--verbose|--no-verbose]
 
 ### Capture Output
 
-By default, Assert shows any output on `$stdout` produced while running a test.  It provides a setting to override whether to show this output or to 'capture' it and display it in the test result details:
+By default, Assert shows any output on `$stdout` produced while running a test.  It provides a setting to override whether to show this output or to "capture" it and display it in the test result details:
 
 In user/local settings file:
 
@@ -404,7 +404,7 @@ This, of course, assumes you are working in a git repository.  If you are not or
 ```ruby
 Assert.configure do |config|
   config.changed_proc Proc.new do |config, test_paths|
-    `git diff --name-only master -- #{test_paths.join(' ')}`.split("\n")  # or whatever
+    `git diff --name-only master -- #{test_paths.join(" ")}`.split("\n")  # or whatever
   end
 end
 ```
@@ -571,7 +571,7 @@ Beyond that, each view can do as it sees fit.  Initialize how you wish, take wha
 To use a 3rd party custom view, first require it in and then configure it.  Assert provides a helper for requiring in views.  It can be used in two ways.  You can pass a fully qualified path to the helper and if it exists, will require it in.
 
 ```ruby
-Assert::View.require_user_view '/path/to/my/view'
+Assert::View.require_user_view "/path/to/my/view"
 ```
 
 Alternatively, you can install/clone/copy/write your view implementations in `~/.assert/views` and require it in by name.  To have assert require it by name, have it installed at `~/assert/views/view_name/lib/view_name.rb` (this structure is compatible with popular conventions for rubygem development). For example:
@@ -579,7 +579,7 @@ Alternatively, you can install/clone/copy/write your view implementations in `~/
 ```ruby
 # assuming ~/.assert/views/my-custom-view/lib/my-custom-view.rb exists
 # this will require it in
-Assert::View.require_user_view 'my-custom-view'
+Assert::View.require_user_view "my-custom-view"
 ```
 
 Once your view class is required in, use it and configure it just as you would any view.
@@ -592,7 +592,7 @@ A `Suite` object is reponsible for collecting and structuring tests and defines 
 
 ### Runner
 
-A `Runner` object is responsible for running a suite of tests and firing event callbacks to the `View`.  Any runner object should take the test suite and view as arguments and should provide a 'run' method that runs the tests and renders the view.
+A `Runner` object is responsible for running a suite of tests and firing event callbacks to the `View`.  Any runner object should take the test suite and view as arguments and should provide a "run" method that runs the tests and renders the view.
 
 ### Context
 
@@ -620,7 +620,7 @@ A `View` object is responsible for rendering test result output.  Assert provide
 
 ### Macro
 
-Macros are procs that define sets of test code and make it available for easy reuse.  Macros work nicely with the 'should' and 'test' context methods.
+Macros are procs that define sets of test code and make it available for easy reuse.  Macros work nicely with the "should" and "test" context methods.
 
 ## Installation
 
@@ -636,7 +636,7 @@ If submitting a Pull Request, please:
 
 1. Fork it
 2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Added some feature'`)
+3. Commit your changes (`git commit -am "Added some feature"`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
 

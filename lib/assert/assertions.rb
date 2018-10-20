@@ -1,4 +1,4 @@
-require 'assert/utils'
+require "assert/utils"
 
 module Assert
 
@@ -214,8 +214,8 @@ module Assert
         c = __assert_config__
         exp_show = Assert::U.show_for_diff(exp, c)
         act_show = Assert::U.show_for_diff(act, c)
-        exp_id = "#<#{exp.class}:#{'0x0%x' % (exp.object_id << 1)}>"
-        act_id = "#<#{act.class}:#{'0x0%x' % (act.object_id << 1)}>"
+        exp_id = "#<#{exp.class}:#{"0x0%x" % (exp.object_id << 1)}>"
+        act_id = "#<#{act.class}:#{"0x0%x" % (act.object_id << 1)}>"
 
         if c.use_diff_proc.call(exp_show, act_show)
           "Expected #{act_id} to be the same as #{exp_id}, diff:\n"\
@@ -232,8 +232,8 @@ module Assert
         c = __assert_config__
         exp_show = Assert::U.show_for_diff(exp, c)
         act_show = Assert::U.show_for_diff(act, c)
-        exp_id = "#<#{exp.class}:#{'0x0%x' % (exp.object_id << 1)}>"
-        act_id = "#<#{act.class}:#{'0x0%x' % (act.object_id << 1)}>"
+        exp_id = "#<#{exp.class}:#{"0x0%x" % (exp.object_id << 1)}>"
+        act_id = "#<#{act.class}:#{"0x0%x" % (act.object_id << 1)}>"
 
         if c.use_diff_proc.call(exp_show, act_show)
           "Expected #{act_id} to not be the same as #{exp_id}, diff:\n"\

@@ -1,7 +1,7 @@
-require 'assert'
-require 'assert/context_info'
+require "assert"
+require "assert/context_info"
 
-require 'assert/context'
+require "assert/context"
 
 class Assert::ContextInfo
 
@@ -30,7 +30,7 @@ class Assert::ContextInfo
     end
 
     should "set its file from caller info on init" do
-      assert_equal @caller.first.gsub(/\:[0-9]+.*$/, ''), subject.file
+      assert_equal @caller.first.gsub(/\:[0-9]+.*$/, ""), subject.file
     end
 
     should "not have any file info if no caller is given" do
@@ -43,8 +43,8 @@ class Assert::ContextInfo
       name = Factory.string
 
       assert_equal name, subject.test_name(name)
-      assert_equal '',   subject.test_name('')
-      assert_equal '',   subject.test_name(nil)
+      assert_equal "",   subject.test_name("")
+      assert_equal "",   subject.test_name(nil)
 
       Assert.stub(subject.klass, :description){ desc }
       assert_equal "#{desc} #{name}", subject.test_name(name)

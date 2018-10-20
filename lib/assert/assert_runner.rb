@@ -1,4 +1,4 @@
-require 'assert/cli'
+require "assert/cli"
 
 module Assert
 
@@ -10,7 +10,7 @@ module Assert
 
     def initialize(config, test_paths, test_options)
       @config = config
-      Assert::CLI.bench('Applying settings') do
+      Assert::CLI.bench("Applying settings") do
         apply_user_settings
         apply_local_settings
         apply_env_settings
@@ -25,7 +25,7 @@ module Assert
     def init(test_files, test_dir)
       # load any test helper file
       if test_dir && (h = File.join(test_dir, self.config.test_helper)) && File.exists?(h)
-        Assert::CLI.bench('Requiring test helper'){ require h }
+        Assert::CLI.bench("Requiring test helper"){ require h }
       end
 
       if self.config.list
@@ -61,15 +61,15 @@ module Assert
     end
 
     def apply_user_settings
-      safe_require("#{ENV['HOME']}/#{USER_SETTINGS_FILE}") if ENV['HOME']
+      safe_require("#{ENV["HOME"]}/#{USER_SETTINGS_FILE}") if ENV["HOME"]
     end
 
     def apply_local_settings
-      safe_require(ENV['ASSERT_LOCALFILE'] || path_of(LOCAL_SETTINGS_FILE, Dir.pwd))
+      safe_require(ENV["ASSERT_LOCALFILE"] || path_of(LOCAL_SETTINGS_FILE, Dir.pwd))
     end
 
     def apply_env_settings
-      self.config.runner_seed ENV['ASSERT_RUNNER_SEED'].to_i if ENV['ASSERT_RUNNER_SEED']
+      self.config.runner_seed ENV["ASSERT_RUNNER_SEED"].to_i if ENV["ASSERT_RUNNER_SEED"]
     end
 
     def apply_option_settings(options)
@@ -111,7 +111,7 @@ module Assert
 
     def path_of(segment, a_path)
       # this method inspects a test path and finds the test dir path.
-      full_path = File.expand_path(a_path || '.', Dir.pwd)
+      full_path = File.expand_path(a_path || ".", Dir.pwd)
       seg_pos = full_path.index(segment_regex(segment))
       File.join(seg_pos && (seg_pos > 0) ? full_path[0..(seg_pos-1)] : full_path, segment)
     end

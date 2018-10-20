@@ -1,6 +1,6 @@
-require 'stringio'
-require 'assert/file_line'
-require 'assert/result'
+require "stringio"
+require "assert/file_line"
+require "assert/result"
 
 module Assert
 
@@ -37,18 +37,18 @@ module Assert
     end
 
     def file_line
-      @file_line ||= FileLine.parse((@build_data[:file_line] || '').to_s)
+      @file_line ||= FileLine.parse((@build_data[:file_line] || "").to_s)
     end
 
     def file_name; self.file_line.file;      end
     def line_num;  self.file_line.line.to_i; end
 
     def name
-      @name ||= (@build_data[:name] || '')
+      @name ||= (@build_data[:name] || "")
     end
 
     def output
-      @output ||= (@build_data[:output] || '')
+      @output ||= (@build_data[:output] || "")
     end
 
     def run_time
@@ -90,16 +90,16 @@ module Assert
       attributes_string = ([:name, :context_info].collect do |attr|
         "@#{attr}=#{self.send(attr).inspect}"
       end).join(" ")
-      "#<#{self.class}:#{'0x0%x' % (object_id << 1)} #{attributes_string}>"
+      "#<#{self.class}:#{"0x0%x" % (object_id << 1)} #{attributes_string}>"
     end
 
     private
 
     def run_test(scope)
       begin
-        # run any assert style 'setup do' setups
+        # run any assert style "setup do" setups
         self.context_class.run_setups(scope)
-        # run any test/unit style 'def setup' setups
+        # run any test/unit style "def setup" setups
         scope.setup if scope.respond_to?(:setup)
         # run the code block
         scope.instance_eval(&(self.code || proc{}))
@@ -113,9 +113,9 @@ module Assert
         capture_result(Result::Error, err)
       ensure
         begin
-          # run any assert style 'teardown do' teardowns
+          # run any assert style "teardown do" teardowns
           self.context_class.run_teardowns(scope)
-          # run any test/unit style 'def teardown' teardowns
+          # run any test/unit style "def teardown" teardowns
           scope.teardown if scope.respond_to?(:teardown)
         rescue Result::TestFailure => err
           capture_result(Result::Fail, err)

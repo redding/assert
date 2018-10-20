@@ -1,13 +1,13 @@
-require 'assert/assertions'
-require 'assert/context/setup_dsl'
-require 'assert/context/subject_dsl'
-require 'assert/context/suite_dsl'
-require 'assert/context/test_dsl'
-require 'assert/context_info'
-require 'assert/macros/methods'
-require 'assert/result'
-require 'assert/suite'
-require 'assert/utils'
+require "assert/assertions"
+require "assert/context/setup_dsl"
+require "assert/context/subject_dsl"
+require "assert/context/suite_dsl"
+require "assert/context/test_dsl"
+require "assert/context_info"
+require "assert/macros/methods"
+require "assert/result"
+require "assert/suite"
+require "assert/utils"
 
 module Assert
 
@@ -33,7 +33,7 @@ module Assert
         klass_method_name = "#{self}##{method_name}"
 
         if self.suite.test_methods.include?(klass_method_name)
-          puts "WARNING: redefining '#{klass_method_name}'"
+          puts "WARNING: redefining "#{klass_method_name}""
           puts "  from: #{caller_locations(1,1)}"
         else
           self.suite.test_methods << klass_method_name
@@ -111,15 +111,15 @@ module Assert
     def fail(message = nil)
       if @__assert_pending__ == 0
         if halt_on_fail?
-          raise Result::TestFailure, message || ''
+          raise Result::TestFailure, message || ""
         else
-          capture_result(Assert::Result::Fail, message || '')
+          capture_result(Assert::Result::Fail, message || "")
         end
       else
         if halt_on_fail?
-          raise Result::TestSkipped, "Pending fail: #{message || ''}"
+          raise Result::TestSkipped, "Pending fail: #{message || ""}"
         else
-          capture_result(Assert::Result::Skip, "Pending fail: #{message || ''}")
+          capture_result(Assert::Result::Skip, "Pending fail: #{message || ""}")
         end
       end
     end
@@ -128,7 +128,7 @@ module Assert
     # adds a Skip result to the end of the test's results
     # breaks test execution
     def skip(skip_msg = nil, called_from = nil)
-      raise Result::TestSkipped, (skip_msg || ''), called_from
+      raise Result::TestSkipped, (skip_msg || ""), called_from
     end
 
     # runs block and any fails are skips and any passes are fails

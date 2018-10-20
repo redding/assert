@@ -1,4 +1,4 @@
-require 'assert/suite'
+require "assert/suite"
 
 module Assert
 

@@ -1,7 +1,7 @@
-require 'assert'
-require 'assert/result'
+require "assert"
+require "assert/result"
 
-require 'assert/file_line'
+require "assert/file_line"
 
 module Assert::Result
 
@@ -70,7 +70,7 @@ module Assert::Result
 
     should "know its class-level type/name" do
       assert_equal :unknown, subject.class.type
-      assert_equal '',       subject.class.name
+      assert_equal "",       subject.class.name
     end
 
     should "know how to build a result for a given test" do
@@ -105,13 +105,13 @@ module Assert::Result
       result = Base.new({})
 
       assert_equal :unknown,                   result.type
-      assert_equal '',                         result.name
-      assert_equal '',                         result.test_name
-      assert_equal Assert::FileLine.parse(''), result.test_file_line
-      assert_equal '',                         result.message
-      assert_equal '',                         result.output
+      assert_equal "",                         result.name
+      assert_equal "",                         result.test_name
+      assert_equal Assert::FileLine.parse(""), result.test_file_line
+      assert_equal "",                         result.message
+      assert_equal "",                         result.output
       assert_equal Backtrace.new([]),          result.backtrace
-      assert_equal '',                         result.trace
+      assert_equal "",                         result.trace
     end
 
     should "know its test file line attrs" do
@@ -212,8 +212,8 @@ module Assert::Result
 
       assert_equal 3, str.split("\n").count
 
-      Assert.stub(subject, :message){ '' }
-      Assert.stub(subject, :trace){ '' }
+      Assert.stub(subject, :message){ "" }
+      Assert.stub(subject, :trace){ "" }
 
       assert_equal 1, subject.to_s.split("\n").count
     end
@@ -227,7 +227,7 @@ module Assert::Result
     end
 
     should "show only its class and message when inspected" do
-      exp = "#<#{subject.class}:#{'0x0%x' % (subject.object_id << 1)} "\
+      exp = "#<#{subject.class}:#{"0x0%x" % (subject.object_id << 1)} "\
             "@message=#{subject.message.inspect} "\
             "@file_line=#{subject.file_line.to_s.inspect} "\
             "@test_file_line=#{subject.test_file_line.to_s.inspect}>"
@@ -246,7 +246,7 @@ module Assert::Result
     should "know its type/name" do
       assert_equal :pass,  subject.type
       assert_equal :pass,  subject.class.type
-      assert_equal 'Pass', subject.class.name
+      assert_equal "Pass", subject.class.name
     end
 
   end
@@ -261,7 +261,7 @@ module Assert::Result
     should "know its type/name" do
       assert_equal :ignore,  subject.type
       assert_equal :ignore,  subject.class.type
-      assert_equal 'Ignore', subject.class.name
+      assert_equal "Ignore", subject.class.name
     end
 
   end
@@ -298,7 +298,7 @@ module Assert::Result
     should "know its type/name" do
       assert_equal :fail,  subject.type
       assert_equal :fail,  subject.class.type
-      assert_equal 'Fail', subject.class.name
+      assert_equal "Fail", subject.class.name
     end
 
     should "allow creating for a test with TestFailure exceptions" do
@@ -349,7 +349,7 @@ module Assert::Result
     should "know its type/name" do
       assert_equal :skip,  subject.type
       assert_equal :skip,  subject.class.type
-      assert_equal 'Skip', subject.class.name
+      assert_equal "Skip", subject.class.name
     end
 
     should "allow creating for a test with TestSkipped exceptions" do
@@ -389,7 +389,7 @@ module Assert::Result
 
     should "know its class-level type/name" do
       assert_equal :error,  subject.class.type
-      assert_equal 'Error', subject.class.name
+      assert_equal "Error", subject.class.name
     end
 
     should "allow creating for a test with exceptions" do

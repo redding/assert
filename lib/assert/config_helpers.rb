@@ -33,27 +33,27 @@ module Assert
       self.pass_result_count == self.result_count
     end
 
-    def formatted_run_time(run_time, format = '%.6f')
+    def formatted_run_time(run_time, format = "%.6f")
       format % run_time
     end
 
-    def formatted_test_rate(test_rate, format = '%.6f')
+    def formatted_test_rate(test_rate, format = "%.6f")
       format % test_rate
     end
 
-    def formatted_result_rate(result_rate, format = '%.6f')
+    def formatted_result_rate(result_rate, format = "%.6f")
       format % result_rate
     end
 
-    def formatted_suite_run_time(format = '%.6f')
+    def formatted_suite_run_time(format = "%.6f")
       formatted_run_time(self.config.suite.run_time, format)
     end
 
-    def formatted_suite_test_rate(format = '%.6f')
+    def formatted_suite_test_rate(format = "%.6f")
       formatted_test_rate(self.config.suite.test_rate, format)
     end
 
-    def formatted_suite_result_rate(format = '%.6f')
+    def formatted_suite_result_rate(format = "%.6f")
       formatted_result_rate(self.config.suite.result_rate, format)
     end
 

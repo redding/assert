@@ -1,9 +1,9 @@
-require 'assert'
-require 'assert/suite'
+require "assert"
+require "assert/suite"
 
-require 'assert/config_helpers'
-require 'assert/test'
-require 'test/support/inherited_stuff'
+require "assert/config_helpers"
+require "assert/test"
+require "test/support/inherited_stuff"
 
 class Assert::Suite
 

@@ -3,10 +3,10 @@
 # Copyright (c) 2011-Present Kelly Redding and Collin Redding
 #
 
-require 'assert'
-require 'assert/cli'
+require "assert"
+require "assert/cli"
 
-Assert.config.debug ENV['ASSERT_DEBUG'] == 'true' || Assert::CLI.debug?(ARGV)
+Assert.config.debug ENV["ASSERT_DEBUG"] == "true" || Assert::CLI.debug?(ARGV)
 
-Assert::CLI.bench('CLI init and parse'){ @cli = Assert::CLI.new(*ARGV) }
+Assert::CLI.bench("CLI init and parse"){ @cli = Assert::CLI.new(*ARGV) }
 @cli.run

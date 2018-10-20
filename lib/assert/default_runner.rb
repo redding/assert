@@ -1,4 +1,4 @@
-require 'assert/runner'
+require "assert/runner"
 
 module Assert
 

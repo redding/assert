@@ -6,8 +6,8 @@ ROOT_PATH = File.expand_path("../..", __FILE__)
 $LOAD_PATH.unshift(ROOT_PATH)
 
 # require pry for debugging (`binding.pry`)
-require 'pry'
-require 'test/support/factory'
+require "pry"
+require "test/support/factory"
 
 # 1.8.7 backfills
 

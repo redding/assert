@@ -1,7 +1,7 @@
-require 'assert/context_info'
-require 'assert/macro'
-require 'assert/suite'
-require 'assert/test'
+require "assert/context_info"
+require "assert/macro"
+require "assert/suite"
+require "assert/test"
 
 module Assert; end
 class Assert::Context
@@ -31,7 +31,7 @@ class Assert::Context
         desc_or_macro.kind_of?(Assert::Macro) ? desc_or_macro.name : desc_or_macro,
         ci,
         self.suite.config,
-        &proc { skip('TODO', [ci.called_from.to_s]) }
+        &proc { skip("TODO", [ci.called_from.to_s]) }
       ))
     end
     alias_method :test_skip, :test_eventually

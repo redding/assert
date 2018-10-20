@@ -1,11 +1,11 @@
-require 'assert'
-require 'assert/runner'
+require "assert"
+require "assert/runner"
 
-require 'stringio'
-require 'assert/config_helpers'
-require 'assert/default_suite'
-require 'assert/result'
-require 'assert/view'
+require "stringio"
+require "assert/config_helpers"
+require "assert/default_suite"
+require "assert/result"
+require "assert/view"
 
 class Assert::Runner
 
@@ -113,7 +113,7 @@ class Assert::Runner
             "seeded with \"#{subject.runner_seed}\"\n"
       assert_includes exp, @view_output
 
-      @view_output.gsub!(/./, '')
+      @view_output.gsub!(/./, "")
       @config.suite.clear_tests_to_run
       subject.run
       assert_not_includes exp, @view_output
@@ -143,7 +143,7 @@ class Assert::Runner
       @config.suite.clear_tests_to_run
       @config.suite.on_test(@test)
       @config.single_test @test.file_line.to_s
-      @view_output.gsub!(/./, '')
+      @view_output.gsub!(/./, "")
       subject.run
 
       exp = "Running test: #{subject.single_test_file_line}, " \

@@ -1,7 +1,7 @@
-require 'assert/config'
-require 'assert/config_helpers'
-require 'assert/suite'
-require 'assert/view_helpers'
+require "assert/config"
+require "assert/config_helpers"
+require "assert/suite"
+require "assert/view_helpers"
 
 module Assert
 
@@ -15,12 +15,12 @@ module Assert
 
     def self.require_user_view(view_name)
       views_file = File.expand_path(
-        File.join("#{ENV['HOME']}/.assert/views", view_name, 'lib', view_name)
+        File.join("#{ENV["HOME"]}/.assert/views", view_name, "lib", view_name)
       )
 
-      if File.exists?(view_name) || File.exists?(view_name + '.rb')
+      if File.exists?(view_name) || File.exists?(view_name + ".rb")
         require view_name
-      elsif File.exists?(views_file + '.rb')
+      elsif File.exists?(views_file + ".rb")
         require views_file
       else
         msg = "[WARN] Can't find or require #{view_name.inspect} view."
@@ -31,18 +31,18 @@ module Assert
 
     # setup options and their default values
 
-    option 'styled',        false
-    option 'pass_styles'    # none
-    option 'fail_styles'    # none
-    option 'error_styles'   # none
-    option 'skip_styles'    # none
-    option 'ignore_styles'  # none
+    option "styled",        false
+    option "pass_styles"    # none
+    option "fail_styles"    # none
+    option "error_styles"   # none
+    option "skip_styles"    # none
+    option "ignore_styles"  # none
 
-    option 'pass_abbrev',   '.'
-    option 'fail_abbrev',   'F'
-    option 'ignore_abbrev', 'I'
-    option 'skip_abbrev',   'S'
-    option 'error_abbrev',  'E'
+    option "pass_abbrev",   "."
+    option "fail_abbrev",   "F"
+    option "ignore_abbrev", "I"
+    option "skip_abbrev",   "S"
+    option "error_abbrev",  "E"
 
     attr_reader :config
 

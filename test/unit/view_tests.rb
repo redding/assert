@@ -1,10 +1,10 @@
-require 'assert'
-require 'assert/view'
+require "assert"
+require "assert/view"
 
-require 'stringio'
-require 'assert/config_helpers'
-require 'assert/suite'
-require 'assert/view_helpers'
+require "stringio"
+require "assert/config_helpers"
+require "assert/suite"
+require "assert/view_helpers"
 
 class Assert::View
 
@@ -51,11 +51,11 @@ class Assert::View
     end
 
     should "default its result abbreviations" do
-      assert_equal '.', subject.pass_abbrev
-      assert_equal 'F', subject.fail_abbrev
-      assert_equal 'I', subject.ignore_abbrev
-      assert_equal 'S', subject.skip_abbrev
-      assert_equal 'E', subject.error_abbrev
+      assert_equal ".", subject.pass_abbrev
+      assert_equal "F", subject.fail_abbrev
+      assert_equal "I", subject.ignore_abbrev
+      assert_equal "S", subject.skip_abbrev
+      assert_equal "E", subject.error_abbrev
     end
 
     should "know its config" do

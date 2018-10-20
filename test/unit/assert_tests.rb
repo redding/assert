@@ -1,8 +1,8 @@
-require 'assert'
+require "assert"
 
-require 'assert/config'
-require 'assert/stub'
-require 'much-stub'
+require "assert/config"
+require "assert/stub"
+require "much-stub"
 
 module Assert
 
@@ -85,21 +85,21 @@ module Assert
     should "auto-unstub any stubs on teardown" do
       context_class = ::Factory.modes_off_context_class do
         setup do
-          Assert.stub('1', :to_s){ 'one' }
+          Assert.stub("1", :to_s){ "one" }
         end
       end
 
-      context_class.run_setups('scope')
+      context_class.run_setups("scope")
       assert_equal 1, Assert.stubs.size
 
-      context_class.run_teardowns('scope')
+      context_class.run_teardowns("scope")
       assert_empty Assert.stubs
     end
 
     should "be able to call a stub's original method" do
       err = assert_raises(MuchStub::NotStubbedError){ Assert.stub_send(@myobj, :mymeth) }
-      assert_includes 'not stubbed.',              err.message
-      assert_includes 'test/unit/assert_tests.rb', err.backtrace.first
+      assert_includes "not stubbed.",              err.message
+      assert_includes "test/unit/assert_tests.rb", err.backtrace.first
 
       Assert.stub(@myobj, :mymeth){ @stub_value }
 

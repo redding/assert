@@ -1,5 +1,5 @@
-require 'assert'
-require 'assert/context/setup_dsl'
+require "assert"
+require "assert/context/setup_dsl"
 
 module Assert::Context::SetupDSL
 
@@ -91,10 +91,10 @@ module Assert::Context::SetupDSL
     end
 
     should "run it's parent and it's own blocks in the correct order" do
-      subject.send('run_setups', obj = @test_status_class.new)
+      subject.send("run_setups", obj = @test_status_class.new)
       assert_equal "the setup has been run with something", obj.setup_status
 
-      subject.send('run_teardowns', obj = @test_status_class.new)
+      subject.send("run_teardowns", obj = @test_status_class.new)
       assert_equal "with something has been run the teardown", obj.teardown_status
     end
 
@@ -105,7 +105,7 @@ module Assert::Context::SetupDSL
     setup do
       @parent_class = Factory.modes_off_context_class do
         around do |block|
-          self.out_status ||= ''
+          self.out_status ||= ""
           self.out_status += "p-around start, "
           block.call
           self.out_status += "p-around end."
@@ -132,8 +132,8 @@ module Assert::Context::SetupDSL
 
     should "run it's parent and it's own blocks in the correct order" do
       obj = @test_status_class.new
-      subject.send('run_arounds', obj) do
-        obj.instance_eval{ self.out_status += 'TEST, ' }
+      subject.send("run_arounds", obj) do
+        obj.instance_eval{ self.out_status += "TEST, " }
       end
 
       exp = "p-around start, c-around1 start, c-around2 start, "\

@@ -1,8 +1,8 @@
-require 'assert/config'
-require 'assert/default_suite'
-require 'assert/factory'
-require 'assert/result'
-require 'assert/test'
+require "assert/config"
+require "assert/default_suite"
+require "assert/factory"
+require "assert/result"
+require "assert/test"
 
 module Factory
   extend Assert::Factory
@@ -35,7 +35,7 @@ module Factory
     config, context_info, name = [
       args.last.kind_of?(Assert::Config) ? args.pop : self.modes_off_config,
       args.last.kind_of?(Assert::ContextInfo) ? args.pop : self.context_info,
-      args.last.kind_of?(::String) ? args.pop : 'a test'
+      args.last.kind_of?(::String) ? args.pop : "a test"
     ]
     Assert::Test.for_block(name, context_info, config, &block)
   end

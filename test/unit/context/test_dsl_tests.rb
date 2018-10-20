@@ -1,5 +1,5 @@
-require 'assert'
-require 'assert/context/test_dsl'
+require "assert"
+require "assert/context/test_dsl"
 
 module Assert::Context::TestDSL
 
@@ -40,7 +40,7 @@ module Assert::Context::TestDSL
       end
 
       assert_equal 1,      context.class.suite.tests_to_run_count
-      assert_equal 'TODO', err.message
+      assert_equal "TODO", err.message
       assert_equal 1,      err.backtrace.size
     end
 
@@ -52,7 +52,7 @@ module Assert::Context::TestDSL
       end
 
       assert_equal 1,      context.class.suite.tests_to_run_count
-      assert_equal 'TODO', err.message
+      assert_equal "TODO", err.message
       assert_equal 1,      err.backtrace.size
     end
 
@@ -64,7 +64,7 @@ module Assert::Context::TestDSL
       end
 
       assert_equal 1,      context.class.suite.tests_to_run_count
-      assert_equal 'TODO', err.message
+      assert_equal "TODO", err.message
       assert_equal 1,      err.backtrace.size
     end
 
@@ -76,7 +76,7 @@ module Assert::Context::TestDSL
       end
 
       assert_equal 1,      context.class.suite.tests_to_run_count
-      assert_equal 'TODO', err.message
+      assert_equal "TODO", err.message
       assert_equal 1,      err.backtrace.size
     end
 
@@ -88,7 +88,7 @@ module Assert::Context::TestDSL
       end
 
       assert_equal 1,      context.class.suite.tests_to_run_count
-      assert_equal 'TODO', err.message
+      assert_equal "TODO", err.message
       assert_equal 1,      err.backtrace.size
     end
 
@@ -100,7 +100,7 @@ module Assert::Context::TestDSL
       end
 
       assert_equal 1,      context.class.suite.tests_to_run_count
-      assert_equal 'TODO', err.message
+      assert_equal "TODO", err.message
       assert_equal 1,      err.backtrace.size
     end
 

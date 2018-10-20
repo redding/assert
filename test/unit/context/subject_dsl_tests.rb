@@ -1,5 +1,5 @@
-require 'assert'
-require 'assert/context/subject_dsl'
+require "assert"
+require "assert/context/subject_dsl"
 
 module Assert::Context::SubjectDSL
 

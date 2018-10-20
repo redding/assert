@@ -1,4 +1,4 @@
-require 'much-stub'
+require "much-stub"
 
 module Assert
 

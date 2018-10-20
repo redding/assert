@@ -1,4 +1,4 @@
-require 'assert'
+require "assert"
 
 class Assert::Test
 
@@ -273,18 +273,18 @@ class Assert::Test
     setup do
       @context_class = Factory.context_class do
         # assert style
-        setup{ pass 'assert style setup' }
+        setup{ pass "assert style setup" }
         # test/unit style
-        def setup; pass 'test/unit style setup'; end
+        def setup; pass "test/unit style setup"; end
       end
-      @test = Factory.test("t", Factory.context_info(@context_class)){ pass 'TEST' }
+      @test = Factory.test("t", Factory.context_info(@context_class)){ pass "TEST" }
       @test.run(&test_run_callback)
     end
 
     should "execute all setup logic when run" do
       assert_equal 3, test_run_result_count(:pass)
 
-      exp = ['assert style setup', 'test/unit style setup', 'TEST']
+      exp = ["assert style setup", "test/unit style setup", "TEST"]
       assert_equal exp, test_run_result_messages
     end
 
@@ -295,18 +295,18 @@ class Assert::Test
     setup do
       @context_class = Factory.context_class do
         # assert style
-        teardown{ pass 'assert style teardown' }
+        teardown{ pass "assert style teardown" }
         # test/unit style
-        def teardown; pass 'test/unit style teardown'; end
+        def teardown; pass "test/unit style teardown"; end
       end
-      @test = Factory.test("t", Factory.context_info(@context_class)){ pass 'TEST' }
+      @test = Factory.test("t", Factory.context_info(@context_class)){ pass "TEST" }
       @test.run(&test_run_callback)
     end
 
     should "execute all teardown logic when run" do
       assert_equal 3, test_run_result_count(:pass)
 
-      exp = ['TEST', 'assert style teardown', 'test/unit style teardown']
+      exp = ["TEST", "assert style teardown", "test/unit style teardown"]
       assert_equal exp, test_run_result_messages
     end
 
@@ -348,10 +348,10 @@ class Assert::Test
       assert_equal 13, test_run_result_count(:pass)
 
       exp = [
-        'parent around start', 'child around1 start', 'child around2 start',
-        'parent setup', 'child setup1', 'child setup2', 'TEST',
-        'child teardown1', 'child teardown2', 'parent teardown',
-        'child around2 end', 'child around1 end', 'parent around end'
+        "parent around start", "child around1 start", "child around2 start",
+        "parent setup", "child setup1", "child setup2", "TEST",
+        "child teardown1", "child teardown2", "parent teardown",
+        "child around2 end", "child around1 end", "parent around end"
       ]
       assert_equal exp, test_run_result_messages
     end

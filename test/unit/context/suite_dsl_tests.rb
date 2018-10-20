@@ -1,7 +1,7 @@
-require 'assert'
-require 'assert/context/suite_dsl'
+require "assert"
+require "assert/context/suite_dsl"
 
-require 'assert/suite'
+require "assert/suite"
 
 module Assert::Context::SuiteDSL
 

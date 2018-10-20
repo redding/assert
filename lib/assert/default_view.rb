@@ -1,5 +1,5 @@
-require 'assert/view'
-require 'assert/view_helpers'
+require "assert/view"
+require "assert/view_helpers"
 
 module Assert
 
@@ -11,12 +11,12 @@ module Assert
 
     # setup options and their default values
 
-    option 'styled',        true
-    option 'pass_styles',   :green
-    option 'fail_styles',   :red, :bold
-    option 'error_styles',  :yellow, :bold
-    option 'skip_styles',   :cyan
-    option 'ignore_styles', :magenta
+    option "styled",        true
+    option "pass_styles",   :green
+    option "fail_styles",   :red, :bold
+    option "error_styles",  :yellow, :bold
+    option "skip_styles",   :cyan
+    option "ignore_styles", :magenta
 
     def before_load(test_files)
     end

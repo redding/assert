@@ -1,4 +1,4 @@
-require 'assert/config_helpers'
+require "assert/config_helpers"
 
 module Assert
 
@@ -37,21 +37,21 @@ module Assert
 
       # show any captured output
       def re_run_test_cmd(test_id)
-        "assert -t #{test_id.gsub(Dir.pwd, '.')}"
+        "assert -t #{test_id.gsub(Dir.pwd, ".")}"
       end
 
       def tests_to_run_count_statement
-        "#{self.tests_to_run_count} test#{'s' if self.tests_to_run_count != 1}"
+        "#{self.tests_to_run_count} test#{"s" if self.tests_to_run_count != 1}"
       end
 
       def result_count_statement
-        "#{self.result_count} result#{'s' if self.result_count != 1}"
+        "#{self.result_count} result#{"s" if self.result_count != 1}"
       end
 
       # generate a comma-seperated sentence fragment given a list of items
       def to_sentence(items)
         if items.size <= 2
-          items.join(items.size == 2 ? ' and ' : '')
+          items.join(items.size == 2 ? " and " : "")
         else
           [items[0..-2].join(", "), items.last].join(", and ")
         end
@@ -173,7 +173,7 @@ module Assert
       }
 
       def self.code_for(*style_names)
-        style_names.map{ |n| "\e[#{CODES[n]}m" if CODES.key?(n) }.compact.join('')
+        style_names.map{ |n| "\e[#{CODES[n]}m" if CODES.key?(n) }.compact.join("")
       end
 
       def ansi_styled_msg(msg, result_type)

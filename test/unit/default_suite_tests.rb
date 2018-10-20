@@ -1,7 +1,7 @@
-require 'assert'
-require 'assert/default_suite'
+require "assert"
+require "assert/default_suite"
 
-require 'assert/suite'
+require "assert/suite"
 
 class Assert::DefaultSuite
 

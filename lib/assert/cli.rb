@@ -1,14 +1,14 @@
-require 'benchmark'
-require 'set'
-require 'assert/assert_runner'
-require 'assert/version'
+require "benchmark"
+require "set"
+require "assert/assert_runner"
+require "assert/version"
 
 module Assert
 
   class CLI
 
     def self.debug?(args)
-      args.include?('-d') || args.include?('--debug')
+      args.include?("-d") || args.include?("--debug")
     end
 
     def self.debug_msg(msg)
@@ -36,39 +36,39 @@ module Assert
     def initialize(*args)
       @args = args
       @cli = CLIRB.new do
-        option 'runner_seed', 'use a given seed to run tests', {
-          :abbrev => 's', :value => Fixnum
+        option "runner_seed", "use a given seed to run tests", {
+          :abbrev => "s", :value => Fixnum
         }
-        option 'changed_only', 'only run test files with changes', {
-          :abbrev => 'c'
+        option "changed_only", "only run test files with changes", {
+          :abbrev => "c"
         }
-        option 'changed_ref', 'reference for changes, use with `-c` opt', {
-          :abbrev => 'r', :value => ''
+        option "changed_ref", "reference for changes, use with `-c` opt", {
+          :abbrev => "r", :value => ""
         }
-        option 'single_test', 'only run the test on the given file/line', {
-          :abbrev => 't', :value => ''
+        option "single_test", "only run the test on the given file/line", {
+          :abbrev => "t", :value => ""
         }
-        option 'pp_objects', 'pretty-print objects in fail messages', {
-          :abbrev => 'p'
+        option "pp_objects", "pretty-print objects in fail messages", {
+          :abbrev => "p"
         }
-        option 'capture_output', 'capture stdout and display in result details', {
-          :abbrev => 'o'
+        option "capture_output", "capture stdout and display in result details", {
+          :abbrev => "o"
         }
-        option 'halt_on_fail', 'halt a test when it fails', {
-          :abbrev => 'h'
+        option "halt_on_fail", "halt a test when it fails", {
+          :abbrev => "h"
         }
-        option 'profile', 'output test profile info', {
-          :abbrev => 'e'
+        option "profile", "output test profile info", {
+          :abbrev => "e"
         }
-        option 'verbose', 'output verbose runtime test info', {
-          :abbrev => 'v'
+        option "verbose", "output verbose runtime test info", {
+          :abbrev => "v"
         }
-        option 'list', 'list test files on $stdout', {
-          :abbrev => 'l'
+        option "list", "list test files on $stdout", {
+          :abbrev => "l"
         }
         # show loaded test files, cli err backtraces, etc
-        option 'debug', 'run in debug mode', {
-          :abbrev => 'd'
+        option "debug", "run in debug mode", {
+          :abbrev => "d"
         }
       end
     end
@@ -118,13 +118,13 @@ module Assert
 
     def initialize(&block)
       @options = []; instance_eval(&block) if block
-      require 'optparse'
+      require "optparse"
       @data, @args, @opts = [], [], {}; @parser = OptionParser.new do |p|
-        p.banner = ''; @options.each do |o|
+        p.banner = ""; @options.each do |o|
           @opts[o.name] = o.value; p.on(*o.parser_args){ |v| @opts[o.name] = v }
         end
-        p.on_tail('--version', ''){ |v| raise VersionExit, v.to_s }
-        p.on_tail('--help',    ''){ |v| raise HelpExit,    v.to_s }
+        p.on_tail("--version", ""){ |v| raise VersionExit, v.to_s }
+        p.on_tail("--help",    ""){ |v| raise HelpExit,    v.to_s }
       end
     end
 
@@ -137,14 +137,14 @@ module Assert
     end
     def to_s; @parser.to_s; end
     def inspect
-      "#<#{self.class}:#{'0x0%x' % (object_id << 1)} @data=#{@data.inspect}>"
+      "#<#{self.class}:#{"0x0%x" % (object_id << 1)} @data=#{@data.inspect}>"
     end
 
     class Option
       attr_reader :name, :opt_name, :desc, :abbrev, :value, :klass, :parser_args
 
       def initialize(name, *args)
-        settings, @desc = args.last.kind_of?(::Hash) ? args.pop : {}, args.pop || ''
+        settings, @desc = args.last.kind_of?(::Hash) ? args.pop : {}, args.pop || ""
         @name, @opt_name, @abbrev = parse_name_values(name, settings[:abbrev])
         @value, @klass = gvalinfo(settings[:value])
         @parser_args = if [TrueClass, FalseClass, NilClass].include?(@klass)
@@ -157,8 +157,8 @@ module Assert
       private
 
       def parse_name_values(name, custom_abbrev)
-        [ (processed_name = name.to_s.strip.downcase), processed_name.gsub('_', '-'),
-          custom_abbrev || processed_name.gsub(/[^a-z]/, '').chars.first || 'a'
+        [ (processed_name = name.to_s.strip.downcase), processed_name.gsub("_", "-"),
+          custom_abbrev || processed_name.gsub(/[^a-z]/, "").chars.first || "a"
         ]
       end
       def gvalinfo(v); v.kind_of?(Class) ? [nil,gklass(v)] : [v,gklass(v.class)]; end

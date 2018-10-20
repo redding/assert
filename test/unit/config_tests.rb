@@ -1,11 +1,11 @@
-require 'assert'
-require 'assert/config'
+require "assert"
+require "assert/config"
 
-require 'assert/default_runner'
-require 'assert/default_suite'
-require 'assert/default_view'
-require 'assert/file_line'
-require 'assert/runner'
+require "assert/default_runner"
+require "assert/default_suite"
+require "assert/default_view"
+require "assert/file_line"
+require "assert/runner"
 
 class Assert::Config
 
@@ -32,9 +32,9 @@ class Assert::Config
     end
 
     should "default the test dir/helper/suffixes" do
-      assert_equal 'test',                    subject.test_dir
-      assert_equal 'helper.rb',               subject.test_helper
-      assert_equal ['_tests.rb', "_test.rb"], subject.test_file_suffixes
+      assert_equal "test",                    subject.test_dir
+      assert_equal "helper.rb",               subject.test_helper
+      assert_equal ["_tests.rb", "_test.rb"], subject.test_file_suffixes
     end
 
     should "default the procs" do
@@ -75,7 +75,7 @@ class Assert::Config
     end
 
     should "know its single test file line" do
-      exp = Assert::FileLine.parse(File.expand_path('', Dir.pwd))
+      exp = Assert::FileLine.parse(File.expand_path("", Dir.pwd))
       assert_equal exp, subject.single_test_file_line
 
       file_line_path = "#{Factory.path}_tests.rb:#{Factory.integer}"
@@ -86,7 +86,7 @@ class Assert::Config
     end
 
     should "know its single test file path" do
-      exp = Assert::FileLine.parse(File.expand_path('', Dir.pwd)).file
+      exp = Assert::FileLine.parse(File.expand_path("", Dir.pwd)).file
       assert_equal exp, subject.single_test_file_path
 
       path = "#{Factory.path}_tests.rb"

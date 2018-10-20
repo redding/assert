@@ -1,7 +1,7 @@
-require 'assert'
-require 'assert/factory'
+require "assert"
+require "assert/factory"
 
-require 'much-factory'
+require "much-factory"
 
 module Assert::Factory
 

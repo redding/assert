@@ -1,7 +1,7 @@
-require 'assert'
-require 'assert/default_runner'
+require "assert"
+require "assert/default_runner"
 
-require 'assert/runner'
+require "assert/runner"
 
 class Assert::DefaultRunner
 

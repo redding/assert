@@ -1,4 +1,4 @@
-require 'assert'
+require "assert"
 
 module Assert
 
@@ -16,7 +16,7 @@ module Assert
     # expands on the basic `show` util by escaping newlines and making object id
     # hex-values generic.
     def self.show_for_diff(obj, config)
-      show(obj, config).gsub(/\\n/, "\n").gsub(/:0x[a-fA-F0-9]{4,}/m, ':0xXXXXXX')
+      show(obj, config).gsub(/\\n/, "\n").gsub(/:0x[a-fA-F0-9]{4,}/m, ":0xXXXXXX")
     end
 
     # open a tempfile and yield it
@@ -30,8 +30,8 @@ module Assert
 
     # Get a proc that uses stdlib `PP.pp` to pretty print objects
     def self.stdlib_pp_proc(width = nil)
-      require 'pp'
-      Proc.new{ |obj| PP.pp(obj, '', width || 79).strip }
+      require "pp"
+      Proc.new{ |obj| PP.pp(obj, "", width || 79).strip }
     end
 
     # Return true if if either show output has newlines or is bigger than 29 chars
@@ -46,8 +46,8 @@ module Assert
     def self.syscmd_diff_proc(syscmd = "diff --unified=-1")
       Proc.new do |exp_show_output, act_show_output|
         result = ""
-        tempfile('exp_show_output', exp_show_output) do |a|
-          tempfile('act_show_output', act_show_output) do |b|
+        tempfile("exp_show_output", exp_show_output) do |a|
+          tempfile("act_show_output", act_show_output) do |b|
             result = `#{syscmd} #{a.path} #{b.path}`.strip
             result.sub!(/^\-\-\- .+/, "--- expected")
             result.sub!(/^\+\+\+ .+/, "+++ actual")
@@ -65,8 +65,8 @@ module Assert
         cmd = [
           "git diff --no-ext-diff --name-only #{config.changed_ref}", # changed files
           "git ls-files --others --exclude-standard"                  # added files
-        ].map{ |c| "#{c} -- #{test_paths.join(' ')}" }.join(' && ')
-        Assert::CLI.bench('Load only changed files') do
+        ].map{ |c| "#{c} -- #{test_paths.join(" ")}" }.join(" && ")
+        Assert::CLI.bench("Load only changed files") do
           files = `#{cmd}`.split("\n")
         end
         puts Assert::CLI.debug_msg("  `#{cmd}`") if config.debug

@@ -1,5 +1,5 @@
-require 'assert'
-require 'assert/macro'
+require "assert"
+require "assert/macro"
 
 class Assert::Macro
 

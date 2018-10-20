@@ -1,5 +1,5 @@
-require 'assert/config_helpers'
-require 'assert/test'
+require "assert/config_helpers"
+require "assert/test"
 
 module Assert
 
@@ -97,7 +97,7 @@ module Assert
     def on_interrupt(err); end
 
     def inspect
-      "#<#{self.class}:#{'0x0%x' % (object_id << 1)}"\
+      "#<#{self.class}:#{"0x0%x" % (object_id << 1)}"\
       " test_count=#{self.test_count.inspect}"\
       " result_count=#{self.result_count.inspect}>"
     end

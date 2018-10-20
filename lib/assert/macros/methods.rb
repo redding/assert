@@ -1,4 +1,4 @@
-require 'assert/macro'
+require "assert/macro"
 
 module Assert::Macros
   module Methods

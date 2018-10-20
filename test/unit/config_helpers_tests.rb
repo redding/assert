@@ -1,7 +1,7 @@
-require 'assert'
-require 'assert/config_helpers'
+require "assert"
+require "assert/config_helpers"
 
-require 'assert/config'
+require "assert/config"
 
 module Assert::ConfigHelpers
 
@@ -99,7 +99,7 @@ module Assert::ConfigHelpers
     end
 
     should "know its formatted run time, test rate and result rate" do
-      format = '%.6f'
+      format = "%.6f"
 
       run_time = Factory.float
       exp = format % run_time
@@ -118,7 +118,7 @@ module Assert::ConfigHelpers
     end
 
     should "know its formatted suite run time, test rate and result rate" do
-      format = '%.6f'
+      format = "%.6f"
 
       exp = format % subject.config.suite.run_time
       assert_equal exp, subject.formatted_suite_run_time(format)

@@ -1,7 +1,7 @@
-require 'assert'
-require 'assert/assertions'
+require "assert"
+require "assert/assertions"
 
-require 'assert/utils'
+require "assert/utils"
 
 module Assert::Assertions
 
@@ -31,9 +31,9 @@ module Assert::Assertions
     should "have a fail message with custom and generic explanations" do
       exp = "#{@args[2]}\n"\
             "Expected #{Assert::U.show(@args[1], @c)}"\
-            " (#<#{@args[1].class}:#{'0x0%x' % (@args[1].object_id << 1)}>)"\
+            " (#<#{@args[1].class}:#{"0x0%x" % (@args[1].object_id << 1)}>)"\
             " to be the same as #{Assert::U.show(@args[0], @c)}"\
-            " (#<#{@args[0].class}:#{'0x0%x' % (@args[0].object_id << 1)}>)."
+            " (#<#{@args[0].class}:#{"0x0%x" % (@args[0].object_id << 1)}>)."
       assert_equal exp, test_run_results(:fail).first.message
     end
 
@@ -65,9 +65,9 @@ module Assert::Assertions
     should "have a fail message with custom and generic explanations" do
       exp = "#{@args[2]}\n"\
             "Expected #{Assert::U.show(@args[1], @c)}"\
-            " (#<#{@args[1].class}:#{'0x0%x' % (@args[1].object_id << 1)}>)"\
+            " (#<#{@args[1].class}:#{"0x0%x" % (@args[1].object_id << 1)}>)"\
             " to not be the same as #{Assert::U.show(@args[0], @c)}"\
-            " (#<#{@args[0].class}:#{'0x0%x' % (@args[0].object_id << 1)}>)."
+            " (#<#{@args[0].class}:#{"0x0%x" % (@args[0].object_id << 1)}>)."
       assert_equal exp, test_run_results(:fail).first.message
     end
 
@@ -103,9 +103,9 @@ module Assert::Assertions
     subject{ @test }
 
     should "include diff output in the fail messages" do
-      exp = "Expected #<#{@act_obj.class}:#{'0x0%x' % (@act_obj.object_id << 1)}>"\
+      exp = "Expected #<#{@act_obj.class}:#{"0x0%x" % (@act_obj.object_id << 1)}>"\
             " to be the same as"\
-            " #<#{@exp_obj.class}:#{'0x0%x' % (@exp_obj.object_id << 1)}>"\
+            " #<#{@exp_obj.class}:#{"0x0%x" % (@exp_obj.object_id << 1)}>"\
             ", diff:\n"\
             "#{Assert::U.syscmd_diff_proc.call(@exp_obj_show, @act_obj_show)}"
       assert_equal exp, test_run_results(:fail).first.message
@@ -128,9 +128,9 @@ module Assert::Assertions
     subject{ @test }
 
     should "include diff output in the fail messages" do
-      exp = "Expected #<#{@act_obj.class}:#{'0x0%x' % (@act_obj.object_id << 1)}>"\
+      exp = "Expected #<#{@act_obj.class}:#{"0x0%x" % (@act_obj.object_id << 1)}>"\
             " to not be the same as"\
-            " #<#{@exp_obj.class}:#{'0x0%x' % (@exp_obj.object_id << 1)}>"\
+            " #<#{@exp_obj.class}:#{"0x0%x" % (@exp_obj.object_id << 1)}>"\
             ", diff:\n"\
             "#{Assert::U.syscmd_diff_proc.call(@exp_obj_show, @act_obj_show)}"
       assert_equal exp, test_run_results(:fail).first.message

@@ -1,12 +1,12 @@
-require 'assert/version'
+require "assert/version"
 
-require 'assert/config'
-require 'assert/context'
-require 'assert/runner'
-require 'assert/stub'
-require 'assert/suite'
-require 'assert/utils'
-require 'assert/view'
+require "assert/config"
+require "assert/context"
+require "assert/runner"
+require "assert/stub"
+require "assert/suite"
+require "assert/utils"
+require "assert/view"
 
 module Assert
 

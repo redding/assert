@@ -1,7 +1,7 @@
-require 'assert'
-require 'assert/assertions'
+require "assert"
+require "assert/assertions"
 
-require 'assert/utils'
+require "assert/utils"
 
 module Assert::Assertions
 
@@ -11,7 +11,7 @@ module Assert::Assertions
     desc "`assert_true`"
     setup do
       desc = @desc = "assert true fail desc"
-      args = @args = [ 'whatever', desc ]
+      args = @args = [ "whatever", desc ]
       @test = Factory.test do
         assert_true(true)  # pass
         assert_true(*args) # fail
@@ -69,7 +69,7 @@ module Assert::Assertions
     desc "`assert_false`"
     setup do
       desc = @desc = "assert false fail desc"
-      args = @args = [ 'whatever', desc ]
+      args = @args = [ "whatever", desc ]
       @test = Factory.test do
         assert_false(false) # pass
         assert_false(*args) # fail

@@ -1,4 +1,4 @@
-require 'much-factory'
+require "much-factory"
 
 module Assert
 

@@ -1,11 +1,11 @@
-require 'assert'
-require 'assert/view_helpers'
+require "assert"
+require "assert/view_helpers"
 
-require 'stringio'
-require 'assert/config'
-require 'assert/config_helpers'
-require 'assert/result'
-require 'assert/view'
+require "stringio"
+require "assert/config"
+require "assert/config_helpers"
+require "assert/result"
+require "assert/view"
 
 module Assert::ViewHelpers
 
@@ -16,7 +16,7 @@ module Assert::ViewHelpers
       @helpers_class = Class.new do
         include Assert::ViewHelpers
 
-        option 'test_opt', test_opt_val
+        option "test_opt", test_opt_val
 
         def config
           # use the assert config since it has tests, contexts, etc
@@ -71,15 +71,15 @@ module Assert::ViewHelpers
 
     should "know how to build the re-run test cmd" do
       test_id = "#{Dir.pwd}/#{Factory.string}_tests.rb:#{Factory.integer}"
-      exp = "assert -t #{test_id.gsub(Dir.pwd, '.')}"
+      exp = "assert -t #{test_id.gsub(Dir.pwd, ".")}"
       assert_equal exp, subject.re_run_test_cmd(test_id)
     end
 
     should "know its tests-to-run count and result count statements" do
-      exp = "#{subject.tests_to_run_count} test#{'s' if subject.tests_to_run_count != 1}"
+      exp = "#{subject.tests_to_run_count} test#{"s" if subject.tests_to_run_count != 1}"
       assert_equal exp, subject.tests_to_run_count_statement
 
-      exp = "#{subject.result_count} result#{'s' if subject.result_count != 1}"
+      exp = "#{subject.result_count} result#{"s" if subject.result_count != 1}"
       assert_equal exp, subject.result_count_statement
     end
 
@@ -88,7 +88,7 @@ module Assert::ViewHelpers
       assert_equal items.first, subject.to_sentence(items)
 
       items = 2.times.map{ Factory.string }
-      assert_equal items.join(' and '), subject.to_sentence(items)
+      assert_equal items.join(" and "), subject.to_sentence(items)
 
       items = (Factory.integer(3)+2).times.map{ Factory.string }
       exp = [items[0..-2].join(", "), items.last].join(", and ")
@@ -147,14 +147,14 @@ module Assert::ViewHelpers
 
     should "map its code style names to ansi code strings" do
       styles = Factory.integer(3).times.map{ subject::CODES.keys.sample }
-      exp = styles.map{ |n| "\e[#{subject::CODES[n]}m" }.join('')
+      exp = styles.map{ |n| "\e[#{subject::CODES[n]}m" }.join("")
       assert_equal exp, subject.code_for(*styles)
 
       styles = Factory.integer(3).times.map{ Factory.string }
-      assert_equal '', subject.code_for(*styles)
+      assert_equal "", subject.code_for(*styles)
 
       styles = []
-      assert_equal '', subject.code_for(*styles)
+      assert_equal "", subject.code_for(*styles)
     end
 
   end

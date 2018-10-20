@@ -1,8 +1,8 @@
-require 'assert/default_runner'
-require 'assert/default_suite'
-require 'assert/default_view'
-require 'assert/file_line'
-require 'assert/utils'
+require "assert/default_runner"
+require "assert/default_suite"
+require "assert/default_view"
+require "assert/file_line"
+require "assert/utils"
 
 module Assert
 
@@ -33,7 +33,7 @@ module Assert
 
       @test_dir    = "test"
       @test_helper = "helper.rb"
-      @test_file_suffixes = ['_tests.rb', '_test.rb']
+      @test_file_suffixes = ["_tests.rb", "_test.rb"]
 
       @changed_proc  = Assert::U.git_changed_proc
       @pp_proc       = Assert::U.stdlib_pp_proc
@@ -43,8 +43,8 @@ module Assert
       # option settings
       @runner_seed    = begin; srand; srand % 0xFFFF; end.to_i
       @changed_only   = false
-      @changed_ref    = ''
-      @single_test    = ''
+      @changed_ref    = ""
+      @single_test    = ""
       @pp_objects     = false
       @capture_output = false
       @halt_on_fail   = true

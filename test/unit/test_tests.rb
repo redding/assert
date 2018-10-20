@@ -1,9 +1,9 @@
-require 'assert'
-require 'assert/test'
+require "assert"
+require "assert/test"
 
-require 'assert/config'
-require 'assert/file_line'
-require 'assert/result'
+require "assert/config"
+require "assert/file_line"
+require "assert/result"
 
 class Assert::Test
 
@@ -46,7 +46,7 @@ class Assert::Test
     end
 
     should "build tests for a method" do
-      meth = 'a_test_method'
+      meth = "a_test_method"
       test = subject.for_method(meth, @context_info, @config)
 
       exp = Assert::FileLine.parse(@context_info.called_from)
@@ -108,9 +108,9 @@ class Assert::Test
     should "default its attrs" do
       test = Assert::Test.new
 
-      assert_equal Assert::FileLine.parse(''), test.file_line
-      assert_equal '', test.name
-      assert_equal '', test.output
+      assert_equal Assert::FileLine.parse(""), test.file_line
+      assert_equal "", test.name
+      assert_equal "", test.output
       assert_equal 0,  test.run_time
 
       assert_nil test.context_info
@@ -131,7 +131,7 @@ class Assert::Test
       attrs = [:name, :context_info].collect do |method|
         "@#{method}=#{subject.send(method).inspect}"
       end.join(" ")
-      exp = "#<#{subject.class}:#{'0x0%x' % (subject.object_id << 1)} #{attrs}>"
+      exp = "#<#{subject.class}:#{"0x0%x" % (subject.object_id << 1)} #{attrs}>"
       assert_equal exp, subject.inspect
     end
 
@@ -224,9 +224,9 @@ class Assert::Test
 
     def assert_failed(test)
       with_backtrace(caller) do
-        assert_equal 1, test_run_result_count, 'too many/few fail results'
+        assert_equal 1, test_run_result_count, "too many/few fail results"
         test_run_results.each do |result|
-          assert_kind_of Assert::Result::Fail, result, 'not a fail result'
+          assert_kind_of Assert::Result::Fail, result, "not a fail result"
         end
       end
     end
@@ -263,9 +263,9 @@ class Assert::Test
 
     def assert_skipped(test)
       with_backtrace(caller) do
-        assert_equal 1, test_run_result_count, 'too many/few skip results'
+        assert_equal 1, test_run_result_count, "too many/few skip results"
         test_run_results.each do |result|
-          assert_kind_of Assert::Result::Skip, result, 'not a skip result'
+          assert_kind_of Assert::Result::Skip, result, "not a skip result"
         end
       end
     end
@@ -286,7 +286,7 @@ class Assert::Test
 
     should "capture errors in the context setup" do
       test = Factory.test("setup error test", @context_info){ }
-      test.context_class.setup{ raise 'an error' }
+      test.context_class.setup{ raise "an error" }
       test.run(&test_run_callback)
 
       assert_errored(test)
@@ -294,7 +294,7 @@ class Assert::Test
 
     should "capture errors in the context teardown" do
       test = Factory.test("teardown error test", @context_info){ }
-      test.context_class.teardown{ raise 'an error' }
+      test.context_class.teardown{ raise "an error" }
       test.run(&test_run_callback)
 
       assert_errored(test)
@@ -304,9 +304,9 @@ class Assert::Test
 
     def assert_errored(test)
       with_backtrace(caller) do
-        assert_equal 1, test_run_result_count, 'too many/few error results'
+        assert_equal 1, test_run_result_count, "too many/few error results"
         test_run_results.each do |result|
-          assert_kind_of Assert::Result::Error, result, 'not an error result'
+          assert_kind_of Assert::Result::Error, result, "not an error result"
         end
       end
     end
@@ -325,7 +325,7 @@ class Assert::Test
 
     should "raises signal exceptions in the context setup" do
       test = Factory.test("setup signal test", @context_info){ }
-      test.context_class.setup{ raise SignalException, 'INT' }
+      test.context_class.setup{ raise SignalException, "INT" }
 
       assert_raises(SignalException){ test.run }
     end

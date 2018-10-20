@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-lib = File.expand_path('../lib', __FILE__)
+lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require "assert/version"
 
@@ -11,7 +11,7 @@ Gem::Specification.new do |gem|
   gem.summary     = %q{Assertion style testing framework.}
   gem.description = %q{Assertion style testing framework.}
   gem.homepage    = "http://github.com/redding/assert"
-  gem.license     = 'MIT'
+  gem.license     = "MIT"
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
