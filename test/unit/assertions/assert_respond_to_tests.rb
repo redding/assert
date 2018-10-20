@@ -11,7 +11,7 @@ module Assert::Assertions
     desc "`assert_respond_to`"
     setup do
       desc = @desc = "assert respond to fail desc"
-      args = @args = [ :abs, "1", desc ]
+      args = @args = [:abs, "1", desc]
       @test = Factory.test do
         assert_respond_to(:abs, 1) # pass
         assert_respond_to(*args)   # fail
@@ -42,7 +42,7 @@ module Assert::Assertions
     desc "`assert_not_respond_to`"
     setup do
       desc = @desc = "assert not respond to fail desc"
-      args = @args = [ :abs, 1, desc ]
+      args = @args = [:abs, 1, desc]
       @test = Factory.test do
         assert_not_respond_to(*args)     # fail
         assert_not_respond_to(:abs, "1") # pass

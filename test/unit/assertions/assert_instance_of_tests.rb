@@ -11,7 +11,7 @@ module Assert::Assertions
     desc "`assert_instance_of`"
     setup do
       desc = @desc = "assert instance of fail desc"
-      args = @args = [ Array, "object", desc ]
+      args = @args = [Array, "object", desc]
       @test = Factory.test do
         assert_instance_of(String, "object") # pass
         assert_instance_of(*args)            # fail
@@ -41,7 +41,7 @@ module Assert::Assertions
     desc "`assert_not_instance_of`"
     setup do
       desc = @desc = "assert not instance of fail desc"
-      args = @args = [ String, "object", desc ]
+      args = @args = [String, "object", desc]
       @test = Factory.test do
         assert_not_instance_of(*args)           # fail
         assert_not_instance_of(Array, "object") # pass

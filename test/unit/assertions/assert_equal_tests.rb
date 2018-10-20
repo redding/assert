@@ -11,7 +11,7 @@ module Assert::Assertions
     desc "`assert_equal`"
     setup do
       desc = @desc = "assert equal fail desc"
-      a = @a = [ "1", "2", desc ]
+      a = @a = ["1", "2", desc]
       @test = Factory.test do
         assert_equal(1, 1) # pass
         assert_equal(*a)   # fail
@@ -41,7 +41,7 @@ module Assert::Assertions
     desc "`assert_not_equal`"
     setup do
       desc = @desc = "assert not equal fail desc"
-      a = @a = [ "1", "1", desc ]
+      a = @a = ["1", "1", desc]
       @test = Factory.test do
         assert_not_equal(*a)   # fail
         assert_not_equal(1, 2) # pass

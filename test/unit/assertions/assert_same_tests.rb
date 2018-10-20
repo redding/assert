@@ -12,7 +12,7 @@ module Assert::Assertions
     setup do
       klass = Class.new; object = klass.new
       desc = @desc = "assert same fail desc"
-      args = @args = [ object, klass.new, desc ]
+      args = @args = [object, klass.new, desc]
       @test = Factory.test do
         assert_same(object, object) # pass
         assert_same(*args)          # fail
@@ -46,7 +46,7 @@ module Assert::Assertions
     setup do
       klass = Class.new; object = klass.new
       desc = @desc = "assert not same fail desc"
-      args = @args = [ object, object, desc ]
+      args = @args = [object, object, desc]
       @test = Factory.test do
         assert_not_same(*args)             # fail
         assert_not_same(object, klass.new) # pass

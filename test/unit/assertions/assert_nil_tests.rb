@@ -11,7 +11,7 @@ module Assert::Assertions
     desc "`assert_nil`"
     setup do
       desc = @desc = "assert nil empty fail desc"
-      args = @args = [ 1, desc ]
+      args = @args = [1, desc]
       @test = Factory.test do
         assert_nil(nil)   # pass
         assert_nil(*args) # fail
@@ -40,7 +40,7 @@ module Assert::Assertions
     desc "`assert_not_nil`"
     setup do
       desc = @desc = "assert not nil empty fail desc"
-      args = @args = [ nil, desc ]
+      args = @args = [nil, desc]
       @test = Factory.test do
         assert_not_nil(1)     # pass
         assert_not_nil(*args) # fail

@@ -12,7 +12,7 @@ module Assert::Context::SubjectDSL
   class DescriptionsTests < UnitTests
     desc "`descriptions` method"
     setup do
-      descs = @descs = [ "something amazing", "it really is" ]
+      descs = @descs = ["something amazing", "it really is"]
       @context_class = Factory.modes_off_context_class do
         descs.each{ |text| desc text }
       end

@@ -11,7 +11,7 @@ module Assert::Assertions
     desc "`assert_true`"
     setup do
       desc = @desc = "assert true fail desc"
-      args = @args = [ "whatever", desc ]
+      args = @args = ["whatever", desc]
       @test = Factory.test do
         assert_true(true)  # pass
         assert_true(*args) # fail
@@ -40,7 +40,7 @@ module Assert::Assertions
     desc "`assert_not_true`"
     setup do
       desc = @desc = "assert not true fail desc"
-      args = @args = [ true, desc ]
+      args = @args = [true, desc]
       @test = Factory.test do
         assert_not_true(false) # pass
         assert_not_true(*args) # fail
@@ -69,7 +69,7 @@ module Assert::Assertions
     desc "`assert_false`"
     setup do
       desc = @desc = "assert false fail desc"
-      args = @args = [ "whatever", desc ]
+      args = @args = ["whatever", desc]
       @test = Factory.test do
         assert_false(false) # pass
         assert_false(*args) # fail
@@ -98,7 +98,7 @@ module Assert::Assertions
     desc "`assert_not_false`"
     setup do
       desc = @desc = "assert not false fail desc"
-      args = @args = [ false, desc ]
+      args = @args = [false, desc]
       @test = Factory.test do
         assert_not_false(true)  # pass
         assert_not_false(*args) # fail

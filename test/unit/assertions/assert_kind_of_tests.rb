@@ -11,7 +11,7 @@ module Assert::Assertions
     desc "`assert_kind_of`"
     setup do
       desc = @desc = "assert kind of fail desc"
-      args = @args = [ Array, "object", desc ]
+      args = @args = [Array, "object", desc]
       @test = Factory.test do
         assert_kind_of(String, "object") # pass
         assert_kind_of(*args)            # fail
@@ -41,7 +41,7 @@ module Assert::Assertions
     desc "`assert_not_kind_of`"
     setup do
       desc = @desc = "assert not kind of fail desc"
-      args = @args = [ String, "object", desc ]
+      args = @args = [String, "object", desc]
       @test = Factory.test do
         assert_not_kind_of(*args)           # fail
         assert_not_kind_of(Array, "object") # pass

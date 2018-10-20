@@ -172,7 +172,7 @@ module Assert
     # Returns a Proc that will output a custom message along with the default
     # fail message.
     def fail_message(fail_desc = nil, what_failed_msg = nil)
-      [ fail_desc, what_failed_msg ].compact.join("\n")
+      [fail_desc, what_failed_msg].compact.join("\n")
     end
 
     private

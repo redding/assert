@@ -11,7 +11,7 @@ module Assert::Assertions
     desc "`assert_file_exists`"
     setup do
       desc = @desc = "assert file exists empty fail desc"
-      args = @args = [ "/a/path/to/some/file/that/no/exists", desc ]
+      args = @args = ["/a/path/to/some/file/that/no/exists", desc]
       @test = Factory.test do
         assert_file_exists(__FILE__) # pass
         assert_file_exists(*args)    # fail
@@ -40,7 +40,7 @@ module Assert::Assertions
     desc "`assert_not_file_exists`"
     setup do
       desc = @desc = "assert not file exists empty fail desc"
-      args = @args = [ __FILE__, desc ]
+      args = @args = [__FILE__, desc]
       @test = Factory.test do
         assert_not_file_exists("/a/path/to/some/file/that/no/exists") # pass
         assert_not_file_exists(*args) # fail

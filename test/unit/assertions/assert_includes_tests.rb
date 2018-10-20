@@ -11,9 +11,9 @@ module Assert::Assertions
     desc "`assert_includes`"
     setup do
       desc = @desc = "assert includes fail desc"
-      args = @args = [ 2, [ 1 ], desc ]
+      args = @args = [2, [1], desc]
       @test = Factory.test do
-        assert_includes(1, [ 1 ]) # pass
+        assert_includes(1, [1]) # pass
         assert_includes(*args)    # fail
       end
       @c = @test.config
@@ -42,9 +42,9 @@ module Assert::Assertions
     desc "`assert_not_included`"
     setup do
       desc = @desc = "assert not included fail desc"
-      args = @args = [ 1, [ 1 ], desc ]
+      args = @args = [1, [1], desc]
       @test = Factory.test do
-        assert_not_included(2, [ 1 ]) # pass
+        assert_not_included(2, [1]) # pass
         assert_not_included(*args)    # fail
       end
       @c = @test.config

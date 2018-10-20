@@ -10,7 +10,7 @@ module Assert::Utils
     desc "Assert::Utils"
     subject{ Assert::Utils }
     setup do
-      @objs = [ 1, "hi there", Hash.new, [:a, :b]]
+      @objs = [1, "hi there", Hash.new, [:a, :b]]
     end
 
     should have_imeths :show, :show_for_diff

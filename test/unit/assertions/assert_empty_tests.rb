@@ -11,7 +11,7 @@ module Assert::Assertions
     desc "`assert_empty`"
     setup do
       desc = @desc = "assert empty fail desc"
-      args = @args = [ [ 1 ], desc ]
+      args = @args = [[1], desc]
       @test = Factory.test do
         assert_empty([])    # pass
         assert_empty(*args) # fail
@@ -40,9 +40,9 @@ module Assert::Assertions
     desc "`assert_not_empty`"
     setup do
       desc = @desc = "assert not empty fail desc"
-      args = @args = [ [], desc ]
+      args = @args = [[], desc]
       @test = Factory.test do
-        assert_not_empty([ 1 ]) # pass
+        assert_not_empty([1]) # pass
         assert_not_empty(*args) # fail
       end
       @c = @test.config

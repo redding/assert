@@ -11,7 +11,7 @@ module Assert::Assertions
     desc "`assert_match`"
     setup do
       desc = @desc = "assert match fail desc"
-      args = @args = [ "not", "a string", desc ]
+      args = @args = ["not", "a string", desc]
       @test = Factory.test do
         assert_match(/a/, "a string") # pass
         assert_match(*args)           # fail
@@ -41,7 +41,7 @@ module Assert::Assertions
     desc "`assert_not_match`"
     setup do
       desc = @desc = "assert not match fail desc"
-      args = @args = [ /a/, "a string", desc ]
+      args = @args = [/a/, "a string", desc]
       @test = Factory.test do
         assert_not_match(*args)             # fail
         assert_not_match("not", "a string") # pass
