@@ -4,9 +4,7 @@ require "assert/assert_runner"
 require "assert/version"
 
 module Assert
-
   class CLI
-
     def self.debug?(args)
       args.include?("-d") || args.include?("--debug")
     end
@@ -36,40 +34,29 @@ module Assert
     def initialize(*args)
       @args = args
       @cli = CLIRB.new do
-        option "runner_seed", "use a given seed to run tests", {
-          :abbrev => "s", :value => Fixnum
-        }
-        option "changed_only", "only run test files with changes", {
-          :abbrev => "c"
-        }
-        option "changed_ref", "reference for changes, use with `-c` opt", {
-          :abbrev => "r", :value => ""
-        }
-        option "single_test", "only run the test on the given file/line", {
-          :abbrev => "t", :value => ""
-        }
-        option "pp_objects", "pretty-print objects in fail messages", {
-          :abbrev => "p"
-        }
-        option "capture_output", "capture stdout and display in result details", {
-          :abbrev => "o"
-        }
-        option "halt_on_fail", "halt a test when it fails", {
-          :abbrev => "h"
-        }
-        option "profile", "output test profile info", {
-          :abbrev => "e"
-        }
-        option "verbose", "output verbose runtime test info", {
-          :abbrev => "v"
-        }
-        option "list", "list test files on $stdout", {
-          :abbrev => "l"
-        }
+        option "runner_seed", "use a given seed to run tests",
+               abbrev: "s", value: Integer
+        option "changed_only", "only run test files with changes",
+               abbrev: "c"
+        option "changed_ref", "reference for changes, use with `-c` opt",
+               abbrev: "r", value: ""
+        option "single_test", "only run the test on the given file/line",
+               abbrev: "t", value: ""
+        option "pp_objects", "pretty-print objects in fail messages",
+               abbrev: "p"
+        option "capture_output", "capture stdout and display in result details",
+               abbrev: "o"
+        option "halt_on_fail", "halt a test when it fails",
+               abbrev: "h"
+        option "profile", "output test profile info",
+               abbrev: "e"
+        option "verbose", "output verbose runtime test info",
+               abbrev: "v"
+        option "list", "list test files on $stdout",
+               abbrev: "l"
+
         # show loaded test files, cli err backtraces, etc
-        option "debug", "run in debug mode", {
-          :abbrev => "d"
-        }
+        option "debug", "run in debug mode", abbrev: "d"
       end
     end
 
@@ -100,7 +87,6 @@ module Assert
       "Options:"\
       "#{@cli}"
     end
-
   end
 
   module RoundedMillisecondTime
@@ -111,7 +97,7 @@ module Assert
     end
   end
 
-  class CLIRB  # Version 1.0.0, https://github.com/redding/cli.rb
+  class CLIRB  # Version 1.1.0, https://github.com/redding/cli.rb
     Error    = Class.new(RuntimeError);
     HelpExit = Class.new(RuntimeError); VersionExit = Class.new(RuntimeError)
     attr_reader :argv, :args, :opts, :data
@@ -143,27 +129,25 @@ module Assert
     class Option
       attr_reader :name, :opt_name, :desc, :abbrev, :value, :klass, :parser_args
 
-      def initialize(name, *args)
-        settings, @desc = args.last.kind_of?(::Hash) ? args.pop : {}, args.pop || ""
-        @name, @opt_name, @abbrev = parse_name_values(name, settings[:abbrev])
-        @value, @klass = gvalinfo(settings[:value])
+      def initialize(name, desc = nil, abbrev: nil, value: nil)
+        @name, @desc = name, desc || ""
+        @opt_name, @abbrev = parse_name_values(name, abbrev)
+        @value, @klass = gvalinfo(value)
         @parser_args = if [TrueClass, FalseClass, NilClass].include?(@klass)
           ["-#{@abbrev}", "--[no-]#{@opt_name}", @desc]
         else
-          ["-#{@abbrev}", "--#{@opt_name} #{@opt_name.upcase}", @klass, @desc]
+          ["-#{@abbrev}", "--#{@opt_name} VALUE", @klass, @desc]
         end
       end
 
       private
 
       def parse_name_values(name, custom_abbrev)
-        [ (processed_name = name.to_s.strip.downcase), processed_name.gsub("_", "-"),
+        [ (processed_name = name.to_s.strip.downcase).gsub("_", "-"),
           custom_abbrev || processed_name.gsub(/[^a-z]/, "").chars.first || "a"
         ]
       end
-      def gvalinfo(v); v.kind_of?(Class) ? [nil,gklass(v)] : [v,gklass(v.class)]; end
-      def gklass(k); k == Fixnum ? Integer : k; end
+      def gvalinfo(v); v.kind_of?(Class) ? [nil,v] : [v,v.class]; end
     end
   end
-
 end
