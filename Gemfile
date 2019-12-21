@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
-ruby '> 1.8'
+ruby "~>2.4"
 
 gemspec
 
-gem "pry", "~> 0.11.3"
+gem "pry", "~> 0.12.2"

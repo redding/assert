@@ -24,11 +24,3 @@ module Assert
 
 end
 
-# Kernel#caller_locations polyfill for pre ruby 2.0.0
-if RUBY_VERSION =~ /\A1\..+/ && !Kernel.respond_to?(:caller_locations)
-  module Kernel
-    def caller_locations(start = 1, length = nil)
-      length ? caller[start, length] : caller[start..-1]
-    end
-  end
-end
