@@ -4,7 +4,6 @@ require "assert/assertions"
 require "assert/utils"
 
 module Assert::Assertions
-
   class AssertEqualTests < Assert::Context
     include Assert::Test::TestHelpers
 
@@ -32,7 +31,6 @@ module Assert::Assertions
             " to be equal to #{Assert::U.show(@a[0], @c)}."
       assert_equal exp, test_run_results(:fail).first.message
     end
-
   end
 
   class AssertNotEqualTests < Assert::Context
@@ -62,7 +60,6 @@ module Assert::Assertions
             " to not be equal to #{Assert::U.show(@a[0], @c)}."
       assert_equal exp, test_run_results(:fail).first.message
     end
-
   end
 
   class EqualOrderTests < Assert::Context
@@ -85,7 +82,6 @@ module Assert::Assertions
       assert_equal @is, @is_not
       assert_not_equal @is_not, @is
     end
-
   end
 
   class DiffTests < Assert::Context
@@ -103,7 +99,6 @@ module Assert::Assertions
       @exp_obj_show = Assert::U.show_for_diff(@exp_obj, @c)
       @act_obj_show = Assert::U.show_for_diff(@act_obj, @c)
     end
-
   end
 
   class AssertEqualDiffTests < DiffTests
@@ -122,7 +117,6 @@ module Assert::Assertions
             "#{Assert::U.syscmd_diff_proc.call(@exp_obj_show, @act_obj_show)}"
       assert_equal exp, test_run_results(:fail).first.message
     end
-
   end
 
   class AssertNotEqualDiffTests < DiffTests
@@ -141,7 +135,5 @@ module Assert::Assertions
             "#{Assert::U.syscmd_diff_proc.call(@exp_obj_show, @exp_obj_show)}"
       assert_equal exp, test_run_results(:fail).first.message
     end
-
   end
-
 end

@@ -5,9 +5,7 @@ require "assert/file_line"
 require "assert/utils"
 
 module Assert
-
   class Config
-
     def self.settings(*items)
       items.each do |item|
         define_method(item) do |*args|
@@ -78,7 +76,5 @@ module Assert
     def single_test_file_path
       self.single_test_file_line.file if self.single_test_file_line
     end
-
   end
-
 end

@@ -1,7 +1,5 @@
 module Assert
-
   class ContextInfo
-
     attr_reader :called_from, :klass, :file
 
     def initialize(klass, called_from = nil, first_caller = nil)
@@ -13,7 +11,5 @@ module Assert
     def test_name(name)
       [klass.description.to_s, name.to_s].compact.reject(&:empty?).join(" ")
     end
-
   end
-
 end

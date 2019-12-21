@@ -4,7 +4,6 @@ require "assert/context/suite_dsl"
 require "assert/suite"
 
 module Assert::Context::SuiteDSL
-
   class UnitTests < Assert::Context
     desc "Assert::Context::SuiteDSL"
     setup do
@@ -21,7 +20,6 @@ module Assert::Context::SuiteDSL
       subject.suite(@custom_suite)
       assert_equal @custom_suite, subject.suite
     end
-
   end
 
   class SuiteFromParentTests < UnitTests
@@ -41,7 +39,5 @@ module Assert::Context::SuiteDSL
       subject.suite(another_suite)
       assert_equal another_suite, subject.suite
     end
-
   end
-
 end

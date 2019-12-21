@@ -8,7 +8,6 @@ require "assert/result"
 require "assert/view"
 
 class Assert::Runner
-
   class UnitTests < Assert::Context
     desc "Assert::Runner"
     subject{ Assert::Runner }
@@ -16,7 +15,6 @@ class Assert::Runner
     should "include the config helpers" do
       assert_includes Assert::ConfigHelpers, subject
     end
-
   end
 
   class InitTests < UnitTests
@@ -43,13 +41,11 @@ class Assert::Runner
     should "override the config helper's runner value with itself" do
       assert_equal subject, subject.runner
     end
-
   end
 
   class RunTests < InitTests
     desc "and run"
     setup do
-      callback_mixin = Module.new
       @runner_class = Class.new(Assert::Runner) do
         include CallbackMixin
       end
@@ -150,7 +146,6 @@ class Assert::Runner
             "seeded with \"#{subject.runner_seed}\"\n"
       assert_includes exp, @view_output
     end
-
   end
 
   module CallbackMixin
@@ -179,7 +174,5 @@ class Assert::Runner
     def on_finish
       @on_finish_called = true
     end
-
   end
-
 end

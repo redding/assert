@@ -10,9 +10,7 @@ require "pry"
 require "test/support/factory"
 
 class Assert::Test
-
   module TestHelpers
-
     def self.included(receiver)
       receiver.class_eval do
         setup do
@@ -44,7 +42,5 @@ class Assert::Test
         @test_run_results.last
       end
     end
-
   end
-
 end

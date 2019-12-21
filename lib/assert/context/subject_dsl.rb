@@ -1,8 +1,6 @@
 module Assert; end
 class Assert::Context
-
   module SubjectDSL
-
     # Add a piece of description text or return the full description for the context
     def description(text = nil)
       if text
@@ -31,7 +29,5 @@ class Assert::Context
     def descriptions
       @descriptions ||= []
     end
-
   end
-
 end

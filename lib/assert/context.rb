@@ -10,7 +10,6 @@ require "assert/suite"
 require "assert/utils"
 
 module Assert
-
   class Context
     # put all logic in DSL methods to keep context instances pure for running tests
     extend SetupDSL
@@ -190,6 +189,5 @@ module Assert
     def __assert_config__
       @__assert_config__
     end
-
   end
 end

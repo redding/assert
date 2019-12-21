@@ -4,7 +4,6 @@ require "assert/assertions"
 require "assert/utils"
 
 module Assert::Assertions
-
   class AssertIncludesTests < Assert::Context
     include Assert::Test::TestHelpers
 
@@ -33,7 +32,6 @@ module Assert::Assertions
             " to include #{Assert::U.show(@args[0], @c)}."
       assert_equal exp, test_run_results(:fail).first.message
     end
-
   end
 
   class AssertNotIncludedTests < Assert::Context
@@ -64,8 +62,6 @@ module Assert::Assertions
             " to not include #{Assert::U.show(@args[0], @c)}."
       assert_equal exp, test_run_results(:fail).first.message
     end
-
   end
-
 end
 

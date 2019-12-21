@@ -1,7 +1,5 @@
 module Assert
-
   class FileLine
-
     def self.parse(file_line_path)
       self.new(*(file_line_path.to_s.match(/(^[^\:]*)\:*(\d*).*$/) || [])[1..2])
     end
@@ -24,7 +22,5 @@ module Assert
         super
       end
     end
-
   end
-
 end

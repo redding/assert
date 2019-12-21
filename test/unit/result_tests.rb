@@ -4,7 +4,6 @@ require "assert/result"
 require "assert/file_line"
 
 module Assert::Result
-
   class UnitTests < Assert::Context
     desc "Assert::Result"
     setup do
@@ -39,7 +38,6 @@ module Assert::Result
       assert_lib_path = File.join(ROOT_PATH, "lib/#{Factory.string}:#{Factory.integer}")
       (Factory.integer(3).times.map{ Factory.string } + [assert_lib_path]).shuffle
     end
-
   end
 
   class BaseTests < UnitTests
@@ -233,7 +231,6 @@ module Assert::Result
             "@test_file_line=#{subject.test_file_line.to_s.inspect}>"
       assert_equal exp, subject.inspect
     end
-
   end
 
   class PassTests < UnitTests
@@ -248,7 +245,6 @@ module Assert::Result
       assert_equal :pass,  subject.class.type
       assert_equal "Pass", subject.class.name
     end
-
   end
 
   class IgnoreTests < UnitTests
@@ -263,7 +259,6 @@ module Assert::Result
       assert_equal :ignore,  subject.class.type
       assert_equal "Ignore", subject.class.name
     end
-
   end
 
   class HaltingTestResultErrorTests < UnitTests
@@ -275,7 +270,6 @@ module Assert::Result
     should "be a runtime error" do
       assert_kind_of RuntimeError, subject
     end
-
   end
 
   class TestFailureTests < UnitTests
@@ -285,7 +279,6 @@ module Assert::Result
     should "be a halting test result error" do
       assert_kind_of HaltingTestResultError, subject.new
     end
-
   end
 
   class FailTests < UnitTests
@@ -326,7 +319,6 @@ module Assert::Result
     should "not allow creating for a test with non-TestFailure exceptions" do
       assert_raises(ArgumentError){ Fail.for_test(@test, RuntimeError.new) }
     end
-
   end
 
   class TestSkippedTests < UnitTests
@@ -336,7 +328,6 @@ module Assert::Result
     should "be a halting test result error" do
       assert_kind_of HaltingTestResultError, subject.new
     end
-
   end
 
   class SkipTests < UnitTests
@@ -377,7 +368,6 @@ module Assert::Result
     should "not allow creating for a test with non-TestSkipped exceptions" do
       assert_raises(ArgumentError){ Skip.for_test(@test, RuntimeError.new) }
     end
-
   end
 
   class ErrorTests < UnitTests
@@ -408,7 +398,6 @@ module Assert::Result
     should "not allow creating for a test without an exception" do
       assert_raises(ArgumentError){ Error.for_test(@test, Factory.string) }
     end
-
   end
 
   class BacktraceTests < UnitTests
@@ -444,7 +433,5 @@ module Assert::Result
     should "default itself when created from nil" do
       assert_equal ["No backtrace"], Backtrace.new
     end
-
   end
-
 end

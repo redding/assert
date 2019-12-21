@@ -2,7 +2,6 @@ require "assert"
 require "assert/assertions"
 
 module Assert::Assertions
-
   class AssertBlockTests < Assert::Context
     include Assert::Test::TestHelpers
 
@@ -27,7 +26,6 @@ module Assert::Assertions
       exp = "#{@desc}\nExpected block to return a true value."
       assert_equal exp, test_run_results(:fail).first.message
     end
-
   end
 
   class AssertNotBlockTests < Assert::Context
@@ -54,8 +52,6 @@ module Assert::Assertions
       exp = "#{@desc}\nExpected block to not return a true value."
       assert_equal exp, test_run_results(:fail).first.message
     end
-
   end
-
 end
 

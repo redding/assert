@@ -7,7 +7,6 @@ require "assert/suite"
 require "assert/view_helpers"
 
 class Assert::View
-
   class UnitTests < Assert::Context
     desc "Assert::View"
     subject { Assert::View }
@@ -21,7 +20,6 @@ class Assert::View
     should "include the view helpers" do
       assert_includes Assert::ViewHelpers, subject
     end
-
   end
 
   class InitTests < UnitTests
@@ -69,7 +67,5 @@ class Assert::View
     should "know if it is a tty" do
       assert_equal !!@io.isatty, subject.is_tty?
     end
-
   end
-
 end

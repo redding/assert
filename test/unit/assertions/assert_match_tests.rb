@@ -4,7 +4,6 @@ require "assert/assertions"
 require "assert/utils"
 
 module Assert::Assertions
-
   class AssertMatchTests < Assert::Context
     include Assert::Test::TestHelpers
 
@@ -32,7 +31,6 @@ module Assert::Assertions
             " to match #{Assert::U.show(@args[0], @c)}."
       assert_equal exp, test_run_results(:fail).first.message
     end
-
   end
 
   class AssertNotMatchTests < Assert::Context
@@ -62,8 +60,6 @@ module Assert::Assertions
             " to not match #{Assert::U.show(@args[0], @c)}."
       assert_equal exp, test_run_results(:fail).first.message
     end
-
   end
-
 end
 

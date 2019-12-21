@@ -2,7 +2,6 @@ require "assert"
 require "assert/assertions"
 
 module Assert::Assertions
-
   class AssertRaisesTests < Assert::Context
     include Assert::Test::TestHelpers
 
@@ -34,7 +33,7 @@ module Assert::Assertions
         "#{@d}\nAn exception expected but nothing raised."
       ]
       messages = test_run_results(:fail).map(&:message)
-      messages.each_with_index{ |msg, n| assert_match /^#{exp[n]}/, msg }
+      messages.each_with_index{ |msg, n| assert_match(/^#{exp[n]}/, msg) }
     end
 
     should "return any raised exception instance" do
@@ -56,7 +55,6 @@ module Assert::Assertions
 
       assert_nil error
     end
-
   end
 
   class AssertNothingRaisedTests < Assert::Context
@@ -88,10 +86,8 @@ module Assert::Assertions
         "#{@d}\nAn exception not expected, but raised:"
       ]
       messages = test_run_results(:fail).map(&:message)
-      messages.each_with_index{ |msg, n| assert_match /^#{exp[n]}/, msg }
+      messages.each_with_index{ |msg, n| assert_match(/^#{exp[n]}/, msg) }
     end
-
   end
-
 end
 

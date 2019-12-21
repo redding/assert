@@ -4,7 +4,6 @@ require "assert/assertions"
 require "assert/utils"
 
 module Assert::Assertions
-
   class AssertKindOfTests < Assert::Context
     include Assert::Test::TestHelpers
 
@@ -32,7 +31,6 @@ module Assert::Assertions
             " to be a kind of #{@args[0]}."
       assert_equal exp, test_run_results(:fail).first.message
     end
-
   end
 
   class AssertNotKindOfTests < Assert::Context
@@ -62,8 +60,6 @@ module Assert::Assertions
             " to not be a kind of #{@args[0]}."
       assert_equal exp, test_run_results(:fail).first.message
     end
-
   end
-
 end
 

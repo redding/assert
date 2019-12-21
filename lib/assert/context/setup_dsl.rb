@@ -1,8 +1,6 @@
 module Assert; end
 class Assert::Context
-
   module SetupDSL
-
     def setup_once(&block)
       self.suite.setup(&block)
     end
@@ -70,7 +68,5 @@ class Assert::Context
       # ... before the parent
       self.superclass.run_teardowns(scope) if self.superclass.respond_to?(:run_teardowns)
     end
-
   end
-
 end

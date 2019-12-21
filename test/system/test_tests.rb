@@ -7,7 +7,6 @@ class Assert::Test
 
     desc "Assert::Test"
     subject{ @test }
-
   end
 
   class NoResultsTests < SystemTests
@@ -20,7 +19,6 @@ class Assert::Test
     should "generate 0 results" do
       assert_equal 0, test_run_result_count
     end
-
   end
 
   class PassTests < SystemTests
@@ -37,7 +35,6 @@ class Assert::Test
     should "generate 1 pass result" do
       assert_equal 1, test_run_result_count(:pass)
     end
-
   end
 
   class FailTests < SystemTests
@@ -54,7 +51,6 @@ class Assert::Test
     should "generate 1 fail result" do
       assert_equal 1, test_run_result_count(:fail)
     end
-
   end
 
   class SkipTests < SystemTests
@@ -71,7 +67,6 @@ class Assert::Test
     should "generate 1 skip result" do
       assert_equal 1, test_run_result_count(:skip)
     end
-
   end
 
   class ErrorTests < SystemTests
@@ -88,7 +83,6 @@ class Assert::Test
     should "generate 1 error result" do
       assert_equal 1, test_run_result_count(:error)
     end
-
   end
 
   class MixedTests < SystemTests
@@ -112,7 +106,6 @@ class Assert::Test
     should "generate 1 fail result" do
       assert_equal 1, test_run_result_count(:fail)
     end
-
   end
 
   class MixedSkipTests < SystemTests
@@ -145,7 +138,6 @@ class Assert::Test
     should "generate 0 fail results" do
       assert_equal 0, test_run_result_count(:fail)
     end
-
   end
 
   class MixedErrorTests < SystemTests
@@ -178,7 +170,6 @@ class Assert::Test
     should "generate 0 fail results" do
       assert_equal 0, test_run_result_count(:fail)
     end
-
   end
 
   class MixedPassTests < SystemTests
@@ -207,7 +198,6 @@ class Assert::Test
     should "generate 1 fail result" do
       assert_equal 1, test_run_result_count(:fail)
     end
-
   end
 
   class MixedFailTests < SystemTests
@@ -236,7 +226,6 @@ class Assert::Test
     should "generate 2 fail results" do
       assert_equal 2, test_run_result_count(:fail)
     end
-
   end
 
   class MixedFlunkTests < SystemTests
@@ -265,7 +254,6 @@ class Assert::Test
     should "generate 2 fail results" do
       assert_equal 2, test_run_result_count(:fail)
     end
-
   end
 
   class WithSetupsTests < SystemTests
@@ -287,7 +275,6 @@ class Assert::Test
       exp = ["assert style setup", "test/unit style setup", "TEST"]
       assert_equal exp, test_run_result_messages
     end
-
   end
 
   class WithTeardownsTests < SystemTests
@@ -309,7 +296,6 @@ class Assert::Test
       exp = ["TEST", "assert style teardown", "test/unit style teardown"]
       assert_equal exp, test_run_result_messages
     end
-
   end
 
   class WithAroundsTests < SystemTests
@@ -355,7 +341,5 @@ class Assert::Test
       ]
       assert_equal exp, test_run_result_messages
     end
-
   end
-
 end

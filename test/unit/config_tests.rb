@@ -8,7 +8,6 @@ require "assert/file_line"
 require "assert/runner"
 
 class Assert::Config
-
   class UnitTests < Assert::Context
     desc "Assert::Config"
     setup do
@@ -94,7 +93,5 @@ class Assert::Config
       subject.apply(:single_test => file_line_path)
       assert_equal File.expand_path(path, Dir.pwd), subject.single_test_file_path
     end
-
   end
-
 end

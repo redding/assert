@@ -6,7 +6,6 @@ require "assert/result"
 require "assert/utils"
 
 class Assert::Context
-
   class UnitTests < Assert::Context
     desc "Assert::Context"
     setup do
@@ -38,7 +37,7 @@ class Assert::Context
 
     should "collect context info" do
       test = @__assert_running_test__
-      assert_match /test\/unit\/context_tests.rb$/, test.context_info.file
+      assert_match(/test\/unit\/context_tests.rb$/, test.context_info.file)
       assert_equal self.class, test.context_info.klass
     end
     private
@@ -63,7 +62,6 @@ class Assert::Context
         assert_equal result.backtrace.filtered.first.to_s, result.src_line
       end
     end
-
   end
 
   class SkipTests < UnitTests
@@ -93,7 +91,6 @@ class Assert::Context
       assert_equal 1,           exception.backtrace.size
       assert_equal called_from, exception.backtrace.first
     end
-
   end
 
   class IgnoreTests < UnitTests
@@ -112,7 +109,6 @@ class Assert::Context
     should "call the result callback" do
       assert_equal @result, @callback_result
     end
-
   end
 
   class PassTests < UnitTests
@@ -131,7 +127,6 @@ class Assert::Context
     should "call the result callback" do
       assert_equal @result, @callback_result
     end
-
   end
 
   class FlunkTests < UnitTests
@@ -150,7 +145,6 @@ class Assert::Context
     should "call the result callback" do
       assert_equal @result, @callback_result
     end
-
   end
 
   class FailTests < UnitTests
@@ -175,7 +169,6 @@ class Assert::Context
     should "call the result callback" do
       assert_equal @result, @callback_result
     end
-
   end
 
   class HaltOnFailTests < UnitTests
@@ -199,7 +192,6 @@ class Assert::Context
     should "not call the result callback" do
       assert_nil @callback_result
     end
-
   end
 
   class AssertTests < UnitTests
@@ -239,7 +231,6 @@ class Assert::Context
     should "return a fail result gievn a `nil` assertion" do
       assert_kind_of Assert::Result::Fail, subject.assert(nil)
     end
-
   end
 
   class AssertNotTests < UnitTests
@@ -273,7 +264,6 @@ class Assert::Context
     should "return a pass result given a `nil` assertion" do
       assert_kind_of Assert::Result::Pass, subject.assert_not(nil)
     end
-
   end
 
   class SubjectTests < UnitTests
@@ -291,7 +281,6 @@ class Assert::Context
     should "instance evaluate the block set with the class setup method" do
       assert_equal @expected, subject
     end
-
   end
 
   class PendingTests < UnitTests
@@ -318,7 +307,6 @@ class Assert::Context
       assert_kind_of Assert::Result::Fail, pending_pass
       assert_includes "Pending pass", pending_pass.message
     end
-
   end
 
   class PendingWithHaltOnFailTests < PendingTests
@@ -336,7 +324,6 @@ class Assert::Context
 
       assert_equal 0, @test_results.size # it halted before the pending pass
     end
-
   end
 
   class WithBacktraceTests < UnitTests
@@ -355,7 +342,7 @@ class Assert::Context
       end
 
       assert_equal 5, @test_results.size
-      norm_fail, with_ignore, with_fail, with_pass, with_skip = @test_results
+      norm_fail, with_ignore, with_fail, with_pass, _with_skip = @test_results
 
       assert_not_with_bt_set norm_fail
 
@@ -365,7 +352,6 @@ class Assert::Context
       assert_with_bt_set exp, with_pass
       assert_with_bt_set exp, with_ignore
     end
-
   end
 
   class WithNestedBacktraceTests < UnitTests
@@ -397,7 +383,6 @@ class Assert::Context
       assert_with_bt_set exp, with_pass
       assert_with_bt_set exp, with_ignore
     end
-
   end
 
   class InspectTests < UnitTests
@@ -412,5 +397,4 @@ class Assert::Context
       assert_equal @expected, subject
     end
   end
-
 end

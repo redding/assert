@@ -3,7 +3,6 @@ require "assert/suite"
 require "assert/view"
 
 module Assert
-
   class Runner
     include Assert::ConfigHelpers
 
@@ -103,7 +102,5 @@ module Assert
         self.suite.sorted_tests_to_run{ rand self.tests_to_run_count }
       end
     end
-
   end
-
 end

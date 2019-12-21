@@ -2,7 +2,6 @@ require "assert"
 require "assert/assertions"
 
 module Assert::Assertions
-
   class UnitTests < Assert::Context
     include Assert::Test::TestHelpers
 
@@ -33,7 +32,6 @@ module Assert::Assertions
     should have_imeths :assert_true, :assert_not_true, :refute_true
     should have_imeths :assert_false, :assert_not_false, :refute_false
     should have_imeths :assert_file_exists, :assert_not_file_exists, :refute_file_exists
-
   end
 
   class IgnoredTests < UnitTests
@@ -64,7 +62,5 @@ module Assert::Assertions
       end
       assert_equal exp, test_run_results.collect(&:message)
     end
-
   end
-
 end

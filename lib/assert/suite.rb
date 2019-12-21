@@ -2,13 +2,11 @@ require "assert/config_helpers"
 require "assert/test"
 
 module Assert
-
   # This is the base suite. It loads the tests to run in memory and provides
   # methods for these tests that the runner/view uses for handling and
   # presentation purposes. It also stores suite-level setups and teardowns.
   # Override the test/result count methods and the callbacks as needed.  See
   # the default suite for example usage.
-
   class Suite
     include Assert::ConfigHelpers
 
@@ -101,7 +99,5 @@ module Assert
       " test_count=#{self.test_count.inspect}"\
       " result_count=#{self.result_count.inspect}>"
     end
-
   end
-
 end

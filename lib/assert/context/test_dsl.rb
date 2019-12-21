@@ -5,9 +5,7 @@ require "assert/test"
 
 module Assert; end
 class Assert::Context
-
   module TestDSL
-
     def test(desc_or_macro, called_from = nil, first_caller = nil, &block)
       if desc_or_macro.kind_of?(Assert::Macro)
         instance_eval(&desc_or_macro)
@@ -50,7 +48,5 @@ class Assert::Context
       test_eventually(desc_or_macro, called_from, first_caller || caller_locations.first, &block)
     end
     alias_method :should_skip, :should_eventually
-
   end
-
 end

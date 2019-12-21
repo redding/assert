@@ -8,7 +8,6 @@ require "assert/result"
 require "assert/view"
 
 module Assert::ViewHelpers
-
   class UnitTests < Assert::Context
     desc "Assert::ViewHelpers"
     setup do
@@ -45,7 +44,6 @@ module Assert::ViewHelpers
       helpers.test_opt new_val, other_val
       assert_equal [new_val, other_val], helpers.test_opt
     end
-
   end
 
   class InitTests < UnitTests
@@ -132,7 +130,6 @@ module Assert::ViewHelpers
       exp = subject.to_sentence(items)
       assert_equal exp, subject.results_summary_sentence(&block)
     end
-
   end
 
   class AnsiTests < UnitTests
@@ -156,7 +153,6 @@ module Assert::ViewHelpers
       styles = []
       assert_equal "", subject.code_for(*styles)
     end
-
   end
 
   class AnsiInitTests < UnitTests
@@ -196,7 +192,5 @@ module Assert::ViewHelpers
       exp = exp_code + msg + Assert::ViewHelpers::Ansi.code_for(:reset)
       assert_equal exp, subject.ansi_styled_msg(msg, result_type)
     end
-
   end
-
 end

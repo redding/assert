@@ -1,7 +1,6 @@
 require "much-stub"
 
 module Assert
-
   def self.stubs
     MuchStub.stubs
   end
@@ -27,5 +26,4 @@ module Assert
       raise err
     end
   end
-
 end

@@ -1,8 +1,6 @@
 module Assert; end
 class Assert::Context
-
   module SuiteDSL
-
     def suite(suite_obj = nil)
       if suite_obj
         @suite = suite_obj
@@ -14,7 +12,5 @@ class Assert::Context
         end
       end
     end
-
   end
-
 end

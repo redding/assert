@@ -1,9 +1,7 @@
 require "assert/config_helpers"
 
 module Assert
-
   module ViewHelpers
-
     def self.included(receiver)
       receiver.class_eval do
         include Assert::ConfigHelpers
@@ -13,7 +11,6 @@ module Assert
     end
 
     module ClassMethods
-
       def option(name, *default_vals)
         default = default_vals.size > 1 ? default_vals : default_vals.first
         define_method(name) do |*args|
@@ -23,11 +20,9 @@ module Assert
           (val = instance_variable_get("@#{name}")).nil? ? default : val
         end
       end
-
     end
 
     module InstanceMethods
-
       # show any captured output
       def captured_output(output)
         "--- stdout ---\n"\
@@ -86,13 +81,10 @@ module Assert
         end
         self.to_sentence(summaries)
       end
-
     end
 
     module Ansi
-
       # Table of supported styles/codes (http://en.wikipedia.org/wiki/ANSI_escape_code)
-
       CODES = {
         :clear            => 0,
         :reset            => 0,
@@ -182,9 +174,6 @@ module Assert
         return msg if code.empty?
         code + msg + Assert::ViewHelpers::Ansi.code_for(:reset)
       end
-
     end
-
   end
-
 end

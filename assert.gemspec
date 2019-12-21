@@ -22,5 +22,4 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency("much-factory", ["~> 0.1.0"])
   gem.add_dependency("much-stub",    ["~> 0.1.1"])
-
 end

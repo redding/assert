@@ -1,7 +1,5 @@
 module Assert
-
   module ConfigHelpers
-
     def runner; self.config.runner; end
     def suite;  self.config.suite;  end
     def view;   self.config.view;   end
@@ -77,7 +75,5 @@ module Assert
     def get_rate(count, time)
       time == 0 ? 0.0 : (count.to_f / time.to_f)
     end
-
   end
-
 end

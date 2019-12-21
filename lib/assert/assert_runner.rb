@@ -1,7 +1,6 @@
 require "assert/cli"
 
 module Assert
-
   class AssertRunner
     USER_SETTINGS_FILE  = ".assert/init.rb"
     LOCAL_SETTINGS_FILE = ".assert.rb"
@@ -117,7 +116,5 @@ module Assert
     end
 
     def segment_regex(seg); /^#{seg}$|^#{seg}\/|\/#{seg}\/|\/#{seg}$/; end
-
   end
-
 end

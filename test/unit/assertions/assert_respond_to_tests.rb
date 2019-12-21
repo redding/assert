@@ -4,7 +4,6 @@ require "assert/assertions"
 require "assert/utils"
 
 module Assert::Assertions
-
   class AssertRespondToTests < Assert::Context
     include Assert::Test::TestHelpers
 
@@ -33,7 +32,6 @@ module Assert::Assertions
             " to respond to `#{@args[0]}`."
       assert_equal exp, test_run_results(:fail).first.message
     end
-
   end
 
   class AssertNotRespondToTests < Assert::Context
@@ -64,8 +62,6 @@ module Assert::Assertions
             " to not respond to `#{@args[0]}`."
       assert_equal exp, test_run_results(:fail).first.message
     end
-
   end
-
 end
 

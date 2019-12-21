@@ -4,7 +4,6 @@ require "assert/default_suite"
 require "assert/suite"
 
 class Assert::DefaultSuite
-
   class UnitTests < Assert::Context
     desc "Assert::DefaultSuite"
     setup do
@@ -91,7 +90,5 @@ class Assert::DefaultSuite
       assert_equal 0, subject.result_count
       assert_equal 0, subject.pass_result_count
     end
-
   end
-
 end

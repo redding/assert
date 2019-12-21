@@ -2,7 +2,6 @@ require "assert"
 require "assert/context/test_dsl"
 
 module Assert::Context::TestDSL
-
   class UnitTests < Assert::Context
     desc "Assert::Context::TestDSL"
     setup do
@@ -158,7 +157,5 @@ module Assert::Context::TestDSL
         e
       end
     end
-
   end
-
 end

@@ -2,7 +2,6 @@ require "assert"
 require "assert/file_line"
 
 class Assert::FileLine
-
   class UnitTests < Assert::Context
     desc "Assert::FileLine"
     setup do
@@ -41,7 +40,6 @@ class Assert::FileLine
       assert_equal "", file_line.file
       assert_equal "", file_line.line
     end
-
   end
 
   class InitTests < UnitTests
@@ -77,7 +75,5 @@ class Assert::FileLine
       assert_equal     yes, subject
       assert_not_equal no,  subject
     end
-
   end
-
 end

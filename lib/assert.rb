@@ -9,7 +9,6 @@ require "assert/utils"
 require "assert/view"
 
 module Assert
-
   def self.config; @config ||= Config.new; end
   def self.configure; yield self.config if block_given?; end
 
@@ -21,6 +20,5 @@ module Assert
   class Context
     teardown{ Assert.unstub! }
   end
-
 end
 

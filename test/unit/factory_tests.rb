@@ -4,7 +4,6 @@ require "assert/factory"
 require "much-factory"
 
 module Assert::Factory
-
   class UnitTests < Assert::Context
     desc "Assert::Factory"
     subject{ Assert::Factory }
@@ -23,7 +22,5 @@ module Assert::Factory
         self
       end
     end
-
   end
-
 end

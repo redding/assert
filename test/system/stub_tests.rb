@@ -2,10 +2,8 @@ require "assert"
 require "assert/stub"
 
 class Assert::Stub
-
   class SystemTests < Assert::Context
     desc "Assert::Stub"
-
   end
 
   class InstanceTests < SystemTests
@@ -79,7 +77,6 @@ class Assert::Stub
 
       assert_raises{ subject.withblock(1) }
     end
-
   end
 
   class ClassTests < SystemTests
@@ -153,7 +150,6 @@ class Assert::Stub
 
       assert_raises{ subject.withblock(1) }
     end
-
   end
 
   class ModuleTests < SystemTests
@@ -227,7 +223,6 @@ class Assert::Stub
 
       assert_raises{ subject.withblock(1) }
     end
-
   end
 
   class ExtendedTests < SystemTests
@@ -301,7 +296,6 @@ class Assert::Stub
 
       assert_raises{ subject.withblock(1) }
     end
-
   end
 
   class IncludedTests < SystemTests
@@ -376,7 +370,6 @@ class Assert::Stub
 
       assert_raises{ subject.withblock(1) }
     end
-
   end
 
   class InheritedClassTests < SystemTests
@@ -450,7 +443,6 @@ class Assert::Stub
 
       assert_raises{ subject.withblock(1) }
     end
-
   end
 
   class InheritedInstanceTests < SystemTests
@@ -525,7 +517,6 @@ class Assert::Stub
 
       assert_raises{ subject.withblock(1) }
     end
-
   end
 
   class DelegateClassTests < SystemTests
@@ -599,7 +590,6 @@ class Assert::Stub
 
       assert_nothing_raised{ subject.withblock(1) }
     end
-
   end
 
   class DelegateInstanceTests < SystemTests
@@ -673,7 +663,6 @@ class Assert::Stub
 
       assert_nothing_raised{ subject.withblock(1) }
     end
-
   end
 
   class ParentAndChildClassTests < SystemTests
@@ -690,11 +679,9 @@ class Assert::Stub
       assert_equal "parent", @parent_class.new
       assert_equal "child", @child_class.new
     end
-
   end
 
   class TestClass
-
     def self.noargs; end
     def self.withargs(a); end
     def self.anyargs(*args); end
@@ -706,27 +693,22 @@ class Assert::Stub
     def anyargs(*args); end
     def minargs(a, b, *args); end
     def withblock(&block); end
-
   end
 
   module TestModule
-
     def self.noargs; end
     def self.withargs(a); end
     def self.anyargs(*args); end
     def self.minargs(a, b, *args); end
     def self.withblock(&block); end
-
   end
 
   module TestMixin
-
     def noargs; end
     def withargs(a); end
     def anyargs(*args); end
     def minargs(a, b, *args); end
     def withblock(&block); end
-
   end
 
   class DelegateClass
@@ -750,5 +732,4 @@ class Assert::Stub
       @delegate.respond_to?(name) ? @delegate.send(name, *args, &block) : super
     end
   end
-
 end

@@ -24,7 +24,6 @@ class SuperStuff
   def test_repeated
     "repeated test from super"
   end
-
 end
 
 class SubStuff < SuperStuff
@@ -45,5 +44,4 @@ class SubStuff < SuperStuff
   def test_repeated
     "repeated test from sub"
   end
-
 end

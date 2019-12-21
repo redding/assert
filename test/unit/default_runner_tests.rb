@@ -4,7 +4,6 @@ require "assert/default_runner"
 require "assert/runner"
 
 class Assert::DefaultRunner
-
   class UnitTests < Assert::Context
     desc "Assert::DefaultRunner"
     setup do
@@ -12,7 +11,5 @@ class Assert::DefaultRunner
       @runner = Assert::DefaultRunner.new(@config)
     end
     subject{ @runner }
-
   end
-
 end

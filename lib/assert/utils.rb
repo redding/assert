@@ -1,9 +1,7 @@
 require "assert"
 
 module Assert
-
   module Utils
-
     # show objects in a human-readable manner.  Either inspects or pretty-prints
     # them depending on settings.
     def self.show(obj, config)
@@ -73,10 +71,8 @@ module Assert
         files
       end
     end
-
   end
 
   # alias for brevity
   U = Utils
-
 end

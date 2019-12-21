@@ -1,9 +1,7 @@
 require "assert/utils"
 
 module Assert
-
   module Assertions
-
     def assert_block(desc = nil)
       assert(yield, desc){ "Expected block to return a true value." }
     end
@@ -328,7 +326,5 @@ module Assert
         super("exception not expected, but raised:")
       end
     end
-
   end
-
 end

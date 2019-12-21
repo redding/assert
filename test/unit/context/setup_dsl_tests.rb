@@ -2,11 +2,9 @@ require "assert"
 require "assert/context/setup_dsl"
 
 module Assert::Context::SetupDSL
-
   class UnitTests < Assert::Context
     desc "Assert::Context::SetupDSL"
     subject{ @context_class }
-
   end
 
   class SetupTeardownOnceMethodsTests < UnitTests
@@ -23,7 +21,6 @@ module Assert::Context::SetupDSL
       assert_includes @block, subject.suite.send(:setups)
       assert_includes @block, subject.suite.send(:teardowns)
     end
-
   end
 
   class SetupTeardownMethodsTests < UnitTests
@@ -40,7 +37,6 @@ module Assert::Context::SetupDSL
       assert_includes @block, subject.send(:setups)
       assert_includes @block, subject.send(:teardowns)
     end
-
   end
 
   class SetupTeardownWithMethodNameTests < UnitTests
@@ -57,7 +53,6 @@ module Assert::Context::SetupDSL
       assert_includes @method_name, subject.send(:setups)
       assert_includes @method_name, subject.send(:teardowns)
     end
-
   end
 
   class SetupTeardownMultipleTests < UnitTests
@@ -97,7 +92,6 @@ module Assert::Context::SetupDSL
       subject.send("run_teardowns", obj = @test_status_class.new)
       assert_equal "with something has been run the teardown", obj.teardown_status
     end
-
   end
 
   class AroundMethodTests < UnitTests
@@ -141,7 +135,5 @@ module Assert::Context::SetupDSL
             "c-around2 end, c-around1 end, p-around end."
       assert_equal exp, obj.out_status
     end
-
   end
-
 end

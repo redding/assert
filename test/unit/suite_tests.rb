@@ -19,7 +19,6 @@ class Assert::Suite
       assert_match     "test#{Factory.string}", subject::TEST_METHOD_REGEX
       assert_not_match "#{Factory.string}test", subject::TEST_METHOD_REGEX
     end
-
   end
 
   class InitTests < UnitTests
@@ -103,7 +102,6 @@ class Assert::Suite
       subject.teardowns.each(&:call)
       assert_equal "teardowns have been run", status
     end
-
   end
 
   class WithTestsLoadedTests < InitTests
@@ -142,7 +140,5 @@ class Assert::Suite
       assert_kind_of Assert::Test, sorted_tests.first
       assert_same sorted_tests.first, subject.sorted_tests_to_run{ 1 }.first
     end
-
   end
-
 end

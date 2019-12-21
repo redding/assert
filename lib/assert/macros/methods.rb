@@ -2,13 +2,11 @@ require "assert/macro"
 
 module Assert::Macros
   module Methods
-
     def self.included(receiver)
       receiver.send(:extend, ClassMethods)
     end
 
     module ClassMethods
-
       def have_instance_method(*methods)
         called_from = (methods.last.kind_of?(Array) ? methods.pop : caller_locations).first
         Assert::Macro.new do
@@ -101,7 +99,6 @@ module Assert::Macros
 
       def _methods_macro_test(called_from)
         @_methods_macro_test ||= test "should respond to methods", called_from do
-
           self.class._methods_macro_instance_methods.each do |(method, called_from)|
             msg = "#{subject.class.name} does not have instance method ##{method}"
             with_backtrace([called_from]) do
@@ -129,7 +126,6 @@ module Assert::Macros
               assert_not_respond_to method, subject.class, msg
             end
           end
-
         end
       end
 
@@ -148,8 +144,6 @@ module Assert::Macros
       def _methods_macro_not_class_methods
         @_methods_macro_not_class_methods ||= []
       end
-
     end
-
   end
 end

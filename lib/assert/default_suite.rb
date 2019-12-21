@@ -1,13 +1,10 @@
 require "assert/suite"
 
 module Assert
-
   # This is the default suite used by assert. In addition to the base suite
   # behavior, it accumulates test/result counts in memory.  This data is used
   # by the runner/view for handling and presentation purposes.
-
   class DefaultSuite < Assert::Suite
-
     def initialize(config)
       super
       reset_run_data
@@ -53,7 +50,5 @@ module Assert
       @skip_result_count   = 0
       @ignore_result_count = 0
     end
-
   end
-
 end

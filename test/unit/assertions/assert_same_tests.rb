@@ -4,7 +4,6 @@ require "assert/assertions"
 require "assert/utils"
 
 module Assert::Assertions
-
   class AssertSameTests < Assert::Context
     include Assert::Test::TestHelpers
 
@@ -36,7 +35,6 @@ module Assert::Assertions
             " (#<#{@args[0].class}:#{"0x0%x" % (@args[0].object_id << 1)}>)."
       assert_equal exp, test_run_results(:fail).first.message
     end
-
   end
 
   class AssertNotSameTests < Assert::Context
@@ -70,7 +68,6 @@ module Assert::Assertions
             " (#<#{@args[0].class}:#{"0x0%x" % (@args[0].object_id << 1)}>)."
       assert_equal exp, test_run_results(:fail).first.message
     end
-
   end
 
   class DiffTests < Assert::Context
@@ -88,7 +85,6 @@ module Assert::Assertions
       @exp_obj_show = Assert::U.show_for_diff(@exp_obj, @c)
       @act_obj_show = Assert::U.show_for_diff(@act_obj, @c)
     end
-
   end
 
   class AssertSameDiffTests < DiffTests
@@ -110,7 +106,6 @@ module Assert::Assertions
             "#{Assert::U.syscmd_diff_proc.call(@exp_obj_show, @act_obj_show)}"
       assert_equal exp, test_run_results(:fail).first.message
     end
-
   end
 
   class AssertNotSameDiffTests < DiffTests
@@ -135,8 +130,6 @@ module Assert::Assertions
             "#{Assert::U.syscmd_diff_proc.call(@exp_obj_show, @act_obj_show)}"
       assert_equal exp, test_run_results(:fail).first.message
     end
-
   end
-
 end
 

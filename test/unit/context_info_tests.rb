@@ -4,7 +4,6 @@ require "assert/context_info"
 require "assert/context"
 
 class Assert::ContextInfo
-
   class UnitTests < Assert::Context
     desc "Assert::ContextInfo"
     setup do
@@ -49,7 +48,5 @@ class Assert::ContextInfo
       Assert.stub(subject.klass, :description){ desc }
       assert_equal "#{desc} #{name}", subject.test_name(name)
     end
-
   end
-
 end

@@ -85,5 +85,4 @@ module Factory
       instance_eval(&block) if !block.nil?
     end
   end
-
 end

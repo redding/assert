@@ -4,7 +4,6 @@ require "assert/assertions"
 require "assert/utils"
 
 module Assert::Assertions
-
   class AssertTrueTests < Assert::Context
     include Assert::Test::TestHelpers
 
@@ -31,7 +30,6 @@ module Assert::Assertions
       exp = "#{@args[1]}\nExpected #{Assert::U.show(@args[0], @c)} to be true."
       assert_equal exp, test_run_results(:fail).first.message
     end
-
   end
 
   class AssertNotTrueTests < Assert::Context
@@ -60,7 +58,6 @@ module Assert::Assertions
       exp = "#{@args[1]}\nExpected #{Assert::U.show(@args[0], @c)} to not be true."
       assert_equal exp, test_run_results(:fail).first.message
     end
-
   end
 
   class AssertFalseTests < Assert::Context
@@ -89,7 +86,6 @@ module Assert::Assertions
       exp = "#{@args[1]}\nExpected #{Assert::U.show(@args[0], @c)} to be false."
       assert_equal exp, test_run_results(:fail).first.message
     end
-
   end
 
   class AssertNotFalseTests < Assert::Context
@@ -118,7 +114,5 @@ module Assert::Assertions
       exp = "#{@args[1]}\nExpected #{Assert::U.show(@args[0], @c)} to not be false."
       assert_equal exp, test_run_results(:fail).first.message
     end
-
   end
-
 end

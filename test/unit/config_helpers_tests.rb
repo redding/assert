@@ -4,7 +4,6 @@ require "assert/config_helpers"
 require "assert/config"
 
 module Assert::ConfigHelpers
-
   class UnitTests < Assert::Context
     desc "Assert::ConfigHelpers"
     setup do
@@ -148,7 +147,5 @@ module Assert::ConfigHelpers
       end
       assert_equal exp, subject.ocurring_result_types
     end
-
   end
-
 end

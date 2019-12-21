@@ -2,7 +2,6 @@ require "assert/file_line"
 
 module Assert; end
 module Assert::Result
-
   class Base          ; end
   class Pass   < Base ; end
   class Ignore < Base ; end
@@ -26,7 +25,6 @@ module Assert::Result
   end
 
   class Base
-
     def self.type; :unknown; end
     def self.name; "";       end
 
@@ -156,7 +154,7 @@ module Assert::Result
     end
 
     # if the filtered backtrace is empty, just use the backtrace itself (this
-    # should only occur if the result is an error from a line in assert's
+    # should only occur if the result is an error from a line in Assert's
     # non-test code).
     def first_filtered_bt_line(backtrace)
       ((fbt = backtrace.filtered).empty? ? backtrace : fbt).first.to_s
@@ -164,17 +162,13 @@ module Assert::Result
   end
 
   class Pass < Base
-
     def self.type; :pass;  end
     def self.name; "Pass"; end
-
   end
 
   class Ignore < Base
-
     def self.type; :ignore;  end
     def self.name; "Ignore"; end
-
   end
 
   class HaltingTestResultError < RuntimeError
@@ -185,7 +179,6 @@ module Assert::Result
   TestFailure = Class.new(HaltingTestResultError)
 
   class Fail < Base
-
     def self.type; :fail;  end
     def self.name; "Fail"; end
 
@@ -201,14 +194,12 @@ module Assert::Result
         super(test, msg_or_err, bt)
       end
     end
-
   end
 
   # raised by the "skip" context helper to break test execution
   TestSkipped = Class.new(HaltingTestResultError)
 
   class Skip < Base
-
     def self.type; :skip;  end
     def self.name; "Skip"; end
 
@@ -224,11 +215,9 @@ module Assert::Result
         super(test, msg_or_err, bt)
       end
     end
-
   end
 
   class Error < Base
-
     def self.type; :error;  end
     def self.name; "Error"; end
 
@@ -247,11 +236,9 @@ module Assert::Result
     def build_trace
       Backtrace.to_s(backtrace)
     end
-
   end
 
   class Backtrace < ::Array
-
     DELIM = "\n".freeze
 
     def self.parse(bt)
@@ -272,7 +259,7 @@ module Assert::Result
 
     protected
 
-    # filter a line out if it's an assert lib/bin line
+    # filter a line out if it's an Assert lib/bin line
     def filter_out?(line)
       # "./lib" in project dir, or "/usr/local/blahblah" if installed
       assert_lib_path    = File.expand_path("../..", __FILE__)
@@ -283,7 +270,5 @@ module Assert::Result
       ) ||
       line =~ assert_bin_regex
     end
-
   end
-
 end

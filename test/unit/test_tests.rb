@@ -6,7 +6,6 @@ require "assert/file_line"
 require "assert/result"
 
 class Assert::Test
-
   class UnitTests < Assert::Context
     desc "Assert::Test"
     setup do
@@ -66,7 +65,6 @@ class Assert::Test
     def a_test_method
       @a_test_method_called = true
     end
-
   end
 
   class InitWithDataTests < UnitTests
@@ -134,7 +132,6 @@ class Assert::Test
       exp = "#<#{subject.class}:#{"0x0%x" % (subject.object_id << 1)} #{attrs}>"
       assert_equal exp, subject.inspect
     end
-
   end
 
   class PassFailIgnoreHandlingTests < UnitTests
@@ -187,7 +184,6 @@ class Assert::Test
         assert_kind_of Assert::Result::Ignore, result
       end
     end
-
   end
 
   class FailHandlingTests < UnitTests
@@ -230,7 +226,6 @@ class Assert::Test
         end
       end
     end
-
   end
 
   class SkipHandlingTests < UnitTests
@@ -269,7 +264,6 @@ class Assert::Test
         end
       end
     end
-
   end
 
   class ErrorHandlingTests < UnitTests
@@ -310,7 +304,6 @@ class Assert::Test
         end
       end
     end
-
   end
 
   class SignalExceptionHandlingTests < UnitTests
@@ -336,7 +329,6 @@ class Assert::Test
 
       assert_raises(SignalException){ test.run }
     end
-
   end
 
   class ComparingTests < UnitTests
@@ -360,7 +352,6 @@ class Assert::Test
       result = @test <=> Factory.test("zzz")
       assert_equal(-1, result)
     end
-
   end
 
   class CaptureOutTests < UnitTests
@@ -377,7 +368,6 @@ class Assert::Test
       @test.run
       assert_equal "std out from the test\n", @test.output
     end
-
   end
 
   class FullCaptureOutTests < CaptureOutTests
@@ -403,7 +393,5 @@ class Assert::Test
                 "std out from the teardown\n"
       assert_equal(exp_out, @test.output)
     end
-
   end
-
 end

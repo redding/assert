@@ -2,10 +2,8 @@ require "assert/view"
 require "assert/view_helpers"
 
 module Assert
-
   # This is the default view used by assert.  It renders ansi test output
   # designed for terminal viewing.
-
   class DefaultView < Assert::View
     include Assert::ViewHelpers::Ansi
 
@@ -184,7 +182,5 @@ module Assert
         end
       end
     end
-
   end
-
 end

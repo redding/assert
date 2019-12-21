@@ -5,7 +5,6 @@ require "assert/stub"
 require "much-stub"
 
 module Assert
-
   class UnitTests < Assert::Context
     desc "Assert"
     subject { Assert }
@@ -25,7 +24,6 @@ module Assert
 
     # Note: don't really need to explicitly test the configure method as
     # nothing runs if it isn't working
-
   end
 
   class StubTests < UnitTests
@@ -106,7 +104,5 @@ module Assert
       assert_equal @stub_value, @myobj.mymeth
       assert_equal @orig_value, Assert.stub_send(@myobj, :mymeth)
     end
-
   end
-
 end

@@ -4,7 +4,6 @@ require "assert/assertions"
 require "assert/utils"
 
 module Assert::Assertions
-
   class AssertInstanceOfTests < Assert::Context
     include Assert::Test::TestHelpers
 
@@ -32,7 +31,6 @@ module Assert::Assertions
             " to be an instance of #{@args[0]}."
       assert_equal exp, test_run_results(:fail).first.message
     end
-
   end
 
   class AssertNotInstanceOfTests < Assert::Context
@@ -62,8 +60,6 @@ module Assert::Assertions
             " to not be an instance of #{@args[0]}."
       assert_equal exp, test_run_results(:fail).first.message
     end
-
   end
-
 end
 

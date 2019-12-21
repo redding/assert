@@ -6,7 +6,6 @@ module Assert::Context::SubjectDSL
   class UnitTests < Assert::Context
     desc "Assert::Context::SubjectDSL"
     subject{ @context_class }
-
   end
 
   class DescriptionsTests < UnitTests
@@ -21,7 +20,6 @@ module Assert::Context::SubjectDSL
     should "return a collection containing any descriptions defined on the class" do
       assert_equal @descs, subject.send(:descriptions)
     end
-
   end
 
   class DescriptionTests < UnitTests
@@ -41,7 +39,6 @@ module Assert::Context::SubjectDSL
       exp_desc = "parent description and the description for this context"
       assert_equal exp_desc, @context_class.description
     end
-
   end
 
   class SubjectFromLocalTests < UnitTests
@@ -56,7 +53,6 @@ module Assert::Context::SubjectDSL
     should "set the subject block on the context class" do
       assert_equal @subject_block, @context_class.subject
     end
-
   end
 
   class SubjectFromParentTests < UnitTests
@@ -72,7 +68,5 @@ module Assert::Context::SubjectDSL
     should "default to it's parents subject block" do
       assert_equal @parent_block, @context_class.subject
     end
-
   end
-
 end

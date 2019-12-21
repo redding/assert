@@ -8,11 +8,9 @@
 require "assert"
 
 class MyTests < Assert::Context
-
   test "something" do
     assert_equal 1, 1
   end
-
 end
 ```
 
@@ -413,13 +411,11 @@ If you just want to disable this feature completely:
 
 ```ruby
 Assert.configure do |config|
-
   # run nothing if the `-c` flag is given
   config.changed_proc Proc.new{ |config, test_paths| [] }
 
   # run all test paths if the `-c` flag is given
   config.changed_proc Proc.new{ |config, test_paths| test_paths }
-
 end
 ```
 

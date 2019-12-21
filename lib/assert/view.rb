@@ -4,7 +4,6 @@ require "assert/suite"
 require "assert/view_helpers"
 
 module Assert
-
   class View
     include Assert::ConfigHelpers
     include Assert::ViewHelpers
@@ -92,7 +91,5 @@ module Assert
 
     def puts(*args); @output_io.puts(*args); end
     def print(*args); @output_io.print(*args); end
-
   end
-
 end

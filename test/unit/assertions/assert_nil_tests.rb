@@ -4,7 +4,6 @@ require "assert/assertions"
 require "assert/utils"
 
 module Assert::Assertions
-
   class AssertNilTests < Assert::Context
     include Assert::Test::TestHelpers
 
@@ -31,7 +30,6 @@ module Assert::Assertions
       exp = "#{@args[1]}\nExpected #{Assert::U.show(@args[0], @c)} to be nil."
       assert_equal exp, test_run_results(:fail).first.message
     end
-
   end
 
   class AssertNotNilTests < Assert::Context
@@ -60,8 +58,6 @@ module Assert::Assertions
       exp = "#{@args[1]}\nExpected #{Assert::U.show(@args[0], @c)} to not be nil."
       assert_equal exp, test_run_results(:fail).first.message
     end
-
   end
-
 end
 

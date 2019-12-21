@@ -3,12 +3,9 @@ require "assert/file_line"
 require "assert/result"
 
 module Assert
-
   class Test
-
-    # a Test is some code/method to run in the scope of a Context that may
-    # produce results
-
+    # Test is some code/method to run in the scope of a Context that may
+    # produce results.
     def self.name_file_line_context_data(ci, name)
       { :name      => ci.test_name(name),
         :file_line => ci.called_from
@@ -147,7 +144,5 @@ module Assert
     def capture_io
       StringIO.new(self.output, "a+")
     end
-
   end
-
 end

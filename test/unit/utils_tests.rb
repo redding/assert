@@ -5,7 +5,6 @@ require "tempfile"
 require "assert/config"
 
 module Assert::Utils
-
   class UnitTests < Assert::Context
     desc "Assert::Utils"
     subject{ Assert::Utils }
@@ -17,7 +16,6 @@ module Assert::Utils
     should have_imeths :tempfile
     should have_imeths :stdlib_pp_proc, :default_use_diff_proc, :syscmd_diff_proc
     should have_imeths :git_changed_proc
-
   end
 
   class ShowTests < UnitTests
@@ -40,7 +38,6 @@ module Assert::Utils
         assert_equal @pp_config.pp_proc.call(obj), subject.show(obj, @pp_config)
       end
     end
-
   end
 
   class ShowForDiffTests < ShowTests
@@ -59,7 +56,6 @@ module Assert::Utils
       exp_out = "#<#<Class:0xXXXXXX>:0xXXXXXX>"
       assert_equal exp_out, subject.show_for_diff(@w_obj_id, Factory.modes_off_config)
     end
-
   end
 
   class TempfileTests < UnitTests
@@ -75,7 +71,6 @@ module Assert::Utils
         assert_equal "some-content\n", tmpfile.read
       end
     end
-
   end
 
   class StdlibPpProcTests < UnitTests
@@ -91,7 +86,6 @@ module Assert::Utils
       act_obj_pps = @objs.map{ |o| subject.stdlib_pp_proc(cust_width).call(o) }
       assert_equal exp_obj_pps, act_obj_pps
     end
-
   end
 
   class DefaultUseDiffProcTests < UnitTests
@@ -111,7 +105,6 @@ module Assert::Utils
       assert proc.call("", @newlines)
       assert proc.call(@longer, @newlines)
     end
-
   end
 
   class SyscmdDiffProc < UnitTests
@@ -142,7 +135,5 @@ module Assert::Utils
 
       assert_equal exp_diff_out, subject.syscmd_diff_proc(cust_syscmd).call(@diff_a, @diff_b)
     end
-
   end
-
 end

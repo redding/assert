@@ -2,7 +2,6 @@ require "assert"
 require "assert/macro"
 
 class Assert::Macro
-
   class UnitTests < Assert::Context
     desc "Assert::Macro"
     setup do
@@ -30,7 +29,6 @@ class Assert::Macro
     should "complain if you create a macro without a block" do
       assert_raises(ArgumentError) { Assert::Macro.new }
     end
-
   end
 
   class InstanceMethodsTests < Assert::Context
@@ -51,7 +49,6 @@ class Assert::Macro
     should not_have_instance_methods :method_8, :method_9
     should not_have_imeth :method_10
     should not_have_imeths :method_11, :method_12
-
   end
 
   class ClassMethodsTests < Assert::Context
@@ -74,7 +71,6 @@ class Assert::Macro
     should not_have_class_methods :method_8, :method_9
     should not_have_cmeth :method_10
     should not_have_cmeths :method_11, :method_12
-
   end
 
   class ReadersTests < Assert::Context
@@ -95,7 +91,6 @@ class Assert::Macro
     should not_have_reader :method_8, :method_9
     should not_have_readers :method_10
     should not_have_readers :method_11, :method_12
-
   end
 
   class WritersTests < Assert::Context
@@ -116,7 +111,6 @@ class Assert::Macro
     should not_have_writer :method_8, :method_9
     should not_have_writers :method_10
     should not_have_writers :method_11, :method_12
-
   end
 
   class AccessorsTests < Assert::Context
@@ -137,7 +131,5 @@ class Assert::Macro
     should not_have_accessor :method_8, :method_9
     should not_have_accessors :method_10
     should not_have_accessors :method_11, :method_12
-
   end
-
 end
