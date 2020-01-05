@@ -104,5 +104,15 @@ module Assert
       assert_equal @stub_value, @myobj.mymeth
       assert_equal @orig_value, Assert.stub_send(@myobj, :mymeth)
     end
+
+    should "be able to add a stub tap" do
+      my_meth_called_with = nil
+      Assert.stub_tap(@myobj, :mymeth){ |value, *args, &block|
+        my_meth_called_with = args
+      }
+
+      assert_equal @orig_value, @myobj.mymeth
+      assert_equal [], my_meth_called_with
+    end
   end
 end

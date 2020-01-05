@@ -26,4 +26,8 @@ module Assert
       raise err
     end
   end
+
+  def self.stub_tap(*args, &block)
+    MuchStub.tap(*args, &block)
+  end
 end
