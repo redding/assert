@@ -71,58 +71,86 @@ Assert comes with a stubbing API - all it does is replace method calls.  In gene
 * no methods are added to `Object` to support stubbing
 * stubs are auto-unstubbed on test teardown
 
-**Note**: Assert's stubbing logic has been extracted into a separate gem: [MuchStub](https://github.com/redding/much-stub/#muchstub).  However, the main `Assert.{stub|unstub|stub_send|etc}` api is still available (it just proxies MuchStub now).
+**Note**: Assert's stubbing logic has been extracted into a separate gem: [MuchStub](https://github.com/redding/much-stub/#muchstub).  However, the main `Assert.{stub|unstub|stub_send|stub_tap|etc}` api is still available (it just proxies to MuchStub now).
 
 ```ruby
 myclass = Class.new do
-  def mymeth; "meth"; end
-  def myval(val); val; end
+  def my_method
+    "my_method"
+  end
+
+  def my_value(value)
+    value
+  end
 end
-myobj = myclass.new
+my_object = myclass.new
 
-myobj.mymeth
-  # => "meth"
-myobj.myval(123)
+my_object.my_method
+  # => "my_method"
+my_object.my_value(123)
   # => 123
-myobj.myval(456)
+my_object.my_value(456)
   # => 456
 
-Assert.stub(myobj, :mymeth)
-myobj.mymeth
-  # => StubError: `mymeth` not stubbed.
-Assert.stub(myobj, :mymeth){ "stub-meth" }
-myobj.mymeth
+Assert.stub(my_object, :my_method)
+my_object.my_method
+  # => StubError: `my_method` not stubbed.
+Assert.stub(my_object, :my_method){ "stub-meth" }
+my_object.my_method
   # => "stub-meth"
-myobj.mymeth(123)
+my_object.my_method(123)
   # => StubError: arity mismatch
-Assert.stub(myobj, :mymeth).with(123){ "stub-meth" }
+Assert.stub(my_object, :my_method).with(123){ "stub-meth" }
   # => StubError: arity mismatch
-Assert.stub_send(myobj, :mymeth) # call to the original method post-stub
-  # => "meth"
 
-Assert.stub(myobj, :myval){ "stub-meth" }
+# Call the original method after it has been stubbed.
+Assert.stub_send(my_object, :my_method)
+  # => "my_method"
+
+Assert.stub(my_object, :my_value){ "stub-meth" }
   # => StubError: arity mismatch
-Assert.stub(myobj, :myval).with(123){ |val| val.to_s }
-myobj.myval
+Assert.stub(my_object, :my_value).with(123){ |val| val.to_s }
+my_object.my_value
   # => StubError: arity mismatch
-myobj.myval(123)
+my_object.my_value(123)
   # => "123"
-myobj.myval(456)
-  # => StubError: `myval(456)` not stubbed.
-Assert.stub_send(myobj, :myval, 123) # call to the original method post-stub
+my_object.my_value(456)
+  # => StubError: `my_value(456)` not stubbed.
+
+# Call the original method after it has been stubbed.
+Assert.stub_send(my_object, :my_value, 123)
   # => 123
-Assert.stub_send(myobj, :myval, 456)
+Assert.stub_send(my_object, :my_value, 456)
   # => 456
 
-Assert.unstub(myobj, :mymeth)
-Assert.unstub(myobj, :myval)
-
-myobj.mymeth
-  # => "meth"
-myobj.myval(123)
+# Stub a method while preserving its behavior and return value.
+my_value_called_with = nil
+Assert.stub_tap(my_object, :my_value) { |value, *args|
+  my_value_called_with = args
+  Assert.stub(value, :to_s) { "FIREWORKS!" }
+}
+value = my_object.my_value(123)
   # => 123
-myobj.myval(456)
+my_value_called_with
+  # => [123]
+value.to_s
+  # =>"FIREWORKS!"
+
+# Unstub individual stubs
+Assert.unstub(my_object, :my_method)
+Assert.unstub(my_object, :my_value)
+
+# OR blanket unstub all stubs
+Assert.unstub!
+
+my_object.my_method
+  # => "my_method"
+my_object.my_value(123)
+  # => 123
+value = my_object.my_value(456)
   # => 456
+value.to_s
+  # => "456"
 ```
 
 ## Factory
