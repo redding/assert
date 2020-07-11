@@ -30,4 +30,12 @@ module Assert
   def self.stub_tap(*args, &block)
     MuchStub.tap(*args, &block)
   end
+
+  def self.stub_tap_on_call(*args, &block)
+    MuchStub.tap_on_call(*args, &block)
+  end
+
+  def self.stub_spy(*args, &block)
+    MuchStub.spy(*args, &block)
+  end
 end
