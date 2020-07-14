@@ -114,5 +114,47 @@ module Assert
       assert_equal @orig_value, @myobj.mymeth
       assert_equal [], my_meth_called_with
     end
+
+    should "be able to add a stub tap with an on_call block" do
+      my_meth_called_with = nil
+      Assert.stub_tap_on_call(@myobj, :mymeth){ |value, call|
+        my_meth_called_with = call
+      }
+
+      assert_equal @orig_value, @myobj.mymeth
+      assert_equal [], my_meth_called_with.args
+    end
+
+    should "be able to add a stubbed spy" do
+      myclass = Class.new do
+        def one; self; end
+        def two(val); self; end
+        def three; self; end
+        def ready?; false; end
+      end
+      myobj = myclass.new
+
+      spy =
+        Assert.stub_spy(
+          myobj,
+          :one,
+          :two,
+          :three,
+          ready?: true)
+
+      assert_equal spy, myobj.one
+      assert_equal spy, myobj.two("a")
+      assert_equal spy, myobj.three
+
+      assert_true myobj.one.two("b").three.ready?
+
+      assert_kind_of MuchStub::CallSpy, spy
+      assert_equal 2, spy.one_call_count
+      assert_equal 2, spy.two_call_count
+      assert_equal 2, spy.three_call_count
+      assert_equal 1, spy.ready_predicate_call_count
+      assert_equal ["b"], spy.two_last_called_with.args
+      assert_true spy.ready_predicate_called?
+    end
   end
 end
