@@ -2,6 +2,15 @@ require "assert/utils"
 
 module Assert
   module Assertions
+    IGNORED_ASSERTION_HELPERS =
+      [
+        :assert_throws,     :assert_nothing_thrown,
+        :assert_operator,   :refute_operator,
+        :assert_in_epsilon, :refute_in_epsilon,
+        :assert_in_delta,   :refute_in_delta,
+        :assert_send
+      ]
+
     def assert_block(desc = nil)
       assert(yield, desc){ "Expected block to return a true value." }
     end
@@ -243,24 +252,6 @@ module Assert
       end
     end
     alias_method :refute_same, :assert_not_same
-
-    # ignored assertion helpers
-
-    IGNORED_ASSERTION_HELPERS = [
-      :assert_throws,     :assert_nothing_thrown,
-      :assert_operator,   :refute_operator,
-      :assert_in_epsilon, :refute_in_epsilon,
-      :assert_in_delta,   :refute_in_delta,
-      :assert_send
-    ]
-    def method_missing(method, *args, &block)
-      if IGNORED_ASSERTION_HELPERS.include?(method.to_sym)
-        ignore "The assertion `#{method}` is not supported."\
-               " Please use another assertion or the basic `assert`."
-      else
-        super
-      end
-    end
 
     private
 

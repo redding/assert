@@ -1,4 +1,5 @@
 require "assert/assertions"
+require "assert/context/method_missing"
 require "assert/context/setup_dsl"
 require "assert/context/subject_dsl"
 require "assert/context/suite_dsl"
@@ -16,6 +17,7 @@ module Assert
     extend SubjectDSL
     extend SuiteDSL
     extend TestDSL
+    include MethodMissing
     include Assert::Assertions
     include Assert::Macros::Methods
 
