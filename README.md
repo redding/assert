@@ -9,7 +9,7 @@ require "assert"
 
 class MyTests < Assert::Context
   test "something" do
-    assert_equal 1, 1
+    assert_that(1).equals(1)
   end
 end
 ```

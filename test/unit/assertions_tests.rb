@@ -10,7 +10,7 @@ module Assert::Assertions
 
     let(:context_class1) { Factory.modes_off_context_class }
     let(:test1) { Factory.test }
-    let(:context1) { context_class1.new(test1, test1.config, proc{ |r| }) }
+    let(:context1) { context_class1.new(test1, test1.config, proc { |r| }) }
 
     should have_imeths :assert_block, :assert_not_block, :refute_block
     should have_imeths :assert_raises, :assert_not_raises

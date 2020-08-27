@@ -25,7 +25,7 @@ class Assert::Context
     let(:msg1) { Factory.string }
 
     # DSL methods
-    should have_cmeths :description, :desc, :describe, :subject, :suite
+    should have_cmeths :description, :desc, :describe, :subject, :suite, :let
     should have_cmeths :setup_once, :before_once, :startup
     should have_cmeths :teardown_once, :after_once, :shutdown
     should have_cmeths :setup, :before, :setups, :run_setups
@@ -34,7 +34,7 @@ class Assert::Context
     should have_cmeths :test, :test_eventually, :test_skip
     should have_cmeths :should, :should_eventually, :should_skip
 
-    should have_imeths :assert, :assert_not, :refute
+    should have_imeths :assert, :assert_not, :refute, :assert_that
     should have_imeths :pass, :ignore, :fail, :flunk, :skip
     should have_imeths :pending, :with_backtrace, :subject
 
@@ -43,6 +43,7 @@ class Assert::Context
       assert_match(/test\/unit\/context_tests.rb$/, test.context_info.file)
       assert_equal self.class, test.context_info.klass
     end
+
     private
 
     ASSERT_TEST_PATH_REGEX = /\A#{File.join(ROOT_PATH, "test", "")}/
@@ -258,6 +259,24 @@ class Assert::Context
 
     should "return a pass result given a `nil` assertion" do
       assert_kind_of Assert::Result::Pass, subject.assert_not(nil)
+    end
+  end
+
+  class AssertThatTests < UnitTests
+    desc "`assert_that` method"
+
+    setup do
+      Assert.stub_tap_on_call(Assert::ActualValue, :new) { |_, call|
+        @actual_value_new_call = call
+      }
+    end
+
+    let(:actual_value) { Factory.string }
+
+    should "build an Assert::ActualValue" do
+      assert_instance_of(Assert::ActualValue, subject.assert_that(actual_value))
+      assert_equal [actual_value], @actual_value_new_call.pargs
+      assert_equal({ context: subject}, @actual_value_new_call.kargs)
     end
   end
 
