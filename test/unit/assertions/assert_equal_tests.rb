@@ -8,27 +8,29 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_equal`"
-    setup do
-      desc = @desc = "assert equal fail desc"
-      a = @a = ["1", "2", desc]
-      @test = Factory.test do
-        assert_equal(1, 1) # pass
-        assert_equal(*a)   # fail
+    subject { test1 }
+
+    let(:desc1) { "assert equal fail desc" }
+    let(:args1) { ["1", "2", desc1] }
+    let(:test1) {
+      args = args1
+      Factory.test do
+        assert_equal(1, 1)  # pass
+        assert_equal(*args) # fail
       end
-      @c = @test.config
-      @test.run(&test_run_callback)
-    end
-    subject{ @test }
+    }
+    let(:config1) { test1.config }
 
     should "produce results as expected" do
+      subject.run(&test_run_callback)
+
       assert_equal 2, test_run_result_count
       assert_equal 1, test_run_result_count(:pass)
       assert_equal 1, test_run_result_count(:fail)
-    end
 
-    should "have a fail message with custom and generic explanations" do
-      exp = "#{@a[2]}\nExpected #{Assert::U.show(@a[1], @c)}"\
-            " to be equal to #{Assert::U.show(@a[0], @c)}."
+      exp =
+        "#{args1[2]}\nExpected #{Assert::U.show(args1[1], config1)}"\
+        " to be equal to #{Assert::U.show(args1[0], config1)}."
       assert_equal exp, test_run_results(:fail).first.message
     end
   end
@@ -37,27 +39,29 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_not_equal`"
-    setup do
-      desc = @desc = "assert not equal fail desc"
-      a = @a = ["1", "1", desc]
-      @test = Factory.test do
-        assert_not_equal(*a)   # fail
-        assert_not_equal(1, 2) # pass
+    subject { test1 }
+
+    let(:desc1) { "assert not equal fail desc" }
+    let(:args1) { ["1", "1", desc1] }
+    let(:test1) {
+      args = args1
+      Factory.test do
+        assert_not_equal(*args) # fail
+        assert_not_equal(1, 2)  # pass
       end
-      @c = @test.config
-      @test.run(&test_run_callback)
-    end
-    subject{ @test }
+    }
+    let(:config1) { test1.config }
 
     should "produce results as expected" do
+      subject.run(&test_run_callback)
+
       assert_equal 2, test_run_result_count
       assert_equal 1, test_run_result_count(:pass)
       assert_equal 1, test_run_result_count(:fail)
-    end
 
-    should "have a fail message with custom and generic explanations" do
-      exp = "#{@a[2]}\nExpected #{Assert::U.show(@a[1], @c)}"\
-            " to not be equal to #{Assert::U.show(@a[0], @c)}."
+      exp =
+        "#{args1[2]}\nExpected #{Assert::U.show(args1[1], config1)}"\
+        " to not be equal to #{Assert::U.show(args1[0], config1)}."
       assert_equal exp, test_run_results(:fail).first.message
     end
   end
@@ -66,21 +70,16 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "with objects that define custom equality operators"
-    setup do
-      is_class = Class.new do
-        def ==(other); true; end
-      end
-      @is = is_class.new
 
-      is_not_class = Class.new do
-        def ==(other); false; end
-      end
-      @is_not = is_not_class.new
-    end
+    let(:is_class)     { Class.new do; def ==(other); true;  end; end }
+    let(:is_not_class) { Class.new do; def ==(other); false; end; end }
+
+    let(:is1) { is_class.new }
+    let(:is_not1) { is_not_class.new }
 
     should "use the equality operator of the exp value" do
-      assert_equal @is, @is_not
-      assert_not_equal @is_not, @is
+      assert_equal is1, is_not1
+      assert_not_equal is_not1, is1
     end
   end
 
@@ -88,51 +87,58 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "with objects that should use diff when showing"
-    setup do
-      @exp_obj = "I'm a\nstring"
-      @act_obj = "I am a \nstring"
 
-      @c = Factory.modes_off_config
-      @c.use_diff_proc(Assert::U.default_use_diff_proc)
-      @c.run_diff_proc(Assert::U.syscmd_diff_proc)
+    let(:config1) {
+      Factory.modes_off_config.tap do |config|
+        config.use_diff_proc(Assert::U.default_use_diff_proc)
+        config.run_diff_proc(Assert::U.syscmd_diff_proc)
+      end
+    }
 
-      @exp_obj_show = Assert::U.show_for_diff(@exp_obj, @c)
-      @act_obj_show = Assert::U.show_for_diff(@act_obj, @c)
-    end
+    let(:exp_obj1) { "I'm a\nstring" }
+    let(:act_obj1) { "I am a \nstring" }
+    let(:exp_obj_show1) { Assert::U.show_for_diff(exp_obj1, config1) }
+    let(:act_obj_show1) { Assert::U.show_for_diff(act_obj1, config1) }
   end
 
   class AssertEqualDiffTests < DiffTests
     desc "`assert_equal`"
-    setup do
-      exp_obj, act_obj = @exp_obj, @act_obj
-      @test = Factory.test(@c) do
+    subject { test1 }
+
+    let(:test1) {
+      exp_obj, act_obj = exp_obj1, act_obj1
+      Factory.test(config1) do
         assert_equal(exp_obj, act_obj)
       end
-      @test.run(&test_run_callback)
-    end
-    subject{ @test }
+    }
 
     should "include diff output in the fail messages" do
-      exp = "Expected does not equal actual, diff:\n"\
-            "#{Assert::U.syscmd_diff_proc.call(@exp_obj_show, @act_obj_show)}"
+      subject.run(&test_run_callback)
+
+      exp =
+        "Expected does not equal actual, diff:\n"\
+        "#{Assert::U.syscmd_diff_proc.call(exp_obj_show1, act_obj_show1)}"
       assert_equal exp, test_run_results(:fail).first.message
     end
   end
 
   class AssertNotEqualDiffTests < DiffTests
     desc "`assert_not_equal`"
-    setup do
-      exp_obj, act_obj = @exp_obj, @act_obj
-      @test = Factory.test(@c) do
+    subject { test1 }
+
+    let(:test1) {
+      exp_obj = exp_obj1
+      Factory.test(config1) do
         assert_not_equal(exp_obj, exp_obj)
       end
-      @test.run(&test_run_callback)
-    end
-    subject{ @test }
+    }
 
     should "include diff output in the fail messages" do
-      exp = "Expected equals actual, diff:\n"\
-            "#{Assert::U.syscmd_diff_proc.call(@exp_obj_show, @exp_obj_show)}"
+      subject.run(&test_run_callback)
+
+      exp =
+        "Expected equals actual, diff:\n"\
+        "#{Assert::U.syscmd_diff_proc.call(exp_obj_show1, exp_obj_show1)}"
       assert_equal exp, test_run_results(:fail).first.message
     end
   end

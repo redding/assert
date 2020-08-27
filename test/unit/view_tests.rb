@@ -24,13 +24,11 @@ class Assert::View
 
   class InitTests < UnitTests
     desc "when init"
-    setup do
-      @io     = StringIO.new("", "w+")
-      @config = Factory.modes_off_config
+    subject { view1 }
 
-      @view = Assert::View.new(@config, @io)
-    end
-    subject{ @view }
+    let(:io1)     { StringIO.new("", "w+") }
+    let(:config1) { Factory.modes_off_config }
+    let(:view1)   { Assert::View.new(config1, io1) }
 
     should have_readers :config
     should have_imeths :view, :is_tty?
@@ -57,7 +55,7 @@ class Assert::View
     end
 
     should "know its config" do
-      assert_equal @config, subject.config
+      assert_equal config1, subject.config
     end
 
     should "override the config helper's view value with itself" do
@@ -65,7 +63,7 @@ class Assert::View
     end
 
     should "know if it is a tty" do
-      assert_equal !!@io.isatty, subject.is_tty?
+      assert_equal !!io1.isatty, subject.is_tty?
     end
   end
 end

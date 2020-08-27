@@ -6,15 +6,17 @@ class Assert::Test
     include Assert::Test::TestHelpers
 
     desc "Assert::Test"
-    subject{ @test }
+    subject { test1 }
+
+    setup do
+      test1.run(&test_run_callback)
+    end
   end
 
   class NoResultsTests < SystemTests
     desc "when producing no results"
-    setup do
-      @test = Factory.test
-      @test.run(&test_run_callback)
-    end
+
+    let(:test1) { Factory.test }
 
     should "generate 0 results" do
       assert_equal 0, test_run_result_count
@@ -23,10 +25,8 @@ class Assert::Test
 
   class PassTests < SystemTests
     desc "when passing a single assertion"
-    setup do
-      @test = Factory.test{ assert(1 == 1) }
-      @test.run(&test_run_callback)
-    end
+
+    let(:test1) { Factory.test{ assert(1 == 1) } }
 
     should "generate 1 result" do
       assert_equal 1, test_run_result_count
@@ -39,10 +39,8 @@ class Assert::Test
 
   class FailTests < SystemTests
     desc "when failing a single assertion"
-    setup do
-      @test = Factory.test{ assert(1 == 0) }
-      @test.run(&test_run_callback)
-    end
+
+    let(:test1) { Factory.test{ assert(1 == 0) } }
 
     should "generate 1 result" do
       assert_equal 1, test_run_result_count
@@ -55,10 +53,8 @@ class Assert::Test
 
   class SkipTests < SystemTests
     desc "when skipping once"
-    setup do
-      @test = Factory.test{ skip }
-      @test.run(&test_run_callback)
-    end
+
+    let(:test1) { Factory.test{ skip } }
 
     should "generate 1 result" do
       assert_equal 1, test_run_result_count
@@ -71,10 +67,8 @@ class Assert::Test
 
   class ErrorTests < SystemTests
     desc "when erroring once"
-    setup do
-      @test = Factory.test{ raise("WHAT") }
-      @test.run(&test_run_callback)
-    end
+
+    let(:test1) { Factory.test{ raise("WHAT") } }
 
     should "generate 1 result" do
       assert_equal 1, test_run_result_count
@@ -87,13 +81,13 @@ class Assert::Test
 
   class MixedTests < SystemTests
     desc "when passing 1 assertion and failing 1 assertion"
-    setup do
-      @test = Factory.test do
+
+    let(:test1) {
+      Factory.test do
         assert(1 == 1)
         assert(1 == 0)
       end
-      @test.run(&test_run_callback)
-    end
+    }
 
     should "generate 2 total results" do
       assert_equal 2, test_run_result_count
@@ -110,14 +104,14 @@ class Assert::Test
 
   class MixedSkipTests < SystemTests
     desc "when passing 1 assertion and failing 1 assertion with a skip call in between"
-    setup do
-      @test = Factory.test do
+
+    let(:test1) {
+      Factory.test do
         assert(1 == 1)
         skip
         assert(1 == 0)
       end
-      @test.run(&test_run_callback)
-    end
+    }
 
     should "generate 2 total results" do
       assert_equal 2, test_run_result_count
@@ -142,14 +136,14 @@ class Assert::Test
 
   class MixedErrorTests < SystemTests
     desc "when passing 1 assertion and failing 1 assertion with an exception raised in between"
-    setup do
-      @test = Factory.test do
+
+    let(:test1) {
+      Factory.test do
         assert(1 == 1)
         raise Exception, "something errored"
         assert(1 == 0)
       end
-      @test.run(&test_run_callback)
-    end
+    }
 
     should "generate 2 total results" do
       assert_equal 2, test_run_result_count
@@ -174,14 +168,14 @@ class Assert::Test
 
   class MixedPassTests < SystemTests
     desc "when passing 1 assertion and failing 1 assertion with a pass call in between"
-    setup do
-      @test = Factory.test do
+
+    let(:test1) {
+      Factory.test do
         assert(1 == 1)
         pass
         assert(1 == 0)
       end
-      @test.run(&test_run_callback)
-    end
+    }
 
     should "generate 3 total results" do
       assert_equal 3, test_run_result_count
@@ -202,14 +196,14 @@ class Assert::Test
 
   class MixedFailTests < SystemTests
     desc "when failing 1 assertion and passing 1 assertion with a fail call in between"
-    setup do
-      @test = Factory.test do
+
+    let(:test1) {
+      Factory.test do
         assert(1 == 0)
         fail
         assert(1 == 1)
       end
-      @test.run(&test_run_callback)
-    end
+    }
 
     should "generate 3 total results" do
       assert_equal 3, test_run_result_count
@@ -230,14 +224,14 @@ class Assert::Test
 
   class MixedFlunkTests < SystemTests
     desc "has failing 1 assertion and passing 1 assertion with a flunk call in between"
-    setup do
-      @test = Factory.test do
+
+    let(:test1) {
+      Factory.test do
         assert(1 == 0)
         flunk
         assert(1 == 1)
       end
-      @test.run(&test_run_callback)
-    end
+    }
 
     should "generate 3 total results" do
       assert_equal 3, test_run_result_count
@@ -258,16 +252,18 @@ class Assert::Test
 
   class WithSetupsTests < SystemTests
     desc "that has setup logic"
-    setup do
-      @context_class = Factory.context_class do
+
+    let(:context_class1) {
+      Factory.context_class do
         # assert style
-        setup{ pass "assert style setup" }
+        setup { pass "assert style setup" }
         # test/unit style
         def setup; pass "test/unit style setup"; end
       end
-      @test = Factory.test("t", Factory.context_info(@context_class)){ pass "TEST" }
-      @test.run(&test_run_callback)
-    end
+    }
+    let(:test1) {
+      Factory.test("t", Factory.context_info(context_class1)) { pass "TEST" }
+    }
 
     should "execute all setup logic when run" do
       assert_equal 3, test_run_result_count(:pass)
@@ -279,16 +275,18 @@ class Assert::Test
 
   class WithTeardownsTests < SystemTests
     desc "that has teardown logic"
-    setup do
-      @context_class = Factory.context_class do
+
+    let(:context_class1) {
+      Factory.context_class do
         # assert style
-        teardown{ pass "assert style teardown" }
+        teardown { pass "assert style teardown" }
         # test/unit style
         def teardown; pass "test/unit style teardown"; end
       end
-      @test = Factory.test("t", Factory.context_info(@context_class)){ pass "TEST" }
-      @test.run(&test_run_callback)
-    end
+    }
+    let(:test1) {
+      Factory.test("t", Factory.context_info(context_class1)) { pass "TEST" }
+    }
 
     should "execute all teardown logic when run" do
       assert_equal 3, test_run_result_count(:pass)
@@ -300,35 +298,39 @@ class Assert::Test
 
   class WithAroundsTests < SystemTests
     desc "that has around logic (in addition to setups/teardowns)"
-    setup do
-      @parent_context_class = Factory.modes_off_context_class do
+
+    let(:parent_context_class1) {
+      Factory.modes_off_context_class do
         around do |block|
           pass "parent around start"
           block.call
           pass "parent around end"
         end
-        setup{ pass "parent setup" }
-        teardown{ pass "parent teardown" }
+        setup { pass "parent setup" }
+        teardown { pass "parent teardown" }
       end
-      @context_class = Factory.modes_off_context_class(@parent_context_class) do
-        setup{ pass "child setup1" }
+    }
+    let(:context_class1) {
+      Factory.modes_off_context_class(parent_context_class1) do
+        setup { pass "child setup1" }
         around do |block|
           pass "child around1 start"
           block.call
           pass "child around1 end"
         end
-        teardown{ pass "child teardown1" }
-        setup{ pass "child setup2" }
+        teardown { pass "child teardown1" }
+        setup { pass "child setup2" }
         around do |block|
           pass "child around2 start"
           block.call
           pass "child around2 end"
         end
-        teardown{ pass "child teardown2" }
+        teardown { pass "child teardown2" }
       end
-      @test = Factory.test("t", Factory.context_info(@context_class)){ pass "TEST" }
-      @test.run(&test_run_callback)
-    end
+    }
+    let(:test1) {
+      Factory.test("t", Factory.context_info(context_class1)) { pass "TEST" }
+    }
 
     should "run the arounds outside of the setups/teardowns/test" do
       assert_equal 13, test_run_result_count(:pass)

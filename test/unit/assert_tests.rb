@@ -27,56 +27,67 @@ module Assert
   end
 
   class StubTests < UnitTests
-    setup do
-      @orig_value = Factory.string
-      @stub_value = Factory.string
+    # setup do
+    #   orig_value1 = Factory.string
+    #   stub_value1 = Factory.string
 
-      @myclass = Class.new do
+    #   @myclass =
+    #   Class.new do
+    #     def initialize(value); @value = value; end
+    #     def mymeth; @value; end
+    #   end
+    #   object1 = @myclass.new(orig_value1)
+    # end
+
+    let(:class1) {
+      Class.new do
         def initialize(value); @value = value; end
         def mymeth; @value; end
       end
-      @myobj = @myclass.new(@orig_value)
-    end
+    }
+    let(:object1) { class1.new(orig_value1) }
+    let(:orig_value1) { Factory.string }
+    let(:stub_value1) { Factory.string }
 
     should "build a stub" do
-      stub1 = Assert.stub(@myobj, :mymeth)
+      stub1 = Assert.stub(object1, :mymeth)
       assert_kind_of MuchStub::Stub, stub1
     end
 
     should "lookup stubs that have been called before" do
-      stub1 = Assert.stub(@myobj, :mymeth)
-      stub2 = Assert.stub(@myobj, :mymeth)
+      stub1 = Assert.stub(object1, :mymeth)
+      stub2 = Assert.stub(object1, :mymeth)
       assert_same stub1, stub2
     end
 
     should "set the stub's do block if given a block" do
-      Assert.stub(@myobj, :mymeth)
-      assert_raises(MuchStub::NotStubbedError){ @myobj.mymeth }
-      Assert.stub(@myobj, :mymeth){ @stub_value }
-      assert_equal @stub_value, @myobj.mymeth
+      Assert.stub(object1, :mymeth)
+      assert_raises(MuchStub::NotStubbedError){ object1.mymeth }
+      Assert.stub(object1, :mymeth){ stub_value1 }
+      assert_equal stub_value1, object1.mymeth
     end
 
     should "teardown stubs" do
-      assert_equal @orig_value, @myobj.mymeth
-      Assert.unstub(@myobj, :mymeth)
-      assert_equal @orig_value, @myobj.mymeth
+      assert_equal orig_value1, object1.mymeth
+      Assert.unstub(object1, :mymeth)
+      assert_equal orig_value1, object1.mymeth
 
-      assert_equal @orig_value, @myobj.mymeth
-      Assert.stub(@myobj, :mymeth){ @stub_value }
-      assert_equal @stub_value, @myobj.mymeth
-      Assert.unstub(@myobj, :mymeth)
-      assert_equal @orig_value, @myobj.mymeth
+      assert_equal orig_value1, object1.mymeth
+      Assert.stub(object1, :mymeth){ stub_value1 }
+      assert_equal stub_value1, object1.mymeth
+      Assert.unstub(object1, :mymeth)
+      assert_equal orig_value1, object1.mymeth
     end
 
     should "know and teardown all stubs" do
-      assert_equal @orig_value, @myobj.mymeth
+      assert_equal orig_value1, object1.mymeth
 
-      Assert.stub(@myobj, :mymeth){ @stub_value }
-      assert_equal @stub_value, @myobj.mymeth
+      Assert.stub(object1, :mymeth){ stub_value1 }
+      assert_equal stub_value1, object1.mymeth
       assert_equal 1, Assert.stubs.size
 
       Assert.unstub!
-      assert_equal @orig_value, @myobj.mymeth
+      assert_equal orig_value1, object1.mymeth
       assert_empty Assert.stubs
     end
 
@@ -95,33 +106,33 @@ module Assert
     end
 
     should "be able to call a stub's original method" do
-      err = assert_raises(MuchStub::NotStubbedError){ Assert.stub_send(@myobj, :mymeth) }
+      err = assert_raises(MuchStub::NotStubbedError){ Assert.stub_send(object1, :mymeth) }
       assert_includes "not stubbed.",              err.message
       assert_includes "test/unit/assert_tests.rb", err.backtrace.first
 
-      Assert.stub(@myobj, :mymeth){ @stub_value }
+      Assert.stub(object1, :mymeth){ stub_value1 }
 
-      assert_equal @stub_value, @myobj.mymeth
-      assert_equal @orig_value, Assert.stub_send(@myobj, :mymeth)
+      assert_equal stub_value1, object1.mymeth
+      assert_equal orig_value1, Assert.stub_send(object1, :mymeth)
     end
 
     should "be able to add a stub tap" do
       my_meth_called_with = nil
-      Assert.stub_tap(@myobj, :mymeth){ |value, *args, &block|
+      Assert.stub_tap(object1, :mymeth){ |value, *args, &block|
         my_meth_called_with = args
       }
 
-      assert_equal @orig_value, @myobj.mymeth
+      assert_equal orig_value1, object1.mymeth
       assert_equal [], my_meth_called_with
     end
 
     should "be able to add a stub tap with an on_call block" do
       my_meth_called_with = nil
-      Assert.stub_tap_on_call(@myobj, :mymeth){ |value, call|
+      Assert.stub_tap_on_call(object1, :mymeth){ |value, call|
         my_meth_called_with = call
       }
 
-      assert_equal @orig_value, @myobj.mymeth
+      assert_equal orig_value1, object1.mymeth
       assert_equal [], my_meth_called_with.args
     end
 

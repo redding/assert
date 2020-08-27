@@ -6,8 +6,10 @@ require "assert/config"
 module Assert::ConfigHelpers
   class UnitTests < Assert::Context
     desc "Assert::ConfigHelpers"
-    setup do
-      @helpers_class = Class.new do
+    subject { helpers1 }
+
+    let(:helpers_class1) {
+      Class.new do
         include Assert::ConfigHelpers
 
         def config
@@ -16,9 +18,8 @@ module Assert::ConfigHelpers
           @config ||= [Assert.config, Assert::Config.new].sample
         end
       end
-      @helpers = @helpers_class.new
-    end
-    subject{ @helpers }
+    }
+    let(:helpers1) { helpers_class1.new }
 
     should have_imeths :runner, :suite, :view
     should have_imeths :runner_seed, :single_test?, :single_test_file_line

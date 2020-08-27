@@ -9,38 +9,36 @@ $LOAD_PATH.unshift(ROOT_PATH)
 require "pry"
 require "test/support/factory"
 
-class Assert::Test
-  module TestHelpers
-    def self.included(receiver)
-      receiver.class_eval do
-        setup do
-          @test_run_results = []
-          @run_callback = proc{ |result| @test_run_results << result }
-        end
+module Assert::Test::TestHelpers
+  def self.included(receiver)
+    receiver.class_eval do
+      setup do
+        @test_run_results = []
+        @run_callback = proc { |result| @test_run_results << result }
       end
+    end
 
-      private
+    private
 
-      def test_run_callback
-        @run_callback
-      end
+    def test_run_callback
+      @run_callback
+    end
 
-      def test_run_results(type = nil)
-        return @test_run_results if type.nil?
-        @test_run_results.select{ |r| r.type == type }
-      end
+    def test_run_results(type = nil)
+      return @test_run_results if type.nil?
+      @test_run_results.select{ |r| r.type == type }
+    end
 
-      def test_run_result_count(type = nil)
-        test_run_results(type).count
-      end
+    def test_run_result_count(type = nil)
+      test_run_results(type).count
+    end
 
-      def test_run_result_messages
-        @test_run_results.map(&:message)
-      end
+    def test_run_result_messages
+      @test_run_results.map(&:message)
+    end
 
-      def last_test_run_result
-        @test_run_results.last
-      end
+    def last_test_run_result
+      @test_run_results.last
     end
   end
 end

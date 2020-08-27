@@ -85,4 +85,10 @@ module Factory
       instance_eval(&block) if !block.nil?
     end
   end
+
+  def self.backtrace
+    assert_lib_path =
+      File.join(ROOT_PATH, "lib/#{Factory.string}:#{Factory.integer}")
+    (Factory.integer(3).times.map{ Factory.string } + [assert_lib_path]).shuffle
+  end
 end

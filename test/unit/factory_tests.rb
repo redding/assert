@@ -6,7 +6,7 @@ require "much-factory"
 module Assert::Factory
   class UnitTests < Assert::Context
     desc "Assert::Factory"
-    subject{ Assert::Factory }
+    subject { Assert::Factory }
 
     should "include and extend MuchFactory" do
       assert_includes MuchFactory, subject
