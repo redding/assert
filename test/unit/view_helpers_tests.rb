@@ -10,9 +10,12 @@ require "assert/view"
 module Assert::ViewHelpers
   class UnitTests < Assert::Context
     desc "Assert::ViewHelpers"
-    setup do
-      test_opt_val = @test_opt_val = Factory.string
-      @helpers_class = Class.new do
+    subject { helpers_class1 }
+
+    let(:test_opt_val1) { Factory.string }
+    let(:helpers_class1) {
+      test_opt_val = test_opt_val1
+      Class.new do
         include Assert::ViewHelpers
 
         option "test_opt", test_opt_val
@@ -23,8 +26,7 @@ module Assert::ViewHelpers
           @config ||= [Assert.config, Assert::Config.new].sample
         end
       end
-    end
-    subject{ @helpers_class }
+    }
 
     should have_imeths :option
 
@@ -33,8 +35,8 @@ module Assert::ViewHelpers
     end
 
     should "write option values" do
-      helpers = @helpers_class.new
-      assert_equal @test_opt_val, helpers.test_opt
+      helpers = helpers_class1.new
+      assert_equal test_opt_val1, helpers.test_opt
 
       new_val = Factory.integer
       helpers.test_opt new_val
@@ -48,10 +50,9 @@ module Assert::ViewHelpers
 
   class InitTests < UnitTests
     desc "when init"
-    setup do
-      @helpers = @helpers_class.new
-    end
-    subject{ @helpers }
+    subject { helpers1 }
+
+    let(:helpers1) { helpers_class1.new }
 
     should have_imeths :captured_output, :re_run_test_cmd
     should have_imeths :tests_to_run_count_statement, :result_count_statement
@@ -134,7 +135,7 @@ module Assert::ViewHelpers
 
   class AnsiTests < UnitTests
     desc "Ansi"
-    subject{ Ansi }
+    subject { Ansi }
 
     should have_imeths :code_for
 
@@ -157,11 +158,10 @@ module Assert::ViewHelpers
 
   class AnsiInitTests < UnitTests
     desc "when mixed in on a view"
-    setup do
-      view_class = Class.new(Assert::View){ include Ansi }
-      @view = view_class.new(Factory.modes_off_config, StringIO.new("", "w+"))
-    end
-    subject{ @view }
+    subject { view1 }
+
+    let(:view_class1) { Class.new(Assert::View){ include Ansi } }
+    let(:view1) { view_class1.new(Factory.modes_off_config, StringIO.new("", "w+")) }
 
     should have_imeths :ansi_styled_msg
 

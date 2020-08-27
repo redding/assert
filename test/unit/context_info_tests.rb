@@ -8,23 +8,24 @@ class Assert::ContextInfo
     desc "Assert::ContextInfo"
     setup do
       @caller = caller
-      @klass  = Assert::Context
-      @info   = Assert::ContextInfo.new(@klass, nil, @caller.first)
     end
-    subject{ @info }
+    subject { info1 }
+
+    let(:context1) { Assert::Context }
+    let(:info1)    { Assert::ContextInfo.new(context1, nil, @caller.first) }
 
     should have_readers :called_from, :klass, :file
     should have_imeths :test_name
 
     should "set its klass on init" do
-      assert_equal @klass, subject.klass
+      assert_equal context1, subject.klass
     end
 
     should "set its called_from to the called_from or first caller on init" do
-      info = Assert::ContextInfo.new(@klass, @caller.first, nil)
+      info = Assert::ContextInfo.new(context1, @caller.first, nil)
       assert_equal @caller.first, info.called_from
 
-      info = Assert::ContextInfo.new(@klass, nil, @caller.first)
+      info = Assert::ContextInfo.new(context1, nil, @caller.first)
       assert_equal @caller.first, info.called_from
     end
 
@@ -33,7 +34,7 @@ class Assert::ContextInfo
     end
 
     should "not have any file info if no caller is given" do
-      info = Assert::ContextInfo.new(@klass)
+      info = Assert::ContextInfo.new(context1)
       assert_nil info.file
     end
 

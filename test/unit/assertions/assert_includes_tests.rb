@@ -8,28 +8,30 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_includes`"
-    setup do
-      desc = @desc = "assert includes fail desc"
-      args = @args = [2, [1], desc]
-      @test = Factory.test do
+    subject { test1 }
+
+    let(:desc1) { "assert includes fail desc" }
+    let(:args1) { [2, [1], desc1] }
+    let(:test1) {
+      args = args1
+      Factory.test do
         assert_includes(1, [1]) # pass
-        assert_includes(*args)    # fail
+        assert_includes(*args)  # fail
       end
-      @c = @test.config
-      @test.run(&test_run_callback)
-    end
-    subject{ @test }
+    }
+    let(:config1) { test1.config }
 
     should "produce results as expected" do
+      subject.run(&test_run_callback)
+
       assert_equal 2, test_run_result_count
       assert_equal 1, test_run_result_count(:pass)
       assert_equal 1, test_run_result_count(:fail)
-    end
 
-    should "have a fail message with custom and generic explanations" do
-      exp = "#{@args[2]}\n"\
-            "Expected #{Assert::U.show(@args[1], @c)}"\
-            " to include #{Assert::U.show(@args[0], @c)}."
+      exp =
+        "#{args1[2]}\n"\
+        "Expected #{Assert::U.show(args1[1], config1)}"\
+        " to include #{Assert::U.show(args1[0], config1)}."
       assert_equal exp, test_run_results(:fail).first.message
     end
   end
@@ -38,30 +40,31 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_not_included`"
-    setup do
-      desc = @desc = "assert not included fail desc"
-      args = @args = [1, [1], desc]
-      @test = Factory.test do
+    subject { test1 }
+
+    let(:desc1) { "assert not included fail desc" }
+    let(:args1) { [1, [1], desc1] }
+    let(:test1) {
+      args = args1
+      Factory.test do
         assert_not_included(2, [1]) # pass
-        assert_not_included(*args)    # fail
+        assert_not_included(*args)  # fail
       end
-      @c = @test.config
-      @test.run(&test_run_callback)
-    end
-    subject{ @test }
+    }
+    let(:config1) { test1.config }
 
     should "produce results as expected" do
+      subject.run(&test_run_callback)
+
       assert_equal 2, test_run_result_count
       assert_equal 1, test_run_result_count(:pass)
       assert_equal 1, test_run_result_count(:fail)
-    end
 
-    should "have a fail message with custom and generic explanations" do
-      exp = "#{@args[2]}\n"\
-            "Expected #{Assert::U.show(@args[1], @c)}"\
-            " to not include #{Assert::U.show(@args[0], @c)}."
+      exp =
+        "#{args1[2]}\n"\
+        "Expected #{Assert::U.show(args1[1], config1)}"\
+        " to not include #{Assert::U.show(args1[0], config1)}."
       assert_equal exp, test_run_results(:fail).first.message
     end
   end
 end
-

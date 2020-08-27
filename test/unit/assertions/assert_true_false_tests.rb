@@ -8,26 +8,27 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_true`"
-    setup do
-      desc = @desc = "assert true fail desc"
-      args = @args = ["whatever", desc]
-      @test = Factory.test do
+    subject { test1 }
+
+    let(:desc1) { "assert true fail desc" }
+    let(:args1) { ["whatever", desc1] }
+    let(:test1) {
+      args = args1
+      Factory.test do
         assert_true(true)  # pass
         assert_true(*args) # fail
       end
-      @c = @test.config
-      @test.run(&test_run_callback)
-    end
-    subject{ @test }
+    }
+    let(:config1) { test1.config }
 
     should "produce results as expected" do
+      subject.run(&test_run_callback)
+
       assert_equal 2, test_run_result_count
       assert_equal 1, test_run_result_count(:pass)
       assert_equal 1, test_run_result_count(:fail)
-    end
 
-    should "have a fail message with custom and generic explanations" do
-      exp = "#{@args[1]}\nExpected #{Assert::U.show(@args[0], @c)} to be true."
+      exp = "#{args1[1]}\nExpected #{Assert::U.show(args1[0], config1)} to be true."
       assert_equal exp, test_run_results(:fail).first.message
     end
   end
@@ -36,26 +37,27 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_not_true`"
-    setup do
-      desc = @desc = "assert not true fail desc"
-      args = @args = [true, desc]
-      @test = Factory.test do
+    subject { test1 }
+
+    let(:desc1) { "assert not true fail desc" }
+    let(:args1) { [true, desc1] }
+    let(:test1) {
+      args = args1
+      Factory.test do
         assert_not_true(false) # pass
         assert_not_true(*args) # fail
       end
-      @c = @test.config
-      @test.run(&test_run_callback)
-    end
-    subject{ @test }
+    }
+    let(:config1) { test1.config }
 
     should "produce results as expected" do
+      subject.run(&test_run_callback)
+
       assert_equal 2, test_run_result_count
       assert_equal 1, test_run_result_count(:pass)
       assert_equal 1, test_run_result_count(:fail)
-    end
 
-    should "have a fail message with custom and generic explanations" do
-      exp = "#{@args[1]}\nExpected #{Assert::U.show(@args[0], @c)} to not be true."
+      exp = "#{args1[1]}\nExpected #{Assert::U.show(args1[0], config1)} to not be true."
       assert_equal exp, test_run_results(:fail).first.message
     end
   end
@@ -64,26 +66,27 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_false`"
-    setup do
-      desc = @desc = "assert false fail desc"
-      args = @args = ["whatever", desc]
-      @test = Factory.test do
+    subject { test1 }
+
+    let(:desc1) { "assert false fail desc" }
+    let(:args1) { ["whatever", desc1] }
+    let(:test1) {
+      args = args1
+      Factory.test do
         assert_false(false) # pass
         assert_false(*args) # fail
       end
-      @c = @test.config
-      @test.run(&test_run_callback)
-    end
-    subject{ @test }
+    }
+    let(:config1) { test1.config }
 
     should "produce results as expected" do
+      subject.run(&test_run_callback)
+
       assert_equal 2, test_run_result_count
       assert_equal 1, test_run_result_count(:pass)
       assert_equal 1, test_run_result_count(:fail)
-    end
 
-    should "have a fail message with custom and generic explanations" do
-      exp = "#{@args[1]}\nExpected #{Assert::U.show(@args[0], @c)} to be false."
+      exp = "#{args1[1]}\nExpected #{Assert::U.show(args1[0], config1)} to be false."
       assert_equal exp, test_run_results(:fail).first.message
     end
   end
@@ -92,26 +95,27 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_not_false`"
-    setup do
-      desc = @desc = "assert not false fail desc"
-      args = @args = [false, desc]
-      @test = Factory.test do
+    subject { test1 }
+
+    let(:desc1) { "assert not false fail desc" }
+    let(:args1) { [false, desc1] }
+    let(:test1) {
+      args = args1
+      Factory.test do
         assert_not_false(true)  # pass
         assert_not_false(*args) # fail
       end
-      @c = @test.config
-      @test.run(&test_run_callback)
-    end
-    subject{ @test }
+    }
+    let(:config1) { test1.config }
 
     should "produce results as expected" do
+      subject.run(&test_run_callback)
+
       assert_equal 2, test_run_result_count
       assert_equal 1, test_run_result_count(:pass)
       assert_equal 1, test_run_result_count(:fail)
-    end
 
-    should "have a fail message with custom and generic explanations" do
-      exp = "#{@args[1]}\nExpected #{Assert::U.show(@args[0], @c)} to not be false."
+      exp = "#{args1[1]}\nExpected #{Assert::U.show(args1[0], config1)} to not be false."
       assert_equal exp, test_run_results(:fail).first.message
     end
   end

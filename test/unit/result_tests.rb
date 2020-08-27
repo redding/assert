@@ -6,10 +6,9 @@ require "assert/file_line"
 module Assert::Result
   class UnitTests < Assert::Context
     desc "Assert::Result"
-    setup do
-      @test = Factory.test("a test name")
-    end
-    subject{ Assert::Result }
+    subject { Assert::Result }
+
+    let(:test1) { Factory.test("a test name") }
 
     should have_imeths :types, :new
 
@@ -31,30 +30,24 @@ module Assert::Result
       exp  = Assert::Result.types[type].new(:type => type)
       assert_equal exp, Assert::Result.new(:type => type)
     end
-
-    private
-
-    def build_backtrace
-      assert_lib_path = File.join(ROOT_PATH, "lib/#{Factory.string}:#{Factory.integer}")
-      (Factory.integer(3).times.map{ Factory.string } + [assert_lib_path]).shuffle
-    end
   end
 
   class BaseTests < UnitTests
     desc "Base"
-    setup do
-      @given_data = {
+    subject { result1 }
+
+    let(:given_data1) {
+      {
         :type           => Factory.string,
         :name           => Factory.string,
         :test_name      => Factory.string,
         :test_file_line => Assert::FileLine.new(Factory.string, Factory.integer),
         :message        => Factory.string,
         :output         => Factory.text,
-        :backtrace      => Backtrace.new(build_backtrace)
+        :backtrace      => Backtrace.new(Factory.backtrace)
       }
-      @result = Base.new(@given_data)
-    end
-    subject{ @result }
+    }
+    let(:result1) { Base.new(given_data1) }
 
     should have_cmeths :type, :name, :for_test
     should have_imeths :type, :name, :test_name, :test_file_line
@@ -63,7 +56,7 @@ module Assert::Result
     should have_imeths :backtrace, :trace
     should have_imeths :set_backtrace, :set_with_bt, :with_bt_set?
     should have_imeths :src_line, :file_line, :file_name, :line_num
-    should have_imeths *Assert::Result.types.keys.map{ |k| "#{k}?" }
+    should have_imeths(*Assert::Result.types.keys.map{ |k| "#{k}?" })
     should have_imeths :to_sym, :to_s
 
     should "know its class-level type/name" do
@@ -74,13 +67,13 @@ module Assert::Result
     should "know how to build a result for a given test" do
       message = Factory.text
       bt      = Factory.integer(3).times.map{ Factory.string }
-      result  = Base.for_test(@test, message, bt)
+      result  = Base.for_test(test1, message, bt)
 
       exp_backtrace = Backtrace.new(bt)
       exp_trace     = exp_backtrace.filtered.first.to_s
 
-      assert_equal @test.name,           result.test_name
-      assert_equal @test.file_line.to_s, result.test_id
+      assert_equal test1.name,           result.test_name
+      assert_equal test1.file_line.to_s, result.test_id
 
       assert_equal message,       result.message
       assert_equal exp_backtrace, result.backtrace
@@ -90,13 +83,13 @@ module Assert::Result
     end
 
     should "use any given attrs" do
-      assert_equal @given_data[:type].to_sym,    subject.type
-      assert_equal @given_data[:name],           subject.name
-      assert_equal @given_data[:test_name],      subject.test_name
-      assert_equal @given_data[:test_file_line], subject.test_file_line
-      assert_equal @given_data[:message],        subject.message
-      assert_equal @given_data[:output],         subject.output
-      assert_equal @given_data[:backtrace],      subject.backtrace
+      assert_equal given_data1[:type].to_sym,    subject.type
+      assert_equal given_data1[:name],           subject.name
+      assert_equal given_data1[:test_name],      subject.test_name
+      assert_equal given_data1[:test_file_line], subject.test_file_line
+      assert_equal given_data1[:message],        subject.message
+      assert_equal given_data1[:output],         subject.output
+      assert_equal given_data1[:backtrace],      subject.backtrace
     end
 
     should "default its attrs" do
@@ -113,14 +106,14 @@ module Assert::Result
     end
 
     should "know its test file line attrs" do
-      exp = @given_data[:test_file_line]
+      exp = given_data1[:test_file_line]
       assert_equal exp.file,      subject.test_file_name
       assert_equal exp.line.to_i, subject.test_line_num
       assert_equal exp.to_s,      subject.test_id
     end
 
     should "allow setting a new backtrace" do
-      new_bt        = build_backtrace
+      new_bt        = Factory.backtrace
       exp_backtrace = Backtrace.new(new_bt)
       exp_trace     = exp_backtrace.filtered.first.to_s
       subject.set_backtrace(new_bt)
@@ -141,7 +134,7 @@ module Assert::Result
       assert_false subject.with_bt_set?
 
       orig_backtrace = subject.backtrace
-      with_bt        = build_backtrace
+      with_bt        = Factory.backtrace
 
       subject.set_with_bt(with_bt)
 
@@ -154,7 +147,7 @@ module Assert::Result
     end
 
     should "know its src/file line attrs" do
-      new_bt = build_backtrace
+      new_bt = Factory.backtrace
       subject.set_backtrace(new_bt)
 
       exp = Backtrace.new(new_bt).filtered.first.to_s
@@ -217,7 +210,7 @@ module Assert::Result
     end
 
     should "know if it is equal to another result" do
-      other = Assert::Result::Base.new(@given_data)
+      other = Assert::Result::Base.new(given_data1)
       assert_equal other, subject
 
       Assert.stub(other, [:type, :message].sample){ Factory.string }
@@ -235,10 +228,9 @@ module Assert::Result
 
   class PassTests < UnitTests
     desc "Pass"
-    setup do
-      @result = Pass.new({})
-    end
-    subject { @result }
+    subject { result1 }
+
+    let(:result1) { Pass.new({}) }
 
     should "know its type/name" do
       assert_equal :pass,  subject.type
@@ -249,10 +241,9 @@ module Assert::Result
 
   class IgnoreTests < UnitTests
     desc "Ignore"
-    setup do
-      @result = Ignore.new({})
-    end
-    subject { @result }
+    subject { result1 }
+
+    let(:result1) { Ignore.new({}) }
 
     should "know its type/name" do
       assert_equal :ignore,  subject.type
@@ -263,7 +254,7 @@ module Assert::Result
 
   class HaltingTestResultErrorTests < UnitTests
     desc "HaltingTestResultError"
-    subject{ HaltingTestResultError.new }
+    subject { HaltingTestResultError.new }
 
     should have_accessors :assert_with_bt
 
@@ -274,7 +265,7 @@ module Assert::Result
 
   class TestFailureTests < UnitTests
     desc "TestFailure"
-    subject{ TestFailure }
+    subject { TestFailure }
 
     should "be a halting test result error" do
       assert_kind_of HaltingTestResultError, subject.new
@@ -283,10 +274,9 @@ module Assert::Result
 
   class FailTests < UnitTests
     desc "Fail"
-    setup do
-      @result = Fail.new({})
-    end
-    subject { @result }
+    subject { result1 }
+
+    let(:result1) { Fail.new({}) }
 
     should "know its type/name" do
       assert_equal :fail,  subject.type
@@ -296,8 +286,8 @@ module Assert::Result
 
     should "allow creating for a test with TestFailure exceptions" do
       err = TestFailure.new
-      err.set_backtrace(build_backtrace)
-      result = Fail.for_test(@test, err)
+      err.set_backtrace(Factory.backtrace)
+      result = Fail.for_test(test1, err)
 
       assert_equal err.message, result.message
 
@@ -305,8 +295,8 @@ module Assert::Result
       assert_equal err_backtrace, result.backtrace
 
       # test assert with bt errors
-      err.assert_with_bt = build_backtrace
-      result = Fail.for_test(@test, err)
+      err.assert_with_bt = Factory.backtrace
+      result = Fail.for_test(test1, err)
 
       assert_equal err.message,              result.message
       assert_equal err.backtrace,            result.backtrace
@@ -317,13 +307,13 @@ module Assert::Result
     end
 
     should "not allow creating for a test with non-TestFailure exceptions" do
-      assert_raises(ArgumentError){ Fail.for_test(@test, RuntimeError.new) }
+      assert_raises(ArgumentError){ Fail.for_test(test1, RuntimeError.new) }
     end
   end
 
   class TestSkippedTests < UnitTests
     desc "TestSkipped"
-    subject{ TestSkipped }
+    subject { TestSkipped }
 
     should "be a halting test result error" do
       assert_kind_of HaltingTestResultError, subject.new
@@ -332,10 +322,9 @@ module Assert::Result
 
   class SkipTests < UnitTests
     desc "Skip"
-    setup do
-      @result = Skip.new({})
-    end
-    subject { @result }
+    subject { result1 }
+
+    let(:result1) { Skip.new({}) }
 
     should "know its type/name" do
       assert_equal :skip,  subject.type
@@ -345,8 +334,8 @@ module Assert::Result
 
     should "allow creating for a test with TestSkipped exceptions" do
       err = TestSkipped.new
-      err.set_backtrace(build_backtrace)
-      result = Skip.for_test(@test, err)
+      err.set_backtrace(Factory.backtrace)
+      result = Skip.for_test(test1, err)
 
       assert_equal err.message, result.message
 
@@ -354,8 +343,8 @@ module Assert::Result
       assert_equal err_backtrace, result.backtrace
 
       # test assert with bt errors
-      err.assert_with_bt = build_backtrace
-      result = Skip.for_test(@test, err)
+      err.assert_with_bt = Factory.backtrace
+      result = Skip.for_test(test1, err)
 
       assert_equal err.message,              result.message
       assert_equal err.backtrace,            result.backtrace
@@ -366,16 +355,15 @@ module Assert::Result
     end
 
     should "not allow creating for a test with non-TestSkipped exceptions" do
-      assert_raises(ArgumentError){ Skip.for_test(@test, RuntimeError.new) }
+      assert_raises(ArgumentError){ Skip.for_test(test1, RuntimeError.new) }
     end
   end
 
   class ErrorTests < UnitTests
     desc "Error"
-    setup do
-      @result = Error.new({})
-    end
-    subject { @result }
+    subject { result1 }
+
+    let(:result1) { Error.new({}) }
 
     should "know its class-level type/name" do
       assert_equal :error,  subject.class.type
@@ -384,8 +372,8 @@ module Assert::Result
 
     should "allow creating for a test with exceptions" do
       err = Exception.new
-      err.set_backtrace(build_backtrace)
-      result = Error.for_test(@test, err)
+      err.set_backtrace(Factory.backtrace)
+      result = Error.for_test(test1, err)
 
       exp_msg = "#{err.message} (#{err.class.name})"
       assert_equal exp_msg, result.message
@@ -396,16 +384,15 @@ module Assert::Result
     end
 
     should "not allow creating for a test without an exception" do
-      assert_raises(ArgumentError){ Error.for_test(@test, Factory.string) }
+      assert_raises(ArgumentError){ Error.for_test(test1, Factory.string) }
     end
   end
 
   class BacktraceTests < UnitTests
     desc "Backtrace"
-    setup do
-      @backtrace = Backtrace.new(build_backtrace)
-    end
-    subject { @backtrace }
+    subject { backtrace1 }
+
+    let(:backtrace1) { Backtrace.new(Factory.backtrace) }
 
     should have_cmeths :parse, :to_s
     should have_imeths :filtered

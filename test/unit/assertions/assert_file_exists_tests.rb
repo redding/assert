@@ -9,26 +9,27 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_file_exists`"
-    setup do
-      desc = @desc = "assert file exists empty fail desc"
-      args = @args = ["/a/path/to/some/file/that/no/exists", desc]
-      @test = Factory.test do
+    subject { test1 }
+
+    let(:desc1) { "assert file exists fail desc" }
+    let(:args1) { ["/a/path/to/some/file/that/no/exists", desc1] }
+    let(:test1) {
+      args = args1
+      Factory.test do
         assert_file_exists(__FILE__) # pass
         assert_file_exists(*args)    # fail
       end
-      @c = @test.config
-      @test.run(&test_run_callback)
-    end
-    subject{ @test }
+    }
+    let(:config1) { test1.config }
 
     should "produce results as expected" do
+      subject.run(&test_run_callback)
+
       assert_equal 2, test_run_result_count
       assert_equal 1, test_run_result_count(:pass)
       assert_equal 1, test_run_result_count(:fail)
-    end
 
-    should "have a fail message with custom and generic explanations" do
-      exp = "#{@args[1]}\nExpected #{Assert::U.show(@args[0], @c)} to exist."
+      exp = "#{args1[1]}\nExpected #{Assert::U.show(args1[0], config1)} to exist."
       assert_equal exp, test_run_results(:fail).first.message
     end
   end
@@ -37,28 +38,28 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_not_file_exists`"
-    setup do
-      desc = @desc = "assert not file exists empty fail desc"
-      args = @args = [__FILE__, desc]
-      @test = Factory.test do
-        assert_not_file_exists("/a/path/to/some/file/that/no/exists") # pass
-        assert_not_file_exists(*args) # fail
+    subject { test1 }
+
+    let(:desc1) { "assert not file exists fail desc" }
+    let(:args1) { [__FILE__, desc1] }
+    let(:test1) {
+      args = args1
+      Factory.test do
+        assert_not_file_exists("/file/path") # pass
+        assert_not_file_exists(*args)        # fail
       end
-      @c = @test.config
-      @test.run(&test_run_callback)
-    end
-    subject{ @test }
+    }
+    let(:config1) { test1.config }
 
     should "produce results as expected" do
+      subject.run(&test_run_callback)
+
       assert_equal 2, test_run_result_count
       assert_equal 1, test_run_result_count(:pass)
       assert_equal 1, test_run_result_count(:fail)
-    end
 
-    should "have a fail message with custom and generic explanations" do
-      exp = "#{@args[1]}\nExpected #{Assert::U.show(@args[0], @c)} to not exist."
+      exp = "#{args1[1]}\nExpected #{Assert::U.show(args1[0], config1)} to not exist."
       assert_equal exp, test_run_results(:fail).first.message
     end
   end
 end
-

@@ -4,10 +4,9 @@ require "assert/macro"
 class Assert::Macro
   class UnitTests < Assert::Context
     desc "Assert::Macro"
-    setup do
-      @macro = Assert::Macro.new {}
-    end
-    subject { @macro }
+    subject { macro1 }
+
+    let(:macro1) { Assert::Macro.new {} }
 
     should "have an accessor for its (optional) name" do
       assert_respond_to :name, subject

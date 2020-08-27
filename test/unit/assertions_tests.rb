@@ -6,12 +6,11 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "Assert::Context"
-    setup do
-      @context_class = Factory.modes_off_context_class
-      @test = Factory.test
-      @context = @context_class.new(@test, @test.config, proc{ |r| })
-    end
-    subject{ @context }
+    subject { context1 }
+
+    let(:context_class1) { Factory.modes_off_context_class }
+    let(:test1) { Factory.test }
+    let(:context1) { context_class1.new(test1, test1.config, proc{ |r| }) }
 
     should have_imeths :assert_block, :assert_not_block, :refute_block
     should have_imeths :assert_raises, :assert_not_raises
@@ -37,14 +36,17 @@ module Assert::Assertions
   class IgnoredTests < UnitTests
     desc "ignored assertions helpers"
     setup do
-      @tests = Assert::Assertions::IGNORED_ASSERTION_HELPERS.map do |helper|
-        context_info = Factory.context_info(@context_class)
+      tests.each{ |test| test.run(&test_run_callback) }
+    end
+
+    let(:tests) {
+      context_info = Factory.context_info(context_class1)
+      Assert::Assertions::IGNORED_ASSERTION_HELPERS.map do |helper|
         Factory.test("ignored assertion helper #{helper}", context_info) do
           self.send(helper, "doesn't matter")
         end
       end
-      @tests.each{ |test| test.run(&test_run_callback) }
-    end
+    }
 
     should "have an ignored result for each helper in the constant" do
       exp = Assert::Assertions::IGNORED_ASSERTION_HELPERS.size

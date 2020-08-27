@@ -8,31 +8,35 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_same`"
-    setup do
-      klass = Class.new; object = klass.new
-      desc = @desc = "assert same fail desc"
-      args = @args = [object, klass.new, desc]
-      @test = Factory.test do
+    subject { test1 }
+
+    let(:class1) { Class.new }
+    let(:object1) { class1.new }
+    let(:desc1) { "assert same fail desc" }
+    let(:args1) { [object1, class1.new, desc1] }
+    let(:test1) {
+      args   = args1
+      object = object1
+      Factory.test do
         assert_same(object, object) # pass
         assert_same(*args)          # fail
       end
-      @c = @test.config
-      @test.run(&test_run_callback)
-    end
-    subject{ @test }
+    }
+    let(:config1) { test1.config }
 
     should "produce results as expected" do
+      subject.run(&test_run_callback)
+
       assert_equal 2, test_run_result_count
       assert_equal 1, test_run_result_count(:pass)
       assert_equal 1, test_run_result_count(:fail)
-    end
 
-    should "have a fail message with custom and generic explanations" do
-      exp = "#{@args[2]}\n"\
-            "Expected #{Assert::U.show(@args[1], @c)}"\
-            " (#<#{@args[1].class}:#{"0x0%x" % (@args[1].object_id << 1)}>)"\
-            " to be the same as #{Assert::U.show(@args[0], @c)}"\
-            " (#<#{@args[0].class}:#{"0x0%x" % (@args[0].object_id << 1)}>)."
+      exp =
+        "#{args1[2]}\n"\
+        "Expected #{Assert::U.show(args1[1], config1)}"\
+        " (#<#{args1[1].class}:#{"0x0%x" % (args1[1].object_id << 1)}>)"\
+        " to be the same as #{Assert::U.show(args1[0], config1)}"\
+        " (#<#{args1[0].class}:#{"0x0%x" % (args1[0].object_id << 1)}>)."
       assert_equal exp, test_run_results(:fail).first.message
     end
   end
@@ -41,31 +45,36 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_not_same`"
-    setup do
-      klass = Class.new; object = klass.new
-      desc = @desc = "assert not same fail desc"
-      args = @args = [object, object, desc]
-      @test = Factory.test do
+    subject { test1 }
+
+    let(:class1) { Class.new }
+    let(:object1) { class1.new }
+    let(:desc1) { "assert not same fail desc" }
+    let(:args1) { [object1, object1, desc1] }
+    let(:test1) {
+      args   = args1
+      object = object1
+      klass  = class1
+      Factory.test do
         assert_not_same(*args)             # fail
         assert_not_same(object, klass.new) # pass
       end
-      @c = @test.config
-      @test.run(&test_run_callback)
-    end
-    subject{ @test }
+    }
+    let(:config1) { test1.config }
 
     should "produce results as expected" do
+      subject.run(&test_run_callback)
+
       assert_equal 2, test_run_result_count
       assert_equal 1, test_run_result_count(:pass)
       assert_equal 1, test_run_result_count(:fail)
-    end
 
-    should "have a fail message with custom and generic explanations" do
-      exp = "#{@args[2]}\n"\
-            "Expected #{Assert::U.show(@args[1], @c)}"\
-            " (#<#{@args[1].class}:#{"0x0%x" % (@args[1].object_id << 1)}>)"\
-            " to not be the same as #{Assert::U.show(@args[0], @c)}"\
-            " (#<#{@args[0].class}:#{"0x0%x" % (@args[0].object_id << 1)}>)."
+      exp =
+        "#{args1[2]}\n"\
+        "Expected #{Assert::U.show(args1[1], config1)}"\
+        " (#<#{args1[1].class}:#{"0x0%x" % (args1[1].object_id << 1)}>)"\
+        " to not be the same as #{Assert::U.show(args1[0], config1)}"\
+        " (#<#{args1[0].class}:#{"0x0%x" % (args1[0].object_id << 1)}>)."
       assert_equal exp, test_run_results(:fail).first.message
     end
   end
@@ -74,62 +83,64 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "with objects that should use diff when showing"
-    setup do
-      @exp_obj = "I'm a\nstring"
-      @act_obj = "I am a \nstring"
+    let(:config1) {
+      Factory.modes_off_config.tap do |config|
+        config.use_diff_proc(Assert::U.default_use_diff_proc)
+        config.run_diff_proc(Assert::U.syscmd_diff_proc)
+      end
+    }
 
-      @c = Factory.modes_off_config
-      @c.use_diff_proc(Assert::U.default_use_diff_proc)
-      @c.run_diff_proc(Assert::U.syscmd_diff_proc)
-
-      @exp_obj_show = Assert::U.show_for_diff(@exp_obj, @c)
-      @act_obj_show = Assert::U.show_for_diff(@act_obj, @c)
-    end
+    let(:exp_obj1) { "I'm a\nstring" }
+    let(:act_obj1) { "I am a \nstring" }
+    let(:exp_obj_show1) { Assert::U.show_for_diff(exp_obj1, config1) }
+    let(:act_obj_show1) { Assert::U.show_for_diff(act_obj1, config1) }
   end
 
   class AssertSameDiffTests < DiffTests
     desc "`assert_same`"
-    setup do
-      exp_obj, act_obj = @exp_obj, @act_obj
-      @test = Factory.test(@c) do
+    subject { test1 }
+
+    let(:test1) {
+      exp_obj, act_obj = exp_obj1, act_obj1
+      Factory.test(config1) do
         assert_same(exp_obj, act_obj)
       end
-      @test.run(&test_run_callback)
-    end
-    subject{ @test }
+    }
 
     should "include diff output in the fail messages" do
-      exp = "Expected #<#{@act_obj.class}:#{"0x0%x" % (@act_obj.object_id << 1)}>"\
-            " to be the same as"\
-            " #<#{@exp_obj.class}:#{"0x0%x" % (@exp_obj.object_id << 1)}>"\
-            ", diff:\n"\
-            "#{Assert::U.syscmd_diff_proc.call(@exp_obj_show, @act_obj_show)}"
+      subject.run(&test_run_callback)
+
+      exp =
+        "Expected #<#{act_obj1.class}:#{"0x0%x" % (act_obj1.object_id << 1)}>"\
+        " to be the same as"\
+        " #<#{exp_obj1.class}:#{"0x0%x" % (exp_obj1.object_id << 1)}>"\
+        ", diff:\n"\
+        "#{Assert::U.syscmd_diff_proc.call(exp_obj_show1, act_obj_show1)}"
       assert_equal exp, test_run_results(:fail).first.message
     end
   end
 
   class AssertNotSameDiffTests < DiffTests
     desc "`assert_not_same`"
-    setup do
-      @exp_obj = @act_obj
-      @exp_obj_show = @act_obj_show
+    subject { test1 }
 
-      exp_obj, act_obj = @exp_obj, @act_obj
-      @test = Factory.test(@c) do
-        assert_not_same(exp_obj, exp_obj)
+    let(:test1) {
+      act_obj = act_obj1
+      Factory.test(config1) do
+        assert_not_same(act_obj, act_obj)
       end
-      @test.run(&test_run_callback)
-    end
-    subject{ @test }
+    }
 
     should "include diff output in the fail messages" do
-      exp = "Expected #<#{@act_obj.class}:#{"0x0%x" % (@act_obj.object_id << 1)}>"\
-            " to not be the same as"\
-            " #<#{@exp_obj.class}:#{"0x0%x" % (@exp_obj.object_id << 1)}>"\
-            ", diff:\n"\
-            "#{Assert::U.syscmd_diff_proc.call(@exp_obj_show, @act_obj_show)}"
+      subject.run(&test_run_callback)
+
+      exp =
+        "Expected #<#{act_obj1.class}:#{"0x0%x" % (act_obj1.object_id << 1)}>"\
+        " to not be the same as"\
+        " #<#{act_obj1.class}:#{"0x0%x" % (act_obj1.object_id << 1)}>"\
+        ", diff:\n"\
+        "#{Assert::U.syscmd_diff_proc.call(act_obj_show1, act_obj_show1)}"
       assert_equal exp, test_run_results(:fail).first.message
     end
   end
 end
-

@@ -1,4 +1,6 @@
 require "assert/assertions"
+require "assert/context/let_dsl"
+require "assert/context/method_missing"
 require "assert/context/setup_dsl"
 require "assert/context/subject_dsl"
 require "assert/context/suite_dsl"
@@ -16,6 +18,8 @@ module Assert
     extend SubjectDSL
     extend SuiteDSL
     extend TestDSL
+    extend LetDSL
+    include MethodMissing
     include Assert::Assertions
     include Assert::Macros::Methods
 
@@ -79,7 +83,7 @@ module Assert
     end
 
     # the opposite of assert, check if the assertion is a false value, if so create a new pass
-    # result, otherwise create a new fail result with the desc and it's what failed msg
+    # result, otherwise create a new fail result with the desc and fail msg
     def assert_not(assertion, fail_desc = nil)
       assert(!assertion, fail_desc) do
         "Failed assert_not: assertion was "\

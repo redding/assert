@@ -6,10 +6,7 @@ require "assert/runner"
 class Assert::DefaultRunner
   class UnitTests < Assert::Context
     desc "Assert::DefaultRunner"
-    setup do
-      @config = Factory.modes_off_config
-      @runner = Assert::DefaultRunner.new(@config)
-    end
-    subject{ @runner }
+
+    # This is tested implicitly by running Assert's test suite
   end
 end

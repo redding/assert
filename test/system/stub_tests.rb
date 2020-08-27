@@ -8,24 +8,26 @@ class Assert::Stub
 
   class InstanceTests < SystemTests
     desc "for instance methods"
+    subject { instance1 }
+
     setup do
-      @instance = TestClass.new
-      Assert.stub(@instance, :noargs){ "default" }
-      Assert.stub(@instance, :noargs).with{ "none" }
+      Assert.stub(instance1, :noargs){ "default" }
+      Assert.stub(instance1, :noargs).with{ "none" }
 
-      Assert.stub(@instance, :withargs){ "default" }
-      Assert.stub(@instance, :withargs).with(1){ "one" }
+      Assert.stub(instance1, :withargs){ "default" }
+      Assert.stub(instance1, :withargs).with(1){ "one" }
 
-      Assert.stub(@instance, :anyargs){ "default" }
-      Assert.stub(@instance, :anyargs).with(1, 2){ "one-two" }
+      Assert.stub(instance1, :anyargs){ "default" }
+      Assert.stub(instance1, :anyargs).with(1, 2){ "one-two" }
 
-      Assert.stub(@instance, :minargs){ "default" }
-      Assert.stub(@instance, :minargs).with(1, 2){ "one-two" }
-      Assert.stub(@instance, :minargs).with(1, 2, 3){ "one-two-three" }
+      Assert.stub(instance1, :minargs){ "default" }
+      Assert.stub(instance1, :minargs).with(1, 2){ "one-two" }
+      Assert.stub(instance1, :minargs).with(1, 2, 3){ "one-two-three" }
 
-      Assert.stub(@instance, :withblock){ "default" }
+      Assert.stub(instance1, :withblock){ "default" }
     end
-    subject{ @instance }
+
+    let(:instance1) { TestClass.new }
 
     should "allow stubbing a method that doesn't take args" do
       assert_equal "none", subject.noargs
@@ -81,24 +83,26 @@ class Assert::Stub
 
   class ClassTests < SystemTests
     desc "for singleton methods on a class"
+    subject { class1 }
+
     setup do
-      @class = TestClass
-      Assert.stub(@class, :noargs){ "default" }
-      Assert.stub(@class, :noargs).with{ "none" }
+      Assert.stub(class1, :noargs){ "default" }
+      Assert.stub(class1, :noargs).with{ "none" }
 
-      Assert.stub(@class, :withargs){ "default" }
-      Assert.stub(@class, :withargs).with(1){ "one" }
+      Assert.stub(class1, :withargs){ "default" }
+      Assert.stub(class1, :withargs).with(1){ "one" }
 
-      Assert.stub(@class, :anyargs){ "default" }
-      Assert.stub(@class, :anyargs).with(1, 2){ "one-two" }
+      Assert.stub(class1, :anyargs){ "default" }
+      Assert.stub(class1, :anyargs).with(1, 2){ "one-two" }
 
-      Assert.stub(@class, :minargs){ "default" }
-      Assert.stub(@class, :minargs).with(1, 2){ "one-two" }
-      Assert.stub(@class, :minargs).with(1, 2, 3){ "one-two-three" }
+      Assert.stub(class1, :minargs){ "default" }
+      Assert.stub(class1, :minargs).with(1, 2){ "one-two" }
+      Assert.stub(class1, :minargs).with(1, 2, 3){ "one-two-three" }
 
-      Assert.stub(@class, :withblock){ "default" }
+      Assert.stub(class1, :withblock){ "default" }
     end
-    subject{ @class }
+
+    let(:class1) { TestClass }
 
     should "allow stubbing a method that doesn't take args" do
       assert_equal "none", subject.noargs
@@ -154,24 +158,26 @@ class Assert::Stub
 
   class ModuleTests < SystemTests
     desc "for singleton methods on a module"
+    subject { module1 }
+
     setup do
-      @module = TestModule
-      Assert.stub(@module, :noargs){ "default" }
-      Assert.stub(@module, :noargs).with{ "none" }
+      Assert.stub(module1, :noargs){ "default" }
+      Assert.stub(module1, :noargs).with{ "none" }
 
-      Assert.stub(@module, :withargs){ "default" }
-      Assert.stub(@module, :withargs).with(1){ "one" }
+      Assert.stub(module1, :withargs){ "default" }
+      Assert.stub(module1, :withargs).with(1){ "one" }
 
-      Assert.stub(@module, :anyargs){ "default" }
-      Assert.stub(@module, :anyargs).with(1, 2){ "one-two" }
+      Assert.stub(module1, :anyargs){ "default" }
+      Assert.stub(module1, :anyargs).with(1, 2){ "one-two" }
 
-      Assert.stub(@module, :minargs){ "default" }
-      Assert.stub(@module, :minargs).with(1, 2){ "one-two" }
-      Assert.stub(@module, :minargs).with(1, 2, 3){ "one-two-three" }
+      Assert.stub(module1, :minargs){ "default" }
+      Assert.stub(module1, :minargs).with(1, 2){ "one-two" }
+      Assert.stub(module1, :minargs).with(1, 2, 3){ "one-two-three" }
 
-      Assert.stub(@module, :withblock){ "default" }
+      Assert.stub(module1, :withblock){ "default" }
     end
-    subject{ @module }
+
+    let(:module1) { TestModule }
 
     should "allow stubbing a method that doesn't take args" do
       assert_equal "none", subject.noargs
@@ -227,24 +233,26 @@ class Assert::Stub
 
   class ExtendedTests < SystemTests
     desc "for extended methods"
+    subject { class1 }
+
     setup do
-      @class = Class.new{ extend TestMixin }
-      Assert.stub(@class, :noargs){ "default" }
-      Assert.stub(@class, :noargs).with{ "none" }
+      Assert.stub(class1, :noargs){ "default" }
+      Assert.stub(class1, :noargs).with{ "none" }
 
-      Assert.stub(@class, :withargs){ "default" }
-      Assert.stub(@class, :withargs).with(1){ "one" }
+      Assert.stub(class1, :withargs){ "default" }
+      Assert.stub(class1, :withargs).with(1){ "one" }
 
-      Assert.stub(@class, :anyargs){ "default" }
-      Assert.stub(@class, :anyargs).with(1, 2){ "one-two" }
+      Assert.stub(class1, :anyargs){ "default" }
+      Assert.stub(class1, :anyargs).with(1, 2){ "one-two" }
 
-      Assert.stub(@class, :minargs){ "default" }
-      Assert.stub(@class, :minargs).with(1, 2){ "one-two" }
-      Assert.stub(@class, :minargs).with(1, 2, 3){ "one-two-three" }
+      Assert.stub(class1, :minargs){ "default" }
+      Assert.stub(class1, :minargs).with(1, 2){ "one-two" }
+      Assert.stub(class1, :minargs).with(1, 2, 3){ "one-two-three" }
 
-      Assert.stub(@class, :withblock){ "default" }
+      Assert.stub(class1, :withblock){ "default" }
     end
-    subject{ @class }
+
+    let(:class1) { Class.new{ extend TestMixin } }
 
     should "allow stubbing a method that doesn't take args" do
       assert_equal "none", subject.noargs
@@ -300,25 +308,26 @@ class Assert::Stub
 
   class IncludedTests < SystemTests
     desc "for an included method"
+    subject { instance1 }
+
     setup do
-      @class = Class.new{ include TestMixin }
-      @instance = @class.new
-      Assert.stub(@instance, :noargs){ "default" }
-      Assert.stub(@instance, :noargs).with{ "none" }
+      Assert.stub(instance1, :noargs){ "default" }
+      Assert.stub(instance1, :noargs).with{ "none" }
 
-      Assert.stub(@instance, :withargs){ "default" }
-      Assert.stub(@instance, :withargs).with(1){ "one" }
+      Assert.stub(instance1, :withargs){ "default" }
+      Assert.stub(instance1, :withargs).with(1){ "one" }
 
-      Assert.stub(@instance, :anyargs){ "default" }
-      Assert.stub(@instance, :anyargs).with(1, 2){ "one-two" }
+      Assert.stub(instance1, :anyargs){ "default" }
+      Assert.stub(instance1, :anyargs).with(1, 2){ "one-two" }
 
-      Assert.stub(@instance, :minargs){ "default" }
-      Assert.stub(@instance, :minargs).with(1, 2){ "one-two" }
-      Assert.stub(@instance, :minargs).with(1, 2, 3){ "one-two-three" }
+      Assert.stub(instance1, :minargs){ "default" }
+      Assert.stub(instance1, :minargs).with(1, 2){ "one-two" }
+      Assert.stub(instance1, :minargs).with(1, 2, 3){ "one-two-three" }
 
-      Assert.stub(@instance, :withblock){ "default" }
+      Assert.stub(instance1, :withblock){ "default" }
     end
-    subject{ @instance }
+
+    let(:instance1) { Class.new { include TestMixin }.new }
 
     should "allow stubbing a method that doesn't take args" do
       assert_equal "none", subject.noargs
@@ -374,24 +383,26 @@ class Assert::Stub
 
   class InheritedClassTests < SystemTests
     desc "for an inherited class method"
+    subject { class1 }
+
     setup do
-      @class = Class.new(TestClass)
-      Assert.stub(@class, :noargs){ "default" }
-      Assert.stub(@class, :noargs).with{ "none" }
+      Assert.stub(class1, :noargs){ "default" }
+      Assert.stub(class1, :noargs).with{ "none" }
 
-      Assert.stub(@class, :withargs){ "default" }
-      Assert.stub(@class, :withargs).with(1){ "one" }
+      Assert.stub(class1, :withargs){ "default" }
+      Assert.stub(class1, :withargs).with(1){ "one" }
 
-      Assert.stub(@class, :anyargs){ "default" }
-      Assert.stub(@class, :anyargs).with(1, 2){ "one-two" }
+      Assert.stub(class1, :anyargs){ "default" }
+      Assert.stub(class1, :anyargs).with(1, 2){ "one-two" }
 
-      Assert.stub(@class, :minargs){ "default" }
-      Assert.stub(@class, :minargs).with(1, 2){ "one-two" }
-      Assert.stub(@class, :minargs).with(1, 2, 3){ "one-two-three" }
+      Assert.stub(class1, :minargs){ "default" }
+      Assert.stub(class1, :minargs).with(1, 2){ "one-two" }
+      Assert.stub(class1, :minargs).with(1, 2, 3){ "one-two-three" }
 
-      Assert.stub(@class, :withblock){ "default" }
+      Assert.stub(class1, :withblock){ "default" }
     end
-    subject{ @class }
+
+    let(:class1) { Class.new(TestClass) }
 
     should "allow stubbing a method that doesn't take args" do
       assert_equal "none", subject.noargs
@@ -447,25 +458,26 @@ class Assert::Stub
 
   class InheritedInstanceTests < SystemTests
     desc "for an inherited instance method"
+    subject { instance1 }
+
     setup do
-      @class = Class.new(TestClass)
-      @instance = @class.new
-      Assert.stub(@instance, :noargs){ "default" }
-      Assert.stub(@instance, :noargs).with{ "none" }
+      Assert.stub(instance1, :noargs){ "default" }
+      Assert.stub(instance1, :noargs).with{ "none" }
 
-      Assert.stub(@instance, :withargs){ "default" }
-      Assert.stub(@instance, :withargs).with(1){ "one" }
+      Assert.stub(instance1, :withargs){ "default" }
+      Assert.stub(instance1, :withargs).with(1){ "one" }
 
-      Assert.stub(@instance, :anyargs){ "default" }
-      Assert.stub(@instance, :anyargs).with(1, 2){ "one-two" }
+      Assert.stub(instance1, :anyargs){ "default" }
+      Assert.stub(instance1, :anyargs).with(1, 2){ "one-two" }
 
-      Assert.stub(@instance, :minargs){ "default" }
-      Assert.stub(@instance, :minargs).with(1, 2){ "one-two" }
-      Assert.stub(@instance, :minargs).with(1, 2, 3){ "one-two-three" }
+      Assert.stub(instance1, :minargs){ "default" }
+      Assert.stub(instance1, :minargs).with(1, 2){ "one-two" }
+      Assert.stub(instance1, :minargs).with(1, 2, 3){ "one-two-three" }
 
-      Assert.stub(@instance, :withblock){ "default" }
+      Assert.stub(instance1, :withblock){ "default" }
     end
-    subject{ @instance }
+
+    let(:instance1) { Class.new(TestClass).new }
 
     should "allow stubbing a method that doesn't take args" do
       assert_equal "none", subject.noargs
@@ -521,24 +533,26 @@ class Assert::Stub
 
   class DelegateClassTests < SystemTests
     desc "a class that delegates another object"
+    subject { class1 }
+
     setup do
-      @class = DelegateClass
-      Assert.stub(@class, :noargs){ "default" }
-      Assert.stub(@class, :noargs).with{ "none" }
+      Assert.stub(class1, :noargs){ "default" }
+      Assert.stub(class1, :noargs).with{ "none" }
 
-      Assert.stub(@class, :withargs){ "default" }
-      Assert.stub(@class, :withargs).with(1){ "one" }
+      Assert.stub(class1, :withargs){ "default" }
+      Assert.stub(class1, :withargs).with(1){ "one" }
 
-      Assert.stub(@class, :anyargs){ "default" }
-      Assert.stub(@class, :anyargs).with(1, 2){ "one-two" }
+      Assert.stub(class1, :anyargs){ "default" }
+      Assert.stub(class1, :anyargs).with(1, 2){ "one-two" }
 
-      Assert.stub(@class, :minargs){ "default" }
-      Assert.stub(@class, :minargs).with(1, 2){ "one-two" }
-      Assert.stub(@class, :minargs).with(1, 2, 3){ "one-two-three" }
+      Assert.stub(class1, :minargs){ "default" }
+      Assert.stub(class1, :minargs).with(1, 2){ "one-two" }
+      Assert.stub(class1, :minargs).with(1, 2, 3){ "one-two-three" }
 
-      Assert.stub(@class, :withblock){ "default" }
+      Assert.stub(class1, :withblock){ "default" }
     end
-    subject{ @class }
+
+    let(:class1) { DelegateClass }
 
     should "allow stubbing a method that doesn't take args" do
       assert_equal "none", subject.noargs
@@ -594,24 +608,26 @@ class Assert::Stub
 
   class DelegateInstanceTests < SystemTests
     desc "an instance that delegates another object"
+    subject { instance1 }
+
     setup do
-      @instance = DelegateClass.new
-      Assert.stub(@instance, :noargs){ "default" }
-      Assert.stub(@instance, :noargs).with{ "none" }
+      Assert.stub(instance1, :noargs){ "default" }
+      Assert.stub(instance1, :noargs).with{ "none" }
 
-      Assert.stub(@instance, :withargs){ "default" }
-      Assert.stub(@instance, :withargs).with(1){ "one" }
+      Assert.stub(instance1, :withargs){ "default" }
+      Assert.stub(instance1, :withargs).with(1){ "one" }
 
-      Assert.stub(@instance, :anyargs){ "default" }
-      Assert.stub(@instance, :anyargs).with(1, 2){ "one-two" }
+      Assert.stub(instance1, :anyargs){ "default" }
+      Assert.stub(instance1, :anyargs).with(1, 2){ "one-two" }
 
-      Assert.stub(@instance, :minargs){ "default" }
-      Assert.stub(@instance, :minargs).with(1, 2){ "one-two" }
-      Assert.stub(@instance, :minargs).with(1, 2, 3){ "one-two-three" }
+      Assert.stub(instance1, :minargs){ "default" }
+      Assert.stub(instance1, :minargs).with(1, 2){ "one-two" }
+      Assert.stub(instance1, :minargs).with(1, 2, 3){ "one-two-three" }
 
-      Assert.stub(@instance, :withblock){ "default" }
+      Assert.stub(instance1, :withblock){ "default" }
     end
-    subject{ @instance }
+
+    let(:instance1) { DelegateClass.new }
 
     should "allow stubbing a method that doesn't take args" do
       assert_equal "none", subject.noargs
@@ -668,16 +684,16 @@ class Assert::Stub
   class ParentAndChildClassTests < SystemTests
     desc "for a parent method stubbed on both the parent and child"
     setup do
-      @parent_class = Class.new
-      @child_class = Class.new(@parent_class)
-
-      Assert.stub(@parent_class, :new){ "parent" }
-      Assert.stub(@child_class, :new){ "child" }
+      Assert.stub(parent_class, :new){ "parent" }
+      Assert.stub(child_class, :new){ "child" }
     end
 
+    let(:parent_class) { Class.new }
+    let(:child_class) { Class.new(parent_class) }
+
     should "allow stubbing the methods individually" do
-      assert_equal "parent", @parent_class.new
-      assert_equal "child", @child_class.new
+      assert_equal "parent", parent_class.new
+      assert_equal "child", child_class.new
     end
   end
 

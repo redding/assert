@@ -9,7 +9,7 @@ class Assert::Suite
 
   class UnitTests < Assert::Context
     desc "Assert::Suite"
-    subject{ Assert::Suite }
+    subject { Assert::Suite }
 
     should "include the config helpers" do
       assert_includes Assert::ConfigHelpers, subject
@@ -23,11 +23,10 @@ class Assert::Suite
 
   class InitTests < UnitTests
     desc "when init"
-    setup do
-      @config = Factory.modes_off_config
-      @suite  = Assert::Suite.new(@config)
-    end
-    subject{ @suite }
+    subject { suite1 }
+
+    let(:config1) { Factory.modes_off_config }
+    let(:suite1)  { Assert::Suite.new(config1) }
 
     should have_readers :config, :test_methods, :setups, :teardowns
     should have_accessors :start_time, :end_time
@@ -43,7 +42,7 @@ class Assert::Suite
     should have_imeths :before_test, :after_test, :on_result
 
     should "know its config" do
-      assert_equal @config, subject.config
+      assert_equal config1, subject.config
     end
 
     should "default its attrs" do
@@ -85,8 +84,8 @@ class Assert::Suite
 
     should "add setup procs" do
       status = nil
-      @suite.setup{ status = "setups" }
-      @suite.startup{ status += " have been run" }
+      suite1.setup{ status = "setups" }
+      suite1.startup{ status += " have been run" }
 
       assert_equal 2, subject.setups.count
       subject.setups.each(&:call)
@@ -95,8 +94,8 @@ class Assert::Suite
 
     should "add teardown procs" do
       status = nil
-      @suite.teardown{ status = "teardowns" }
-      @suite.shutdown{ status += " have been run" }
+      suite1.teardown{ status = "teardowns" }
+      suite1.shutdown{ status += " have been run" }
 
       assert_equal 2, subject.teardowns.count
       subject.teardowns.each(&:call)
@@ -106,21 +105,25 @@ class Assert::Suite
 
   class WithTestsLoadedTests < InitTests
     desc "with tests loaded"
+
     setup do
-      ci = proc{ Factory.context_info(Factory.modes_off_context_class) }
-      @tests = [
-        Factory.test("should nothing", ci.call){ },
-        Factory.test("should pass",    ci.call){ assert(1==1); refute(1==0) },
-        Factory.test("should fail",    ci.call){ ignore; assert(1==0); refute(1==1) },
-        Factory.test("should ignore",  ci.call){ ignore },
-        Factory.test("should skip",    ci.call){ skip; ignore; assert(1==1) },
-        Factory.test("should error",   ci.call){ raise Exception; ignore; assert(1==1) }
-      ]
-      @tests.each{ |test| @suite.on_test(test) }
+      tests1.each{ |test| suite1.on_test(test) }
     end
 
+    let(:ci1) { proc{ Factory.context_info(Factory.modes_off_context_class) } }
+    let(:tests1) {
+      [
+        Factory.test("should nothing", ci1.call){ },
+        Factory.test("should pass",    ci1.call){ assert(1==1); refute(1==0) },
+        Factory.test("should fail",    ci1.call){ ignore; assert(1==0); refute(1==1) },
+        Factory.test("should ignore",  ci1.call){ ignore },
+        Factory.test("should skip",    ci1.call){ skip; ignore; assert(1==1) },
+        Factory.test("should error",   ci1.call){ raise Exception; ignore; assert(1==1) }
+      ]
+    }
+
     should "know its tests-to-run attrs" do
-      assert_equal @tests.size, subject.tests_to_run_count
+      assert_equal tests1.size, subject.tests_to_run_count
       assert_true subject.tests_to_run?
 
       subject.clear_tests_to_run
@@ -130,13 +133,13 @@ class Assert::Suite
     end
 
     should "find a test to run given a file line" do
-      test = @tests.sample
+      test = tests1.sample
       assert_same test, subject.find_test_to_run(test.file_line)
     end
 
     should "know its sorted tests to run" do
       sorted_tests = subject.sorted_tests_to_run{ 1 }
-      assert_equal @tests.size, sorted_tests.size
+      assert_equal tests1.size, sorted_tests.size
       assert_kind_of Assert::Test, sorted_tests.first
       assert_same sorted_tests.first, subject.sorted_tests_to_run{ 1 }.first
     end

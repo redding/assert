@@ -8,55 +8,58 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_empty`"
-    setup do
-      desc = @desc = "assert empty fail desc"
-      args = @args = [[1], desc]
-      @test = Factory.test do
+    subject { test1 }
+
+    let(:desc1) { "assert empty fail desc" }
+    let(:args1) { [[1], desc1] }
+    let(:test1) {
+      args = args1
+      Factory.test do
         assert_empty([])    # pass
         assert_empty(*args) # fail
       end
-      @c = @test.config
-      @test.run(&test_run_callback)
-    end
-    subject{ @test }
+    }
+    let(:config1) { test1.config }
 
     should "produce results as expected" do
+      subject.run(&test_run_callback)
+
       assert_equal 2, test_run_result_count
       assert_equal 1, test_run_result_count(:pass)
       assert_equal 1, test_run_result_count(:fail)
-    end
 
-    should "have a fail message with custom and generic explanations" do
-      exp = "#{@args[1]}\nExpected #{Assert::U.show(@args[0], @c)} to be empty."
+      exp =
+        "#{args1[1]}\nExpected #{Assert::U.show(args1[0], config1)} to be empty."
       assert_equal exp, test_run_results(:fail).first.message
     end
-
   end
 
   class AssertNotEmptyTests < Assert::Context
     include Assert::Test::TestHelpers
 
     desc "`assert_not_empty`"
-    setup do
-      desc = @desc = "assert not empty fail desc"
-      args = @args = [[], desc]
-      @test = Factory.test do
-        assert_not_empty([1]) # pass
+    subject { test1 }
+
+    let(:desc1) { "assert not empty fail desc" }
+    let(:args1) { [[], desc1] }
+    let(:test1) {
+      args = args1
+      Factory.test do
+        assert_not_empty([1])   # pass
         assert_not_empty(*args) # fail
       end
-      @c = @test.config
-      @test.run(&test_run_callback)
-    end
-    subject{ @test }
+    }
+    let(:config1) { test1.config }
 
     should "produce results as expected" do
+      subject.run(&test_run_callback)
+
       assert_equal 2, test_run_result_count
       assert_equal 1, test_run_result_count(:pass)
       assert_equal 1, test_run_result_count(:fail)
-    end
 
-    should "have a fail message with custom and generic explanations" do
-      exp = "#{@args[1]}\nExpected #{Assert::U.show(@args[0], @c)} to not be empty."
+      exp =
+        "#{args1[1]}\nExpected #{Assert::U.show(args1[0], config1)} to not be empty."
       assert_equal exp, test_run_results(:fail).first.message
     end
   end

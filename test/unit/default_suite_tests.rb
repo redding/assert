@@ -6,14 +6,12 @@ require "assert/suite"
 class Assert::DefaultSuite
   class UnitTests < Assert::Context
     desc "Assert::DefaultSuite"
-    setup do
-      ci = Factory.context_info(Factory.modes_off_context_class)
-      @test = Factory.test(Factory.string, ci){ }
+    subject { suite1 }
 
-      @config = Factory.modes_off_config
-      @suite  = Assert::DefaultSuite.new(@config)
-    end
-    subject{ @suite }
+    let(:ci1)     { Factory.context_info(Factory.modes_off_context_class) }
+    let(:test1)   { Factory.test(Factory.string, ci1) { } }
+    let(:config1) { Factory.modes_off_config }
+    let(:suite1)  { Assert::DefaultSuite.new(config1) }
 
     should "be a Suite" do
       assert_kind_of Assert::Suite, subject
@@ -77,7 +75,7 @@ class Assert::DefaultSuite
     end
 
     should "clear the run data on `on_start`" do
-      subject.before_test(@test)
+      subject.before_test(test1)
       subject.on_result(Factory.pass_result)
 
       assert_equal 1, subject.test_count
