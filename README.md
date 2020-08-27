@@ -33,13 +33,13 @@ Running tests in random order, seeded with "56382"
 
 ## What Assert is not
 
-* **RSpec/spec-anything**: define tests using assertion statements
-* **Unit/Functional/Integration/etc**: Assert is agnostic - you define whatever kinds of tests you like (one or more of the above) and assert runs them in context
-* **Mock/Spec/BDD/etc**: Assert is the framework and there are a variety of 3rd party tools to do such things - feel free to use whatever you like
+* **RSpec/spec-anything**: define tests using assertion statements.
+* **Unit/Functional/Integration/etc**: Assert is agnostic - you define whatever kinds of tests you like and Assert runs them in context.
+* **Mock/Spec/BDD/etc**: Assert is the framework and there are a variety of 3rd party tools to do such things. Feel free to use whatever you like.
 
 ## Description
 
-Assert is an assertion style testing framework, meaning you use assertion statements to define your tests and create results.  Assert uses class-based contexts so if you want to nest your contexts, use inheritance.
+Assert is an assertion-style testing framework, meaning you use assertion statements to define your tests and create results. Assert uses class-based contexts so if you want to nest your contexts, use inheritance.
 
 ### Features
 
@@ -50,6 +50,7 @@ Assert is an assertion style testing framework, meaning you use assertion statem
 * class-based contexts
 * multiple before/setup & after/teardown blocks
 * around blocks
+* `let` value declarations
 * full backtrace for errors
 * optionally pretty print objects in failure descriptions
 * [stubbing API](https://github.com/redding/assert#stub)
@@ -666,4 +667,4 @@ If submitting a Pull Request, please:
 
 One note: please respect that Assert itself is intended to be the flexible, base-level, framework-type logic that should change little if at all.  Pull requests for niche functionality or personal testing philosphy stuff will likely not be accepted.
 
-If you wish to extend Assert for your niche purpose/desire/philosophy, please do so in it's own gem (preferrably named `assert-<whatever>`) that uses Assert as a dependency.
+If you wish to extend Assert for your niche purpose/desire/philosophy, please do so in its own gem (preferrably named `assert-<whatever>`) that uses Assert as a dependency.
