@@ -19,7 +19,7 @@ module Assert::Context::SubjectDSL
       subject.desc("and the description for this context")
 
       exp = "parent description and the description for this context"
-      assert_equal exp, subject.description
+      assert_that(subject.description).equals(exp)
     end
   end
 
@@ -29,7 +29,7 @@ module Assert::Context::SubjectDSL
     should "set the subject block on the context class" do
       subject.subject(&subject_block1)
 
-      assert_equal subject_block1, subject.subject
+      assert_that(subject.subject).equals(subject_block1)
     end
   end
 
@@ -39,7 +39,7 @@ module Assert::Context::SubjectDSL
     should "default to its parents subject block" do
       parent_class1.subject(&subject_block1)
 
-      assert_equal subject_block1, subject.subject
+      assert_that(subject.subject).equals(subject_block1)
     end
   end
 end

@@ -12,12 +12,12 @@ class Assert::Suite
     subject { Assert::Suite }
 
     should "include the config helpers" do
-      assert_includes Assert::ConfigHelpers, subject
+      assert_that(subject).includes(Assert::ConfigHelpers)
     end
 
     should "know its test method regex" do
-      assert_match     "test#{Factory.string}", subject::TEST_METHOD_REGEX
-      assert_not_match "#{Factory.string}test", subject::TEST_METHOD_REGEX
+      assert_that(subject::TEST_METHOD_REGEX).matches("test#{Factory.string}")
+      assert_that(subject::TEST_METHOD_REGEX).does_not_match("#{Factory.string}test")
     end
   end
 
@@ -42,34 +42,34 @@ class Assert::Suite
     should have_imeths :before_test, :after_test, :on_result
 
     should "know its config" do
-      assert_equal config1, subject.config
+      assert_that(subject.config).equals(config1)
     end
 
     should "default its attrs" do
-      assert_equal [], subject.test_methods
-      assert_equal [], subject.setups
-      assert_equal [], subject.teardowns
+      assert_that(subject.test_methods).equals([])
+      assert_that(subject.setups).equals([])
+      assert_that(subject.teardowns).equals([])
 
-      assert_equal subject.start_time, subject.end_time
+      assert_that(subject.end_time).equals(subject.start_time)
     end
 
     should "override the config helper's suite value with itself" do
-      assert_equal subject, subject.suite
+      assert_that(subject.suite).equals(subject)
     end
 
     should "not provide any test/result count implementations" do
-      assert_nil subject.test_count
-      assert_nil subject.pass_result_count
-      assert_nil subject.fail_result_count
-      assert_nil subject.error_result_count
-      assert_nil subject.skip_result_count
-      assert_nil subject.ignore_result_count
+      assert_that(subject.test_count).is_nil
+      assert_that(subject.pass_result_count).is_nil
+      assert_that(subject.fail_result_count).is_nil
+      assert_that(subject.error_result_count).is_nil
+      assert_that(subject.skip_result_count).is_nil
+      assert_that(subject.ignore_result_count).is_nil
     end
 
     should "know its run time and rates" do
-      assert_equal 0, subject.run_time
-      assert_equal 0, subject.test_rate
-      assert_equal 0, subject.result_rate
+      assert_that(subject.run_time).equals(0)
+      assert_that(subject.test_rate).equals(0)
+      assert_that(subject.result_rate).equals(0)
 
       time = Factory.integer(3).to_f
       subject.end_time = subject.start_time + time
@@ -77,9 +77,9 @@ class Assert::Suite
       Assert.stub(subject, :test_count){ count }
       Assert.stub(subject, :result_count){ count }
 
-      assert_equal time, subject.run_time
-      assert_equal (subject.test_count / subject.run_time),   subject.test_rate
-      assert_equal (subject.result_count / subject.run_time), subject.result_rate
+      assert_that(subject.run_time).equals(time)
+      assert_that(subject.test_rate).equals((subject.test_count / subject.run_time))
+      assert_that(subject.result_rate).equals((subject.result_count / subject.run_time))
     end
 
     should "add setup procs" do
@@ -87,9 +87,9 @@ class Assert::Suite
       suite1.setup{ status = "setups" }
       suite1.startup{ status += " have been run" }
 
-      assert_equal 2, subject.setups.count
+      assert_that(subject.setups.count).equals(2)
       subject.setups.each(&:call)
-      assert_equal "setups have been run", status
+      assert_that(status).equals("setups have been run")
     end
 
     should "add teardown procs" do
@@ -97,9 +97,9 @@ class Assert::Suite
       suite1.teardown{ status = "teardowns" }
       suite1.shutdown{ status += " have been run" }
 
-      assert_equal 2, subject.teardowns.count
+      assert_that(subject.teardowns.count).equals(2)
       subject.teardowns.each(&:call)
-      assert_equal "teardowns have been run", status
+      assert_that(status).equals("teardowns have been run")
     end
   end
 
@@ -123,25 +123,25 @@ class Assert::Suite
     }
 
     should "know its tests-to-run attrs" do
-      assert_equal tests1.size, subject.tests_to_run_count
-      assert_true subject.tests_to_run?
+      assert_that(subject.tests_to_run_count).equals(tests1.size)
+      assert_that(subject.tests_to_run?).is_true
 
       subject.clear_tests_to_run
 
-      assert_equal 0, subject.tests_to_run_count
-      assert_false subject.tests_to_run?
+      assert_that(subject.tests_to_run_count).equals(0)
+      assert_that(subject.tests_to_run?).is_false
     end
 
     should "find a test to run given a file line" do
       test = tests1.sample
-      assert_same test, subject.find_test_to_run(test.file_line)
+      assert_that(subject.find_test_to_run(test.file_line)).is_the_same_as(test)
     end
 
     should "know its sorted tests to run" do
       sorted_tests = subject.sorted_tests_to_run{ 1 }
-      assert_equal tests1.size, sorted_tests.size
-      assert_kind_of Assert::Test, sorted_tests.first
-      assert_same sorted_tests.first, subject.sorted_tests_to_run{ 1 }.first
+      assert_that(sorted_tests.size).equals(tests1.size)
+      assert_that(sorted_tests.first).is_kind_of(Assert::Test)
+      assert_that(subject.sorted_tests_to_run{ 1 }.first).is_the_same_as(sorted_tests.first)
     end
   end
 end

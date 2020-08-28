@@ -24,13 +24,13 @@ module Assert::Assertions
     should "produce results as expected" do
       subject.run(&test_run_callback)
 
-      assert_equal 2, test_run_result_count
-      assert_equal 1, test_run_result_count(:pass)
-      assert_equal 1, test_run_result_count(:fail)
+      assert_that(test_run_result_count).equals(2)
+      assert_that(test_run_result_count(:pass)).equals(1)
+      assert_that(test_run_result_count(:fail)).equals(1)
 
       exp =
         "#{args1[1]}\nExpected #{Assert::U.show(args1[0], config1)} to be empty."
-      assert_equal exp, test_run_results(:fail).first.message
+      assert_that(test_run_results(:fail).first.message).equals(exp)
     end
   end
 
@@ -54,13 +54,13 @@ module Assert::Assertions
     should "produce results as expected" do
       subject.run(&test_run_callback)
 
-      assert_equal 2, test_run_result_count
-      assert_equal 1, test_run_result_count(:pass)
-      assert_equal 1, test_run_result_count(:fail)
+      assert_that(test_run_result_count).equals(2)
+      assert_that(test_run_result_count(:pass)).equals(1)
+      assert_that(test_run_result_count(:fail)).equals(1)
 
       exp =
         "#{args1[1]}\nExpected #{Assert::U.show(args1[0], config1)} to not be empty."
-      assert_equal exp, test_run_results(:fail).first.message
+      assert_that(test_run_results(:fail).first.message).equals(exp)
     end
   end
 end

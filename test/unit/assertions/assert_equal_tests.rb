@@ -24,14 +24,14 @@ module Assert::Assertions
     should "produce results as expected" do
       subject.run(&test_run_callback)
 
-      assert_equal 2, test_run_result_count
-      assert_equal 1, test_run_result_count(:pass)
-      assert_equal 1, test_run_result_count(:fail)
+      assert_that(test_run_result_count).equals(2)
+      assert_that(test_run_result_count(:pass)).equals(1)
+      assert_that(test_run_result_count(:fail)).equals(1)
 
       exp =
         "#{args1[2]}\nExpected #{Assert::U.show(args1[1], config1)}"\
         " to be equal to #{Assert::U.show(args1[0], config1)}."
-      assert_equal exp, test_run_results(:fail).first.message
+      assert_that(test_run_results(:fail).first.message).equals(exp)
     end
   end
 
@@ -55,14 +55,14 @@ module Assert::Assertions
     should "produce results as expected" do
       subject.run(&test_run_callback)
 
-      assert_equal 2, test_run_result_count
-      assert_equal 1, test_run_result_count(:pass)
-      assert_equal 1, test_run_result_count(:fail)
+      assert_that(test_run_result_count).equals(2)
+      assert_that(test_run_result_count(:pass)).equals(1)
+      assert_that(test_run_result_count(:fail)).equals(1)
 
       exp =
         "#{args1[2]}\nExpected #{Assert::U.show(args1[1], config1)}"\
         " to not be equal to #{Assert::U.show(args1[0], config1)}."
-      assert_equal exp, test_run_results(:fail).first.message
+      assert_that(test_run_results(:fail).first.message).equals(exp)
     end
   end
 
@@ -78,8 +78,8 @@ module Assert::Assertions
     let(:is_not1) { is_not_class.new }
 
     should "use the equality operator of the exp value" do
-      assert_equal is1, is_not1
-      assert_not_equal is_not1, is1
+      assert_that(is1).equals(is_not1)
+      assert_that(is_not1).does_not_equal(is1)
     end
   end
 
@@ -118,7 +118,7 @@ module Assert::Assertions
       exp =
         "Expected does not equal actual, diff:\n"\
         "#{Assert::U.syscmd_diff_proc.call(exp_obj_show1, act_obj_show1)}"
-      assert_equal exp, test_run_results(:fail).first.message
+      assert_that(test_run_results(:fail).first.message).equals(exp)
     end
   end
 
@@ -139,7 +139,7 @@ module Assert::Assertions
       exp =
         "Expected equals actual, diff:\n"\
         "#{Assert::U.syscmd_diff_proc.call(exp_obj_show1, exp_obj_show1)}"
-      assert_equal exp, test_run_results(:fail).first.message
+      assert_that(test_run_results(:fail).first.message).equals(exp)
     end
   end
 end

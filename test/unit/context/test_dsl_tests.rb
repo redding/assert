@@ -12,22 +12,22 @@ module Assert::Context::TestDSL
       d, b = test_desc1, test_block1
       context, test = build_eval_context{ test(d, &b) }
 
-      assert_equal 1, context.class.suite.tests_to_run_count
+      assert_that(context.class.suite.tests_to_run_count).equals(1)
 
-      assert_kind_of Assert::Test, test
-      assert_equal test_desc1,  test.name
-      assert_equal test_block1, test.code
+      assert_that(test).is_kind_of(Assert::Test)
+      assert_that(test.name).equals(test_desc1)
+      assert_that(test.code).equals(test_block1)
     end
 
     should "build a test using `should` with a desc and code block" do
       d, b = test_desc1, test_block1
       context, test = build_eval_context{ should(d, &b) }
 
-      assert_equal 1, context.class.suite.tests_to_run_count
+      assert_that(context.class.suite.tests_to_run_count).equals(1)
 
-      assert_kind_of Assert::Test, test
-      assert_equal "should #{test_desc1}", test.name
-      assert_equal test_block1, test.code
+      assert_that(test).is_kind_of(Assert::Test)
+      assert_that(test.name).equals("should #{test_desc1}")
+      assert_that(test.code).equals(test_block1)
     end
 
     should "build a test that skips with no msg when `test_eventually` called" do
@@ -37,9 +37,9 @@ module Assert::Context::TestDSL
         context.instance_eval(&test.code)
       end
 
-      assert_equal 1,      context.class.suite.tests_to_run_count
-      assert_equal "TODO", err.message
-      assert_equal 1,      err.backtrace.size
+      assert_that(context.class.suite.tests_to_run_count).equals(1)
+      assert_that(err.message).equals("TODO")
+      assert_that(err.backtrace.size).equals(1)
     end
 
     should "build a test that skips with no msg  when `should_eventually` called" do
@@ -49,9 +49,9 @@ module Assert::Context::TestDSL
         context.instance_eval(&test.code)
       end
 
-      assert_equal 1,      context.class.suite.tests_to_run_count
-      assert_equal "TODO", err.message
-      assert_equal 1,      err.backtrace.size
+      assert_that(context.class.suite.tests_to_run_count).equals(1)
+      assert_that(err.message).equals("TODO")
+      assert_that(err.backtrace.size).equals(1)
     end
 
     should "skip with the msg \"TODO\" when `test` called with no block" do
@@ -61,9 +61,9 @@ module Assert::Context::TestDSL
         context.instance_eval(&test.code)
       end
 
-      assert_equal 1,      context.class.suite.tests_to_run_count
-      assert_equal "TODO", err.message
-      assert_equal 1,      err.backtrace.size
+      assert_that(context.class.suite.tests_to_run_count).equals(1)
+      assert_that(err.message).equals("TODO")
+      assert_that(err.backtrace.size).equals(1)
     end
 
     should "skip with the msg \"TODO\" when `should` called with no block" do
@@ -73,9 +73,9 @@ module Assert::Context::TestDSL
         context.instance_eval(&test.code)
       end
 
-      assert_equal 1,      context.class.suite.tests_to_run_count
-      assert_equal "TODO", err.message
-      assert_equal 1,      err.backtrace.size
+      assert_that(context.class.suite.tests_to_run_count).equals(1)
+      assert_that(err.message).equals("TODO")
+      assert_that(err.backtrace.size).equals(1)
     end
 
     should "skip with the msg \"TODO\" when `test_eventually` called with no block" do
@@ -85,9 +85,9 @@ module Assert::Context::TestDSL
         context.instance_eval(&test.code)
       end
 
-      assert_equal 1,      context.class.suite.tests_to_run_count
-      assert_equal "TODO", err.message
-      assert_equal 1,      err.backtrace.size
+      assert_that(context.class.suite.tests_to_run_count).equals(1)
+      assert_that(err.message).equals("TODO")
+      assert_that(err.backtrace.size).equals(1)
     end
 
     should "skip with the msg \"TODO\" when `should_eventually` called with no block" do
@@ -97,9 +97,9 @@ module Assert::Context::TestDSL
         context.instance_eval(&test.code)
       end
 
-      assert_equal 1,      context.class.suite.tests_to_run_count
-      assert_equal "TODO", err.message
-      assert_equal 1,      err.backtrace.size
+      assert_that(context.class.suite.tests_to_run_count).equals(1)
+      assert_that(err.message).equals("TODO")
+      assert_that(err.backtrace.size).equals(1)
     end
 
     should "build a test from a macro using `test`" do
@@ -107,7 +107,7 @@ module Assert::Context::TestDSL
       m = Assert::Macro.new{ test(d, &b); test(d, &b) }
       context_class = Factory.modes_off_context_class{ test(m) }
 
-      assert_equal 2, context_class.suite.tests_to_run_count
+      assert_that(context_class.suite.tests_to_run_count).equals(2)
     end
 
     should "build a test from a macro using `should`" do
@@ -115,7 +115,7 @@ module Assert::Context::TestDSL
       m = Assert::Macro.new{ should(d, &b); should(d, &b) }
       context_class = Factory.modes_off_context_class{ should(m) }
 
-      assert_equal 2, context_class.suite.tests_to_run_count
+      assert_that(context_class.suite.tests_to_run_count).equals(2)
     end
 
     should "build a test that skips from a macro using `test_eventually`" do
@@ -123,10 +123,9 @@ module Assert::Context::TestDSL
       m = Assert::Macro.new{ test(d, &b); test(d, &b) }
       context, test = build_eval_context{ test_eventually(m) }
 
-      assert_equal 1, context.class.suite.tests_to_run_count
-      assert_raises(Assert::Result::TestSkipped) do
-        context.instance_eval(&test.code)
-      end
+      assert_that(context.class.suite.tests_to_run_count).equals(1)
+      assert_that(-> { context.instance_eval(&test.code) }).
+        raises(Assert::Result::TestSkipped)
     end
 
     should "build a test that skips from a macro using `should_eventually`" do
@@ -134,10 +133,9 @@ module Assert::Context::TestDSL
       m = Assert::Macro.new{ should(d, &b); should(d, &b) }
       context, test = build_eval_context{ should_eventually(m) }
 
-      assert_equal 1, context.class.suite.tests_to_run_count
-      assert_raises(Assert::Result::TestSkipped) do
-        context.instance_eval(&test.code)
-      end
+      assert_that(context.class.suite.tests_to_run_count).equals(1)
+      assert_that(-> { context.instance_eval(&test.code) }).
+        raises(Assert::Result::TestSkipped)
     end
 
     private

@@ -13,13 +13,13 @@ module Assert
     should have_imeths :stubs, :stub, :unstub, :unstub!, :stub_send
 
     should "know its config instance" do
-      assert_kind_of Assert::Config, subject.config
+      assert_that(subject.config).is_kind_of(Assert::Config)
     end
 
     should "map its view, suite and runner to its config" do
-      assert_same subject.config.view,   subject.view
-      assert_same subject.config.suite,  subject.suite
-      assert_same subject.config.runner, subject.runner
+      assert_that(subject.view).is_the_same_as(subject.config.view)
+      assert_that(subject.suite).is_the_same_as(subject.config.suite)
+      assert_that(subject.runner).is_the_same_as(subject.config.runner)
     end
 
     # Note: don't really need to explicitly test the configure method as
@@ -51,44 +51,44 @@ module Assert
 
     should "build a stub" do
       stub1 = Assert.stub(object1, :mymeth)
-      assert_kind_of MuchStub::Stub, stub1
+      assert_that(stub1).is_kind_of(MuchStub::Stub)
     end
 
     should "lookup stubs that have been called before" do
       stub1 = Assert.stub(object1, :mymeth)
       stub2 = Assert.stub(object1, :mymeth)
-      assert_same stub1, stub2
+      assert_that(stub2).is_the_same_as(stub1)
     end
 
     should "set the stub's do block if given a block" do
       Assert.stub(object1, :mymeth)
-      assert_raises(MuchStub::NotStubbedError){ object1.mymeth }
+      assert_that(-> { object1.mymeth }).raises(MuchStub::NotStubbedError)
       Assert.stub(object1, :mymeth){ stub_value1 }
-      assert_equal stub_value1, object1.mymeth
+      assert_that(object1.mymeth).equals(stub_value1)
     end
 
     should "teardown stubs" do
-      assert_equal orig_value1, object1.mymeth
+      assert_that(object1.mymeth).equals(orig_value1)
       Assert.unstub(object1, :mymeth)
-      assert_equal orig_value1, object1.mymeth
+      assert_that(object1.mymeth).equals(orig_value1)
 
-      assert_equal orig_value1, object1.mymeth
+      assert_that(object1.mymeth).equals(orig_value1)
       Assert.stub(object1, :mymeth){ stub_value1 }
-      assert_equal stub_value1, object1.mymeth
+      assert_that(object1.mymeth).equals(stub_value1)
       Assert.unstub(object1, :mymeth)
-      assert_equal orig_value1, object1.mymeth
+      assert_that(object1.mymeth).equals(orig_value1)
     end
 
     should "know and teardown all stubs" do
-      assert_equal orig_value1, object1.mymeth
+      assert_that(object1.mymeth).equals(orig_value1)
 
       Assert.stub(object1, :mymeth){ stub_value1 }
-      assert_equal stub_value1, object1.mymeth
-      assert_equal 1, Assert.stubs.size
+      assert_that(object1.mymeth).equals(stub_value1)
+      assert_that(Assert.stubs.size).equals(1)
 
       Assert.unstub!
-      assert_equal orig_value1, object1.mymeth
-      assert_empty Assert.stubs
+      assert_that(object1.mymeth).equals(orig_value1)
+      assert_that(Assert.stubs).is_empty
     end
 
     should "auto-unstub any stubs on teardown" do
@@ -99,21 +99,23 @@ module Assert
       end
 
       context_class.run_setups("scope")
-      assert_equal 1, Assert.stubs.size
+      assert_that(Assert.stubs.size).equals(1)
 
       context_class.run_teardowns("scope")
-      assert_empty Assert.stubs
+      assert_that(Assert.stubs).is_empty
     end
 
     should "be able to call a stub's original method" do
-      err = assert_raises(MuchStub::NotStubbedError){ Assert.stub_send(object1, :mymeth) }
-      assert_includes "not stubbed.",              err.message
-      assert_includes "test/unit/assert_tests.rb", err.backtrace.first
+      err =
+        assert_that(-> { Assert.stub_send(object1, :mymeth) }).
+          raises(MuchStub::NotStubbedError)
+      assert_that(err.message).includes("not stubbed.")
+      assert_that(err.backtrace.first).includes("test/unit/assert_tests.rb")
 
       Assert.stub(object1, :mymeth){ stub_value1 }
 
-      assert_equal stub_value1, object1.mymeth
-      assert_equal orig_value1, Assert.stub_send(object1, :mymeth)
+      assert_that(object1.mymeth).equals(stub_value1)
+      assert_that(Assert.stub_send(object1, :mymeth)).equals(orig_value1)
     end
 
     should "be able to add a stub tap" do
@@ -122,8 +124,8 @@ module Assert
         my_meth_called_with = args
       }
 
-      assert_equal orig_value1, object1.mymeth
-      assert_equal [], my_meth_called_with
+      assert_that(object1.mymeth).equals(orig_value1)
+      assert_that(my_meth_called_with).equals([])
     end
 
     should "be able to add a stub tap with an on_call block" do
@@ -132,8 +134,8 @@ module Assert
         my_meth_called_with = call
       }
 
-      assert_equal orig_value1, object1.mymeth
-      assert_equal [], my_meth_called_with.args
+      assert_that(object1.mymeth).equals(orig_value1)
+      assert_that(my_meth_called_with.args).equals([])
     end
 
     should "be able to add a stubbed spy" do
@@ -153,19 +155,19 @@ module Assert
           :three,
           ready?: true)
 
-      assert_equal spy, myobj.one
-      assert_equal spy, myobj.two("a")
-      assert_equal spy, myobj.three
+      assert_that(myobj.one).equals(spy)
+      assert_that(myobj.two("a")).equals(spy)
+      assert_that(myobj.three).equals(spy)
 
-      assert_true myobj.one.two("b").three.ready?
+      assert_that(myobj.one.two("b").three.ready?).is_true
 
-      assert_kind_of MuchStub::CallSpy, spy
-      assert_equal 2, spy.one_call_count
-      assert_equal 2, spy.two_call_count
-      assert_equal 2, spy.three_call_count
-      assert_equal 1, spy.ready_predicate_call_count
-      assert_equal ["b"], spy.two_last_called_with.args
-      assert_true spy.ready_predicate_called?
+      assert_that(spy).is_kind_of(MuchStub::CallSpy)
+      assert_that(spy.one_call_count).equals(2)
+      assert_that(spy.two_call_count).equals(2)
+      assert_that(spy.three_call_count).equals(2)
+      assert_that(spy.ready_predicate_call_count).equals(1)
+      assert_that(spy.two_last_called_with.args).equals(["b"])
+      assert_that(spy.ready_predicate_called?).is_true
     end
   end
 end

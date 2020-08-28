@@ -17,8 +17,8 @@ module Assert::Context::SetupDSL
       subject.setup_once(&block1)
       subject.teardown_once(&block1)
 
-      assert_includes block1, subject.suite.send(:setups)
-      assert_includes block1, subject.suite.send(:teardowns)
+      assert_that(subject.suite.send(:setups)).includes(block1)
+      assert_that(subject.suite.send(:teardowns)).includes(block1)
     end
   end
 
@@ -29,8 +29,8 @@ module Assert::Context::SetupDSL
       subject.setup(&block1)
       subject.teardown(&block1)
 
-      assert_includes block1, subject.send(:setups)
-      assert_includes block1, subject.send(:teardowns)
+      assert_that(subject.send(:setups)).includes(block1)
+      assert_that(subject.send(:teardowns)).includes(block1)
     end
   end
 
@@ -43,8 +43,8 @@ module Assert::Context::SetupDSL
       subject.setup(method_name1)
       subject.teardown(method_name1)
 
-      assert_includes method_name1, subject.send(:setups)
-      assert_includes method_name1, subject.send(:teardowns)
+      assert_that(subject.send(:setups)).includes(method_name1)
+      assert_that(subject.send(:teardowns)).includes(method_name1)
     end
   end
 
@@ -82,10 +82,10 @@ module Assert::Context::SetupDSL
       subject.teardown(&context_teardown_block1)
 
       subject.send("run_setups", obj = test_status_class.new)
-      assert_equal "the setup has been run with something", obj.setup_status
+      assert_that(obj.setup_status).equals("the setup has been run with something")
 
       subject.send("run_teardowns", obj = test_status_class.new)
-      assert_equal "with something has been run the teardown", obj.teardown_status
+      assert_that(obj.teardown_status).equals("with something has been run the teardown")
     end
   end
 
@@ -122,7 +122,7 @@ module Assert::Context::SetupDSL
         "p-around start, c-around1 start, c-around2 start, "\
         "TEST, "\
         "c-around2 end, c-around1 end, p-around end."
-      assert_equal exp, obj.out_status
+      assert_that(obj.out_status).equals(exp)
     end
   end
 end

@@ -22,10 +22,10 @@ class Assert::Test
       data = subject.name_file_line_context_data(context_info1, test_name)
 
       exp = context_info1.test_name(test_name)
-      assert_equal exp, data[:name]
+      assert_that(data[:name]).equals(exp)
 
       exp = context_info1.called_from
-      assert_equal exp, data[:file_line]
+      assert_that(data[:file_line]).equals(exp)
     end
 
     should "build tests for a block" do
@@ -33,14 +33,14 @@ class Assert::Test
       test = subject.for_block(name, context_info1, config1, &test_code1)
 
       exp = Assert::FileLine.parse(context_info1.called_from)
-      assert_equal exp, test.file_line
+      assert_that(test.file_line).equals(exp)
 
       exp = context_info1.test_name(name)
-      assert_equal exp, test.name
+      assert_that(test.name).equals(exp)
 
-      assert_equal context_info1, test.context_info
-      assert_equal config1,       test.config
-      assert_equal test_code1,    test.code
+      assert_that(test.context_info).equals(context_info1)
+      assert_that(test.config).equals(config1)
+      assert_that(test.code).equals(test_code1)
     end
 
     should "build tests for a method" do
@@ -48,17 +48,17 @@ class Assert::Test
       test = subject.for_method(meth, context_info1, config1)
 
       exp = Assert::FileLine.parse(context_info1.called_from)
-      assert_equal exp, test.file_line
+      assert_that(test.file_line).equals(exp)
 
       exp = context_info1.test_name(meth)
-      assert_equal exp, test.name
+      assert_that(test.name).equals(exp)
 
-      assert_equal context_info1, test.context_info
-      assert_equal config1,       test.config
+      assert_that(test.context_info).equals(context_info1)
+      assert_that(test.config).equals(config1)
 
-      assert_kind_of Proc, test.code
+      assert_that(test.code).is_kind_of(Proc)
       self.instance_eval(&test.code)
-      assert_true @a_test_method_called
+      assert_that(@a_test_method_called).is_true
     end
 
     def a_test_method
@@ -93,36 +93,36 @@ class Assert::Test
     should have_imeths :context_info, :context_class, :config, :code, :run
 
     should "use any given attrs" do
-      assert_equal file_line1,             subject.file_line
-      assert_equal meta_data1[:name],      subject.name
-      assert_equal meta_data1[:output],    subject.output
-      assert_equal meta_data1[:run_time],  subject.run_time
+      assert_that(subject.file_line).equals(file_line1)
+      assert_that(subject.name).equals(meta_data1[:name])
+      assert_that(subject.output).equals(meta_data1[:output])
+      assert_that(subject.run_time).equals(meta_data1[:run_time])
 
-      assert_equal context_info1, subject.context_info
-      assert_equal config1,       subject.config
-      assert_equal test_code1,    subject.code
+      assert_that(subject.context_info).equals(context_info1)
+      assert_that(subject.config).equals(config1)
+      assert_that(subject.code).equals(test_code1)
     end
 
     should "default its attrs" do
       test = Assert::Test.new
 
-      assert_equal Assert::FileLine.parse(""), test.file_line
-      assert_equal "", test.name
-      assert_equal "", test.output
-      assert_equal 0,  test.run_time
+      assert_that(test.file_line).equals(Assert::FileLine.parse(""))
+      assert_that(test.name).equals("")
+      assert_that(test.output).equals("")
+      assert_that(test.run_time).equals(0)
 
-      assert_nil test.context_info
-      assert_nil test.config
-      assert_nil test.code
+      assert_that(test.context_info).is_nil
+      assert_that(test.config).is_nil
+      assert_that(test.code).is_nil
     end
 
     should "know its context class" do
-      assert_equal context_class1, subject.context_class
+      assert_that(subject.context_class).equals(context_class1)
     end
 
     should "know its file line attrs" do
-      assert_equal subject.file_line.file,      subject.file_name
-      assert_equal subject.file_line.line.to_i, subject.line_num
+      assert_that(subject.file_name).equals(subject.file_line.file)
+      assert_that(subject.line_num).equals(subject.file_line.line.to_i)
     end
 
     should "have a custom inspect that only shows limited attributes" do
@@ -130,7 +130,7 @@ class Assert::Test
         "@#{method}=#{subject.send(method).inspect}"
       end.join(" ")
       exp = "#<#{subject.class}:#{"0x0%x" % (subject.object_id << 1)} #{attrs}>"
-      assert_equal exp, subject.inspect
+      assert_that(subject.inspect).equals(exp)
     end
   end
 
@@ -162,30 +162,30 @@ class Assert::Test
     }
 
     should "capture results in the test and any setups/teardowns" do
-      assert_equal 9, test_run_results.size
+      assert_that(test_run_results.size).equals(9)
       test_run_results.each do |result|
-        assert_kind_of Assert::Result::Base, result
+        assert_that(result).is_kind_of(Assert::Result::Base)
       end
     end
 
     should "capture pass results in the test and any setups/teardowns" do
-      assert_equal 3, test_run_results(:pass).size
+      assert_that(test_run_results(:pass).size).equals(3)
       test_run_results(:pass).each do |result|
-        assert_kind_of Assert::Result::Pass, result
+        assert_that(result).is_kind_of(Assert::Result::Pass)
       end
     end
 
     should "capture fail results in the test and any setups/teardowns" do
-      assert_equal 3, test_run_results(:fail).size
+      assert_that(test_run_results(:fail).size).equals(3)
       test_run_results(:fail).each do |result|
-        assert_kind_of Assert::Result::Fail, result
+        assert_that(result).is_kind_of(Assert::Result::Fail)
       end
     end
 
     should "capture ignore results in the test and any setups/teardowns" do
-      assert_equal 3, test_run_results(:ignore).size
+      assert_that(test_run_results(:ignore).size).equals(3)
       test_run_results(:ignore).each do |result|
-        assert_kind_of Assert::Result::Ignore, result
+        assert_that(result).is_kind_of(Assert::Result::Ignore)
       end
     end
   end
@@ -224,9 +224,9 @@ class Assert::Test
 
     def assert_failed(test)
       with_backtrace(caller) do
-        assert_equal 1, test_run_result_count, "too many/few fail results"
+        assert_that(test_run_result_count).equals(1, "too many/few fail results")
         test_run_results.each do |result|
-          assert_kind_of Assert::Result::Fail, result, "not a fail result"
+          assert_that(result).is_kind_of(Assert::Result::Fail, "not a fail result")
         end
       end
     end
@@ -262,9 +262,9 @@ class Assert::Test
 
     def assert_skipped(test)
       with_backtrace(caller) do
-        assert_equal 1, test_run_result_count, "too many/few skip results"
+        assert_that(test_run_result_count).equals(1, "too many/few skip results")
         test_run_results.each do |result|
-          assert_kind_of Assert::Result::Skip, result, "not a skip result"
+          assert_that(result).is_kind_of(Assert::Result::Skip, "not a skip result")
         end
       end
     end
@@ -302,9 +302,9 @@ class Assert::Test
 
     def assert_errored(test)
       with_backtrace(caller) do
-        assert_equal 1, test_run_result_count, "too many/few error results"
+        assert_that(test_run_result_count).equals(1, "too many/few error results")
         test_run_results.each do |result|
-          assert_kind_of Assert::Result::Error, result, "not an error result"
+          assert_that(result).is_kind_of(Assert::Result::Error, "not an error result")
         end
       end
     end
@@ -316,21 +316,21 @@ class Assert::Test
         raise SignalException, "USR1"
       end
 
-      assert_raises(SignalException){ test.run }
+      assert_that(-> { test.run }).raises(SignalException)
     end
 
     should "raises signal exceptions in the context setup" do
       test = Factory.test("setup signal test", context_info1){ }
       test.context_class.setup{ raise SignalException, "INT" }
 
-      assert_raises(SignalException){ test.run }
+      assert_that(-> { test.run }).raises(SignalException)
     end
 
     should "raises signal exceptions in the context teardown" do
       test = Factory.test("teardown signal test", context_info1){ }
       test.context_class.teardown{ raise SignalException, "TERM" }
 
-      assert_raises(SignalException){ test.run }
+      assert_that(-> { test.run }).raises(SignalException)
     end
   end
 
@@ -342,17 +342,17 @@ class Assert::Test
 
     should "return 1 with a test named 'aaa' (greater than it)" do
       result = test1 <=> Factory.test("aaa")
-      assert_equal(1, result)
+      assert_that(result).equals(1)
     end
 
     should "return 0 with a test named the same" do
       result = test1 <=> Factory.test(test1.name)
-      assert_equal(0, result)
+      assert_that(result).equals(0)
     end
 
     should "return -1 with a test named 'zzz' (less than it)" do
       result = test1 <=> Factory.test("zzz")
-      assert_equal(-1, result)
+      assert_that(result).equals(-1)
     end
   end
 
@@ -369,7 +369,7 @@ class Assert::Test
 
     should "capture any io from the test" do
       test1.run
-      assert_equal "std out from the test\n", test1.output
+      assert_that(test1.output).equals("std out from the test\n")
     end
   end
 
@@ -399,7 +399,7 @@ class Assert::Test
         "std out from the test\n"\
         "std out from a method an assert called\n"\
         "std out from the teardown\n"
-      assert_equal(exp_out, test1.output)
+      assert_that(test1.output).equals(exp_out)
     end
   end
 end

@@ -9,10 +9,10 @@ module Assert::Factory
     subject { Assert::Factory }
 
     should "include and extend MuchFactory" do
-      assert_includes MuchFactory, subject
+      assert_that(subject).includes(MuchFactory)
 
       # https://stackoverflow.com/questions/5197166/ruby-get-a-list-of-extended-modules
-      assert_includes MuchFactory, subject_metaclass.included_modules
+      assert_that(subject_metaclass.included_modules).includes(MuchFactory)
     end
 
     private

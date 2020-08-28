@@ -50,10 +50,10 @@ module Assert::Assertions
 
     should "have an ignored result for each helper in the constant" do
       exp = Assert::Assertions::IGNORED_ASSERTION_HELPERS.size
-      assert_equal exp, test_run_result_count
+      assert_that(test_run_result_count).equals(exp)
 
       test_run_results.each do |result|
-        assert_kind_of Assert::Result::Ignore, result
+        assert_that(result).is_kind_of(Assert::Result::Ignore)
       end
     end
 
@@ -62,7 +62,7 @@ module Assert::Assertions
         "The assertion `#{helper}` is not supported."\
         " Please use another assertion or the basic `assert`."
       end
-      assert_equal exp, test_run_results.collect(&:message)
+      assert_that(test_run_results.collect(&:message)).equals(exp)
     end
   end
 end

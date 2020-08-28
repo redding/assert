@@ -13,7 +13,7 @@ class Assert::Runner
     subject { Assert::Runner }
 
     should "include the config helpers" do
-      assert_includes Assert::ConfigHelpers, subject
+      assert_that(subject).includes(Assert::ConfigHelpers)
     end
   end
 
@@ -36,11 +36,11 @@ class Assert::Runner
     should have_imeths :before_test, :after_test, :on_result
 
     should "know its config" do
-      assert_equal config1, subject.config
+      assert_that(subject.config).equals(config1)
     end
 
     should "override the config helper's runner value with itself" do
-      assert_equal subject, subject.runner
+      assert_that(subject.runner).equals(subject)
     end
   end
 
@@ -66,7 +66,7 @@ class Assert::Runner
     let(:runner1) { runner_class1.new(config1) }
 
     should "return the fail+error result count as an integer exit code" do
-      assert_equal 0, @result
+      assert_that(@result).equals(0)
 
       fail_count  = Factory.integer
       error_count = Factory.integer
@@ -76,43 +76,43 @@ class Assert::Runner
       result = runner1.run
 
       exp = fail_count + error_count
-      assert_equal exp, result
+      assert_that(result).equals(exp)
     end
 
     should "run all callbacks on itself, the suite and the view" do
       # itself
-      assert_true subject.on_start_called
-      assert_equal [test1], subject.before_test_called
-      assert_instance_of Assert::Result::Pass, subject.on_result_called.last
-      assert_equal [test1], subject.after_test_called
-      assert_true subject.on_finish_called
+      assert_that(subject.on_start_called).is_true
+      assert_that(subject.before_test_called).equals([test1])
+      assert_that(subject.on_result_called.last).is_instance_of(Assert::Result::Pass)
+      assert_that(subject.after_test_called).equals([test1])
+      assert_that(subject.on_finish_called).is_true
 
       # suite
       suite = config1.suite
-      assert_true suite.on_start_called
-      assert_equal [test1], suite.before_test_called
-      assert_instance_of Assert::Result::Pass, suite.on_result_called.last
-      assert_equal [test1], suite.after_test_called
-      assert_true suite.on_finish_called
+      assert_that(suite.on_start_called).is_true
+      assert_that(suite.before_test_called).equals([test1])
+      assert_that(suite.on_result_called.last).is_instance_of(Assert::Result::Pass)
+      assert_that(suite.after_test_called).equals([test1])
+      assert_that(suite.on_finish_called).is_true
 
       # view
       view = config1.view
-      assert_true view.on_start_called
-      assert_equal [test1], view.before_test_called
-      assert_instance_of Assert::Result::Pass, view.on_result_called.last
-      assert_equal [test1], view.after_test_called
-      assert_true view.on_finish_called
+      assert_that(view.on_start_called).is_true
+      assert_that(view.before_test_called).equals([test1])
+      assert_that(view.on_result_called.last).is_instance_of(Assert::Result::Pass)
+      assert_that(view.after_test_called).equals([test1])
+      assert_that(view.on_finish_called).is_true
     end
 
     should "describe running the tests in random order if there are tests" do
       exp = "Running tests in random order, " \
             "seeded with \"#{subject.runner_seed}\"\n"
-      assert_includes exp, @view_output
+      assert_that(@view_output).includes(exp)
 
       @view_output.gsub!(/./, "")
       config1.suite.clear_tests_to_run
       subject.run
-      assert_not_includes exp, @view_output
+      assert_that(@view_output).does_not_include(exp)
     end
 
     should "run only a single test if a single test is configured" do
@@ -122,7 +122,7 @@ class Assert::Runner
       config1.single_test test.file_line.to_s
 
       runner = runner_class1.new(config1).tap(&:run)
-      assert_equal [test], runner.before_test_called
+      assert_that(runner.before_test_called).equals([test])
     end
 
     should "not run any tests if a single test is configured but can't be found" do
@@ -132,7 +132,7 @@ class Assert::Runner
       config1.single_test Factory.string
 
       runner = runner_class1.new(config1).tap(&:run)
-      assert_nil runner.before_test_called
+      assert_that(runner.before_test_called).is_nil
     end
 
     should "describe running only a single test if a single test is configured" do
@@ -144,7 +144,7 @@ class Assert::Runner
 
       exp = "Running test: #{subject.single_test_file_line}, " \
             "seeded with \"#{subject.runner_seed}\"\n"
-      assert_includes exp, @view_output
+      assert_that(@view_output).includes(exp)
     end
   end
 

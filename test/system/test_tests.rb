@@ -19,7 +19,7 @@ class Assert::Test
     let(:test1) { Factory.test }
 
     should "generate 0 results" do
-      assert_equal 0, test_run_result_count
+      assert_that(test_run_result_count).equals(0)
     end
   end
 
@@ -29,11 +29,11 @@ class Assert::Test
     let(:test1) { Factory.test{ assert(1 == 1) } }
 
     should "generate 1 result" do
-      assert_equal 1, test_run_result_count
+      assert_that(test_run_result_count).equals(1)
     end
 
     should "generate 1 pass result" do
-      assert_equal 1, test_run_result_count(:pass)
+      assert_that(test_run_result_count(:pass)).equals(1)
     end
   end
 
@@ -43,11 +43,11 @@ class Assert::Test
     let(:test1) { Factory.test{ assert(1 == 0) } }
 
     should "generate 1 result" do
-      assert_equal 1, test_run_result_count
+      assert_that(test_run_result_count).equals(1)
     end
 
     should "generate 1 fail result" do
-      assert_equal 1, test_run_result_count(:fail)
+      assert_that(test_run_result_count(:fail)).equals(1)
     end
   end
 
@@ -57,11 +57,11 @@ class Assert::Test
     let(:test1) { Factory.test{ skip } }
 
     should "generate 1 result" do
-      assert_equal 1, test_run_result_count
+      assert_that(test_run_result_count).equals(1)
     end
 
     should "generate 1 skip result" do
-      assert_equal 1, test_run_result_count(:skip)
+      assert_that(test_run_result_count(:skip)).equals(1)
     end
   end
 
@@ -71,11 +71,11 @@ class Assert::Test
     let(:test1) { Factory.test{ raise("WHAT") } }
 
     should "generate 1 result" do
-      assert_equal 1, test_run_result_count
+      assert_that(test_run_result_count).equals(1)
     end
 
     should "generate 1 error result" do
-      assert_equal 1, test_run_result_count(:error)
+      assert_that(test_run_result_count(:error)).equals(1)
     end
   end
 
@@ -90,15 +90,15 @@ class Assert::Test
     }
 
     should "generate 2 total results" do
-      assert_equal 2, test_run_result_count
+      assert_that(test_run_result_count).equals(2)
     end
 
     should "generate 1 pass result" do
-      assert_equal 1, test_run_result_count(:pass)
+      assert_that(test_run_result_count(:pass)).equals(1)
     end
 
     should "generate 1 fail result" do
-      assert_equal 1, test_run_result_count(:fail)
+      assert_that(test_run_result_count(:fail)).equals(1)
     end
   end
 
@@ -114,23 +114,23 @@ class Assert::Test
     }
 
     should "generate 2 total results" do
-      assert_equal 2, test_run_result_count
+      assert_that(test_run_result_count).equals(2)
     end
 
     should "generate a skip for its last result" do
-      assert_kind_of Assert::Result::Skip, last_test_run_result
+      assert_that(last_test_run_result).is_kind_of(Assert::Result::Skip)
     end
 
     should "generate 1 pass result" do
-      assert_equal 1, test_run_result_count(:pass)
+      assert_that(test_run_result_count(:pass)).equals(1)
     end
 
     should "generate 1 skip result" do
-      assert_equal 1, test_run_result_count(:skip)
+      assert_that(test_run_result_count(:skip)).equals(1)
     end
 
     should "generate 0 fail results" do
-      assert_equal 0, test_run_result_count(:fail)
+      assert_that(test_run_result_count(:fail)).equals(0)
     end
   end
 
@@ -146,23 +146,23 @@ class Assert::Test
     }
 
     should "generate 2 total results" do
-      assert_equal 2, test_run_result_count
+      assert_that(test_run_result_count).equals(2)
     end
 
     should "generate an error for its last result" do
-      assert_kind_of Assert::Result::Error, last_test_run_result
+      assert_that(last_test_run_result).is_kind_of(Assert::Result::Error)
     end
 
     should "generate 1 pass result" do
-      assert_equal 1, test_run_result_count(:pass)
+      assert_that(test_run_result_count(:pass)).equals(1)
     end
 
     should "generate 1 error result" do
-      assert_equal 1, test_run_result_count(:error)
+      assert_that(test_run_result_count(:error)).equals(1)
     end
 
     should "generate 0 fail results" do
-      assert_equal 0, test_run_result_count(:fail)
+      assert_that(test_run_result_count(:fail)).equals(0)
     end
   end
 
@@ -178,19 +178,19 @@ class Assert::Test
     }
 
     should "generate 3 total results" do
-      assert_equal 3, test_run_result_count
+      assert_that(test_run_result_count).equals(3)
     end
 
     should "generate a fail for its last result" do
-      assert_kind_of Assert::Result::Fail, last_test_run_result
+      assert_that(last_test_run_result).is_kind_of(Assert::Result::Fail)
     end
 
     should "generate 2 pass results" do
-      assert_equal 2, test_run_result_count(:pass)
+      assert_that(test_run_result_count(:pass)).equals(2)
     end
 
     should "generate 1 fail result" do
-      assert_equal 1, test_run_result_count(:fail)
+      assert_that(test_run_result_count(:fail)).equals(1)
     end
   end
 
@@ -206,19 +206,19 @@ class Assert::Test
     }
 
     should "generate 3 total results" do
-      assert_equal 3, test_run_result_count
+      assert_that(test_run_result_count).equals(3)
     end
 
     should "generate a pass for its last result" do
-      assert_kind_of Assert::Result::Pass, last_test_run_result
+      assert_that(last_test_run_result).is_kind_of(Assert::Result::Pass)
     end
 
     should "generate 1 pass result" do
-      assert_equal 1, test_run_result_count(:pass)
+      assert_that(test_run_result_count(:pass)).equals(1)
     end
 
     should "generate 2 fail results" do
-      assert_equal 2, test_run_result_count(:fail)
+      assert_that(test_run_result_count(:fail)).equals(2)
     end
   end
 
@@ -234,19 +234,19 @@ class Assert::Test
     }
 
     should "generate 3 total results" do
-      assert_equal 3, test_run_result_count
+      assert_that(test_run_result_count).equals(3)
     end
 
     should "generate a pass for its last result" do
-      assert_kind_of Assert::Result::Pass, last_test_run_result
+      assert_that(last_test_run_result).is_kind_of(Assert::Result::Pass)
     end
 
     should "generate 1 pass results" do
-      assert_equal 1, test_run_result_count(:pass)
+      assert_that(test_run_result_count(:pass)).equals(1)
     end
 
     should "generate 2 fail results" do
-      assert_equal 2, test_run_result_count(:fail)
+      assert_that(test_run_result_count(:fail)).equals(2)
     end
   end
 
@@ -266,10 +266,10 @@ class Assert::Test
     }
 
     should "execute all setup logic when run" do
-      assert_equal 3, test_run_result_count(:pass)
+      assert_that(test_run_result_count(:pass)).equals(3)
 
       exp = ["assert style setup", "test/unit style setup", "TEST"]
-      assert_equal exp, test_run_result_messages
+      assert_that(test_run_result_messages).equals(exp)
     end
   end
 
@@ -289,10 +289,10 @@ class Assert::Test
     }
 
     should "execute all teardown logic when run" do
-      assert_equal 3, test_run_result_count(:pass)
+      assert_that(test_run_result_count(:pass)).equals(3)
 
       exp = ["TEST", "assert style teardown", "test/unit style teardown"]
-      assert_equal exp, test_run_result_messages
+      assert_that(test_run_result_messages).equals(exp)
     end
   end
 
@@ -333,7 +333,7 @@ class Assert::Test
     }
 
     should "run the arounds outside of the setups/teardowns/test" do
-      assert_equal 13, test_run_result_count(:pass)
+      assert_that(test_run_result_count(:pass)).equals(13)
 
       exp = [
         "parent around start", "child around1 start", "child around2 start",
@@ -341,7 +341,7 @@ class Assert::Test
         "child teardown1", "child teardown2", "parent teardown",
         "child around2 end", "child around1 end", "parent around end"
       ]
-      assert_equal exp, test_run_result_messages
+      assert_that(test_run_result_messages).equals(exp)
     end
   end
 end

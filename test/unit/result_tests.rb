@@ -20,15 +20,15 @@ module Assert::Result
         :skip   => Skip,
         :error  => Error
       }
-      assert_equal exp, subject.types
+      assert_that(subject.types).equals(exp)
 
-      assert_equal Base, subject.types[Factory.string]
+      assert_that(subject.types[Factory.string]).equals(Base)
     end
 
     should "create results from data hashes" do
       type = Assert::Result.types.keys.sample
       exp  = Assert::Result.types[type].new(:type => type)
-      assert_equal exp, Assert::Result.new(:type => type)
+      assert_that(Assert::Result.new(:type => type)).equals(exp)
     end
   end
 
@@ -60,8 +60,8 @@ module Assert::Result
     should have_imeths :to_sym, :to_s
 
     should "know its class-level type/name" do
-      assert_equal :unknown, subject.class.type
-      assert_equal "",       subject.class.name
+      assert_that(subject.class.type).equals(:unknown)
+      assert_that(subject.class.name).equals("")
     end
 
     should "know how to build a result for a given test" do
@@ -72,44 +72,44 @@ module Assert::Result
       exp_backtrace = Backtrace.new(bt)
       exp_trace     = exp_backtrace.filtered.first.to_s
 
-      assert_equal test1.name,           result.test_name
-      assert_equal test1.file_line.to_s, result.test_id
+      assert_that(result.test_name).equals(test1.name)
+      assert_that(result.test_id).equals(test1.file_line.to_s)
 
-      assert_equal message,       result.message
-      assert_equal exp_backtrace, result.backtrace
-      assert_equal exp_trace,     result.trace
+      assert_that(result.message).equals(message)
+      assert_that(result.backtrace).equals(exp_backtrace)
+      assert_that(result.trace).equals(exp_trace)
 
-      assert_false result.with_bt_set?
+      assert_that(result.with_bt_set?).is_false
     end
 
     should "use any given attrs" do
-      assert_equal given_data1[:type].to_sym,    subject.type
-      assert_equal given_data1[:name],           subject.name
-      assert_equal given_data1[:test_name],      subject.test_name
-      assert_equal given_data1[:test_file_line], subject.test_file_line
-      assert_equal given_data1[:message],        subject.message
-      assert_equal given_data1[:output],         subject.output
-      assert_equal given_data1[:backtrace],      subject.backtrace
+      assert_that(subject.type).equals(given_data1[:type].to_sym)
+      assert_that(subject.name).equals(given_data1[:name])
+      assert_that(subject.test_name).equals(given_data1[:test_name])
+      assert_that(subject.test_file_line).equals(given_data1[:test_file_line])
+      assert_that(subject.message).equals(given_data1[:message])
+      assert_that(subject.output).equals(given_data1[:output])
+      assert_that(subject.backtrace).equals(given_data1[:backtrace])
     end
 
     should "default its attrs" do
       result = Base.new({})
 
-      assert_equal :unknown,                   result.type
-      assert_equal "",                         result.name
-      assert_equal "",                         result.test_name
-      assert_equal Assert::FileLine.parse(""), result.test_file_line
-      assert_equal "",                         result.message
-      assert_equal "",                         result.output
-      assert_equal Backtrace.new([]),          result.backtrace
-      assert_equal "",                         result.trace
+      assert_that(result.type).equals(:unknown)
+      assert_that(result.name).equals("")
+      assert_that(result.test_name).equals("")
+      assert_that(result.test_file_line).equals(Assert::FileLine.parse(""))
+      assert_that(result.message).equals("")
+      assert_that(result.output).equals("")
+      assert_that(result.backtrace).equals(Backtrace.new([]))
+      assert_that(result.trace).equals("")
     end
 
     should "know its test file line attrs" do
       exp = given_data1[:test_file_line]
-      assert_equal exp.file,      subject.test_file_name
-      assert_equal exp.line.to_i, subject.test_line_num
-      assert_equal exp.to_s,      subject.test_id
+      assert_that(subject.test_file_name).equals(exp.file)
+      assert_that(subject.test_line_num).equals(exp.line.to_i)
+      assert_that(subject.test_id).equals(exp.to_s)
     end
 
     should "allow setting a new backtrace" do
@@ -117,8 +117,8 @@ module Assert::Result
       exp_backtrace = Backtrace.new(new_bt)
       exp_trace     = exp_backtrace.filtered.first.to_s
       subject.set_backtrace(new_bt)
-      assert_equal exp_backtrace, subject.backtrace
-      assert_equal exp_trace,     subject.trace
+      assert_that(subject.backtrace).equals(exp_backtrace)
+      assert_that(subject.trace).equals(exp_trace)
 
       # test that the first bt line is used if filtered is empty
       assert_lib_path = File.join(ROOT_PATH, "lib/#{Factory.string}:#{Factory.integer}")
@@ -126,24 +126,24 @@ module Assert::Result
       exp_backtrace   = Backtrace.new(new_bt)
       exp_trace       = exp_backtrace.first.to_s
       subject.set_backtrace(new_bt)
-      assert_equal exp_backtrace, subject.backtrace
-      assert_equal exp_trace,     subject.trace
+      assert_that(subject.backtrace).equals(exp_backtrace)
+      assert_that(subject.trace).equals(exp_trace)
     end
 
     should "allow setting a with bt backtrace and know if one has been set" do
-      assert_false subject.with_bt_set?
+      assert_that(subject.with_bt_set?).is_false
 
       orig_backtrace = subject.backtrace
       with_bt        = Factory.backtrace
 
       subject.set_with_bt(with_bt)
 
-      assert_true subject.with_bt_set?
-      assert_equal orig_backtrace, subject.backtrace
-      assert_equal with_bt.first,  subject.src_line
+      assert_that(subject.with_bt_set?).is_true
+      assert_that(subject.backtrace).equals(orig_backtrace)
+      assert_that(subject.src_line).equals(with_bt.first)
 
       exp = Backtrace.to_s(with_bt + [orig_backtrace.filtered.first])
-      assert_equal exp, subject.trace
+      assert_that(subject.trace).equals(exp)
     end
 
     should "know its src/file line attrs" do
@@ -151,21 +151,21 @@ module Assert::Result
       subject.set_backtrace(new_bt)
 
       exp = Backtrace.new(new_bt).filtered.first.to_s
-      assert_equal exp, subject.src_line
+      assert_that(subject.src_line).equals(exp)
 
       exp = Assert::FileLine.parse(subject.src_line)
-      assert_equal exp,           subject.file_line
-      assert_equal exp.file,      subject.file_name
-      assert_equal exp.line.to_i, subject.line_num
+      assert_that(subject.file_line).equals(exp)
+      assert_that(subject.file_name).equals(exp.file)
+      assert_that(subject.line_num).equals(exp.line.to_i)
 
       # test you get the same file line attrs using `set_with_bt`
       subject.set_with_bt(new_bt)
-      assert_equal new_bt.first.to_s, subject.src_line
+      assert_that(subject.src_line).equals(new_bt.first.to_s)
 
       exp = Assert::FileLine.parse(subject.src_line)
-      assert_equal exp,           subject.file_line
-      assert_equal exp.file,      subject.file_name
-      assert_equal exp.line.to_i, subject.line_num
+      assert_that(subject.file_line).equals(exp)
+      assert_that(subject.file_name).equals(exp.file)
+      assert_that(subject.line_num).equals(exp.line.to_i)
 
       # test that the first bt line is used if filtered is empty
       assert_lib_path = File.join(ROOT_PATH, "lib/#{Factory.string}:#{Factory.integer}")
@@ -173,45 +173,45 @@ module Assert::Result
       subject.set_backtrace(new_bt)
 
       exp = new_bt.first.to_s
-      assert_equal exp, subject.src_line
+      assert_that(subject.src_line).equals(exp)
 
       exp = Assert::FileLine.parse(subject.src_line)
-      assert_equal exp,           subject.file_line
-      assert_equal exp.file,      subject.file_name
-      assert_equal exp.line.to_i, subject.line_num
+      assert_that(subject.file_line).equals(exp)
+      assert_that(subject.file_name).equals(exp.file)
+      assert_that(subject.line_num).equals(exp.line.to_i)
     end
 
     should "know if it is a certain type of result" do
       Assert::Result.types.keys.each do |type|
-        assert_false subject.send("#{type}?")
+        assert_that(subject.send("#{type}?")).is_false
         Assert.stub(subject, :type){ type }
-        assert_true subject.send("#{type}?")
+        assert_that(subject.send("#{type}?")).is_true
       end
     end
 
     should "know its symbol representation" do
-      assert_equal subject.type, subject.to_sym
+      assert_that(subject.to_sym).equals(subject.type)
     end
 
     should "know its string representation" do
       str = subject.to_s
 
-      assert_includes subject.name.upcase, str
-      assert_includes subject.test_name,   str
-      assert_includes subject.message,     str
-      assert_includes subject.trace,       str
+      assert_that(str).includes(subject.name.upcase)
+      assert_that(str).includes(subject.test_name)
+      assert_that(str).includes(subject.message)
+      assert_that(str).includes(subject.trace)
 
-      assert_equal 3, str.split("\n").count
+      assert_that(str.split("\n").count).equals(3)
 
       Assert.stub(subject, :message){ "" }
       Assert.stub(subject, :trace){ "" }
 
-      assert_equal 1, subject.to_s.split("\n").count
+      assert_that(subject.to_s.split("\n").count).equals(1)
     end
 
     should "know if it is equal to another result" do
       other = Assert::Result::Base.new(given_data1)
-      assert_equal other, subject
+      assert_that(subject).equals(other)
 
       Assert.stub(other, [:type, :message].sample){ Factory.string }
       assert_not_equal other, subject
@@ -222,7 +222,7 @@ module Assert::Result
             "@message=#{subject.message.inspect} "\
             "@file_line=#{subject.file_line.to_s.inspect} "\
             "@test_file_line=#{subject.test_file_line.to_s.inspect}>"
-      assert_equal exp, subject.inspect
+      assert_that(subject.inspect).equals(exp)
     end
   end
 
@@ -233,9 +233,9 @@ module Assert::Result
     let(:result1) { Pass.new({}) }
 
     should "know its type/name" do
-      assert_equal :pass,  subject.type
-      assert_equal :pass,  subject.class.type
-      assert_equal "Pass", subject.class.name
+      assert_that(subject.type).equals(:pass)
+      assert_that(subject.class.type).equals(:pass)
+      assert_that(subject.class.name).equals("Pass")
     end
   end
 
@@ -246,9 +246,9 @@ module Assert::Result
     let(:result1) { Ignore.new({}) }
 
     should "know its type/name" do
-      assert_equal :ignore,  subject.type
-      assert_equal :ignore,  subject.class.type
-      assert_equal "Ignore", subject.class.name
+      assert_that(subject.type).equals(:ignore)
+      assert_that(subject.class.type).equals(:ignore)
+      assert_that(subject.class.name).equals("Ignore")
     end
   end
 
@@ -259,7 +259,7 @@ module Assert::Result
     should have_accessors :assert_with_bt
 
     should "be a runtime error" do
-      assert_kind_of RuntimeError, subject
+      assert_that(subject).is_kind_of(RuntimeError)
     end
   end
 
@@ -268,7 +268,7 @@ module Assert::Result
     subject { TestFailure }
 
     should "be a halting test result error" do
-      assert_kind_of HaltingTestResultError, subject.new
+      assert_that(subject.new).is_kind_of(HaltingTestResultError)
     end
   end
 
@@ -279,9 +279,9 @@ module Assert::Result
     let(:result1) { Fail.new({}) }
 
     should "know its type/name" do
-      assert_equal :fail,  subject.type
-      assert_equal :fail,  subject.class.type
-      assert_equal "Fail", subject.class.name
+      assert_that(subject.type).equals(:fail)
+      assert_that(subject.class.type).equals(:fail)
+      assert_that(subject.class.name).equals("Fail")
     end
 
     should "allow creating for a test with TestFailure exceptions" do
@@ -289,25 +289,25 @@ module Assert::Result
       err.set_backtrace(Factory.backtrace)
       result = Fail.for_test(test1, err)
 
-      assert_equal err.message, result.message
+      assert_that(result.message).equals(err.message)
 
       err_backtrace = Backtrace.new(err.backtrace)
-      assert_equal err_backtrace, result.backtrace
+      assert_that(result.backtrace).equals(err_backtrace)
 
       # test assert with bt errors
       err.assert_with_bt = Factory.backtrace
       result = Fail.for_test(test1, err)
 
-      assert_equal err.message,              result.message
-      assert_equal err.backtrace,            result.backtrace
-      assert_equal err.assert_with_bt.first, result.src_line
+      assert_that(result.message).equals(err.message)
+      assert_that(result.backtrace).equals(err.backtrace)
+      assert_that(result.src_line).equals(err.assert_with_bt.first)
 
       exp = Backtrace.to_s(err.assert_with_bt + [err_backtrace.filtered.first])
-      assert_equal exp, result.trace
+      assert_that(result.trace).equals(exp)
     end
 
     should "not allow creating for a test with non-TestFailure exceptions" do
-      assert_raises(ArgumentError){ Fail.for_test(test1, RuntimeError.new) }
+      assert_that(-> { Fail.for_test(test1, RuntimeError.new) }).raises(ArgumentError)
     end
   end
 
@@ -316,7 +316,7 @@ module Assert::Result
     subject { TestSkipped }
 
     should "be a halting test result error" do
-      assert_kind_of HaltingTestResultError, subject.new
+      assert_that(subject.new).is_kind_of(HaltingTestResultError)
     end
   end
 
@@ -327,9 +327,9 @@ module Assert::Result
     let(:result1) { Skip.new({}) }
 
     should "know its type/name" do
-      assert_equal :skip,  subject.type
-      assert_equal :skip,  subject.class.type
-      assert_equal "Skip", subject.class.name
+      assert_that(subject.type).equals(:skip)
+      assert_that(subject.class.type).equals(:skip)
+      assert_that(subject.class.name).equals("Skip")
     end
 
     should "allow creating for a test with TestSkipped exceptions" do
@@ -337,25 +337,25 @@ module Assert::Result
       err.set_backtrace(Factory.backtrace)
       result = Skip.for_test(test1, err)
 
-      assert_equal err.message, result.message
+      assert_that(result.message).equals(err.message)
 
       err_backtrace = Backtrace.new(err.backtrace)
-      assert_equal err_backtrace, result.backtrace
+      assert_that(result.backtrace).equals(err_backtrace)
 
       # test assert with bt errors
       err.assert_with_bt = Factory.backtrace
       result = Skip.for_test(test1, err)
 
-      assert_equal err.message,              result.message
-      assert_equal err.backtrace,            result.backtrace
-      assert_equal err.assert_with_bt.first, result.src_line
+      assert_that(result.message).equals(err.message)
+      assert_that(result.backtrace).equals(err.backtrace)
+      assert_that(result.src_line).equals(err.assert_with_bt.first)
 
       exp = Backtrace.to_s(err.assert_with_bt + [err_backtrace.filtered.first])
-      assert_equal exp, result.trace
+      assert_that(result.trace).equals(exp)
     end
 
     should "not allow creating for a test with non-TestSkipped exceptions" do
-      assert_raises(ArgumentError){ Skip.for_test(test1, RuntimeError.new) }
+      assert_that(-> { Skip.for_test(test1, RuntimeError.new) }).raises(ArgumentError)
     end
   end
 
@@ -366,8 +366,8 @@ module Assert::Result
     let(:result1) { Error.new({}) }
 
     should "know its class-level type/name" do
-      assert_equal :error,  subject.class.type
-      assert_equal "Error", subject.class.name
+      assert_that(subject.class.type).equals(:error)
+      assert_that(subject.class.name).equals("Error")
     end
 
     should "allow creating for a test with exceptions" do
@@ -376,15 +376,15 @@ module Assert::Result
       result = Error.for_test(test1, err)
 
       exp_msg = "#{err.message} (#{err.class.name})"
-      assert_equal exp_msg, result.message
+      assert_that(result.message).equals(exp_msg)
 
       exp_bt = Backtrace.new(err.backtrace)
-      assert_equal exp_bt,                 result.backtrace
-      assert_equal Backtrace.to_s(exp_bt), result.trace
+      assert_that(result.backtrace).equals(exp_bt)
+      assert_that(result.trace).equals(Backtrace.to_s(exp_bt))
     end
 
     should "not allow creating for a test without an exception" do
-      assert_raises(ArgumentError){ Error.for_test(test1, Factory.string) }
+      assert_that(-> { Error.for_test(test1, Factory.string) }).raises(ArgumentError)
     end
   end
 
@@ -398,27 +398,27 @@ module Assert::Result
     should have_imeths :filtered
 
     should "be parseable from its string representation" do
-      assert_equal subject, Backtrace.parse(Backtrace.to_s(subject))
+      assert_that(Backtrace.parse(Backtrace.to_s(subject))).equals(subject)
     end
 
     should "render as a string by joining on the newline" do
-      assert_equal subject.join(Backtrace::DELIM), Backtrace.to_s(subject)
+      assert_that(Backtrace.to_s(subject)).equals(subject.join(Backtrace::DELIM))
     end
 
     should "be an Array" do
-      assert_kind_of ::Array, subject
+      assert_that(subject).is_kind_of(::Array)
     end
 
     should "know its DELIM" do
-      assert_equal "\n", Backtrace::DELIM
+      assert_that(Backtrace::DELIM).equals("\n")
     end
 
     should "another backtrace when filtered" do
-      assert_kind_of Backtrace, subject
+      assert_that(subject).is_kind_of(Backtrace)
     end
 
     should "default itself when created from nil" do
-      assert_equal ["No backtrace"], Backtrace.new
+      assert_that(Backtrace.new).equals(["No backtrace"])
     end
   end
 end

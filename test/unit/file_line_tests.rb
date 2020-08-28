@@ -18,26 +18,26 @@ class Assert::FileLine
       ].sample
       file_line = subject.parse(file_line_path)
 
-      assert_equal file1, file_line.file
-      assert_equal line1, file_line.line
+      assert_that(file_line.file).equals(file1)
+      assert_that(file_line.line).equals(line1)
     end
 
     should "handle parsing bad data gracefully" do
       file_line = subject.parse(file1)
-      assert_equal file1, file_line.file
-      assert_equal "",    file_line.line
+      assert_that(file_line.file).equals(file1)
+      assert_that(file_line.line).equals("")
 
       file_line = subject.parse(line1)
-      assert_equal line1, file_line.file
-      assert_equal "",    file_line.line
+      assert_that(file_line.file).equals(line1)
+      assert_that(file_line.line).equals("")
 
       file_line = subject.parse("")
-      assert_equal "", file_line.file
-      assert_equal "", file_line.line
+      assert_that(file_line.file).equals("")
+      assert_that(file_line.line).equals("")
 
       file_line = subject.parse(nil)
-      assert_equal "", file_line.file
-      assert_equal "", file_line.line
+      assert_that(file_line.file).equals("")
+      assert_that(file_line.line).equals("")
     end
   end
 
@@ -50,27 +50,27 @@ class Assert::FileLine
     should have_readers :file, :line
 
     should "know its file and line" do
-      assert_equal file1, subject.file
-      assert_equal line1, subject.line
+      assert_that(subject.file).equals(file1)
+      assert_that(subject.line).equals(line1)
 
       file_line = Assert::FileLine.new(file1)
-      assert_equal file1, file_line.file
-      assert_equal "",    file_line.line
+      assert_that(file_line.file).equals(file1)
+      assert_that(file_line.line).equals("")
 
       file_line = Assert::FileLine.new
-      assert_equal "", file_line.file
-      assert_equal "", file_line.line
+      assert_that(file_line.file).equals("")
+      assert_that(file_line.line).equals("")
     end
 
     should "know its string representation" do
-      assert_equal "#{subject.file}:#{subject.line}", subject.to_s
+      assert_that(subject.to_s).equals("#{subject.file}:#{subject.line}")
     end
 
     should "know if it is equal to another file line" do
       yes = Assert::FileLine.new(file1, line1)
       no = Assert::FileLine.new("#{Factory.path}_tests.rb", Factory.integer.to_s)
 
-      assert_equal     yes, subject
+      assert_that(subject).equals(yes)
       assert_not_equal no,  subject
     end
   end

@@ -23,9 +23,9 @@ module Assert::Assertions
     should "produce results as expected" do
       subject.run(&test_run_callback)
 
-      assert_equal 5, test_run_result_count
-      assert_equal 1, test_run_result_count(:pass)
-      assert_equal 4, test_run_result_count(:fail)
+      assert_that(test_run_result_count).equals(5)
+      assert_that(test_run_result_count(:pass)).equals(1)
+      assert_that(test_run_result_count(:fail)).equals(4)
 
       exp =
         [ "#{desc1}\nStandardError or RuntimeError exception expected, not:",
@@ -34,7 +34,7 @@ module Assert::Assertions
           "#{desc1}\nAn exception expected but nothing raised."
         ]
       messages = test_run_results(:fail).map(&:message)
-      messages.each_with_index{ |msg, n| assert_match(/^#{exp[n]}/, msg) }
+      messages.each_with_index{ |msg, n| assert_that(msg).matches(/^#{exp[n]}/) }
     end
 
     should "return any raised exception instance" do
@@ -47,14 +47,14 @@ module Assert::Assertions
         end
       test.run
 
-      assert_not_nil error
-      assert_kind_of RuntimeError, error
-      assert_equal error_msg, error.message
+      assert_that(error).is_not_nil
+      assert_that(error).is_kind_of(RuntimeError)
+      assert_that(error.message).equals(error_msg)
 
       test = Factory.test { error = assert_raises(RuntimeError) {} }
       test.run
 
-      assert_nil error
+      assert_that(error).is_nil
     end
   end
 
@@ -78,16 +78,16 @@ module Assert::Assertions
     should "produce results as expected" do
       subject.run(&test_run_callback)
 
-      assert_equal 4, test_run_result_count
-      assert_equal 2, test_run_result_count(:pass)
-      assert_equal 2, test_run_result_count(:fail)
+      assert_that(test_run_result_count).equals(4)
+      assert_that(test_run_result_count(:pass)).equals(2)
+      assert_that(test_run_result_count(:fail)).equals(2)
 
       exp =
         [ "#{desc1}\nStandardError or RuntimeError exception not expected, but raised:",
           "#{desc1}\nAn exception not expected, but raised:"
         ]
       messages = test_run_results(:fail).map(&:message)
-      messages.each_with_index{ |msg, n| assert_match(/^#{exp[n]}/, msg) }
+      messages.each_with_index{ |msg, n| assert_that(msg).matches(/^#{exp[n]}/) }
     end
   end
 end
