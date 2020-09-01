@@ -14,79 +14,79 @@ class Assert::DefaultSuite
     let(:suite1)  { Assert::DefaultSuite.new(config1) }
 
     should "be a Suite" do
-      assert_kind_of Assert::Suite, subject
+      assert_that(subject).is_kind_of(Assert::Suite)
     end
 
     should "default its test/result counts" do
-      assert_equal 0, subject.test_count
-      assert_equal 0, subject.result_count
-      assert_equal 0, subject.pass_result_count
-      assert_equal 0, subject.fail_result_count
-      assert_equal 0, subject.error_result_count
-      assert_equal 0, subject.skip_result_count
-      assert_equal 0, subject.ignore_result_count
+      assert_that(subject.test_count).equals(0)
+      assert_that(subject.result_count).equals(0)
+      assert_that(subject.pass_result_count).equals(0)
+      assert_that(subject.fail_result_count).equals(0)
+      assert_that(subject.error_result_count).equals(0)
+      assert_that(subject.skip_result_count).equals(0)
+      assert_that(subject.ignore_result_count).equals(0)
     end
 
     should "increment its test count on `before_test`" do
       subject.before_test(@test)
-      assert_equal 1, subject.test_count
+      assert_that(subject.test_count).equals(1)
     end
 
     should "increment its result counts on `on_result`" do
       subject.on_result(Factory.pass_result)
-      assert_equal 1, subject.result_count
-      assert_equal 1, subject.pass_result_count
-      assert_equal 0, subject.fail_result_count
-      assert_equal 0, subject.error_result_count
-      assert_equal 0, subject.skip_result_count
-      assert_equal 0, subject.ignore_result_count
+      assert_that(subject.result_count).equals(1)
+      assert_that(subject.pass_result_count).equals(1)
+      assert_that(subject.fail_result_count).equals(0)
+      assert_that(subject.error_result_count).equals(0)
+      assert_that(subject.skip_result_count).equals(0)
+      assert_that(subject.ignore_result_count).equals(0)
 
       subject.on_result(Factory.fail_result)
-      assert_equal 2, subject.result_count
-      assert_equal 1, subject.pass_result_count
-      assert_equal 1, subject.fail_result_count
-      assert_equal 0, subject.error_result_count
-      assert_equal 0, subject.skip_result_count
-      assert_equal 0, subject.ignore_result_count
+      assert_that(subject.result_count).equals(2)
+      assert_that(subject.pass_result_count).equals(1)
+      assert_that(subject.fail_result_count).equals(1)
+      assert_that(subject.error_result_count).equals(0)
+      assert_that(subject.skip_result_count).equals(0)
+      assert_that(subject.ignore_result_count).equals(0)
 
       subject.on_result(Factory.error_result)
-      assert_equal 3, subject.result_count
-      assert_equal 1, subject.pass_result_count
-      assert_equal 1, subject.fail_result_count
-      assert_equal 1, subject.error_result_count
-      assert_equal 0, subject.skip_result_count
-      assert_equal 0, subject.ignore_result_count
+      assert_that(subject.result_count).equals(3)
+      assert_that(subject.pass_result_count).equals(1)
+      assert_that(subject.fail_result_count).equals(1)
+      assert_that(subject.error_result_count).equals(1)
+      assert_that(subject.skip_result_count).equals(0)
+      assert_that(subject.ignore_result_count).equals(0)
 
       subject.on_result(Factory.skip_result)
-      assert_equal 4, subject.result_count
-      assert_equal 1, subject.pass_result_count
-      assert_equal 1, subject.fail_result_count
-      assert_equal 1, subject.error_result_count
-      assert_equal 1, subject.skip_result_count
-      assert_equal 0, subject.ignore_result_count
+      assert_that(subject.result_count).equals(4)
+      assert_that(subject.pass_result_count).equals(1)
+      assert_that(subject.fail_result_count).equals(1)
+      assert_that(subject.error_result_count).equals(1)
+      assert_that(subject.skip_result_count).equals(1)
+      assert_that(subject.ignore_result_count).equals(0)
 
       subject.on_result(Factory.ignore_result)
-      assert_equal 5, subject.result_count
-      assert_equal 1, subject.pass_result_count
-      assert_equal 1, subject.fail_result_count
-      assert_equal 1, subject.error_result_count
-      assert_equal 1, subject.skip_result_count
-      assert_equal 1, subject.ignore_result_count
+      assert_that(subject.result_count).equals(5)
+      assert_that(subject.pass_result_count).equals(1)
+      assert_that(subject.fail_result_count).equals(1)
+      assert_that(subject.error_result_count).equals(1)
+      assert_that(subject.skip_result_count).equals(1)
+      assert_that(subject.ignore_result_count).equals(1)
     end
 
     should "clear the run data on `on_start`" do
       subject.before_test(test1)
       subject.on_result(Factory.pass_result)
 
-      assert_equal 1, subject.test_count
-      assert_equal 1, subject.result_count
-      assert_equal 1, subject.pass_result_count
+      assert_that(subject.test_count).equals(1)
+      assert_that(subject.result_count).equals(1)
+      assert_that(subject.pass_result_count).equals(1)
 
       subject.on_start
 
-      assert_equal 0, subject.test_count
-      assert_equal 0, subject.result_count
-      assert_equal 0, subject.pass_result_count
+      assert_that(subject.test_count).equals(0)
+      assert_that(subject.result_count).equals(0)
+      assert_that(subject.pass_result_count).equals(0)
     end
   end
 end

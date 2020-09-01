@@ -29,13 +29,13 @@ module Assert::Utils
 
     should "use `inspect` to show objs when `pp_objects` setting is false" do
       objs1.each do |obj|
-        assert_equal obj.inspect, subject.show(obj, Factory.modes_off_config)
+        assert_that(subject.show(obj, Factory.modes_off_config)).equals(obj.inspect)
       end
     end
 
     should "use `pp_proc` to show objs when `pp_objects` setting is true" do
       objs1.each do |obj|
-        assert_equal pp_config1.pp_proc.call(obj), subject.show(obj, pp_config1)
+        assert_that(subject.show(obj, pp_config1)).equals(pp_config1.pp_proc.call(obj))
       end
     end
   end
@@ -48,12 +48,12 @@ module Assert::Utils
 
     should "call show, escaping newlines" do
       exp_out = "{:string=>\"herp derp, derp herp\nherpderpedia\"}"
-      assert_equal exp_out, subject.show_for_diff(w_newlines1, Factory.modes_off_config)
+      assert_that(subject.show_for_diff(w_newlines1, Factory.modes_off_config)).equals(exp_out)
     end
 
     should "make any obj ids generic" do
       exp_out = "#<#<Class:0xXXXXXX>:0xXXXXXX>"
-      assert_equal exp_out, subject.show_for_diff(w_obj_id1, Factory.modes_off_config)
+      assert_that(subject.show_for_diff(w_obj_id1, Factory.modes_off_config)).equals(exp_out)
     end
   end
 
@@ -62,12 +62,12 @@ module Assert::Utils
 
     should "require tempfile, open a tempfile, write the given content, and yield it" do
       subject.tempfile("a-name", "some-content") do |tmpfile|
-        assert_equal false, (require "tempfile")
+        assert_that((require "tempfile")).equals(false)
         assert tmpfile
-        assert_kind_of Tempfile, tmpfile
+        assert_that(tmpfile).is_kind_of(Tempfile)
 
         tmpfile.pos = 0
-        assert_equal "some-content\n", tmpfile.read
+        assert_that(tmpfile.read).equals("some-content\n")
       end
     end
   end
@@ -78,12 +78,12 @@ module Assert::Utils
     should "build a pp proc that uses stdlib `PP.pp` to pretty print objects" do
       exp_obj_pps = objs1.map{ |o| PP.pp(o, "", 79).strip }
       act_obj_pps = objs1.map{ |o| subject.stdlib_pp_proc.call(o) }
-      assert_equal exp_obj_pps, act_obj_pps
+      assert_that(act_obj_pps).equals(exp_obj_pps)
 
       cust_width = 1
       exp_obj_pps = objs1.map{ |o| PP.pp(o, "", cust_width).strip }
       act_obj_pps = objs1.map{ |o| subject.stdlib_pp_proc(cust_width).call(o) }
-      assert_equal exp_obj_pps, act_obj_pps
+      assert_that(act_obj_pps).equals(exp_obj_pps)
     end
   end
 
@@ -119,7 +119,7 @@ module Assert::Utils
         out.sub!(/^\+\+\+ .+/, "+++ actual")
       end
 
-      assert_equal exp_diff_out, subject.syscmd_diff_proc.call(diff_a1, diff_b1)
+      assert_that(subject.syscmd_diff_proc.call(diff_a1, diff_b1)).equals(exp_diff_out)
     end
 
     should "allow you to specify a custom syscmd" do
@@ -129,7 +129,7 @@ module Assert::Utils
         out.sub!(/^\+\+\+ .+/, "+++ actual")
       end
 
-      assert_equal exp_diff_out, subject.syscmd_diff_proc(cust_syscmd).call(diff_a1, diff_b1)
+      assert_that(subject.syscmd_diff_proc(cust_syscmd).call(diff_a1, diff_b1)).equals(exp_diff_out)
     end
   end
 end

@@ -10,7 +10,7 @@ module Assert::Assertions
 
     let(:context_class1) { Factory.modes_off_context_class }
     let(:test1) { Factory.test }
-    let(:context1) { context_class1.new(test1, test1.config, proc{ |r| }) }
+    let(:context1) { context_class1.new(test1, test1.config, proc { |r| }) }
 
     should have_imeths :assert_block, :assert_not_block, :refute_block
     should have_imeths :assert_raises, :assert_not_raises
@@ -50,10 +50,10 @@ module Assert::Assertions
 
     should "have an ignored result for each helper in the constant" do
       exp = Assert::Assertions::IGNORED_ASSERTION_HELPERS.size
-      assert_equal exp, test_run_result_count
+      assert_that(test_run_result_count).equals(exp)
 
       test_run_results.each do |result|
-        assert_kind_of Assert::Result::Ignore, result
+        assert_that(result).is_kind_of(Assert::Result::Ignore)
       end
     end
 
@@ -62,7 +62,7 @@ module Assert::Assertions
         "The assertion `#{helper}` is not supported."\
         " Please use another assertion or the basic `assert`."
       end
-      assert_equal exp, test_run_results.collect(&:message)
+      assert_that(test_run_results.collect(&:message)).equals(exp)
     end
   end
 end

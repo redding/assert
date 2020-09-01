@@ -13,12 +13,12 @@ module Assert::Context::SuiteDSL
     let(:custom_suite1)  { Factory.modes_off_suite }
 
     should "use `Assert.suite` by default" do
-      assert_equal Assert.suite, subject.suite
+      assert_that(subject.suite).equals(Assert.suite)
     end
 
     should "use any given custom suite" do
       subject.suite(custom_suite1)
-      assert_equal custom_suite1, subject.suite
+      assert_that(subject.suite).equals(custom_suite1)
     end
   end
 
@@ -32,12 +32,12 @@ module Assert::Context::SuiteDSL
     let(:custom_suite2) { Factory.modes_off_suite }
 
     should "default to its parent's suite" do
-      assert_equal custom_suite1, subject.suite
+      assert_that(subject.suite).equals(custom_suite1)
     end
 
     should "use any given custom suite" do
       subject.suite(custom_suite2)
-      assert_equal custom_suite2, subject.suite
+      assert_that(subject.suite).equals(custom_suite2)
     end
   end
 end

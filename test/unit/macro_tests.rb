@@ -9,24 +9,24 @@ class Assert::Macro
     let(:macro1) { Assert::Macro.new {} }
 
     should "have an accessor for its (optional) name" do
-      assert_respond_to :name, subject
-      assert_respond_to :name=, subject
+      assert_that(subject).responds_to(:name)
+      assert_that(subject).responds_to(:name=)
     end
 
     should "default its name if no given" do
-      assert_equal "run this macro", (Assert::Macro.new {}).name
+      assert_that((Assert::Macro.new {}).name).equals("run this macro")
     end
 
     should "initialize with a given name" do
-      assert_equal "test", (Assert::Macro.new("test") {}).name
+      assert_that((Assert::Macro.new("test") {}).name).equals("test")
     end
 
     should "be a Proc" do
-      assert_kind_of ::Proc, subject
+      assert_that(subject).is_kind_of(::Proc)
     end
 
     should "complain if you create a macro without a block" do
-      assert_raises(ArgumentError) { Assert::Macro.new }
+      assert_that(-> { Assert::Macro.new }).raises(ArgumentError)
     end
   end
 

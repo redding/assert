@@ -1,3 +1,4 @@
+require "assert/actual_value"
 require "assert/assertions"
 require "assert/context/let_dsl"
 require "assert/context/method_missing"
@@ -65,9 +66,8 @@ module Assert
       end
     end
 
-    # check if the assertion is a truthy value, if so create a new pass result,
-    # otherwise create a new fail result with the desc and what failed msg.
-    # all other assertion helpers use this one in the end
+    # Check if the result is true. If so, create a new pass result,  Otherwise
+    # create a new fail result with the desc and fail msg.
     def assert(assertion, desc = nil)
       if assertion
         pass
@@ -82,8 +82,8 @@ module Assert
       end
     end
 
-    # the opposite of assert, check if the assertion is a false value, if so create a new pass
-    # result, otherwise create a new fail result with the desc and fail msg
+    # The opposite of assert. Check if the result is false. If so, create a new
+    # pass result. Otherwise create a new fail result with the desc and fail msg.
     def assert_not(assertion, fail_desc = nil)
       assert(!assertion, fail_desc) do
         "Failed assert_not: assertion was "\
@@ -91,6 +91,10 @@ module Assert
       end
     end
     alias_method :refute, :assert_not
+
+    def assert_that(actual_value)
+      Assert::ActualValue.new(actual_value, context: self)
+    end
 
     # adds a Pass result to the end of the test's results
     # does not break test execution

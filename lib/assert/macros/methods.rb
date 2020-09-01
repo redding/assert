@@ -102,28 +102,28 @@ module Assert::Macros
           self.class._methods_macro_instance_methods.each do |(method, called_from)|
             msg = "#{subject.class.name} does not have instance method ##{method}"
             with_backtrace([called_from]) do
-              assert_respond_to method, subject, msg
+              assert_that(subject).responds_to(method, msg)
             end
           end
 
           self.class._methods_macro_class_methods.each do |(method, called_from)|
             msg = "#{subject.class.name} does not have class method ##{method}"
             with_backtrace([called_from]) do
-              assert_respond_to method, subject.class, msg
+              assert_that(subject.class).responds_to(method, msg)
             end
           end
 
           self.class._methods_macro_not_instance_methods.each do |(method, called_from)|
             msg = "#{subject.class.name} has instance method ##{method}"
             with_backtrace([called_from]) do
-              assert_not_respond_to method, subject, msg
+              assert_that(subject).does_not_respond_to(method, msg)
             end
           end
 
           self.class._methods_macro_not_class_methods.each do |(method, called_from)|
             msg = "#{subject.class.name} has class method ##{method}"
             with_backtrace([called_from]) do
-              assert_not_respond_to method, subject.class, msg
+              assert_that(subject.class).does_not_respond_to(method, msg)
             end
           end
         end

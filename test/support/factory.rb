@@ -86,6 +86,15 @@ module Factory
     end
   end
 
+  def self.modes_off_context(&result_block)
+    test = Factory.test
+    Factory.modes_off_context_class.new(
+      test,
+      test.config,
+      result_block || proc { |r| }
+    )
+  end
+
   def self.backtrace
     assert_lib_path =
       File.join(ROOT_PATH, "lib/#{Factory.string}:#{Factory.integer}")

@@ -30,54 +30,53 @@ class Assert::Stub
     let(:instance1) { TestClass.new }
 
     should "allow stubbing a method that doesn't take args" do
-      assert_equal "none", subject.noargs
+      assert_that(subject.noargs).equals("none")
     end
 
     should "allow stubbing a method that takes args" do
-      assert_equal "one",     subject.withargs(1)
-      assert_equal "default", subject.withargs(2)
+      assert_that(subject.withargs(2)).equals("default")
     end
 
     should "allow stubbing a method that takes any args" do
-      assert_equal "default", subject.anyargs
-      assert_equal "default", subject.anyargs(1)
-      assert_equal "one-two", subject.anyargs(1, 2)
+      assert_that(subject.anyargs).equals("default")
+      assert_that(subject.anyargs(1)).equals("default")
+      assert_that(subject.anyargs(1, 2)).equals("one-two")
     end
 
     should "allow stubbing a method that takes a minimum number of args" do
-      assert_equal "one-two",       subject.minargs(1, 2)
-      assert_equal "one-two-three", subject.minargs(1, 2, 3)
-      assert_equal "default",       subject.minargs(1, 2, 4)
-      assert_equal "default",       subject.minargs(1, 2, 3, 4)
+      assert_that(subject.minargs(1, 2)).equals("one-two")
+      assert_that(subject.minargs(1, 2, 3)).equals("one-two-three")
+      assert_that(subject.minargs(1, 2, 4)).equals("default")
+      assert_that(subject.minargs(1, 2, 3, 4)).equals("default")
     end
 
     should "allow stubbing a method that takes a block" do
-      assert_equal "default", subject.withblock
-      assert_equal "default", subject.withblock{ "my-block" }
+      assert_that(subject.withblock).equals("default")
+      assert_that(subject.withblock{ "my-block" }).equals("default")
     end
 
     should "not allow stubbing methods with invalid arity" do
-      assert_raises{ Assert.stub(subject, :noargs).with(1){ } }
+      assert_that(-> { Assert.stub(subject, :noargs).with(1){ } }).raises
 
-      assert_raises{ Assert.stub(subject, :withargs).with{ } }
-      assert_raises{ Assert.stub(subject, :withargs).with(1, 2){ } }
+      assert_that(-> { Assert.stub(subject, :withargs).with{ } }).raises
+      assert_that(-> { Assert.stub(subject, :withargs).with(1, 2){ } }).raises
 
-      assert_raises{ Assert.stub(subject, :minargs).with{ } }
-      assert_raises{ Assert.stub(subject, :minargs).with(1){ } }
+      assert_that(-> { Assert.stub(subject, :minargs).with{ } }).raises
+      assert_that(-> { Assert.stub(subject, :minargs).with(1){ } }).raises
 
-      assert_raises{ Assert.stub(subject, :withblock).with(1){ } }
+      assert_that(-> { Assert.stub(subject, :withblock).with(1){ } }).raises
     end
 
     should "not allow calling methods with invalid arity" do
-      assert_raises{ subject.noargs(1) }
+      assert_that(-> { subject.noargs(1) }).raises
 
-      assert_raises{ subject.withargs }
-      assert_raises{ subject.withargs(1, 2) }
+      assert_that(-> { subject.withargs }).raises
+      assert_that(-> { subject.withargs(1, 2) }).raises
 
-      assert_raises{ subject.minargs }
-      assert_raises{ subject.minargs(1) }
+      assert_that(-> { subject.minargs }).raises
+      assert_that(-> { subject.minargs(1) }).raises
 
-      assert_raises{ subject.withblock(1) }
+      assert_that(-> { subject.withblock(1) }).raises
     end
   end
 
@@ -105,54 +104,54 @@ class Assert::Stub
     let(:class1) { TestClass }
 
     should "allow stubbing a method that doesn't take args" do
-      assert_equal "none", subject.noargs
+      assert_that(subject.noargs).equals("none")
     end
 
     should "allow stubbing a method that takes args" do
-      assert_equal "one",     subject.withargs(1)
-      assert_equal "default", subject.withargs(2)
+      assert_that(subject.withargs(1)).equals("one")
+      assert_that(subject.withargs(2)).equals("default")
     end
 
     should "allow stubbing a method that takes any args" do
-      assert_equal "default", subject.anyargs
-      assert_equal "default", subject.anyargs(1)
-      assert_equal "one-two", subject.anyargs(1, 2)
+      assert_that(subject.anyargs).equals("default")
+      assert_that(subject.anyargs(1)).equals("default")
+      assert_that(subject.anyargs(1, 2)).equals("one-two")
     end
 
     should "allow stubbing a method that takes a minimum number of args" do
-      assert_equal "one-two",       subject.minargs(1, 2)
-      assert_equal "one-two-three", subject.minargs(1, 2, 3)
-      assert_equal "default",       subject.minargs(1, 2, 4)
-      assert_equal "default",       subject.minargs(1, 2, 3, 4)
+      assert_that(subject.minargs(1, 2)).equals("one-two")
+      assert_that(subject.minargs(1, 2, 3)).equals("one-two-three")
+      assert_that(subject.minargs(1, 2, 4)).equals("default")
+      assert_that(subject.minargs(1, 2, 3, 4)).equals("default")
     end
 
     should "allow stubbing a method that takes a block" do
-      assert_equal "default", subject.withblock
-      assert_equal "default", subject.withblock{ "my-block" }
+      assert_that(subject.withblock).equals("default")
+      assert_that(subject.withblock{ "my-block" }).equals("default")
     end
 
     should "not allow stubbing methods with invalid arity" do
-      assert_raises{ Assert.stub(subject, :noargs).with(1){ } }
+      assert_that(-> { Assert.stub(subject, :noargs).with(1){ } }).raises
 
-      assert_raises{ Assert.stub(subject, :withargs).with{ } }
-      assert_raises{ Assert.stub(subject, :withargs).with(1, 2){ } }
+      assert_that(-> { Assert.stub(subject, :withargs).with{ } }).raises
+      assert_that(-> { Assert.stub(subject, :withargs).with(1, 2){ } }).raises
 
-      assert_raises{ Assert.stub(subject, :minargs).with{ } }
-      assert_raises{ Assert.stub(subject, :minargs).with(1){ } }
+      assert_that(-> { Assert.stub(subject, :minargs).with{ } }).raises
+      assert_that(-> { Assert.stub(subject, :minargs).with(1){ } }).raises
 
-      assert_raises{ Assert.stub(subject, :withblock).with(1){ } }
+      assert_that(-> { Assert.stub(subject, :withblock).with(1){ } }).raises
     end
 
     should "not allow calling methods with invalid arity" do
-      assert_raises{ subject.noargs(1) }
+      assert_that(-> { subject.noargs(1) }).raises
 
-      assert_raises{ subject.withargs }
-      assert_raises{ subject.withargs(1, 2) }
+      assert_that(-> { subject.withargs }).raises
+      assert_that(-> { subject.withargs(1, 2) }).raises
 
-      assert_raises{ subject.minargs }
-      assert_raises{ subject.minargs(1) }
+      assert_that(-> { subject.minargs }).raises
+      assert_that(-> { subject.minargs(1) }).raises
 
-      assert_raises{ subject.withblock(1) }
+      assert_that(-> { subject.withblock(1) }).raises
     end
   end
 
@@ -180,54 +179,54 @@ class Assert::Stub
     let(:module1) { TestModule }
 
     should "allow stubbing a method that doesn't take args" do
-      assert_equal "none", subject.noargs
+      assert_that(subject.noargs).equals("none")
     end
 
     should "allow stubbing a method that takes args" do
-      assert_equal "one",     subject.withargs(1)
-      assert_equal "default", subject.withargs(2)
+      assert_that(subject.withargs(1)).equals("one")
+      assert_that(subject.withargs(2)).equals("default")
     end
 
     should "allow stubbing a method that takes any args" do
-      assert_equal "default", subject.anyargs
-      assert_equal "default", subject.anyargs(1)
-      assert_equal "one-two", subject.anyargs(1, 2)
+      assert_that(subject.anyargs).equals("default")
+      assert_that(subject.anyargs(1)).equals("default")
+      assert_that(subject.anyargs(1, 2)).equals("one-two")
     end
 
     should "allow stubbing a method that takes a minimum number of args" do
-      assert_equal "one-two",       subject.minargs(1, 2)
-      assert_equal "one-two-three", subject.minargs(1, 2, 3)
-      assert_equal "default",       subject.minargs(1, 2, 4)
-      assert_equal "default",       subject.minargs(1, 2, 3, 4)
+      assert_that(subject.minargs(1, 2)).equals("one-two")
+      assert_that(subject.minargs(1, 2, 3)).equals("one-two-three")
+      assert_that(subject.minargs(1, 2, 4)).equals("default")
+      assert_that(subject.minargs(1, 2, 3, 4)).equals("default")
     end
 
     should "allow stubbing a method that takes a block" do
-      assert_equal "default", subject.withblock
-      assert_equal "default", subject.withblock{ "my-block" }
+      assert_that(subject.withblock).equals("default")
+      assert_that(subject.withblock{ "my-block" }).equals("default")
     end
 
     should "not allow stubbing methods with invalid arity" do
-      assert_raises{ Assert.stub(subject, :noargs).with(1){ } }
+      assert_that(-> { Assert.stub(subject, :noargs).with(1){ } }).raises
 
-      assert_raises{ Assert.stub(subject, :withargs).with{ } }
-      assert_raises{ Assert.stub(subject, :withargs).with(1, 2){ } }
+      assert_that(-> { Assert.stub(subject, :withargs).with{ } }).raises
+      assert_that(-> { Assert.stub(subject, :withargs).with(1, 2){ } }).raises
 
-      assert_raises{ Assert.stub(subject, :minargs).with{ } }
-      assert_raises{ Assert.stub(subject, :minargs).with(1){ } }
+      assert_that(-> { Assert.stub(subject, :minargs).with{ } }).raises
+      assert_that(-> { Assert.stub(subject, :minargs).with(1){ } }).raises
 
-      assert_raises{ Assert.stub(subject, :withblock).with(1){ } }
+      assert_that(-> { Assert.stub(subject, :withblock).with(1){ } }).raises
     end
 
     should "not allow calling methods with invalid arity" do
-      assert_raises{ subject.noargs(1) }
+      assert_that(-> { subject.noargs(1) }).raises
 
-      assert_raises{ subject.withargs }
-      assert_raises{ subject.withargs(1, 2) }
+      assert_that(-> { subject.withargs }).raises
+      assert_that(-> { subject.withargs(1, 2) }).raises
 
-      assert_raises{ subject.minargs }
-      assert_raises{ subject.minargs(1) }
+      assert_that(-> { subject.minargs }).raises
+      assert_that(-> { subject.minargs(1) }).raises
 
-      assert_raises{ subject.withblock(1) }
+      assert_that(-> { subject.withblock(1) }).raises
     end
   end
 
@@ -255,54 +254,54 @@ class Assert::Stub
     let(:class1) { Class.new{ extend TestMixin } }
 
     should "allow stubbing a method that doesn't take args" do
-      assert_equal "none", subject.noargs
+      assert_that(subject.noargs).equals("none")
     end
 
     should "allow stubbing a method that takes args" do
-      assert_equal "one",     subject.withargs(1)
-      assert_equal "default", subject.withargs(2)
+      assert_that(subject.withargs(1)).equals("one")
+      assert_that(subject.withargs(2)).equals("default")
     end
 
     should "allow stubbing a method that takes any args" do
-      assert_equal "default", subject.anyargs
-      assert_equal "default", subject.anyargs(1)
-      assert_equal "one-two", subject.anyargs(1, 2)
+      assert_that(subject.anyargs).equals("default")
+      assert_that(subject.anyargs(1)).equals("default")
+      assert_that(subject.anyargs(1, 2)).equals("one-two")
     end
 
     should "allow stubbing a method that takes a minimum number of args" do
-      assert_equal "one-two",       subject.minargs(1, 2)
-      assert_equal "one-two-three", subject.minargs(1, 2, 3)
-      assert_equal "default",       subject.minargs(1, 2, 4)
-      assert_equal "default",       subject.minargs(1, 2, 3, 4)
+      assert_that(subject.minargs(1, 2)).equals("one-two")
+      assert_that(subject.minargs(1, 2, 3)).equals("one-two-three")
+      assert_that(subject.minargs(1, 2, 4)).equals("default")
+      assert_that(subject.minargs(1, 2, 3, 4)).equals("default")
     end
 
     should "allow stubbing a method that takes a block" do
-      assert_equal "default", subject.withblock
-      assert_equal "default", subject.withblock{ "my-block" }
+      assert_that(subject.withblock).equals("default")
+      assert_that(subject.withblock{ "my-block" }).equals("default")
     end
 
     should "not allow stubbing methods with invalid arity" do
-      assert_raises{ Assert.stub(subject, :noargs).with(1){ } }
+      assert_that(-> { Assert.stub(subject, :noargs).with(1){ } }).raises
 
-      assert_raises{ Assert.stub(subject, :withargs).with{ } }
-      assert_raises{ Assert.stub(subject, :withargs).with(1, 2){ } }
+      assert_that(-> { Assert.stub(subject, :withargs).with{ } }).raises
+      assert_that(-> { Assert.stub(subject, :withargs).with(1, 2){ } }).raises
 
-      assert_raises{ Assert.stub(subject, :minargs).with{ } }
-      assert_raises{ Assert.stub(subject, :minargs).with(1){ } }
+      assert_that(-> { Assert.stub(subject, :minargs).with{ } }).raises
+      assert_that(-> { Assert.stub(subject, :minargs).with(1){ } }).raises
 
-      assert_raises{ Assert.stub(subject, :withblock).with(1){ } }
+      assert_that(-> { Assert.stub(subject, :withblock).with(1){ } }).raises
     end
 
     should "not allow calling methods with invalid arity" do
-      assert_raises{ subject.noargs(1) }
+      assert_that(-> { subject.noargs(1) }).raises
 
-      assert_raises{ subject.withargs }
-      assert_raises{ subject.withargs(1, 2) }
+      assert_that(-> { subject.withargs }).raises
+      assert_that(-> { subject.withargs(1, 2) }).raises
 
-      assert_raises{ subject.minargs }
-      assert_raises{ subject.minargs(1) }
+      assert_that(-> { subject.minargs }).raises
+      assert_that(-> { subject.minargs(1) }).raises
 
-      assert_raises{ subject.withblock(1) }
+      assert_that(-> { subject.withblock(1) }).raises
     end
   end
 
@@ -330,54 +329,54 @@ class Assert::Stub
     let(:instance1) { Class.new { include TestMixin }.new }
 
     should "allow stubbing a method that doesn't take args" do
-      assert_equal "none", subject.noargs
+      assert_that(subject.noargs).equals("none")
     end
 
     should "allow stubbing a method that takes args" do
-      assert_equal "one",     subject.withargs(1)
-      assert_equal "default", subject.withargs(2)
+      assert_that(subject.withargs(1)).equals("one")
+      assert_that(subject.withargs(2)).equals("default")
     end
 
     should "allow stubbing a method that takes any args" do
-      assert_equal "default", subject.anyargs
-      assert_equal "default", subject.anyargs(1)
-      assert_equal "one-two", subject.anyargs(1, 2)
+      assert_that(subject.anyargs).equals("default")
+      assert_that(subject.anyargs(1)).equals("default")
+      assert_that(subject.anyargs(1, 2)).equals("one-two")
     end
 
     should "allow stubbing a method that takes a minimum number of args" do
-      assert_equal "one-two",       subject.minargs(1, 2)
-      assert_equal "one-two-three", subject.minargs(1, 2, 3)
-      assert_equal "default",       subject.minargs(1, 2, 4)
-      assert_equal "default",       subject.minargs(1, 2, 3, 4)
+      assert_that(subject.minargs(1, 2)).equals("one-two")
+      assert_that(subject.minargs(1, 2, 3)).equals("one-two-three")
+      assert_that(subject.minargs(1, 2, 4)).equals("default")
+      assert_that(subject.minargs(1, 2, 3, 4)).equals("default")
     end
 
     should "allow stubbing a method that takes a block" do
-      assert_equal "default", subject.withblock
-      assert_equal "default", subject.withblock{ "my-block" }
+      assert_that(subject.withblock).equals("default")
+      assert_that(subject.withblock{ "my-block" }).equals("default")
     end
 
     should "not allow stubbing methods with invalid arity" do
-      assert_raises{ Assert.stub(subject, :noargs).with(1){ } }
+      assert_that(-> { Assert.stub(subject, :noargs).with(1){ } }).raises
 
-      assert_raises{ Assert.stub(subject, :withargs).with{ } }
-      assert_raises{ Assert.stub(subject, :withargs).with(1, 2){ } }
+      assert_that(-> { Assert.stub(subject, :withargs).with{ } }).raises
+      assert_that(-> { Assert.stub(subject, :withargs).with(1, 2){ } }).raises
 
-      assert_raises{ Assert.stub(subject, :minargs).with{ } }
-      assert_raises{ Assert.stub(subject, :minargs).with(1){ } }
+      assert_that(-> { Assert.stub(subject, :minargs).with{ } }).raises
+      assert_that(-> { Assert.stub(subject, :minargs).with(1){ } }).raises
 
-      assert_raises{ Assert.stub(subject, :withblock).with(1){ } }
+      assert_that(-> { Assert.stub(subject, :withblock).with(1){ } }).raises
     end
 
     should "not allow calling methods with invalid arity" do
-      assert_raises{ subject.noargs(1) }
+      assert_that(-> { subject.noargs(1) }).raises
 
-      assert_raises{ subject.withargs }
-      assert_raises{ subject.withargs(1, 2) }
+      assert_that(-> { subject.withargs }).raises
+      assert_that(-> { subject.withargs(1, 2) }).raises
 
-      assert_raises{ subject.minargs }
-      assert_raises{ subject.minargs(1) }
+      assert_that(-> { subject.minargs }).raises
+      assert_that(-> { subject.minargs(1) }).raises
 
-      assert_raises{ subject.withblock(1) }
+      assert_that(-> { subject.withblock(1) }).raises
     end
   end
 
@@ -405,54 +404,54 @@ class Assert::Stub
     let(:class1) { Class.new(TestClass) }
 
     should "allow stubbing a method that doesn't take args" do
-      assert_equal "none", subject.noargs
+      assert_that(subject.noargs).equals("none")
     end
 
     should "allow stubbing a method that takes args" do
-      assert_equal "one",     subject.withargs(1)
-      assert_equal "default", subject.withargs(2)
+      assert_that(subject.withargs(1)).equals("one")
+      assert_that(subject.withargs(2)).equals("default")
     end
 
     should "allow stubbing a method that takes any args" do
-      assert_equal "default", subject.anyargs
-      assert_equal "default", subject.anyargs(1)
-      assert_equal "one-two", subject.anyargs(1, 2)
+      assert_that(subject.anyargs).equals("default")
+      assert_that(subject.anyargs(1)).equals("default")
+      assert_that(subject.anyargs(1, 2)).equals("one-two")
     end
 
     should "allow stubbing a method that takes a minimum number of args" do
-      assert_equal "one-two",       subject.minargs(1, 2)
-      assert_equal "one-two-three", subject.minargs(1, 2, 3)
-      assert_equal "default",       subject.minargs(1, 2, 4)
-      assert_equal "default",       subject.minargs(1, 2, 3, 4)
+      assert_that(subject.minargs(1, 2)).equals("one-two")
+      assert_that(subject.minargs(1, 2, 3)).equals("one-two-three")
+      assert_that(subject.minargs(1, 2, 4)).equals("default")
+      assert_that(subject.minargs(1, 2, 3, 4)).equals("default")
     end
 
     should "allow stubbing a method that takes a block" do
-      assert_equal "default", subject.withblock
-      assert_equal "default", subject.withblock{ "my-block" }
+      assert_that(subject.withblock).equals("default")
+      assert_that(subject.withblock{ "my-block" }).equals("default")
     end
 
     should "not allow stubbing methods with invalid arity" do
-      assert_raises{ Assert.stub(subject, :noargs).with(1){ } }
+      assert_that(-> { Assert.stub(subject, :noargs).with(1){ } }).raises
 
-      assert_raises{ Assert.stub(subject, :withargs).with{ } }
-      assert_raises{ Assert.stub(subject, :withargs).with(1, 2){ } }
+      assert_that(-> { Assert.stub(subject, :withargs).with{ } }).raises
+      assert_that(-> { Assert.stub(subject, :withargs).with(1, 2){ } }).raises
 
-      assert_raises{ Assert.stub(subject, :minargs).with{ } }
-      assert_raises{ Assert.stub(subject, :minargs).with(1){ } }
+      assert_that(-> { Assert.stub(subject, :minargs).with{ } }).raises
+      assert_that(-> { Assert.stub(subject, :minargs).with(1){ } }).raises
 
-      assert_raises{ Assert.stub(subject, :withblock).with(1){ } }
+      assert_that(-> { Assert.stub(subject, :withblock).with(1){ } }).raises
     end
 
     should "not allow calling methods with invalid arity" do
-      assert_raises{ subject.noargs(1) }
+      assert_that(-> { subject.noargs(1) }).raises
 
-      assert_raises{ subject.withargs }
-      assert_raises{ subject.withargs(1, 2) }
+      assert_that(-> { subject.withargs }).raises
+      assert_that(-> { subject.withargs(1, 2) }).raises
 
-      assert_raises{ subject.minargs }
-      assert_raises{ subject.minargs(1) }
+      assert_that(-> { subject.minargs }).raises
+      assert_that(-> { subject.minargs(1) }).raises
 
-      assert_raises{ subject.withblock(1) }
+      assert_that(-> { subject.withblock(1) }).raises
     end
   end
 
@@ -480,54 +479,54 @@ class Assert::Stub
     let(:instance1) { Class.new(TestClass).new }
 
     should "allow stubbing a method that doesn't take args" do
-      assert_equal "none", subject.noargs
+      assert_that(subject.noargs).equals("none")
     end
 
     should "allow stubbing a method that takes args" do
-      assert_equal "one",     subject.withargs(1)
-      assert_equal "default", subject.withargs(2)
+      assert_that(subject.withargs(1)).equals("one")
+      assert_that(subject.withargs(2)).equals("default")
     end
 
     should "allow stubbing a method that takes any args" do
-      assert_equal "default", subject.anyargs
-      assert_equal "default", subject.anyargs(1)
-      assert_equal "one-two", subject.anyargs(1, 2)
+      assert_that(subject.anyargs).equals("default")
+      assert_that(subject.anyargs(1)).equals("default")
+      assert_that(subject.anyargs(1, 2)).equals("one-two")
     end
 
     should "allow stubbing a method that takes a minimum number of args" do
-      assert_equal "one-two",       subject.minargs(1, 2)
-      assert_equal "one-two-three", subject.minargs(1, 2, 3)
-      assert_equal "default",       subject.minargs(1, 2, 4)
-      assert_equal "default",       subject.minargs(1, 2, 3, 4)
+      assert_that(subject.minargs(1, 2)).equals("one-two")
+      assert_that(subject.minargs(1, 2, 3)).equals("one-two-three")
+      assert_that(subject.minargs(1, 2, 4)).equals("default")
+      assert_that(subject.minargs(1, 2, 3, 4)).equals("default")
     end
 
     should "allow stubbing a method that takes a block" do
-      assert_equal "default", subject.withblock
-      assert_equal "default", subject.withblock{ "my-block" }
+      assert_that(subject.withblock).equals("default")
+      assert_that(subject.withblock{ "my-block" }).equals("default")
     end
 
     should "not allow stubbing methods with invalid arity" do
-      assert_raises{ Assert.stub(subject, :noargs).with(1){ } }
+      assert_that(-> { Assert.stub(subject, :noargs).with(1){ } }).raises
 
-      assert_raises{ Assert.stub(subject, :withargs).with{ } }
-      assert_raises{ Assert.stub(subject, :withargs).with(1, 2){ } }
+      assert_that(-> { Assert.stub(subject, :withargs).with{ } }).raises
+      assert_that(-> { Assert.stub(subject, :withargs).with(1, 2){ } }).raises
 
-      assert_raises{ Assert.stub(subject, :minargs).with{ } }
-      assert_raises{ Assert.stub(subject, :minargs).with(1){ } }
+      assert_that(-> { Assert.stub(subject, :minargs).with{ } }).raises
+      assert_that(-> { Assert.stub(subject, :minargs).with(1){ } }).raises
 
-      assert_raises{ Assert.stub(subject, :withblock).with(1){ } }
+      assert_that(-> { Assert.stub(subject, :withblock).with(1){ } }).raises
     end
 
     should "not allow calling methods with invalid arity" do
-      assert_raises{ subject.noargs(1) }
+      assert_that(-> { subject.noargs(1) }).raises
 
-      assert_raises{ subject.withargs }
-      assert_raises{ subject.withargs(1, 2) }
+      assert_that(-> { subject.withargs }).raises
+      assert_that(-> { subject.withargs(1, 2) }).raises
 
-      assert_raises{ subject.minargs }
-      assert_raises{ subject.minargs(1) }
+      assert_that(-> { subject.minargs }).raises
+      assert_that(-> { subject.minargs(1) }).raises
 
-      assert_raises{ subject.withblock(1) }
+      assert_that(-> { subject.withblock(1) }).raises
     end
   end
 
@@ -555,54 +554,54 @@ class Assert::Stub
     let(:class1) { DelegateClass }
 
     should "allow stubbing a method that doesn't take args" do
-      assert_equal "none", subject.noargs
+      assert_that(subject.noargs).equals("none")
     end
 
     should "allow stubbing a method that takes args" do
-      assert_equal "one",     subject.withargs(1)
-      assert_equal "default", subject.withargs(2)
+      assert_that(subject.withargs(1)).equals("one")
+      assert_that(subject.withargs(2)).equals("default")
     end
 
     should "allow stubbing a method that takes any args" do
-      assert_equal "default", subject.anyargs
-      assert_equal "default", subject.anyargs(1)
-      assert_equal "one-two", subject.anyargs(1, 2)
+      assert_that(subject.anyargs).equals("default")
+      assert_that(subject.anyargs(1)).equals("default")
+      assert_that(subject.anyargs(1, 2)).equals("one-two")
     end
 
     should "allow stubbing a method that takes a minimum number of args" do
-      assert_equal "one-two",       subject.minargs(1, 2)
-      assert_equal "one-two-three", subject.minargs(1, 2, 3)
-      assert_equal "default",       subject.minargs(1, 2, 4)
-      assert_equal "default",       subject.minargs(1, 2, 3, 4)
+      assert_that(subject.minargs(1, 2)).equals("one-two")
+      assert_that(subject.minargs(1, 2, 3)).equals("one-two-three")
+      assert_that(subject.minargs(1, 2, 4)).equals("default")
+      assert_that(subject.minargs(1, 2, 3, 4)).equals("default")
     end
 
     should "allow stubbing a method that takes a block" do
-      assert_equal "default", subject.withblock
-      assert_equal "default", subject.withblock{ "my-block" }
+      assert_that(subject.withblock).equals("default")
+      assert_that(subject.withblock{ "my-block" }).equals("default")
     end
 
     should "allow stubbing methods with invalid arity" do
-      assert_nothing_raised{ Assert.stub(subject, :noargs).with(1){ } }
+      assert_that(-> { Assert.stub(subject, :noargs).with(1){ } }).does_not_raise
 
-      assert_nothing_raised{ Assert.stub(subject, :withargs).with{ } }
-      assert_nothing_raised{ Assert.stub(subject, :withargs).with(1, 2){ } }
+      assert_that(-> { Assert.stub(subject, :withargs).with{ } }).does_not_raise
+      assert_that(-> { Assert.stub(subject, :withargs).with(1, 2){ } }).does_not_raise
 
-      assert_nothing_raised{ Assert.stub(subject, :minargs).with{ } }
-      assert_nothing_raised{ Assert.stub(subject, :minargs).with(1){ } }
+      assert_that(-> { Assert.stub(subject, :minargs).with{ } }).does_not_raise
+      assert_that(-> { Assert.stub(subject, :minargs).with(1){ } }).does_not_raise
 
-      assert_nothing_raised{ Assert.stub(subject, :withblock).with(1){ } }
+      assert_that(-> { Assert.stub(subject, :withblock).with(1){ } }).does_not_raise
     end
 
     should "allow calling methods with invalid arity" do
-      assert_nothing_raised{ subject.noargs(1) }
+      assert_that(-> { subject.noargs(1) }).does_not_raise
 
-      assert_nothing_raised{ subject.withargs }
-      assert_nothing_raised{ subject.withargs(1, 2) }
+      assert_that(-> { subject.withargs }).does_not_raise
+      assert_that(-> { subject.withargs(1, 2) }).does_not_raise
 
-      assert_nothing_raised{ subject.minargs }
-      assert_nothing_raised{ subject.minargs(1) }
+      assert_that(-> { subject.minargs }).does_not_raise
+      assert_that(-> { subject.minargs(1) }).does_not_raise
 
-      assert_nothing_raised{ subject.withblock(1) }
+      assert_that(-> { subject.withblock(1) }).does_not_raise
     end
   end
 
@@ -630,54 +629,54 @@ class Assert::Stub
     let(:instance1) { DelegateClass.new }
 
     should "allow stubbing a method that doesn't take args" do
-      assert_equal "none", subject.noargs
+      assert_that(subject.noargs).equals("none")
     end
 
     should "allow stubbing a method that takes args" do
-      assert_equal "one",     subject.withargs(1)
-      assert_equal "default", subject.withargs(2)
+      assert_that(subject.withargs(1)).equals("one")
+      assert_that(subject.withargs(2)).equals("default")
     end
 
     should "allow stubbing a method that takes any args" do
-      assert_equal "default", subject.anyargs
-      assert_equal "default", subject.anyargs(1)
-      assert_equal "one-two", subject.anyargs(1, 2)
+      assert_that(subject.anyargs).equals("default")
+      assert_that(subject.anyargs(1)).equals("default")
+      assert_that(subject.anyargs(1, 2)).equals("one-two")
     end
 
     should "allow stubbing a method that takes a minimum number of args" do
-      assert_equal "one-two",       subject.minargs(1, 2)
-      assert_equal "one-two-three", subject.minargs(1, 2, 3)
-      assert_equal "default",       subject.minargs(1, 2, 4)
-      assert_equal "default",       subject.minargs(1, 2, 3, 4)
+      assert_that(subject.minargs(1, 2)).equals("one-two")
+      assert_that(subject.minargs(1, 2, 3)).equals("one-two-three")
+      assert_that(subject.minargs(1, 2, 4)).equals("default")
+      assert_that(subject.minargs(1, 2, 3, 4)).equals("default")
     end
 
     should "allow stubbing a method that takes a block" do
-      assert_equal "default", subject.withblock
-      assert_equal "default", subject.withblock{ "my-block" }
+      assert_that(subject.withblock).equals("default")
+      assert_that(subject.withblock{ "my-block" }).equals("default")
     end
 
     should "allow stubbing methods with invalid arity" do
-      assert_nothing_raised{ Assert.stub(subject, :noargs).with(1){ } }
+      assert_that(-> { Assert.stub(subject, :noargs).with(1){ } }).does_not_raise
 
-      assert_nothing_raised{ Assert.stub(subject, :withargs).with{ } }
-      assert_nothing_raised{ Assert.stub(subject, :withargs).with(1, 2){ } }
+      assert_that(-> { Assert.stub(subject, :withargs).with{ } }).does_not_raise
+      assert_that(-> { Assert.stub(subject, :withargs).with(1, 2){ } }).does_not_raise
 
-      assert_nothing_raised{ Assert.stub(subject, :minargs).with{ } }
-      assert_nothing_raised{ Assert.stub(subject, :minargs).with(1){ } }
+      assert_that(-> { Assert.stub(subject, :minargs).with{ } }).does_not_raise
+      assert_that(-> { Assert.stub(subject, :minargs).with(1){ } }).does_not_raise
 
-      assert_nothing_raised{ Assert.stub(subject, :withblock).with(1){ } }
+      assert_that(-> { Assert.stub(subject, :withblock).with(1){ } }).does_not_raise
     end
 
     should "allow calling methods with invalid arity" do
-      assert_nothing_raised{ subject.noargs(1) }
+      assert_that(-> { subject.noargs(1) }).does_not_raise
 
-      assert_nothing_raised{ subject.withargs }
-      assert_nothing_raised{ subject.withargs(1, 2) }
+      assert_that(-> { subject.withargs }).does_not_raise
+      assert_that(-> { subject.withargs(1, 2) }).does_not_raise
 
-      assert_nothing_raised{ subject.minargs }
-      assert_nothing_raised{ subject.minargs(1) }
+      assert_that(-> { subject.minargs }).does_not_raise
+      assert_that(-> { subject.minargs(1) }).does_not_raise
 
-      assert_nothing_raised{ subject.withblock(1) }
+      assert_that(-> { subject.withblock(1) }).does_not_raise
     end
   end
 
@@ -692,8 +691,8 @@ class Assert::Stub
     let(:child_class) { Class.new(parent_class) }
 
     should "allow stubbing the methods individually" do
-      assert_equal "parent", parent_class.new
-      assert_equal "child", child_class.new
+      assert_that(parent_class.new).equals("parent")
+      assert_that(child_class.new).equals("child")
     end
   end
 

@@ -24,73 +24,73 @@ class Assert::Config
     should have_imeths :single_test_file_line, :single_test_file_path
 
     should "default the view, suite, and runner" do
-      assert_kind_of Assert::DefaultView,   subject.view
-      assert_kind_of Assert::DefaultSuite,  subject.suite
-      assert_kind_of Assert::DefaultRunner, subject.runner
+      assert_that(subject.view).is_kind_of(Assert::DefaultView)
+      assert_that(subject.suite).is_kind_of(Assert::DefaultSuite)
+      assert_that(subject.runner).is_kind_of(Assert::DefaultRunner)
     end
 
     should "default the test dir/helper/suffixes" do
-      assert_equal "test",                    subject.test_dir
-      assert_equal "helper.rb",               subject.test_helper
-      assert_equal ["_tests.rb", "_test.rb"], subject.test_file_suffixes
+      assert_that(subject.test_dir).equals("test")
+      assert_that(subject.test_helper).equals("helper.rb")
+      assert_that(subject.test_file_suffixes).equals(["_tests.rb", "_test.rb"])
     end
 
     should "default the procs" do
-      assert_not_nil subject.changed_proc
-      assert_not_nil subject.pp_proc
-      assert_not_nil subject.use_diff_proc
-      assert_not_nil subject.run_diff_proc
+      assert_that(subject.changed_proc).is_not_nil
+      assert_that(subject.pp_proc).is_not_nil
+      assert_that(subject.use_diff_proc).is_not_nil
+      assert_that(subject.run_diff_proc).is_not_nil
     end
 
     should "default the option settings" do
-      assert_not_nil subject.runner_seed
-      assert_not     subject.changed_only
-      assert_empty   subject.changed_ref
-      assert_empty   subject.single_test
-      assert_not     subject.pp_objects
-      assert_not     subject.capture_output
-      assert         subject.halt_on_fail
-      assert_not     subject.profile
-      assert_not     subject.verbose
-      assert_not     subject.list
-      assert_not     subject.debug
+      assert_that(subject.runner_seed).is_not_nil
+      assert_that(subject.changed_only).is_false
+      assert_that(subject.changed_ref).is_empty
+      assert_that(subject.single_test).is_empty
+      assert_that(subject.pp_objects).is_false
+      assert_that(subject.capture_output).is_false
+      assert_that(subject.halt_on_fail).is_true
+      assert_that(subject.profile).is_false
+      assert_that(subject.verbose).is_false
+      assert_that(subject.list).is_false
+      assert_that(subject.debug).is_false
     end
 
     should "apply settings given from a hash" do
       assert subject.halt_on_fail
       subject.apply(:halt_on_fail => false)
-      assert_not subject.halt_on_fail
+      assert_that(subject.halt_on_fail).is_false
 
-      assert Assert::Config.new.halt_on_fail
-      assert_not Assert::Config.new(:halt_on_fail => false).halt_on_fail
+      assert_that(Assert::Config.new.halt_on_fail).is_true
+      assert_that(Assert::Config.new(:halt_on_fail => false).halt_on_fail).is_false
     end
 
     should "know if it is in single test mode" do
-      assert_false subject.single_test?
+      assert_that(subject.single_test?).is_false
 
       subject.apply(:single_test => Factory.string)
-      assert_true subject.single_test?
+      assert_that(subject.single_test?).is_true
     end
 
     should "know its single test file line" do
       exp = Assert::FileLine.parse(File.expand_path("", Dir.pwd))
-      assert_equal exp, subject.single_test_file_line
+      assert_that(subject.single_test_file_line).equals(exp)
 
       file_line_path = "#{Factory.path}_tests.rb:#{Factory.integer}"
       subject.apply(:single_test => file_line_path)
 
       exp = Assert::FileLine.parse(File.expand_path(file_line_path, Dir.pwd))
-      assert_equal exp, subject.single_test_file_line
+      assert_that(subject.single_test_file_line).equals(exp)
     end
 
     should "know its single test file path" do
       exp = Assert::FileLine.parse(File.expand_path("", Dir.pwd)).file
-      assert_equal exp, subject.single_test_file_path
+      assert_that(subject.single_test_file_path).equals(exp)
 
       path = "#{Factory.path}_tests.rb"
       file_line_path = "#{path}:#{Factory.integer}"
       subject.apply(:single_test => file_line_path)
-      assert_equal File.expand_path(path, Dir.pwd), subject.single_test_file_path
+      assert_that(subject.single_test_file_path).equals(File.expand_path(path, Dir.pwd))
     end
   end
 end

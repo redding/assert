@@ -14,11 +14,11 @@ class Assert::View
     should have_instance_method :require_user_view
 
     should "include the config helpers" do
-      assert_includes Assert::ConfigHelpers, subject
+      assert_that(subject).includes(Assert::ConfigHelpers)
     end
 
     should "include the view helpers" do
-      assert_includes Assert::ViewHelpers, subject
+      assert_that(subject).includes(Assert::ViewHelpers)
     end
   end
 
@@ -37,33 +37,33 @@ class Assert::View
     should have_imeths :before_test, :after_test, :on_result
 
     should "default its style options" do
-      assert_false subject.styled
+      assert_that(subject.styled).is_false
 
-      assert_nil subject.pass_styles
-      assert_nil subject.fail_styles
-      assert_nil subject.error_styles
-      assert_nil subject.skip_styles
-      assert_nil subject.ignore_styles
+      assert_that(subject.pass_styles).is_nil
+      assert_that(subject.fail_styles).is_nil
+      assert_that(subject.error_styles).is_nil
+      assert_that(subject.skip_styles).is_nil
+      assert_that(subject.ignore_styles).is_nil
     end
 
     should "default its result abbreviations" do
-      assert_equal ".", subject.pass_abbrev
-      assert_equal "F", subject.fail_abbrev
-      assert_equal "I", subject.ignore_abbrev
-      assert_equal "S", subject.skip_abbrev
-      assert_equal "E", subject.error_abbrev
+      assert_that(subject.pass_abbrev).equals(".")
+      assert_that(subject.fail_abbrev).equals("F")
+      assert_that(subject.ignore_abbrev).equals("I")
+      assert_that(subject.skip_abbrev).equals("S")
+      assert_that(subject.error_abbrev).equals("E")
     end
 
     should "know its config" do
-      assert_equal config1, subject.config
+      assert_that(subject.config).equals(config1)
     end
 
     should "override the config helper's view value with itself" do
-      assert_equal subject, subject.view
+      assert_that(subject.view).equals(subject)
     end
 
     should "know if it is a tty" do
-      assert_equal !!io1.isatty, subject.is_tty?
+      assert_that(subject.is_tty?).equals(!!io1.isatty)
     end
   end
 end
