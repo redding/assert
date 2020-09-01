@@ -323,7 +323,7 @@ class Assert::ActualValue
 
     def assert_calls(context_method, when_calling:, on_value:)
       @last_call = nil
-      Assert.stub(context1, context_method).on_call(&capture_last_call_block)
+      Assert.stub_on_call(context1, context_method, &capture_last_call_block)
 
       unit_class.new(on_value, context: context1).public_send(*[*when_calling, *args1])
       yield(on_value, @last_call)

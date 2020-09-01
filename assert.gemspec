@@ -21,5 +21,5 @@ Gem::Specification.new do |gem|
   gem.required_ruby_version = "~> 2.5"
 
   gem.add_dependency("much-factory", ["~> 0.1.0"])
-  gem.add_dependency("much-stub",    ["~> 0.1.3"])
+  gem.add_dependency("much-stub",    ["~> 0.1.4"])
 end

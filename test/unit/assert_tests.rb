@@ -54,6 +54,18 @@ module Assert
       assert_that(stub1).is_kind_of(MuchStub::Stub)
     end
 
+    should "build a stub with an on_call block" do
+      my_meth_called_with = nil
+      stub1 =
+        Assert.stub_on_call(object1, :mymeth) { |call|
+          my_meth_called_with = call
+        }
+
+      object1.mymeth
+      assert_kind_of MuchStub::Stub, stub1
+      assert_equal [], my_meth_called_with.args
+    end
+
     should "lookup stubs that have been called before" do
       stub1 = Assert.stub(object1, :mymeth)
       stub2 = Assert.stub(object1, :mymeth)
