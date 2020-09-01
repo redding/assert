@@ -9,6 +9,10 @@ module Assert
     MuchStub.stub(*args, &block)
   end
 
+  def self.stub_on_call(*args, &block)
+    MuchStub.stub_on_call(*args, &block)
+  end
+
   def self.unstub(*args)
     MuchStub.unstub(*args)
   end
