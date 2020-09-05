@@ -6,10 +6,9 @@ require "assert/suite"
 module Assert::Context::SuiteDSL
   class UnitTests < Assert::Context
     desc "Assert::Context::SuiteDSL"
-    subject { context_class1 }
+    subject { Factory.context_class(parent_class1) }
 
     let(:parent_class1)  { Factory.context_class }
-    let(:context_class1) { Factory.context_class(parent_class1) }
     let(:custom_suite1)  { Factory.modes_off_suite }
 
     should "use `Assert.suite` by default" do

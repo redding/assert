@@ -6,10 +6,7 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_raises`"
-    subject { test1 }
-
-    let(:desc1) { "assert raises fail desc" }
-    let(:test1) {
+    subject {
       desc = desc1
       Factory.test do
         assert_raises(StandardError, RuntimeError) { raise(StandardError) }    # pass
@@ -19,6 +16,8 @@ module Assert::Assertions
         assert_raises(desc) { true }                                           # fail
       end
     }
+
+    let(:desc1) { "assert raises fail desc" }
 
     should "produce results as expected" do
       subject.run(&test_run_callback)
@@ -62,10 +61,7 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_nothing_raised`"
-    subject { test1 }
-
-    let(:desc1) { "assert nothing raised fail desc" }
-    let(:test1) {
+    subject {
       desc = desc1
       Factory.test do
         assert_nothing_raised(StandardError, RuntimeError, desc) { raise(StandardError) } # fail
@@ -74,6 +70,8 @@ module Assert::Assertions
         assert_nothing_raised { true }                                                    # pass
       end
     }
+
+    let(:desc1) { "assert nothing raised fail desc" }
 
     should "produce results as expected" do
       subject.run(&test_run_callback)

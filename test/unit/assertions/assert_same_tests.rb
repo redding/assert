@@ -8,13 +8,7 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_same`"
-    subject { test1 }
-
-    let(:class1) { Class.new }
-    let(:object1) { class1.new }
-    let(:desc1) { "assert same fail desc" }
-    let(:args1) { [object1, class1.new, desc1] }
-    let(:test1) {
+    subject {
       args   = args1
       object = object1
       Factory.test do
@@ -22,7 +16,12 @@ module Assert::Assertions
         assert_same(*args)          # fail
       end
     }
-    let(:config1) { test1.config }
+
+    let(:class1) { Class.new }
+    let(:object1) { class1.new }
+    let(:desc1) { "assert same fail desc" }
+    let(:args1) { [object1, class1.new, desc1] }
+    let(:config1) { subject.config }
 
     should "produce results as expected" do
       subject.run(&test_run_callback)
@@ -45,13 +44,7 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_not_same`"
-    subject { test1 }
-
-    let(:class1) { Class.new }
-    let(:object1) { class1.new }
-    let(:desc1) { "assert not same fail desc" }
-    let(:args1) { [object1, object1, desc1] }
-    let(:test1) {
+    subject {
       args   = args1
       object = object1
       klass  = class1
@@ -60,7 +53,12 @@ module Assert::Assertions
         assert_not_same(object, klass.new) # pass
       end
     }
-    let(:config1) { test1.config }
+
+    let(:class1) { Class.new }
+    let(:object1) { class1.new }
+    let(:desc1) { "assert not same fail desc" }
+    let(:args1) { [object1, object1, desc1] }
+    let(:config1) { subject.config }
 
     should "produce results as expected" do
       subject.run(&test_run_callback)
@@ -98,9 +96,7 @@ module Assert::Assertions
 
   class AssertSameDiffTests < DiffTests
     desc "`assert_same`"
-    subject { test1 }
-
-    let(:test1) {
+    subject {
       exp_obj, act_obj = exp_obj1, act_obj1
       Factory.test(config1) do
         assert_same(exp_obj, act_obj)
@@ -122,9 +118,7 @@ module Assert::Assertions
 
   class AssertNotSameDiffTests < DiffTests
     desc "`assert_not_same`"
-    subject { test1 }
-
-    let(:test1) {
+    subject {
       act_obj = act_obj1
       Factory.test(config1) do
         assert_not_same(act_obj, act_obj)

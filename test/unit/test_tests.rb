@@ -8,7 +8,9 @@ require "assert/result"
 class Assert::Test
   class UnitTests < Assert::Context
     desc "Assert::Test"
-    subject { Assert::Test }
+    subject { unit_class }
+
+    let(:unit_class) { Assert::Test }
 
     let(:context_class1) { Factory.modes_off_context_class { desc "context class" } }
     let(:context_info1)  { Factory.context_info(context_class1) }
@@ -68,7 +70,7 @@ class Assert::Test
 
   class InitWithDataTests < UnitTests
     desc "when init with data"
-    subject { test1 }
+    subject { unit_class.new(meta_data1.merge(run_data1)) }
 
     let(:file_line1) { Assert::FileLine.new(Factory.string, Factory.integer.to_s) }
     let(:meta_data1) {
@@ -86,7 +88,6 @@ class Assert::Test
         :code         => test_code1
       }
     }
-    let(:test1) { Assert::Test.new(meta_data1.merge(run_data1)) }
 
     should have_imeths :file_line, :file_name, :line_num
     should have_imeths :name, :output, :run_time
@@ -104,7 +105,7 @@ class Assert::Test
     end
 
     should "default its attrs" do
-      test = Assert::Test.new
+      test = unit_class.new
 
       assert_that(test.file_line).equals(Assert::FileLine.parse(""))
       assert_that(test.name).equals("")
@@ -137,7 +138,13 @@ class Assert::Test
   class PassFailIgnoreHandlingTests < UnitTests
     include Assert::Test::TestHelpers
 
-    subject { test1 }
+    subject {
+      Factory.test("pass fail ignore test", context_info1) do
+        ignore("something")
+        assert(true)
+        assert(false)
+      end
+    }
 
     setup do
       subject.context_class.setup do
@@ -152,14 +159,6 @@ class Assert::Test
       end
       subject.run(&test_run_callback)
     end
-
-    let(:test1) {
-      Factory.test("pass fail ignore test", context_info1) do
-        ignore("something")
-        assert(true)
-        assert(false)
-      end
-    }
 
     should "capture results in the test and any setups/teardowns" do
       assert_that(test_run_results.size).equals(9)
@@ -336,70 +335,64 @@ class Assert::Test
 
   class ComparingTests < UnitTests
     desc "<=> another test"
-    subject { test1 }
-
-    let(:test1) { Factory.test("mmm") }
+    subject { Factory.test("mmm") }
 
     should "return 1 with a test named 'aaa' (greater than it)" do
-      result = test1 <=> Factory.test("aaa")
-      assert_that(result).equals(1)
+      assert_that(subject <=> Factory.test("aaa")).equals(1)
     end
 
     should "return 0 with a test named the same" do
-      result = test1 <=> Factory.test(test1.name)
-      assert_that(result).equals(0)
+      assert_that(subject <=> Factory.test(subject.name)).equals(0)
     end
 
     should "return -1 with a test named 'zzz' (less than it)" do
-      result = test1 <=> Factory.test("zzz")
-      assert_that(result).equals(-1)
+      assert_that(subject <=> Factory.test("zzz")).equals(-1)
     end
   end
 
   class CaptureOutTests < UnitTests
     desc "when capturing std out"
-
-    let(:capture_config1) { Assert::Config.new(:capture_output => true) }
-    let(:test1) {
+    subject {
       Factory.test("stdout", capture_config1) do
         puts "std out from the test"
         assert true
       end
     }
 
+    let(:capture_config1) { Assert::Config.new(:capture_output => true) }
+
     should "capture any io from the test" do
-      test1.run
-      assert_that(test1.output).equals("std out from the test\n")
+      subject.run
+      assert_that(subject.output).equals("std out from the test\n")
     end
   end
 
   class FullCaptureOutTests < CaptureOutTests
     desc "across setup, teardown, and meth calls"
-
-    setup do
-      test1.context_class.setup{ puts "std out from the setup" }
-      test1.context_class.teardown{ puts "std out from the teardown" }
-      test1.context_class.send(:define_method, "a_method_an_assert_calls") do
-        puts "std out from a method an assert called"
-      end
-    end
-
-    let(:test1) {
+    subject {
       Factory.test("fullstdouttest", capture_config1) do
         puts "std out from the test"
         assert a_method_an_assert_calls
       end
     }
 
+    setup do
+      subject.context_class.setup{ puts "std out from the setup" }
+      subject.context_class.teardown{ puts "std out from the teardown" }
+      subject.context_class.send(:define_method, "a_method_an_assert_calls") do
+        puts "std out from a method an assert called"
+      end
+    end
+
     should "collect all stdout in the output accessor" do
-      test1.run
+      subject.run
 
       exp_out =
         "std out from the setup\n"\
         "std out from the test\n"\
         "std out from a method an assert called\n"\
         "std out from the teardown\n"
-      assert_that(test1.output).equals(exp_out)
+      assert_that(subject.output).equals(exp_out)
     end
   end
 end

@@ -10,7 +10,9 @@ require "assert/view"
 class Assert::Runner
   class UnitTests < Assert::Context
     desc "Assert::Runner"
-    subject { Assert::Runner }
+    subject { unit_class }
+
+    let(:unit_class) { Assert::Runner }
 
     should "include the config helpers" do
       assert_that(subject).includes(Assert::ConfigHelpers)
@@ -19,7 +21,7 @@ class Assert::Runner
 
   class InitTests < UnitTests
     desc "when init"
-    subject { runner1 }
+    subject { unit_class.new(config1) }
 
     setup do
       config1.suite Assert::DefaultSuite.new(config1)
@@ -27,7 +29,6 @@ class Assert::Runner
     end
 
     let(:config1) { Factory.modes_off_config }
-    let(:runner1) { Assert::Runner.new(config1) }
 
     should have_readers :config
     should have_imeths :runner, :run
@@ -46,6 +47,7 @@ class Assert::Runner
 
   class RunTests < InitTests
     desc "and run"
+    subject { runner_class1.new(config1) }
 
     setup do
       @view_output = ""
@@ -57,26 +59,24 @@ class Assert::Runner
       config1.view  view_class.new(config1, StringIO.new(@view_output, "w+"))
       config1.suite.on_test(test1)
 
-      @result = subject.run
+      @result_count = subject.run
     end
 
-    let(:runner_class1) { Class.new(Assert::Runner) { include CallbackMixin } }
+    let(:runner_class1) { Class.new(unit_class) { include CallbackMixin } }
     let(:ci1) { Factory.context_info(Factory.modes_off_context_class) }
     let(:test1) { Factory.test("should pass", ci1){ assert(1==1) } }
-    let(:runner1) { runner_class1.new(config1) }
 
     should "return the fail+error result count as an integer exit code" do
-      assert_that(@result).equals(0)
+      assert_that(@result_count).equals(0)
 
       fail_count  = Factory.integer
       error_count = Factory.integer
       Assert.stub(subject, :fail_result_count){ fail_count }
       Assert.stub(subject, :error_result_count){ error_count }
       Assert.stub(test1, :run){ } # no-op
-      result = runner1.run
+      result_count = subject.run
 
-      exp = fail_count + error_count
-      assert_that(result).equals(exp)
+      assert_that(result_count).equals(fail_count + error_count)
     end
 
     should "run all callbacks on itself, the suite and the view" do

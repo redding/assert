@@ -9,18 +9,17 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_file_exists`"
-    subject { test1 }
-
-    let(:desc1) { "assert file exists fail desc" }
-    let(:args1) { ["/a/path/to/some/file/that/no/exists", desc1] }
-    let(:test1) {
+    subject {
       args = args1
       Factory.test do
         assert_file_exists(__FILE__) # pass
         assert_file_exists(*args)    # fail
       end
     }
-    let(:config1) { test1.config }
+
+    let(:desc1) { "assert file exists fail desc" }
+    let(:args1) { ["/a/path/to/some/file/that/no/exists", desc1] }
+    let(:config1) { subject.config }
 
     should "produce results as expected" do
       subject.run(&test_run_callback)
@@ -38,18 +37,17 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_not_file_exists`"
-    subject { test1 }
-
-    let(:desc1) { "assert not file exists fail desc" }
-    let(:args1) { [__FILE__, desc1] }
-    let(:test1) {
+    subject {
       args = args1
       Factory.test do
         assert_not_file_exists("/file/path") # pass
         assert_not_file_exists(*args)        # fail
       end
     }
-    let(:config1) { test1.config }
+
+    let(:desc1) { "assert not file exists fail desc" }
+    let(:args1) { [__FILE__, desc1] }
+    let(:config1) { subject.config }
 
     should "produce results as expected" do
       subject.run(&test_run_callback)

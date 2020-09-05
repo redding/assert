@@ -8,18 +8,17 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_empty`"
-    subject { test1 }
-
-    let(:desc1) { "assert empty fail desc" }
-    let(:args1) { [[1], desc1] }
-    let(:test1) {
+    subject {
       args = args1
       Factory.test do
         assert_empty([])    # pass
         assert_empty(*args) # fail
       end
     }
-    let(:config1) { test1.config }
+
+    let(:desc1) { "assert empty fail desc" }
+    let(:args1) { [[1], desc1] }
+    let(:config1) { subject.config }
 
     should "produce results as expected" do
       subject.run(&test_run_callback)
@@ -38,18 +37,17 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_not_empty`"
-    subject { test1 }
-
-    let(:desc1) { "assert not empty fail desc" }
-    let(:args1) { [[], desc1] }
-    let(:test1) {
+    subject {
       args = args1
       Factory.test do
         assert_not_empty([1])   # pass
         assert_not_empty(*args) # fail
       end
     }
-    let(:config1) { test1.config }
+
+    let(:desc1) { "assert not empty fail desc" }
+    let(:args1) { [[], desc1] }
+    let(:config1) { subject.config }
 
     should "produce results as expected" do
       subject.run(&test_run_callback)

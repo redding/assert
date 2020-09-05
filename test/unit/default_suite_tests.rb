@@ -6,12 +6,18 @@ require "assert/suite"
 class Assert::DefaultSuite
   class UnitTests < Assert::Context
     desc "Assert::DefaultSuite"
-    subject { suite1 }
+    subject { unit_class }
+
+    let(:unit_class) { Assert::DefaultSuite }
+  end
+
+  class InitTests < UnitTests
+    desc "when init"
+    subject { unit_class.new(config1) }
 
     let(:ci1)     { Factory.context_info(Factory.modes_off_context_class) }
     let(:test1)   { Factory.test(Factory.string, ci1) { } }
     let(:config1) { Factory.modes_off_config }
-    let(:suite1)  { Assert::DefaultSuite.new(config1) }
 
     should "be a Suite" do
       assert_that(subject).is_kind_of(Assert::Suite)

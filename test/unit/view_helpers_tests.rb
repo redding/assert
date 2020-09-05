@@ -10,10 +10,9 @@ require "assert/view"
 module Assert::ViewHelpers
   class UnitTests < Assert::Context
     desc "Assert::ViewHelpers"
-    subject { helpers_class1 }
+    subject { unit_class }
 
-    let(:test_opt_val1) { Factory.string }
-    let(:helpers_class1) {
+    let(:unit_class) {
       test_opt_val = test_opt_val1
       Class.new do
         include Assert::ViewHelpers
@@ -28,6 +27,8 @@ module Assert::ViewHelpers
       end
     }
 
+    let(:test_opt_val1) { Factory.string }
+
     should have_imeths :option
 
     should "include the config helpers" do
@@ -35,7 +36,7 @@ module Assert::ViewHelpers
     end
 
     should "write option values" do
-      helpers = helpers_class1.new
+      helpers = unit_class.new
       assert_that(helpers.test_opt).equals(test_opt_val1)
 
       new_val = Factory.integer
@@ -50,9 +51,7 @@ module Assert::ViewHelpers
 
   class InitTests < UnitTests
     desc "when init"
-    subject { helpers1 }
-
-    let(:helpers1) { helpers_class1.new }
+    subject { unit_class.new }
 
     should have_imeths :captured_output, :re_run_test_cmd
     should have_imeths :tests_to_run_count_statement, :result_count_statement

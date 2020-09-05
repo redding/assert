@@ -6,10 +6,11 @@ require "assert/test"
 require "test/support/inherited_stuff"
 
 class Assert::Suite
-
   class UnitTests < Assert::Context
     desc "Assert::Suite"
-    subject { Assert::Suite }
+    subject { unit_class }
+
+    let(:unit_class) { Assert::Suite }
 
     should "include the config helpers" do
       assert_that(subject).includes(Assert::ConfigHelpers)
@@ -23,10 +24,9 @@ class Assert::Suite
 
   class InitTests < UnitTests
     desc "when init"
-    subject { suite1 }
+    subject { unit_class.new(config1) }
 
     let(:config1) { Factory.modes_off_config }
-    let(:suite1)  { Assert::Suite.new(config1) }
 
     should have_readers :config, :test_methods, :setups, :teardowns
     should have_accessors :start_time, :end_time
@@ -84,8 +84,8 @@ class Assert::Suite
 
     should "add setup procs" do
       status = nil
-      suite1.setup{ status = "setups" }
-      suite1.startup{ status += " have been run" }
+      subject.setup{ status = "setups" }
+      subject.startup{ status += " have been run" }
 
       assert_that(subject.setups.count).equals(2)
       subject.setups.each(&:call)
@@ -94,8 +94,8 @@ class Assert::Suite
 
     should "add teardown procs" do
       status = nil
-      suite1.teardown{ status = "teardowns" }
-      suite1.shutdown{ status += " have been run" }
+      subject.teardown{ status = "teardowns" }
+      subject.shutdown{ status += " have been run" }
 
       assert_that(subject.teardowns.count).equals(2)
       subject.teardowns.each(&:call)
@@ -107,7 +107,7 @@ class Assert::Suite
     desc "with tests loaded"
 
     setup do
-      tests1.each{ |test| suite1.on_test(test) }
+      tests1.each{ |test| subject.on_test(test) }
     end
 
     let(:ci1) { proc{ Factory.context_info(Factory.modes_off_context_class) } }

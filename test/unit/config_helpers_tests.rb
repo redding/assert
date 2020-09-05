@@ -6,20 +6,24 @@ require "assert/config"
 module Assert::ConfigHelpers
   class UnitTests < Assert::Context
     desc "Assert::ConfigHelpers"
-    subject { helpers1 }
+    subject { unit_class }
 
-    let(:helpers_class1) {
+    let(:unit_class) {
       Class.new do
         include Assert::ConfigHelpers
 
         def config
           # use the assert config since it has tests, contexts, etc
-          # also maybe use a fresh config that is empty
+          # also use a fresh config that is empty
           @config ||= [Assert.config, Assert::Config.new].sample
         end
       end
     }
-    let(:helpers1) { helpers_class1.new }
+  end
+
+  class InitTests < UnitTests
+    desc "when init"
+    subject { unit_class.new }
 
     should have_imeths :runner, :suite, :view
     should have_imeths :runner_seed, :single_test?, :single_test_file_line

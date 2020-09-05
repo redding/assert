@@ -165,9 +165,12 @@ module Assert
     end
 
     def subject
-      if subj = self.class.subject
-        instance_eval(&subj)
+      unless instance_variable_defined?("@__assert_subject__")
+        @__assert_subject__ =
+          instance_eval(&self.class.subject) if self.class.subject
       end
+
+      @__assert_subject__
     end
 
     def inspect

@@ -6,13 +6,20 @@ require "assert/context"
 class Assert::ContextInfo
   class UnitTests < Assert::Context
     desc "Assert::ContextInfo"
+    subject { unit_class }
+
+    let(:unit_class) { Assert::ContextInfo }
+  end
+
+  class InitTests < UnitTests
+    desc "when init"
+    subject { unit_class.new(context1, nil, @caller.first) }
+
     setup do
       @caller = caller
     end
-    subject { info1 }
 
     let(:context1) { Assert::Context }
-    let(:info1)    { Assert::ContextInfo.new(context1, nil, @caller.first) }
 
     should have_readers :called_from, :klass, :file
     should have_imeths :test_name
