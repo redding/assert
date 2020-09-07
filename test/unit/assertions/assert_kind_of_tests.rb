@@ -8,18 +8,17 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_kind_of`"
-    subject { test1 }
-
-    let(:desc1) { "assert kind of fail desc" }
-    let(:args1) { [Array, "object", desc1] }
-    let(:test1) {
+    subject {
       args = args1
       Factory.test do
         assert_kind_of(String, "object") # pass
         assert_kind_of(*args)            # fail
       end
     }
-    let(:config1) { test1.config }
+
+    let(:desc1) { "assert kind of fail desc" }
+    let(:args1) { [Array, "object", desc1] }
+    let(:config1) { subject.config }
 
     should "produce results as expected" do
       subject.run(&test_run_callback)
@@ -39,18 +38,17 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_not_kind_of`"
-    subject { test1 }
-
-    let(:desc1) { "assert not kind of fail desc" }
-    let(:args1) { [String, "object", desc1] }
-    let(:test1) {
+    subject {
       args = args1
       Factory.test do
         assert_not_kind_of(*args)           # fail
         assert_not_kind_of(Array, "object") # pass
       end
     }
-    let(:config1) { test1.config }
+
+    let(:desc1) { "assert not kind of fail desc" }
+    let(:args1) { [String, "object", desc1] }
+    let(:config1) { subject.config }
 
     should "produce results as expected" do
       subject.run(&test_run_callback)

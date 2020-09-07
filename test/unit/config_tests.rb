@@ -10,9 +10,14 @@ require "assert/runner"
 class Assert::Config
   class UnitTests < Assert::Context
     desc "Assert::Config"
-    subject { config1 }
+    subject { unit_class }
 
-    let(:config1) { Assert::Config.new }
+    let(:unit_class) { Assert::Config }
+  end
+
+  class InitTests < UnitTests
+    desc "when init"
+    subject { unit_class.new }
 
     should have_imeths :view, :suite, :runner
     should have_imeths :test_dir, :test_helper, :test_file_suffixes

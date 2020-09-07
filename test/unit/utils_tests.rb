@@ -7,7 +7,9 @@ require "assert/config"
 module Assert::Utils
   class UnitTests < Assert::Context
     desc "Assert::Utils"
-    subject { Assert::Utils }
+    subject { unit_class }
+
+    let(:unit_class) { Assert::Utils }
 
     let(:objs1) { [1, "hi there", Hash.new, [:a, :b]] }
 

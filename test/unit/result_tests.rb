@@ -6,7 +6,9 @@ require "assert/file_line"
 module Assert::Result
   class UnitTests < Assert::Context
     desc "Assert::Result"
-    subject { Assert::Result }
+    subject { unit_class }
+
+    let(:unit_class) { Assert::Result }
 
     let(:test1) { Factory.test("a test name") }
 
@@ -32,9 +34,9 @@ module Assert::Result
     end
   end
 
-  class BaseTests < UnitTests
-    desc "Base"
-    subject { result1 }
+  class InitBaseTests < UnitTests
+    desc "Base when init"
+    subject { Base.new(given_data1) }
 
     let(:given_data1) {
       {
@@ -47,7 +49,6 @@ module Assert::Result
         :backtrace      => Backtrace.new(Factory.backtrace)
       }
     }
-    let(:result1) { Base.new(given_data1) }
 
     should have_cmeths :type, :name, :for_test
     should have_imeths :type, :name, :test_name, :test_file_line
@@ -226,11 +227,9 @@ module Assert::Result
     end
   end
 
-  class PassTests < UnitTests
-    desc "Pass"
-    subject { result1 }
-
-    let(:result1) { Pass.new({}) }
+  class InitPassTests < UnitTests
+    desc "Pass when init"
+    subject { Pass.new({}) }
 
     should "know its type/name" do
       assert_that(subject.type).equals(:pass)
@@ -239,11 +238,9 @@ module Assert::Result
     end
   end
 
-  class IgnoreTests < UnitTests
-    desc "Ignore"
-    subject { result1 }
-
-    let(:result1) { Ignore.new({}) }
+  class InitIgnoreTests < UnitTests
+    desc "Ignore when init"
+    subject { Ignore.new({}) }
 
     should "know its type/name" do
       assert_that(subject.type).equals(:ignore)
@@ -252,8 +249,8 @@ module Assert::Result
     end
   end
 
-  class HaltingTestResultErrorTests < UnitTests
-    desc "HaltingTestResultError"
+  class InitHaltingTestResultErrorTests < UnitTests
+    desc "HaltingTestResultError when init"
     subject { HaltingTestResultError.new }
 
     should have_accessors :assert_with_bt
@@ -263,20 +260,18 @@ module Assert::Result
     end
   end
 
-  class TestFailureTests < UnitTests
-    desc "TestFailure"
-    subject { TestFailure }
+  class InitTestFailureTests < UnitTests
+    desc "TestFailure when init"
+    subject { TestFailure.new }
 
     should "be a halting test result error" do
-      assert_that(subject.new).is_kind_of(HaltingTestResultError)
+      assert_that(subject).is_kind_of(HaltingTestResultError)
     end
   end
 
-  class FailTests < UnitTests
-    desc "Fail"
-    subject { result1 }
-
-    let(:result1) { Fail.new({}) }
+  class InitFailTests < UnitTests
+    desc "Fail when init"
+    subject { Fail.new({}) }
 
     should "know its type/name" do
       assert_that(subject.type).equals(:fail)
@@ -311,20 +306,18 @@ module Assert::Result
     end
   end
 
-  class TestSkippedTests < UnitTests
-    desc "TestSkipped"
-    subject { TestSkipped }
+  class InitTestSkippedTests < UnitTests
+    desc "TestSkipped when init"
+    subject { TestSkipped.new }
 
     should "be a halting test result error" do
-      assert_that(subject.new).is_kind_of(HaltingTestResultError)
+      assert_that(subject).is_kind_of(HaltingTestResultError)
     end
   end
 
-  class SkipTests < UnitTests
-    desc "Skip"
-    subject { result1 }
-
-    let(:result1) { Skip.new({}) }
+  class InitSkipTests < UnitTests
+    desc "Skip when init"
+    subject { Skip.new({}) }
 
     should "know its type/name" do
       assert_that(subject.type).equals(:skip)
@@ -359,11 +352,9 @@ module Assert::Result
     end
   end
 
-  class ErrorTests < UnitTests
-    desc "Error"
-    subject { result1 }
-
-    let(:result1) { Error.new({}) }
+  class InitErrorTests < UnitTests
+    desc "Error when init"
+    subject { Error.new({}) }
 
     should "know its class-level type/name" do
       assert_that(subject.class.type).equals(:error)
@@ -388,11 +379,9 @@ module Assert::Result
     end
   end
 
-  class BacktraceTests < UnitTests
-    desc "Backtrace"
-    subject { backtrace1 }
-
-    let(:backtrace1) { Backtrace.new(Factory.backtrace) }
+  class InitBacktraceTests < UnitTests
+    desc "Backtrace when init"
+    subject { Backtrace.new(Factory.backtrace) }
 
     should have_cmeths :parse, :to_s
     should have_imeths :filtered

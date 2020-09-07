@@ -4,10 +4,9 @@ require "assert/context/setup_dsl"
 module Assert::Context::SetupDSL
   class UnitTests < Assert::Context
     desc "Assert::Context::SetupDSL"
-    subject { context_class1 }
+    subject { Factory.modes_off_context_class }
 
     let(:block1) { ::Proc.new {} }
-    let(:context_class1) { Factory.modes_off_context_class }
   end
 
   class SetupTeardownOnceMethodsTests < UnitTests
@@ -49,8 +48,9 @@ module Assert::Context::SetupDSL
   end
 
   class ParentContextClassTests < UnitTests
+    subject { Factory.modes_off_context_class(parent_class1) }
+
     let(:parent_class1)  { Factory.modes_off_context_class }
-    let(:context_class1) { Factory.modes_off_context_class(parent_class1) }
   end
 
   class SetupTeardownMultipleTests < ParentContextClassTests

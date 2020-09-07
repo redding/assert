@@ -8,18 +8,17 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_equal`"
-    subject { test1 }
-
-    let(:desc1) { "assert equal fail desc" }
-    let(:args1) { ["1", "2", desc1] }
-    let(:test1) {
+    subject {
       args = args1
       Factory.test do
         assert_equal(1, 1)  # pass
         assert_equal(*args) # fail
       end
     }
-    let(:config1) { test1.config }
+
+    let(:desc1) { "assert equal fail desc" }
+    let(:args1) { ["1", "2", desc1] }
+    let(:config1) { subject.config }
 
     should "produce results as expected" do
       subject.run(&test_run_callback)
@@ -39,18 +38,17 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_not_equal`"
-    subject { test1 }
-
-    let(:desc1) { "assert not equal fail desc" }
-    let(:args1) { ["1", "1", desc1] }
-    let(:test1) {
+    subject {
       args = args1
       Factory.test do
         assert_not_equal(*args) # fail
         assert_not_equal(1, 2)  # pass
       end
     }
-    let(:config1) { test1.config }
+
+    let(:desc1) { "assert not equal fail desc" }
+    let(:args1) { ["1", "1", desc1] }
+    let(:config1) { subject.config }
 
     should "produce results as expected" do
       subject.run(&test_run_callback)
@@ -103,9 +101,7 @@ module Assert::Assertions
 
   class AssertEqualDiffTests < DiffTests
     desc "`assert_equal`"
-    subject { test1 }
-
-    let(:test1) {
+    subject {
       exp_obj, act_obj = exp_obj1, act_obj1
       Factory.test(config1) do
         assert_equal(exp_obj, act_obj)
@@ -124,9 +120,7 @@ module Assert::Assertions
 
   class AssertNotEqualDiffTests < DiffTests
     desc "`assert_not_equal`"
-    subject { test1 }
-
-    let(:test1) {
+    subject {
       exp_obj = exp_obj1
       Factory.test(config1) do
         assert_not_equal(exp_obj, exp_obj)

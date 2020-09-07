@@ -8,7 +8,24 @@ require "assert/utils"
 class Assert::Context
   class UnitTests < Assert::Context
     desc "Assert::Context"
-    subject { context1 }
+    subject { unit_class }
+
+    let(:unit_class) { Assert::Context }
+
+    # DSL methods
+    should have_imeths :description, :desc, :describe, :subject, :suite, :let
+    should have_imeths :setup_once, :before_once, :startup
+    should have_imeths :teardown_once, :after_once, :shutdown
+    should have_imeths :setup, :before, :setups, :run_setups
+    should have_imeths :teardown, :after, :teardowns, :run_teardowns
+    should have_imeths :around, :arounds, :run_arounds
+    should have_imeths :test, :test_eventually, :test_skip
+    should have_imeths :should, :should_eventually, :should_skip
+  end
+
+  class InitTests < UnitTests
+    desc "when init"
+    subject { context_class1.new(test1, test1.config, result_callback1) }
 
     setup do
       @callback_result = nil
@@ -20,19 +37,8 @@ class Assert::Context
     let(:result_callback1) {
       proc { |result| @callback_result = result; test_results1 << result }
     }
-    let(:context1) { context_class1.new(test1, test1.config, result_callback1) }
     let(:halt_config1) { Assert::Config.new(:halt_on_fail => true) }
     let(:msg1) { Factory.string }
-
-    # DSL methods
-    should have_cmeths :description, :desc, :describe, :subject, :suite, :let
-    should have_cmeths :setup_once, :before_once, :startup
-    should have_cmeths :teardown_once, :after_once, :shutdown
-    should have_cmeths :setup, :before, :setups, :run_setups
-    should have_cmeths :teardown, :after, :teardowns, :run_teardowns
-    should have_cmeths :around, :arounds, :run_arounds
-    should have_cmeths :test, :test_eventually, :test_skip
-    should have_cmeths :should, :should_eventually, :should_skip
 
     should have_imeths :assert, :assert_not, :refute, :assert_that
     should have_imeths :pass, :ignore, :fail, :flunk, :skip
@@ -68,19 +74,18 @@ class Assert::Context
     end
   end
 
-  class SkipTests < UnitTests
+  class SkipTests < InitTests
     desc "skip method"
-    subject { @result }
 
     setup do
-      begin; context1.skip(msg1); rescue StandardError => @exception; end
+      begin; subject.skip(msg1); rescue StandardError => @exception; end
       @result = Factory.skip_result(@exception)
     end
 
     should "raise a test skipped exception and set its message" do
       assert_that(@exception).is_kind_of(Assert::Result::TestSkipped)
       assert_that(@exception.message).equals(msg1)
-      assert_that(subject.message).equals(msg1)
+      assert_that(@result.message).equals(msg1)
     end
 
     should "not call the result callback" do
@@ -91,23 +96,22 @@ class Assert::Context
       assert_that(@exception.backtrace.size).does_not_equal(1)
 
       called_from = Factory.string
-      begin; context1.skip(msg1, called_from); rescue StandardError => exception; end
+      begin; subject.skip(msg1, called_from); rescue StandardError => exception; end
       assert_that(exception.backtrace.size).equals(1)
       assert_that(exception.backtrace.first).equals(called_from)
     end
   end
 
-  class IgnoreTests < UnitTests
+  class IgnoreTests < InitTests
     desc "ignore method"
-    subject { @result }
 
     setup do
-      @result = context1.ignore(msg1)
+      @result = subject.ignore(msg1)
     end
 
     should "create an ignore result and set its message" do
-      assert_that(subject).is_kind_of(Assert::Result::Ignore)
-      assert_that(subject.message).equals(msg1)
+      assert_that(@result).is_kind_of(Assert::Result::Ignore)
+      assert_that(@result.message).equals(msg1)
     end
 
     should "call the result callback" do
@@ -115,17 +119,16 @@ class Assert::Context
     end
   end
 
-  class PassTests < UnitTests
+  class PassTests < InitTests
     desc "pass method"
-    subject { @result }
 
     setup do
-      @result = context1.pass(msg1)
+      @result = subject.pass(msg1)
     end
 
     should "create a pass result and set its message" do
-      assert_that(subject).is_kind_of(Assert::Result::Pass)
-      assert_that(subject.message).equals(msg1)
+      assert_that(@result).is_kind_of(Assert::Result::Pass)
+      assert_that(@result.message).equals(msg1)
     end
 
     should "call the result callback" do
@@ -133,17 +136,16 @@ class Assert::Context
     end
   end
 
-  class FlunkTests < UnitTests
+  class FlunkTests < InitTests
     desc "flunk method"
-    subject { @result }
 
     setup do
-      @result = context1.flunk(msg1)
+      @result = subject.flunk(msg1)
     end
 
     should "create a fail result and set its message" do
-      assert_that(subject).is_kind_of(Assert::Result::Fail)
-      assert_that(subject.message).equals(msg1)
+      assert_that(@result).is_kind_of(Assert::Result::Fail)
+      assert_that(@result.message).equals(msg1)
     end
 
     should "call the result callback" do
@@ -151,22 +153,21 @@ class Assert::Context
     end
   end
 
-  class FailTests < UnitTests
+  class FailTests < InitTests
     desc "fail method"
-    subject { @result }
 
     setup do
-      @result = context1.fail
+      @result = subject.fail
     end
 
     should "create a fail result and set its backtrace" do
-      assert_that(subject).is_kind_of(Assert::Result::Fail)
-      assert_that(subject.trace).equals(subject.backtrace.filtered.first.to_s)
-      assert_that(subject.backtrace).is_kind_of(Array)
+      assert_that(@result).is_kind_of(Assert::Result::Fail)
+      assert_that(@result.trace).equals(@result.backtrace.filtered.first.to_s)
+      assert_that(@result.backtrace).is_kind_of(Array)
     end
 
     should "set any given result message" do
-      result = context1.fail(msg1)
+      result = subject.fail(msg1)
       assert_that(result.message).equals(msg1)
     end
 
@@ -175,14 +176,12 @@ class Assert::Context
     end
   end
 
-  class HaltOnFailTests < UnitTests
+  class HaltOnFailTests < InitTests
     desc "failing when halting on fails"
-    subject { @result }
-
-    let(:context1) { context_class1.new(test1, halt_config1, result_callback1) }
+    subject { context_class1.new(test1, halt_config1, result_callback1) }
 
     should "raise an exception with the failure's message" do
-      begin; context1.fail(msg1); rescue StandardError => err; end
+      begin; subject.fail(msg1); rescue StandardError => err; end
       assert_that(err).is_kind_of(Assert::Result::TestFailure)
       assert_that(err.message).equals(msg1)
 
@@ -195,7 +194,7 @@ class Assert::Context
     end
   end
 
-  class AssertTests < UnitTests
+  class AssertTests < InitTests
     desc "assert method"
 
     let(:what_failed) { Factory.string }
@@ -232,7 +231,7 @@ class Assert::Context
     end
   end
 
-  class AssertNotTests < UnitTests
+  class AssertNotTests < InitTests
     desc "assert_not method"
 
     should "return a pass result given a `false` assertion" do
@@ -262,7 +261,7 @@ class Assert::Context
     end
   end
 
-  class AssertThatTests < UnitTests
+  class AssertThatTests < InitTests
     desc "`assert_that` method"
 
     setup do
@@ -276,39 +275,38 @@ class Assert::Context
     should "build an Assert::ActualValue" do
       assert_instance_of Assert::ActualValue, subject.assert_that(actual_value)
       assert_equal [actual_value], @actual_value_new_call.pargs
-      assert_equal({ context: context1 },  @actual_value_new_call.kargs)
+      assert_equal({ context: subject },  @actual_value_new_call.kargs)
     end
   end
 
-  class SubjectTests < UnitTests
+  class SubjectTests < InitTests
     desc "subject method"
-    subject { @subject }
+    subject { context_class1.new(test1, test1.config, proc{ |result| }) }
 
     setup do
       expected = expected1
       context_class1.subject { @something = expected }
-      @subject = context1.subject
+      @subject = subject.subject
     end
 
     let(:context_class1) { Factory.modes_off_context_class }
-    let(:context1) { context_class1.new(test1, test1.config, proc{ |result| }) }
     let(:expected1) { Factory.string }
 
     should "instance evaluate the block set with the class setup method" do
-      assert_that(subject).equals(expected1)
+      assert_that(@subject).equals(expected1)
     end
   end
 
-  class PendingTests < UnitTests
+  class PendingTests < InitTests
     desc "`pending` method"
 
     let(:block2) { proc { fail; pass; } }
     let(:block1) { block = block2; proc { pending(&block) } } # test nesting
 
     should "make fails skips and make passes fails" do
-      context1.fail "not affected"
-      context1.pass
-      context1.pending(&block1)
+      subject.fail "not affected"
+      subject.pass
+      subject.pending(&block1)
 
       assert_that(test_results1.size).equals(4)
       norm_fail, norm_pass, pending_fail, pending_pass = test_results1
@@ -326,12 +324,10 @@ class Assert::Context
 
   class PendingWithHaltOnFailTests < PendingTests
     desc "when halting on fails"
-    subject { @result }
-
-    let(:context1) { context_class1.new(test1, halt_config1, result_callback1) }
+    subject { context_class1.new(test1, halt_config1, result_callback1) }
 
     should "make fails skips and stop the test" do
-      begin; context1.pending(&block1); rescue StandardError => err; end
+      begin; subject.pending(&block1); rescue StandardError => err; end
       assert_that(err).is_kind_of(Assert::Result::TestSkipped)
       assert_that(err.message).includes("Pending fail")
 
@@ -339,16 +335,16 @@ class Assert::Context
     end
   end
 
-  class WithBacktraceTests < UnitTests
+  class WithBacktraceTests < InitTests
     desc "`with_backtrace` method"
 
     let(:from_bt1)    { ["called_from_here", Factory.string] }
     let(:from_block1) { proc { ignore; fail; pass; skip "todo"; } }
 
     should "alter non-error block results' bt with given bt's first line" do
-      context1.fail "not affected"
+      subject.fail "not affected"
       begin
-        context1.with_backtrace(from_bt1, &from_block1)
+        subject.with_backtrace(from_bt1, &from_block1)
       rescue Assert::Result::TestSkipped => e
         test_results1 << Assert::Result::Skip.for_test(test1, e)
       end
@@ -366,7 +362,7 @@ class Assert::Context
     end
   end
 
-  class WithNestedBacktraceTests < UnitTests
+  class WithNestedBacktraceTests < InitTests
     desc "`with_backtrace` method nested"
 
     let(:from_bt1)    { ["called_from_here 1", Factory.string] }
@@ -379,9 +375,9 @@ class Assert::Context
     }
 
     should "alter non-error block results' bt with nested wbt accrued first lines" do
-      context1.fail "not affected"
+      subject.fail "not affected"
       begin
-        context1.with_backtrace(from_bt1, &from_block1)
+        subject.with_backtrace(from_bt1, &from_block1)
       rescue Assert::Result::TestSkipped => e
         test_results1 << Assert::Result::Skip.for_test(test1, e)
       end
@@ -399,15 +395,11 @@ class Assert::Context
     end
   end
 
-  class InspectTests < UnitTests
+  class InspectTests < InitTests
     desc "inspect method"
-    subject { inspect1 }
-
-    let(:inspect1)  { context1.inspect }
 
     should "just show the name of the class" do
-      exp = "#<#{context1.class}>"
-      assert_that(subject).equals(exp)
+      assert_that(subject.inspect).equals("#<#{subject.class}>")
     end
   end
 end

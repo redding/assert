@@ -4,9 +4,14 @@ require "assert/macro"
 class Assert::Macro
   class UnitTests < Assert::Context
     desc "Assert::Macro"
-    subject { macro1 }
+    subject { unit_class }
 
-    let(:macro1) { Assert::Macro.new {} }
+    let(:unit_class) { Assert::Macro }
+  end
+
+  class InitTests < UnitTests
+    desc "when init"
+    subject { unit_class.new {} }
 
     should "have an accessor for its (optional) name" do
       assert_that(subject).responds_to(:name)
@@ -14,11 +19,11 @@ class Assert::Macro
     end
 
     should "default its name if no given" do
-      assert_that((Assert::Macro.new {}).name).equals("run this macro")
+      assert_that((unit_class.new {}).name).equals("run this macro")
     end
 
     should "initialize with a given name" do
-      assert_that((Assert::Macro.new("test") {}).name).equals("test")
+      assert_that((unit_class.new("test") {}).name).equals("test")
     end
 
     should "be a Proc" do
@@ -26,7 +31,7 @@ class Assert::Macro
     end
 
     should "complain if you create a macro without a block" do
-      assert_that(-> { Assert::Macro.new }).raises(ArgumentError)
+      assert_that(-> { unit_class.new }).raises(ArgumentError)
     end
   end
 

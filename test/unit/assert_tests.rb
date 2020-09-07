@@ -7,7 +7,9 @@ require "much-stub"
 module Assert
   class UnitTests < Assert::Context
     desc "Assert"
-    subject { Assert }
+    subject { unit_class }
+
+    let(:unit_class) { Assert }
 
     should have_imeths :config, :configure, :view, :suite, :runner
     should have_imeths :stubs, :stub, :unstub, :unstub!, :stub_send
