@@ -64,7 +64,7 @@ module Assert
 
     should "set the stub's do block if given a block" do
       Assert.stub(object1, :mymeth)
-      assert_that(-> { object1.mymeth }).raises(MuchStub::NotStubbedError)
+      assert_that { object1.mymeth }.raises(MuchStub::NotStubbedError)
       Assert.stub(object1, :mymeth){ stub_value1 }
       assert_that(object1.mymeth).equals(stub_value1)
     end
@@ -109,8 +109,9 @@ module Assert
 
     should "be able to call a stub's original method" do
       err =
-        assert_that(-> { Assert.stub_send(object1, :mymeth) }).
-          raises(MuchStub::NotStubbedError)
+        assert_that {
+          Assert.stub_send(object1, :mymeth)
+        }.raises(MuchStub::NotStubbedError)
       assert_that(err.message).includes("not stubbed.")
       assert_that(err.backtrace.first).includes("test/unit/assert_tests.rb")
 

@@ -293,21 +293,21 @@ class Assert::Test
         raise SignalException, "USR1"
       end
 
-      assert_that(-> { test.run }).raises(SignalException)
+      assert_that { test.run }.raises(SignalException)
     end
 
     should "raises signal exceptions in the context setup" do
       test = Factory.test("setup signal test", context_info1){ }
       test.context_class.setup{ raise SignalException, "INT" }
 
-      assert_that(-> { test.run }).raises(SignalException)
+      assert_that { test.run }.raises(SignalException)
     end
 
     should "raises signal exceptions in the context teardown" do
       test = Factory.test("teardown signal test", context_info1){ }
       test.context_class.teardown{ raise SignalException, "TERM" }
 
-      assert_that(-> { test.run }).raises(SignalException)
+      assert_that { test.run }.raises(SignalException)
     end
   end
 

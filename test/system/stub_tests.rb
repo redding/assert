@@ -54,27 +54,27 @@ class Assert::Stub
     end
 
     should "not allow stubbing methods with invalid arity" do
-      assert_that(-> { Assert.stub(subject, :noargs).with(1){ } }).raises
+      assert_that { Assert.stub(subject, :noargs).with(1){ } }.raises
 
-      assert_that(-> { Assert.stub(subject, :withargs).with{ } }).raises
-      assert_that(-> { Assert.stub(subject, :withargs).with(1, 2){ } }).raises
+      assert_that { Assert.stub(subject, :withargs).with{ } }.raises
+      assert_that { Assert.stub(subject, :withargs).with(1, 2){ } }.raises
 
-      assert_that(-> { Assert.stub(subject, :minargs).with{ } }).raises
-      assert_that(-> { Assert.stub(subject, :minargs).with(1){ } }).raises
+      assert_that { Assert.stub(subject, :minargs).with{ } }.raises
+      assert_that { Assert.stub(subject, :minargs).with(1){ } }.raises
 
-      assert_that(-> { Assert.stub(subject, :withblock).with(1){ } }).raises
+      assert_that { Assert.stub(subject, :withblock).with(1){ } }.raises
     end
 
     should "not allow calling methods with invalid arity" do
-      assert_that(-> { subject.noargs(1) }).raises
+      assert_that { subject.noargs(1) }.raises
 
-      assert_that(-> { subject.withargs }).raises
-      assert_that(-> { subject.withargs(1, 2) }).raises
+      assert_that { subject.withargs }.raises
+      assert_that { subject.withargs(1, 2) }.raises
 
-      assert_that(-> { subject.minargs }).raises
-      assert_that(-> { subject.minargs(1) }).raises
+      assert_that { subject.minargs }.raises
+      assert_that { subject.minargs(1) }.raises
 
-      assert_that(-> { subject.withblock(1) }).raises
+      assert_that { subject.withblock(1) }.raises
     end
   end
 
@@ -127,27 +127,27 @@ class Assert::Stub
     end
 
     should "not allow stubbing methods with invalid arity" do
-      assert_that(-> { Assert.stub(subject, :noargs).with(1){ } }).raises
+      assert_that { Assert.stub(subject, :noargs).with(1){ } }.raises
 
-      assert_that(-> { Assert.stub(subject, :withargs).with{ } }).raises
-      assert_that(-> { Assert.stub(subject, :withargs).with(1, 2){ } }).raises
+      assert_that { Assert.stub(subject, :withargs).with{ } }.raises
+      assert_that { Assert.stub(subject, :withargs).with(1, 2){ } }.raises
 
-      assert_that(-> { Assert.stub(subject, :minargs).with{ } }).raises
-      assert_that(-> { Assert.stub(subject, :minargs).with(1){ } }).raises
+      assert_that { Assert.stub(subject, :minargs).with{ } }.raises
+      assert_that { Assert.stub(subject, :minargs).with(1){ } }.raises
 
-      assert_that(-> { Assert.stub(subject, :withblock).with(1){ } }).raises
+      assert_that { Assert.stub(subject, :withblock).with(1){ } }.raises
     end
 
     should "not allow calling methods with invalid arity" do
-      assert_that(-> { subject.noargs(1) }).raises
+      assert_that { subject.noargs(1) }.raises
 
-      assert_that(-> { subject.withargs }).raises
-      assert_that(-> { subject.withargs(1, 2) }).raises
+      assert_that { subject.withargs }.raises
+      assert_that { subject.withargs(1, 2) }.raises
 
-      assert_that(-> { subject.minargs }).raises
-      assert_that(-> { subject.minargs(1) }).raises
+      assert_that { subject.minargs }.raises
+      assert_that { subject.minargs(1) }.raises
 
-      assert_that(-> { subject.withblock(1) }).raises
+      assert_that { subject.withblock(1) }.raises
     end
   end
 
@@ -200,27 +200,27 @@ class Assert::Stub
     end
 
     should "not allow stubbing methods with invalid arity" do
-      assert_that(-> { Assert.stub(subject, :noargs).with(1){ } }).raises
+      assert_that { Assert.stub(subject, :noargs).with(1){ } }.raises
 
-      assert_that(-> { Assert.stub(subject, :withargs).with{ } }).raises
-      assert_that(-> { Assert.stub(subject, :withargs).with(1, 2){ } }).raises
+      assert_that { Assert.stub(subject, :withargs).with{ } }.raises
+      assert_that { Assert.stub(subject, :withargs).with(1, 2){ } }.raises
 
-      assert_that(-> { Assert.stub(subject, :minargs).with{ } }).raises
-      assert_that(-> { Assert.stub(subject, :minargs).with(1){ } }).raises
+      assert_that { Assert.stub(subject, :minargs).with{ } }.raises
+      assert_that { Assert.stub(subject, :minargs).with(1){ } }.raises
 
-      assert_that(-> { Assert.stub(subject, :withblock).with(1){ } }).raises
+      assert_that { Assert.stub(subject, :withblock).with(1){ } }.raises
     end
 
     should "not allow calling methods with invalid arity" do
-      assert_that(-> { subject.noargs(1) }).raises
+      assert_that { subject.noargs(1) }.raises
 
-      assert_that(-> { subject.withargs }).raises
-      assert_that(-> { subject.withargs(1, 2) }).raises
+      assert_that { subject.withargs }.raises
+      assert_that { subject.withargs(1, 2) }.raises
 
-      assert_that(-> { subject.minargs }).raises
-      assert_that(-> { subject.minargs(1) }).raises
+      assert_that { subject.minargs }.raises
+      assert_that { subject.minargs(1) }.raises
 
-      assert_that(-> { subject.withblock(1) }).raises
+      assert_that { subject.withblock(1) }.raises
     end
   end
 
@@ -273,27 +273,27 @@ class Assert::Stub
     end
 
     should "not allow stubbing methods with invalid arity" do
-      assert_that(-> { Assert.stub(subject, :noargs).with(1){ } }).raises
+      assert_that { Assert.stub(subject, :noargs).with(1){ } }.raises
 
-      assert_that(-> { Assert.stub(subject, :withargs).with{ } }).raises
-      assert_that(-> { Assert.stub(subject, :withargs).with(1, 2){ } }).raises
+      assert_that { Assert.stub(subject, :withargs).with{ } }.raises
+      assert_that { Assert.stub(subject, :withargs).with(1, 2){ } }.raises
 
-      assert_that(-> { Assert.stub(subject, :minargs).with{ } }).raises
-      assert_that(-> { Assert.stub(subject, :minargs).with(1){ } }).raises
+      assert_that { Assert.stub(subject, :minargs).with{ } }.raises
+      assert_that { Assert.stub(subject, :minargs).with(1){ } }.raises
 
-      assert_that(-> { Assert.stub(subject, :withblock).with(1){ } }).raises
+      assert_that { Assert.stub(subject, :withblock).with(1){ } }.raises
     end
 
     should "not allow calling methods with invalid arity" do
-      assert_that(-> { subject.noargs(1) }).raises
+      assert_that { subject.noargs(1) }.raises
 
-      assert_that(-> { subject.withargs }).raises
-      assert_that(-> { subject.withargs(1, 2) }).raises
+      assert_that { subject.withargs }.raises
+      assert_that { subject.withargs(1, 2) }.raises
 
-      assert_that(-> { subject.minargs }).raises
-      assert_that(-> { subject.minargs(1) }).raises
+      assert_that { subject.minargs }.raises
+      assert_that { subject.minargs(1) }.raises
 
-      assert_that(-> { subject.withblock(1) }).raises
+      assert_that { subject.withblock(1) }.raises
     end
   end
 
@@ -348,27 +348,27 @@ class Assert::Stub
     end
 
     should "not allow stubbing methods with invalid arity" do
-      assert_that(-> { Assert.stub(subject, :noargs).with(1){ } }).raises
+      assert_that { Assert.stub(subject, :noargs).with(1){ } }.raises
 
-      assert_that(-> { Assert.stub(subject, :withargs).with{ } }).raises
-      assert_that(-> { Assert.stub(subject, :withargs).with(1, 2){ } }).raises
+      assert_that { Assert.stub(subject, :withargs).with{ } }.raises
+      assert_that { Assert.stub(subject, :withargs).with(1, 2){ } }.raises
 
-      assert_that(-> { Assert.stub(subject, :minargs).with{ } }).raises
-      assert_that(-> { Assert.stub(subject, :minargs).with(1){ } }).raises
+      assert_that { Assert.stub(subject, :minargs).with{ } }.raises
+      assert_that { Assert.stub(subject, :minargs).with(1){ } }.raises
 
-      assert_that(-> { Assert.stub(subject, :withblock).with(1){ } }).raises
+      assert_that { Assert.stub(subject, :withblock).with(1){ } }.raises
     end
 
     should "not allow calling methods with invalid arity" do
-      assert_that(-> { subject.noargs(1) }).raises
+      assert_that { subject.noargs(1) }.raises
 
-      assert_that(-> { subject.withargs }).raises
-      assert_that(-> { subject.withargs(1, 2) }).raises
+      assert_that { subject.withargs }.raises
+      assert_that { subject.withargs(1, 2) }.raises
 
-      assert_that(-> { subject.minargs }).raises
-      assert_that(-> { subject.minargs(1) }).raises
+      assert_that { subject.minargs }.raises
+      assert_that { subject.minargs(1) }.raises
 
-      assert_that(-> { subject.withblock(1) }).raises
+      assert_that { subject.withblock(1) }.raises
     end
   end
 
@@ -421,27 +421,27 @@ class Assert::Stub
     end
 
     should "not allow stubbing methods with invalid arity" do
-      assert_that(-> { Assert.stub(subject, :noargs).with(1){ } }).raises
+      assert_that { Assert.stub(subject, :noargs).with(1){ } }.raises
 
-      assert_that(-> { Assert.stub(subject, :withargs).with{ } }).raises
-      assert_that(-> { Assert.stub(subject, :withargs).with(1, 2){ } }).raises
+      assert_that { Assert.stub(subject, :withargs).with{ } }.raises
+      assert_that { Assert.stub(subject, :withargs).with(1, 2){ } }.raises
 
-      assert_that(-> { Assert.stub(subject, :minargs).with{ } }).raises
-      assert_that(-> { Assert.stub(subject, :minargs).with(1){ } }).raises
+      assert_that { Assert.stub(subject, :minargs).with{ } }.raises
+      assert_that { Assert.stub(subject, :minargs).with(1){ } }.raises
 
-      assert_that(-> { Assert.stub(subject, :withblock).with(1){ } }).raises
+      assert_that { Assert.stub(subject, :withblock).with(1){ } }.raises
     end
 
     should "not allow calling methods with invalid arity" do
-      assert_that(-> { subject.noargs(1) }).raises
+      assert_that { subject.noargs(1) }.raises
 
-      assert_that(-> { subject.withargs }).raises
-      assert_that(-> { subject.withargs(1, 2) }).raises
+      assert_that { subject.withargs }.raises
+      assert_that { subject.withargs(1, 2) }.raises
 
-      assert_that(-> { subject.minargs }).raises
-      assert_that(-> { subject.minargs(1) }).raises
+      assert_that { subject.minargs }.raises
+      assert_that { subject.minargs(1) }.raises
 
-      assert_that(-> { subject.withblock(1) }).raises
+      assert_that { subject.withblock(1) }.raises
     end
   end
 
@@ -494,27 +494,27 @@ class Assert::Stub
     end
 
     should "not allow stubbing methods with invalid arity" do
-      assert_that(-> { Assert.stub(subject, :noargs).with(1){ } }).raises
+      assert_that { Assert.stub(subject, :noargs).with(1){ } }.raises
 
-      assert_that(-> { Assert.stub(subject, :withargs).with{ } }).raises
-      assert_that(-> { Assert.stub(subject, :withargs).with(1, 2){ } }).raises
+      assert_that { Assert.stub(subject, :withargs).with{ } }.raises
+      assert_that { Assert.stub(subject, :withargs).with(1, 2){ } }.raises
 
-      assert_that(-> { Assert.stub(subject, :minargs).with{ } }).raises
-      assert_that(-> { Assert.stub(subject, :minargs).with(1){ } }).raises
+      assert_that { Assert.stub(subject, :minargs).with{ } }.raises
+      assert_that { Assert.stub(subject, :minargs).with(1){ } }.raises
 
-      assert_that(-> { Assert.stub(subject, :withblock).with(1){ } }).raises
+      assert_that { Assert.stub(subject, :withblock).with(1){ } }.raises
     end
 
     should "not allow calling methods with invalid arity" do
-      assert_that(-> { subject.noargs(1) }).raises
+      assert_that { subject.noargs(1) }.raises
 
-      assert_that(-> { subject.withargs }).raises
-      assert_that(-> { subject.withargs(1, 2) }).raises
+      assert_that { subject.withargs }.raises
+      assert_that { subject.withargs(1, 2) }.raises
 
-      assert_that(-> { subject.minargs }).raises
-      assert_that(-> { subject.minargs(1) }).raises
+      assert_that { subject.minargs }.raises
+      assert_that { subject.minargs(1) }.raises
 
-      assert_that(-> { subject.withblock(1) }).raises
+      assert_that { subject.withblock(1) }.raises
     end
   end
 
@@ -567,27 +567,27 @@ class Assert::Stub
     end
 
     should "allow stubbing methods with invalid arity" do
-      assert_that(-> { Assert.stub(subject, :noargs).with(1){ } }).does_not_raise
+      assert_that { Assert.stub(subject, :noargs).with(1){ } }.does_not_raise
 
-      assert_that(-> { Assert.stub(subject, :withargs).with{ } }).does_not_raise
-      assert_that(-> { Assert.stub(subject, :withargs).with(1, 2){ } }).does_not_raise
+      assert_that { Assert.stub(subject, :withargs).with{ } }.does_not_raise
+      assert_that { Assert.stub(subject, :withargs).with(1, 2){ } }.does_not_raise
 
-      assert_that(-> { Assert.stub(subject, :minargs).with{ } }).does_not_raise
-      assert_that(-> { Assert.stub(subject, :minargs).with(1){ } }).does_not_raise
+      assert_that { Assert.stub(subject, :minargs).with{ } }.does_not_raise
+      assert_that { Assert.stub(subject, :minargs).with(1){ } }.does_not_raise
 
-      assert_that(-> { Assert.stub(subject, :withblock).with(1){ } }).does_not_raise
+      assert_that { Assert.stub(subject, :withblock).with(1){ } }.does_not_raise
     end
 
     should "allow calling methods with invalid arity" do
-      assert_that(-> { subject.noargs(1) }).does_not_raise
+      assert_that { subject.noargs(1) }.does_not_raise
 
-      assert_that(-> { subject.withargs }).does_not_raise
-      assert_that(-> { subject.withargs(1, 2) }).does_not_raise
+      assert_that { subject.withargs }.does_not_raise
+      assert_that { subject.withargs(1, 2) }.does_not_raise
 
-      assert_that(-> { subject.minargs }).does_not_raise
-      assert_that(-> { subject.minargs(1) }).does_not_raise
+      assert_that { subject.minargs }.does_not_raise
+      assert_that { subject.minargs(1) }.does_not_raise
 
-      assert_that(-> { subject.withblock(1) }).does_not_raise
+      assert_that { subject.withblock(1) }.does_not_raise
     end
   end
 
@@ -640,27 +640,27 @@ class Assert::Stub
     end
 
     should "allow stubbing methods with invalid arity" do
-      assert_that(-> { Assert.stub(subject, :noargs).with(1){ } }).does_not_raise
+      assert_that { Assert.stub(subject, :noargs).with(1){ } }.does_not_raise
 
-      assert_that(-> { Assert.stub(subject, :withargs).with{ } }).does_not_raise
-      assert_that(-> { Assert.stub(subject, :withargs).with(1, 2){ } }).does_not_raise
+      assert_that { Assert.stub(subject, :withargs).with{ } }.does_not_raise
+      assert_that { Assert.stub(subject, :withargs).with(1, 2){ } }.does_not_raise
 
-      assert_that(-> { Assert.stub(subject, :minargs).with{ } }).does_not_raise
-      assert_that(-> { Assert.stub(subject, :minargs).with(1){ } }).does_not_raise
+      assert_that { Assert.stub(subject, :minargs).with{ } }.does_not_raise
+      assert_that { Assert.stub(subject, :minargs).with(1){ } }.does_not_raise
 
-      assert_that(-> { Assert.stub(subject, :withblock).with(1){ } }).does_not_raise
+      assert_that { Assert.stub(subject, :withblock).with(1){ } }.does_not_raise
     end
 
     should "allow calling methods with invalid arity" do
-      assert_that(-> { subject.noargs(1) }).does_not_raise
+      assert_that { subject.noargs(1) }.does_not_raise
 
-      assert_that(-> { subject.withargs }).does_not_raise
-      assert_that(-> { subject.withargs(1, 2) }).does_not_raise
+      assert_that { subject.withargs }.does_not_raise
+      assert_that { subject.withargs(1, 2) }.does_not_raise
 
-      assert_that(-> { subject.minargs }).does_not_raise
-      assert_that(-> { subject.minargs(1) }).does_not_raise
+      assert_that { subject.minargs }.does_not_raise
+      assert_that { subject.minargs(1) }.does_not_raise
 
-      assert_that(-> { subject.withblock(1) }).does_not_raise
+      assert_that { subject.withblock(1) }.does_not_raise
     end
   end
 

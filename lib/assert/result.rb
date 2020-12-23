@@ -129,7 +129,11 @@ module Assert::Result
     end
 
     def ==(other_result)
-      self.type == other_result.type && self.message == other_result.message
+      if other_result.is_a?(self.class)
+        self.type == other_result.type && self.message == other_result.message
+      else
+        super
+      end
     end
 
     def inspect

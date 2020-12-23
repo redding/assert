@@ -70,8 +70,11 @@ module Assert
     end
     alias_method :refute, :assert_not
 
-    def assert_that(actual_value)
-      Assert::ActualValue.new(actual_value, context: self)
+    def assert_that(
+          actual_value = Assert::ActualValue.not_given,
+          &actual_value_block
+        )
+      Assert::ActualValue.new(actual_value, context: self, &actual_value_block)
     end
 
     # adds a Pass result to the end of the test's results
@@ -80,8 +83,10 @@ module Assert
       if @__assert_pending__ == 0
         capture_result(Assert::Result::Pass, pass_msg)
       else
-        capture_result(Assert::Result::Fail, "Pending pass (make it "\
-                                             "not pending)")
+        capture_result(
+          Assert::Result::Fail,
+          "Pending pass (make it not pending)"
+        )
       end
     end
 
