@@ -27,10 +27,11 @@ module Assert::Assertions
       assert_that(test_run_result_count(:fail)).equals(4)
 
       exp =
-        [ "#{desc1}\nStandardError or RuntimeError exception expected, not:",
+        [
+          "#{desc1}\nStandardError or RuntimeError exception expected, not:",
           "#{desc1}\nRuntimeError exception expected, not:",
           "#{desc1}\nRuntimeError exception expected but nothing raised.",
-          "#{desc1}\nAn exception expected but nothing raised."
+          "#{desc1}\nAn exception expected but nothing raised.",
         ]
       messages = test_run_results(:fail).map(&:message)
       messages.each_with_index{ |msg, n| assert_that(msg).matches(/^#{exp[n]}/) }
@@ -81,8 +82,9 @@ module Assert::Assertions
       assert_that(test_run_result_count(:fail)).equals(2)
 
       exp =
-        [ "#{desc1}\nStandardError or RuntimeError exception not expected, but raised:",
-          "#{desc1}\nAn exception not expected, but raised:"
+        [
+          "#{desc1}\nStandardError or RuntimeError exception not expected, but raised:",
+          "#{desc1}\nAn exception not expected, but raised:",
         ]
       messages = test_run_results(:fail).map(&:message)
       messages.each_with_index{ |msg, n| assert_that(msg).matches(/^#{exp[n]}/) }

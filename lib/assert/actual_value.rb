@@ -60,6 +60,14 @@ class Assert::ActualValue
     @context.assert_nothing_raised(*expected_exceptions, &@value)
   end
 
+  def changes(*args)
+    @context.assert_changes(*args, &@value)
+  end
+
+  def does_not_change(*args)
+    @context.assert_not_changes(*args, &@value)
+  end
+
   def is_a_kind_of(expected_class, *args)
     @context.assert_kind_of(expected_class, @value, *args)
   end

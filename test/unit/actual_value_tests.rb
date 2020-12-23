@@ -18,6 +18,7 @@ class Assert::ActualValue
 
     should have_imeths :returns_true, :does_not_return_true
     should have_imeths :raises, :does_not_raise
+    should have_imeths :changes, :does_not_change
     should have_imeths :is_a_kind_of, :is_not_a_kind_of
     should have_imeths :is_kind_of, :is_not_kind_of
     should have_imeths :is_an_instance_of, :is_not_an_instance_of
@@ -73,6 +74,24 @@ class Assert::ActualValue
       assert_calls(
         :assert_nothing_raised,
         when_calling: :does_not_raise,
+        on_value: -> {}
+      ) do |value, call|
+        assert_equal args1, call.args
+        assert_equal value, call.block
+      end
+
+      assert_calls(
+        :assert_changes,
+        when_calling: :changes,
+        on_value: -> {}
+      ) do |value, call|
+        assert_equal args1, call.args
+        assert_equal value, call.block
+      end
+
+      assert_calls(
+        :assert_not_changes,
+        when_calling: :does_not_change,
         on_value: -> {}
       ) do |value, call|
         assert_equal args1, call.args

@@ -198,6 +198,75 @@ module Assert
     alias_method :assert_not_raises, :assert_nothing_raised
     alias_method :assert_not_raise, :assert_nothing_raised
 
+    def assert_changes(
+          ruby_string_to_eval,
+          desc: nil,
+          from: Assert::ActualValue.not_given,
+          to: Assert::ActualValue.not_given,
+          &block
+        )
+      desc_msg = desc ? "#{desc}\n" : ""
+      from_eval = instance_eval(ruby_string_to_eval)
+      if Assert::ActualValue.given?(from)
+        assert_equal(
+          from,
+          from_eval,
+          "#{desc_msg}Expected `#{ruby_string_to_eval}` to change from `#{from.inspect}`."
+        )
+      end
+
+      block.call
+
+      to_eval = instance_eval(ruby_string_to_eval)
+      if Assert::ActualValue.given?(to)
+        assert_equal(
+          to,
+          to_eval,
+          "#{desc_msg}Expected `#{ruby_string_to_eval}` to change to `#{to.inspect}`."
+        )
+      end
+
+      if (
+        Assert::ActualValue.not_given?(from) &&
+        Assert::ActualValue.not_given?(to)
+      )
+        assert_not_equal(
+          from_eval,
+          to_eval,
+          "#{desc_msg}Expected `#{ruby_string_to_eval}` to change; "\
+          "it was `#{from_eval.inspect}` and didn't change."
+        )
+      end
+    end
+
+    def assert_not_changes(
+          ruby_string_to_eval,
+          desc: nil,
+          from: Assert::ActualValue.not_given,
+          &block
+        )
+      desc_msg = desc ? "#{desc}\n" : ""
+      from_eval = instance_eval(ruby_string_to_eval)
+      if Assert::ActualValue.given?(from)
+        assert_equal(
+          from,
+          from_eval,
+          "#{desc_msg}Expected `#{ruby_string_to_eval}` to not change from `#{from.inspect}`."
+        )
+      end
+
+      block.call
+
+      to_eval = instance_eval(ruby_string_to_eval)
+      assert_equal(
+        from_eval,
+        to_eval,
+        "#{desc_msg}Expected `#{ruby_string_to_eval}` to not change; "\
+        "it was `#{from_eval.inspect}` and changed to `#{to_eval.inspect}`."
+      )
+    end
+    alias_method :refute_changes, :assert_not_changes
+
     def assert_respond_to(method, object, desc = nil)
       assert(object.respond_to?(method), desc) do
         "Expected #{Assert::U.show(object, __assert_config__)} (#{object.class})"\
