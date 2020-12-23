@@ -15,11 +15,6 @@ class Assert::Suite
     should "include the config helpers" do
       assert_that(subject).includes(Assert::ConfigHelpers)
     end
-
-    should "know its test method regex" do
-      assert_that(subject::TEST_METHOD_REGEX).matches("test#{Factory.string}")
-      assert_that(subject::TEST_METHOD_REGEX).does_not_match("#{Factory.string}test")
-    end
   end
 
   class InitTests < UnitTests
@@ -28,7 +23,7 @@ class Assert::Suite
 
     let(:config1) { Factory.modes_off_config }
 
-    should have_readers :config, :test_methods, :setups, :teardowns
+    should have_readers :config, :setups, :teardowns
     should have_accessors :start_time, :end_time
     should have_imeths :suite, :setup, :startup, :teardown, :shutdown
     should have_imeths :tests_to_run?, :tests_to_run_count, :clear_tests_to_run
@@ -46,7 +41,6 @@ class Assert::Suite
     end
 
     should "default its attrs" do
-      assert_that(subject.test_methods).equals([])
       assert_that(subject.setups).equals([])
       assert_that(subject.teardowns).equals([])
 

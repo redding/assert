@@ -10,22 +10,19 @@ module Assert
   class Suite
     include Assert::ConfigHelpers
 
-    TEST_METHOD_REGEX = /^test./.freeze
-
     # A suite is a set of tests to run.  When a test class subclasses
     # the Context class, that test class is pushed to the suite.
 
-    attr_reader :config, :test_methods, :setups, :teardowns
+    attr_reader :config, :setups, :teardowns
     attr_accessor :start_time, :end_time
 
     def initialize(config)
-      @config       = config
-      @tests        = []
-      @test_methods = []
-      @setups       = []
-      @teardowns    = []
-      @start_time   = Time.now
-      @end_time     = @start_time
+      @config     = config
+      @tests      = []
+      @setups     = []
+      @teardowns  = []
+      @start_time = Time.now
+      @end_time   = @start_time
     end
 
     def suite; self; end

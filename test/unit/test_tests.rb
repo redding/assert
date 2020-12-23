@@ -17,7 +17,7 @@ class Assert::Test
     let(:config1)        { Factory.modes_off_config }
     let(:test_code1)     { proc { assert(true) } }
 
-    should have_imeths :name_file_line_context_data, :for_block, :for_method
+    should have_imeths :name_file_line_context_data, :for_block
 
     should "know how to build the name and file line given context" do
       test_name = Factory.string
@@ -43,28 +43,6 @@ class Assert::Test
       assert_that(test.context_info).equals(context_info1)
       assert_that(test.config).equals(config1)
       assert_that(test.code).equals(test_code1)
-    end
-
-    should "build tests for a method" do
-      meth = "a_test_method"
-      test = subject.for_method(meth, context_info1, config1)
-
-      exp = Assert::FileLine.parse(context_info1.called_from)
-      assert_that(test.file_line).equals(exp)
-
-      exp = context_info1.test_name(meth)
-      assert_that(test.name).equals(exp)
-
-      assert_that(test.context_info).equals(context_info1)
-      assert_that(test.config).equals(config1)
-
-      assert_that(test.code).is_kind_of(Proc)
-      self.instance_eval(&test.code)
-      assert_that(@a_test_method_called).is_true
-    end
-
-    def a_test_method
-      @a_test_method_called = true
     end
   end
 

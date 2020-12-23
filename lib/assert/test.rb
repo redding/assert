@@ -20,14 +20,6 @@ module Assert
       }))
     end
 
-    def self.for_method(method_name, context_info, config)
-      self.new(self.name_file_line_context_data(context_info, method_name).merge({
-        :context_info => context_info,
-        :config       => config,
-        :code         => proc{ self.send(method_name) }
-      }))
-    end
-
     def initialize(build_data = nil)
       @build_data      = build_data || {}
       @result_callback = nil
