@@ -1,43 +1,9 @@
+require "much-not-given"
 require "much-stub"
 
 module Assert; end
 class Assert::ActualValue
-  def self.not_given
-    @not_given ||=
-      Class.new {
-        def to_s
-          "Assert::ActualValue.not_given"
-        end
-
-        def blank?
-          true
-        end
-
-        def present?
-          false
-        end
-
-        def ==(other)
-          if other.is_a?(self.class)
-            true
-          else
-            super
-          end
-        end
-
-        def inspect
-          to_s
-        end
-      }.new
-  end
-
-  def self.not_given?(value)
-    value == not_given
-  end
-
-  def self.given?(value)
-    value != not_given
-  end
+  include MuchNotGiven
 
   def initialize(value = self.class.not_given, context:, &value_block)
     @value = self.class.given?(value) ? value : value_block
