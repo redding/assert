@@ -128,14 +128,14 @@ class Assert::Suite
 
     should "find a test to run given a file line" do
       test = tests1.sample
-      assert_that(subject.find_test_to_run(test.file_line)).is_the_same_as(test)
+      assert_that(subject.find_test_to_run(test.file_line)).is(test)
     end
 
     should "know its sorted tests to run" do
       sorted_tests = subject.sorted_tests_to_run{ 1 }
       assert_that(sorted_tests.size).equals(tests1.size)
       assert_that(sorted_tests.first).is_kind_of(Assert::Test)
-      assert_that(subject.sorted_tests_to_run{ 1 }.first).is_the_same_as(sorted_tests.first)
+      assert_that(subject.sorted_tests_to_run{ 1 }.first).is(sorted_tests.first)
     end
   end
 end

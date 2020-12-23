@@ -19,9 +19,9 @@ module Assert
     end
 
     should "map its view, suite and runner to its config" do
-      assert_that(subject.view).is_the_same_as(subject.config.view)
-      assert_that(subject.suite).is_the_same_as(subject.config.suite)
-      assert_that(subject.runner).is_the_same_as(subject.config.runner)
+      assert_that(subject.view).is(subject.config.view)
+      assert_that(subject.suite).is(subject.config.suite)
+      assert_that(subject.runner).is(subject.config.runner)
     end
 
     # Note: don't really need to explicitly test the configure method as
@@ -29,18 +29,6 @@ module Assert
   end
 
   class StubTests < UnitTests
-    # setup do
-    #   orig_value1 = Factory.string
-    #   stub_value1 = Factory.string
-
-    #   @myclass =
-    #   Class.new do
-    #     def initialize(value); @value = value; end
-    #     def mymeth; @value; end
-    #   end
-    #   object1 = @myclass.new(orig_value1)
-    # end
-
     let(:class1) {
       Class.new do
         def initialize(value); @value = value; end
@@ -71,7 +59,7 @@ module Assert
     should "lookup stubs that have been called before" do
       stub1 = Assert.stub(object1, :mymeth)
       stub2 = Assert.stub(object1, :mymeth)
-      assert_that(stub2).is_the_same_as(stub1)
+      assert_that(stub2).is(stub1)
     end
 
     should "set the stub's do block if given a block" do

@@ -24,6 +24,7 @@ class Assert::ActualValue
     should have_imeths :is_instance_of, :is_not_instance_of
     should have_imeths :responds_to, :does_not_respond_to
     should have_imeths :is_the_same_as, :is_not_the_same_as
+    should have_imeths :is, :is_not
     should have_imeths :equals, :does_not_equal
     should have_imeths :is_equal_to, :is_not_equal_to
     should have_imeths :matches, :does_not_match
@@ -167,8 +168,24 @@ class Assert::ActualValue
       end
 
       assert_calls(
+        :assert_same,
+        when_calling: [:is, "something"],
+        on_value: actual_value1
+      ) do |value, call|
+        assert_equal ["something", value, *args1], call.args
+      end
+
+      assert_calls(
         :assert_not_same,
         when_calling: [:is_not_the_same_as, "something"],
+        on_value: actual_value1
+      ) do |value, call|
+        assert_equal ["something", value, *args1], call.args
+      end
+
+      assert_calls(
+        :assert_not_same,
+        when_calling: [:is_not, "something"],
         on_value: actual_value1
       ) do |value, call|
         assert_equal ["something", value, *args1], call.args

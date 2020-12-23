@@ -54,10 +54,12 @@ class Assert::ActualValue
   def is_the_same_as(expected_object, *args)
     @context.assert_same(expected_object, @value, *args)
   end
+  alias_method :is, :is_the_same_as
 
   def is_not_the_same_as(expected_object, *args)
     @context.assert_not_same(expected_object, @value, *args)
   end
+  alias_method :is_not, :is_not_the_same_as
 
   def equals(expected_value, *args)
     @context.assert_equal(expected_value, @value, *args)
