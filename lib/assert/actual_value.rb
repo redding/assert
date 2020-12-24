@@ -2,8 +2,45 @@ require "much-stub"
 
 module Assert; end
 class Assert::ActualValue
-  def initialize(value, context:)
-    @value = value
+  def self.not_given
+    @not_given ||=
+      Class.new {
+        def to_s
+          "Assert::ActualValue.not_given"
+        end
+
+        def blank?
+          true
+        end
+
+        def present?
+          false
+        end
+
+        def ==(other)
+          if other.is_a?(self.class)
+            true
+          else
+            super
+          end
+        end
+
+        def inspect
+          to_s
+        end
+      }.new
+  end
+
+  def self.not_given?(value)
+    value == not_given
+  end
+
+  def self.given?(value)
+    value != not_given
+  end
+
+  def initialize(value = self.class.not_given, context:, &value_block)
+    @value = self.class.given?(value) ? value : value_block
     @context = context
   end
 
@@ -21,6 +58,14 @@ class Assert::ActualValue
 
   def does_not_raise(*expected_exceptions)
     @context.assert_nothing_raised(*expected_exceptions, &@value)
+  end
+
+  def changes(*args)
+    @context.assert_changes(*args, &@value)
+  end
+
+  def does_not_change(*args)
+    @context.assert_not_changes(*args, &@value)
   end
 
   def is_a_kind_of(expected_class, *args)
@@ -54,10 +99,12 @@ class Assert::ActualValue
   def is_the_same_as(expected_object, *args)
     @context.assert_same(expected_object, @value, *args)
   end
+  alias_method :is, :is_the_same_as
 
   def is_not_the_same_as(expected_object, *args)
     @context.assert_not_same(expected_object, @value, *args)
   end
+  alias_method :is_not, :is_not_the_same_as
 
   def equals(expected_value, *args)
     @context.assert_equal(expected_value, @value, *args)

@@ -15,11 +15,6 @@ class Assert::Suite
     should "include the config helpers" do
       assert_that(subject).includes(Assert::ConfigHelpers)
     end
-
-    should "know its test method regex" do
-      assert_that(subject::TEST_METHOD_REGEX).matches("test#{Factory.string}")
-      assert_that(subject::TEST_METHOD_REGEX).does_not_match("#{Factory.string}test")
-    end
   end
 
   class InitTests < UnitTests
@@ -28,7 +23,7 @@ class Assert::Suite
 
     let(:config1) { Factory.modes_off_config }
 
-    should have_readers :config, :test_methods, :setups, :teardowns
+    should have_readers :config, :setups, :teardowns
     should have_accessors :start_time, :end_time
     should have_imeths :suite, :setup, :startup, :teardown, :shutdown
     should have_imeths :tests_to_run?, :tests_to_run_count, :clear_tests_to_run
@@ -46,7 +41,6 @@ class Assert::Suite
     end
 
     should "default its attrs" do
-      assert_that(subject.test_methods).equals([])
       assert_that(subject.setups).equals([])
       assert_that(subject.teardowns).equals([])
 
@@ -134,14 +128,14 @@ class Assert::Suite
 
     should "find a test to run given a file line" do
       test = tests1.sample
-      assert_that(subject.find_test_to_run(test.file_line)).is_the_same_as(test)
+      assert_that(subject.find_test_to_run(test.file_line)).is(test)
     end
 
     should "know its sorted tests to run" do
       sorted_tests = subject.sorted_tests_to_run{ 1 }
       assert_that(sorted_tests.size).equals(tests1.size)
       assert_that(sorted_tests.first).is_kind_of(Assert::Test)
-      assert_that(subject.sorted_tests_to_run{ 1 }.first).is_the_same_as(sorted_tests.first)
+      assert_that(subject.sorted_tests_to_run{ 1 }.first).is(sorted_tests.first)
     end
   end
 end

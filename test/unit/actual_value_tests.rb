@@ -18,12 +18,14 @@ class Assert::ActualValue
 
     should have_imeths :returns_true, :does_not_return_true
     should have_imeths :raises, :does_not_raise
+    should have_imeths :changes, :does_not_change
     should have_imeths :is_a_kind_of, :is_not_a_kind_of
     should have_imeths :is_kind_of, :is_not_kind_of
     should have_imeths :is_an_instance_of, :is_not_an_instance_of
     should have_imeths :is_instance_of, :is_not_instance_of
     should have_imeths :responds_to, :does_not_respond_to
     should have_imeths :is_the_same_as, :is_not_the_same_as
+    should have_imeths :is, :is_not
     should have_imeths :equals, :does_not_equal
     should have_imeths :is_equal_to, :is_not_equal_to
     should have_imeths :matches, :does_not_match
@@ -72,6 +74,24 @@ class Assert::ActualValue
       assert_calls(
         :assert_nothing_raised,
         when_calling: :does_not_raise,
+        on_value: -> {}
+      ) do |value, call|
+        assert_equal args1, call.args
+        assert_equal value, call.block
+      end
+
+      assert_calls(
+        :assert_changes,
+        when_calling: :changes,
+        on_value: -> {}
+      ) do |value, call|
+        assert_equal args1, call.args
+        assert_equal value, call.block
+      end
+
+      assert_calls(
+        :assert_not_changes,
+        when_calling: :does_not_change,
         on_value: -> {}
       ) do |value, call|
         assert_equal args1, call.args
@@ -167,8 +187,24 @@ class Assert::ActualValue
       end
 
       assert_calls(
+        :assert_same,
+        when_calling: [:is, "something"],
+        on_value: actual_value1
+      ) do |value, call|
+        assert_equal ["something", value, *args1], call.args
+      end
+
+      assert_calls(
         :assert_not_same,
         when_calling: [:is_not_the_same_as, "something"],
+        on_value: actual_value1
+      ) do |value, call|
+        assert_equal ["something", value, *args1], call.args
+      end
+
+      assert_calls(
+        :assert_not_same,
+        when_calling: [:is_not, "something"],
         on_value: actual_value1
       ) do |value, call|
         assert_equal ["something", value, *args1], call.args

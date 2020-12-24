@@ -124,8 +124,9 @@ module Assert::Context::TestDSL
       context, test = build_eval_context{ test_eventually(m) }
 
       assert_that(context.class.suite.tests_to_run_count).equals(1)
-      assert_that(-> { context.instance_eval(&test.code) }).
-        raises(Assert::Result::TestSkipped)
+      assert_that {
+        context.instance_eval(&test.code)
+      }.raises(Assert::Result::TestSkipped)
     end
 
     should "build a test that skips from a macro using `should_eventually`" do
@@ -134,8 +135,9 @@ module Assert::Context::TestDSL
       context, test = build_eval_context{ should_eventually(m) }
 
       assert_that(context.class.suite.tests_to_run_count).equals(1)
-      assert_that(-> { context.instance_eval(&test.code) }).
-        raises(Assert::Result::TestSkipped)
+      assert_that {
+        context.instance_eval(&test.code)
+      }.raises(Assert::Result::TestSkipped)
     end
 
     private

@@ -49,10 +49,10 @@ module Assert::ConfigHelpers
     end
 
     should "know if it is in single test mode" do
-      Assert.stub(subject.config, :single_test?){ true }
+      Assert.stub(subject.config, :single_test?) { true }
       assert_that(subject.single_test?).is_true
 
-      Assert.stub(subject.config, :single_test?){ false }
+      Assert.stub(subject.config, :single_test?) { false }
       assert_that(subject.single_test?).is_false
     end
 

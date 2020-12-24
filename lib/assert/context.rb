@@ -13,8 +13,13 @@ require "assert/suite"
 require "assert/utils"
 
 module Assert
+  # A Context is a scope for tests to run in. Contexts have setup and teardown
+  # blocks, subjects, and descriptions. Tests are run in the scope of a Context
+  # instance. Therefore, a Context should have minimal base
+  # logic/methods/instance_vars. The instance should remain pure to not pollute
+  # test scopes.
   class Context
-    # put all logic in DSL methods to keep context instances pure for running tests
+    # Put all logic in DSL methods to keep context instances pure.
     extend SetupDSL
     extend SubjectDSL
     extend SuiteDSL
@@ -23,33 +28,6 @@ module Assert
     include MethodMissing
     include Assert::Assertions
     include Assert::Macros::Methods
-
-    # a Context is a scope for tests to run in.  Contexts have setup and
-    # teardown blocks, subjects, and descriptions.  Tests are run in the
-    # scope of a Context instance.  Therefore, a Context should have
-    # minimal base logic/methods/instance_vars.  The instance should remain
-    # pure to not pollute test scopes.
-
-    # if a test method is added to a context manually (not using a context helper):
-    # capture any context info, build a test obj, and add it to the suite
-    def self.method_added(method_name)
-      if method_name.to_s =~ Suite::TEST_METHOD_REGEX
-        klass_method_name = "#{self}##{method_name}"
-
-        if self.suite.test_methods.include?(klass_method_name)
-          puts "WARNING: redefining "#{klass_method_name}""
-          puts "  from: #{caller_locations(1,1)}"
-        else
-          self.suite.test_methods << klass_method_name
-        end
-
-        self.suite.on_test(Test.for_method(
-          method_name.to_s,
-          ContextInfo.new(self, nil, caller_locations(1,1)),
-          self.suite.config
-        ))
-      end
-    end
 
     def initialize(running_test, config, result_callback)
       @__assert_running_test__ = running_test
@@ -92,8 +70,11 @@ module Assert
     end
     alias_method :refute, :assert_not
 
-    def assert_that(actual_value)
-      Assert::ActualValue.new(actual_value, context: self)
+    def assert_that(
+          actual_value = Assert::ActualValue.not_given,
+          &actual_value_block
+        )
+      Assert::ActualValue.new(actual_value, context: self, &actual_value_block)
     end
 
     # adds a Pass result to the end of the test's results
@@ -102,8 +83,10 @@ module Assert
       if @__assert_pending__ == 0
         capture_result(Assert::Result::Pass, pass_msg)
       else
-        capture_result(Assert::Result::Fail, "Pending pass (make it "\
-                                             "not pending)")
+        capture_result(
+          Assert::Result::Fail,
+          "Pending pass (make it not pending)"
+        )
       end
     end
 

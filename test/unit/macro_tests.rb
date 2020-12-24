@@ -31,7 +31,7 @@ class Assert::Macro
     end
 
     should "complain if you create a macro without a block" do
-      assert_that(-> { unit_class.new }).raises(ArgumentError)
+      assert_that { unit_class.new }.raises(ArgumentError)
     end
   end
 

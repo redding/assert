@@ -69,8 +69,28 @@ module Assert::Assertions
 
     desc "with objects that define custom equality operators"
 
-    let(:is_class)     { Class.new do; def ==(other); true;  end; end }
-    let(:is_not_class) { Class.new do; def ==(other); false; end; end }
+    let(:is_class)     {
+      Class.new do
+        def ==(other)
+          if other.is_a?(Assert::ActualValue.not_given.class)
+            super
+          else
+            true
+          end
+        end
+      end
+    }
+    let(:is_not_class) {
+      Class.new do
+        def ==(other)
+          if other.is_a?(Assert::ActualValue.not_given.class)
+            super
+          else
+            false
+          end
+        end
+      end
+    }
 
     let(:is1) { is_class.new }
     let(:is_not1) { is_not_class.new }

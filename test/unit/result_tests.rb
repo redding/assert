@@ -302,7 +302,7 @@ module Assert::Result
     end
 
     should "not allow creating for a test with non-TestFailure exceptions" do
-      assert_that(-> { Fail.for_test(test1, RuntimeError.new) }).raises(ArgumentError)
+      assert_that { Fail.for_test(test1, RuntimeError.new) }.raises(ArgumentError)
     end
   end
 
@@ -348,7 +348,7 @@ module Assert::Result
     end
 
     should "not allow creating for a test with non-TestSkipped exceptions" do
-      assert_that(-> { Skip.for_test(test1, RuntimeError.new) }).raises(ArgumentError)
+      assert_that { Skip.for_test(test1, RuntimeError.new) }.raises(ArgumentError)
     end
   end
 
@@ -375,7 +375,7 @@ module Assert::Result
     end
 
     should "not allow creating for a test without an exception" do
-      assert_that(-> { Error.for_test(test1, Factory.string) }).raises(ArgumentError)
+      assert_that { Error.for_test(test1, Factory.string) }.raises(ArgumentError)
     end
   end
 

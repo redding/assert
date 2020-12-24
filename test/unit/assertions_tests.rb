@@ -12,24 +12,25 @@ module Assert::Assertions
     let(:test1) { Factory.test }
 
     should have_imeths :assert_block, :assert_not_block, :refute_block
+    should have_imeths :assert_empty, :assert_not_empty, :refute_empty
+    should have_imeths :assert_equal, :assert_not_equal, :refute_equal
+    should have_imeths :assert_file_exists, :assert_not_file_exists, :refute_file_exists
+    should have_imeths :assert_includes, :assert_not_includes
+    should have_imeths :assert_included, :assert_not_included
+    should have_imeths :refute_includes, :refute_included
+    should have_imeths :assert_instance_of, :assert_not_instance_of, :refute_instance_of
+    should have_imeths :assert_kind_of, :assert_not_kind_of, :refute_kind_of
+    should have_imeths :assert_match, :assert_not_match, :assert_no_match, :refute_match
+    should have_imeths :assert_nil, :assert_not_nil, :refute_nil
+    should have_imeths :assert_true, :assert_not_true, :refute_true
+    should have_imeths :assert_false, :assert_not_false, :refute_false
     should have_imeths :assert_raises, :assert_not_raises
     should have_imeths :assert_raise, :assert_not_raise, :assert_nothing_raised
-    should have_imeths :assert_kind_of, :assert_not_kind_of, :refute_kind_of
-    should have_imeths :assert_instance_of, :assert_not_instance_of, :refute_instance_of
+    should have_imeths :assert_changes, :assert_not_changes, :refute_changes
     should have_imeths :assert_respond_to, :assert_responds_to
     should have_imeths :assert_not_respond_to, :assert_not_responds_to
     should have_imeths :refute_respond_to, :refute_responds_to
     should have_imeths :assert_same, :assert_not_same, :refute_same
-    should have_imeths :assert_equal, :assert_not_equal, :refute_equal
-    should have_imeths :assert_match, :assert_not_match, :assert_no_match, :refute_match
-    should have_imeths :assert_empty, :assert_not_empty, :refute_empty
-    should have_imeths :assert_includes, :assert_not_includes
-    should have_imeths :assert_included, :assert_not_included
-    should have_imeths :refute_includes, :refute_included
-    should have_imeths :assert_nil, :assert_not_nil, :refute_nil
-    should have_imeths :assert_true, :assert_not_true, :refute_true
-    should have_imeths :assert_false, :assert_not_false, :refute_false
-    should have_imeths :assert_file_exists, :assert_not_file_exists, :refute_file_exists
   end
 
   class IgnoredTests < UnitTests
