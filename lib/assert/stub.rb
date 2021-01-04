@@ -44,4 +44,43 @@ module Assert
   def self.stub_spy(*args, &block)
     MuchStub.spy(*args, &block)
   end
+
+  StubCall = MuchStub::Call
+  class StubCall
+    def self.name
+      super.gsub("MuchStub::Call", "Assert::StubCall")
+    end
+
+    def self.to_s
+      super.gsub("MuchStub::Call", "Assert::StubCall")
+    end
+
+    def self.inspect
+      super.gsub("MuchStub::Call", "Assert::StubCall")
+    end
+
+    def inspect
+      super.gsub("MuchStub::Call", "Assert::StubCall")
+    end
+  end
+
+  StubCallSpy = MuchStub::CallSpy
+  class StubCallSpy
+    def self.name
+      super.gsub("MuchStub::CallSpy", "Assert::StubCallSpy")
+    end
+
+    def self.to_s
+      super.gsub("MuchStub::CallSpy", "Assert::StubCallSpy")
+    end
+
+    def self.inspect
+      super.gsub("MuchStub::CallSpy", "Assert::StubCallSpy")
+    end
+
+    # See MuchStub::CallSpy#inspect.
+    def inspect
+      "#<Assert::StubCallSpy:#{"0x0%x" % (self.__id__ << 1)}>"
+    end
+  end
 end
