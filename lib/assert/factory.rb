@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "much-factory"
 
 module Assert

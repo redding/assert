@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "assert"
 require "assert/view"
 
@@ -28,7 +30,7 @@ class Assert::View
     desc "when init"
     subject { Assert::View.new(config1, io1) }
 
-    let(:io1)     { StringIO.new("", "w+") }
+    let(:io1)     { StringIO.new(+"", "w+") }
     let(:config1) { Factory.modes_off_config }
 
     should have_readers :config

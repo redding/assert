@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "assert"
 require "assert/view_helpers"
 
@@ -163,7 +165,7 @@ module Assert::ViewHelpers
     subject { view1 }
 
     let(:view_class1) { Class.new(Assert::View){ include Ansi } }
-    let(:view1) { view_class1.new(Factory.modes_off_config, StringIO.new("", "w+")) }
+    let(:view1) { view_class1.new(Factory.modes_off_config, StringIO.new(+"", "w+")) }
 
     should have_imeths :ansi_styled_msg
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module MixinStuff
   def test_mixin_stuff
     "from mixin"

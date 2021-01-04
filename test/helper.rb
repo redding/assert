@@ -1,7 +1,9 @@
-# this file is automatically required when you run `assert`
-# put any test helpers here
+# frozen_string_literal: true
 
-# add the root dir to the load path
+# This file is automatically required when you run `assert`; put any test
+# helpers here.
+
+# Add the root dir to the load path.
 ROOT_PATH = File.expand_path("../..", __FILE__)
 $LOAD_PATH.unshift(ROOT_PATH)
 

@@ -1,6 +1,9 @@
+# frozen_string_literal: true
+
 require "assert/file_line"
 
 module Assert; end
+
 module Assert::Result
   class Base          ; end
   class Pass   < Base ; end

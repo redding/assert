@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "benchmark"
 require "set"
 require "assert/assert_runner"

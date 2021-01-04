@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Assert
   class ContextInfo
     attr_reader :called_from, :klass, :file

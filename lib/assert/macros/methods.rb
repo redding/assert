@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "assert/macro"
 
 module Assert::Macros

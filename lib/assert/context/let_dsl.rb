@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 module Assert; end
 class Assert::Context; end
+
 module Assert::Context::LetDSL
   def let(name, &block)
     self.send(:define_method, name, &-> {

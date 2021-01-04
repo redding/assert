@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Assert
   class FileLine
     def self.parse(file_line_path)

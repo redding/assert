@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "assert/view"
 require "assert/view_helpers"
 

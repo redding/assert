@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "assert"
 require "assert/utils"
 
@@ -78,12 +80,12 @@ module Assert::Utils
     desc "`stdlib_pp_proc`"
 
     should "build a pp proc that uses stdlib `PP.pp` to pretty print objects" do
-      exp_obj_pps = objs1.map{ |o| PP.pp(o, "", 79).strip }
+      exp_obj_pps = objs1.map{ |o| PP.pp(o, +"", 79).strip }
       act_obj_pps = objs1.map{ |o| subject.stdlib_pp_proc.call(o) }
       assert_that(act_obj_pps).equals(exp_obj_pps)
 
       cust_width = 1
-      exp_obj_pps = objs1.map{ |o| PP.pp(o, "", cust_width).strip }
+      exp_obj_pps = objs1.map{ |o| PP.pp(o, +"", cust_width).strip }
       act_obj_pps = objs1.map{ |o| subject.stdlib_pp_proc(cust_width).call(o) }
       assert_that(act_obj_pps).equals(exp_obj_pps)
     end

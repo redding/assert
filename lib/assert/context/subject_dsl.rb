@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 module Assert; end
 class Assert::Context; end
+
 module Assert::Context::SubjectDSL
   # Add a piece of description text or return the full description for the context
   def description(text = nil)

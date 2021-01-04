@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "assert/config"
 require "assert/default_suite"
 require "assert/factory"

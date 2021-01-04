@@ -1,4 +1,7 @@
+# frozen_string_literal: true
+
 module Assert; end
+
 class Assert::Context
   module SetupDSL
     def setup_once(&block)

@@ -1,7 +1,10 @@
+# frozen_string_literal: true
+
 require "much-not-given"
 require "much-stub"
 
 module Assert; end
+
 class Assert::ActualValue
   include MuchNotGiven
 

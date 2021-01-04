@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "assert"
 
 require "assert/config"
@@ -96,7 +98,7 @@ module Assert
     should "auto-unstub any stubs on teardown" do
       context_class = ::Factory.modes_off_context_class do
         setup do
-          Assert.stub("1", :to_s){ "one" }
+          Assert.stub(+"1", :to_s){ "one" }
         end
       end
 

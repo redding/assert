@@ -2,6 +2,7 @@
 #
 # Copyright (c) 2011-Present Kelly Redding and Collin Redding
 #
+# frozen_string_literal: true
 
 require "assert"
 require "assert/cli"

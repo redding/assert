@@ -1,9 +1,12 @@
+# frozen_string_literal: true
+
 require "assert/context_info"
 require "assert/macro"
 require "assert/suite"
 require "assert/test"
 
 module Assert; end
+
 class Assert::Context
   module TestDSL
     def test(desc_or_macro, called_from = nil, first_caller = nil, &block)

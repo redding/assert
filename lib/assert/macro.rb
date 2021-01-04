@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Assert
   class Macro < ::Proc
     # this class is essentially a way to define a custom set of tests using

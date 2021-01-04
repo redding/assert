@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "assert"
 require "assert/runner"
 
@@ -25,7 +27,7 @@ class Assert::Runner
 
     setup do
       config1.suite Assert::DefaultSuite.new(config1)
-      config1.view  Assert::View.new(config1, StringIO.new("", "w+"))
+      config1.view  Assert::View.new(config1, StringIO.new(+"", "w+"))
     end
 
     let(:config1) { Factory.modes_off_config }
@@ -50,7 +52,7 @@ class Assert::Runner
     subject { runner_class1.new(config1) }
 
     setup do
-      @view_output = ""
+      @view_output = +""
 
       suite_class = Class.new(Assert::DefaultSuite){ include CallbackMixin }
       view_class  = Class.new(Assert::View){ include CallbackMixin }

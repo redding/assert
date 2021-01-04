@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Assert
   module ConfigHelpers
     def runner; self.config.runner; end

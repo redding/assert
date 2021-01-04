@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "assert/config_helpers"
 
 module Assert

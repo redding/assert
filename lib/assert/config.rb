@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "assert/default_runner"
 require "assert/default_suite"
 require "assert/default_view"

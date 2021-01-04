@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "stringio"
 require "assert/file_line"
 require "assert/result"
@@ -37,7 +39,7 @@ module Assert
     end
 
     def output
-      @output ||= (@build_data[:output] || "")
+      @output ||= (@build_data[:output] || +"")
     end
 
     def run_time

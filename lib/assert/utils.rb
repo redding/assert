@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "assert"
 
 module Assert
@@ -29,7 +31,7 @@ module Assert
     # Get a proc that uses stdlib `PP.pp` to pretty print objects
     def self.stdlib_pp_proc(width = nil)
       require "pp"
-      Proc.new{ |obj| PP.pp(obj, "", width || 79).strip }
+      Proc.new{ |obj| PP.pp(obj, +"", width || 79).strip }
     end
 
     # Return true if if either show output has newlines or is bigger than 29 chars
