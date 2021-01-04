@@ -2,8 +2,8 @@
 
 source "https://rubygems.org"
 
-ruby "~>2.4"
+ruby "~> 2.5"
 
 gemspec
 
-gem "pry", "~> 0.12.2"
+gem "pry"
