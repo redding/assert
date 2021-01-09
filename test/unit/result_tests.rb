@@ -8,22 +8,23 @@ require "assert/file_line"
 module Assert::Result
   class UnitTests < Assert::Context
     desc "Assert::Result"
-    subject { unit_class }
+    subject{ unit_class }
 
-    let(:unit_class) { Assert::Result }
+    let(:unit_class){ Assert::Result }
 
-    let(:test1) { Factory.test("a test name") }
+    let(:test1){ Factory.test("a test name") }
 
     should have_imeths :types, :new
 
     should "know its types" do
-      exp = {
-        :pass   => Pass,
-        :fail   => Fail,
-        :ignore => Ignore,
-        :skip   => Skip,
-        :error  => Error
-      }
+      exp =
+        {
+          pass: Pass,
+          fail: Fail,
+          ignore: Ignore,
+          skip: Skip,
+          error: Error,
+        }
       assert_that(subject.types).equals(exp)
 
       assert_that(subject.types[Factory.string]).equals(Base)
@@ -31,26 +32,26 @@ module Assert::Result
 
     should "create results from data hashes" do
       type = Assert::Result.types.keys.sample
-      exp  = Assert::Result.types[type].new(:type => type)
-      assert_that(Assert::Result.new(:type => type)).equals(exp)
+      exp  = Assert::Result.types[type].new(type: type)
+      assert_that(Assert::Result.new(type: type)).equals(exp)
     end
   end
 
   class InitBaseTests < UnitTests
     desc "Base when init"
-    subject { Base.new(given_data1) }
+    subject{ Base.new(given_data1) }
 
-    let(:given_data1) {
+    let(:given_data1) do
       {
-        :type           => Factory.string,
-        :name           => Factory.string,
-        :test_name      => Factory.string,
-        :test_file_line => Assert::FileLine.new(Factory.string, Factory.integer),
-        :message        => Factory.string,
-        :output         => Factory.text,
-        :backtrace      => Backtrace.new(Factory.backtrace)
+        type: Factory.string,
+        name: Factory.string,
+        test_name: Factory.string,
+        test_file_line: Assert::FileLine.new(Factory.string, Factory.integer),
+        message: Factory.string,
+        output: Factory.text,
+        backtrace: Backtrace.new(Factory.backtrace),
       }
-    }
+    end
 
     should have_cmeths :type, :name, :for_test
     should have_imeths :type, :name, :test_name, :test_file_line
@@ -124,10 +125,11 @@ module Assert::Result
       assert_that(subject.trace).equals(exp_trace)
 
       # test that the first bt line is used if filtered is empty
-      assert_lib_path = File.join(ROOT_PATH, "lib/#{Factory.string}:#{Factory.integer}")
-      new_bt          = (Factory.integer(3)+1).times.map{ assert_lib_path }
-      exp_backtrace   = Backtrace.new(new_bt)
-      exp_trace       = exp_backtrace.first.to_s
+      assert_lib_path =
+        File.join(ROOT_PATH, "lib/#{Factory.string}:#{Factory.integer}")
+      new_bt        = (Factory.integer(3) + 1).times.map{ assert_lib_path }
+      exp_backtrace = Backtrace.new(new_bt)
+      exp_trace     = exp_backtrace.first.to_s
       subject.set_backtrace(new_bt)
       assert_that(subject.backtrace).equals(exp_backtrace)
       assert_that(subject.trace).equals(exp_trace)
@@ -171,8 +173,9 @@ module Assert::Result
       assert_that(subject.line_num).equals(exp.line.to_i)
 
       # test that the first bt line is used if filtered is empty
-      assert_lib_path = File.join(ROOT_PATH, "lib/#{Factory.string}:#{Factory.integer}")
-      new_bt          = (Factory.integer(3)+1).times.map{ assert_lib_path }
+      assert_lib_path =
+        File.join(ROOT_PATH, "lib/#{Factory.string}:#{Factory.integer}")
+      new_bt = (Factory.integer(3) + 1).times.map{ assert_lib_path }
       subject.set_backtrace(new_bt)
 
       exp = new_bt.first.to_s
@@ -231,7 +234,7 @@ module Assert::Result
 
   class InitPassTests < UnitTests
     desc "Pass when init"
-    subject { Pass.new({}) }
+    subject{ Pass.new({}) }
 
     should "know its type/name" do
       assert_that(subject.type).equals(:pass)
@@ -242,7 +245,7 @@ module Assert::Result
 
   class InitIgnoreTests < UnitTests
     desc "Ignore when init"
-    subject { Ignore.new({}) }
+    subject{ Ignore.new({}) }
 
     should "know its type/name" do
       assert_that(subject.type).equals(:ignore)
@@ -253,7 +256,7 @@ module Assert::Result
 
   class InitHaltingTestResultErrorTests < UnitTests
     desc "HaltingTestResultError when init"
-    subject { HaltingTestResultError.new }
+    subject{ HaltingTestResultError.new }
 
     should have_accessors :assert_with_bt
 
@@ -264,7 +267,7 @@ module Assert::Result
 
   class InitTestFailureTests < UnitTests
     desc "TestFailure when init"
-    subject { TestFailure.new }
+    subject{ TestFailure.new }
 
     should "be a halting test result error" do
       assert_that(subject).is_kind_of(HaltingTestResultError)
@@ -273,7 +276,7 @@ module Assert::Result
 
   class InitFailTests < UnitTests
     desc "Fail when init"
-    subject { Fail.new({}) }
+    subject{ Fail.new({}) }
 
     should "know its type/name" do
       assert_that(subject.type).equals(:fail)
@@ -304,13 +307,14 @@ module Assert::Result
     end
 
     should "not allow creating for a test with non-TestFailure exceptions" do
-      assert_that { Fail.for_test(test1, RuntimeError.new) }.raises(ArgumentError)
+      assert_that{ Fail.for_test(test1, RuntimeError.new) }
+        .raises(ArgumentError)
     end
   end
 
   class InitTestSkippedTests < UnitTests
     desc "TestSkipped when init"
-    subject { TestSkipped.new }
+    subject{ TestSkipped.new }
 
     should "be a halting test result error" do
       assert_that(subject).is_kind_of(HaltingTestResultError)
@@ -319,7 +323,7 @@ module Assert::Result
 
   class InitSkipTests < UnitTests
     desc "Skip when init"
-    subject { Skip.new({}) }
+    subject{ Skip.new({}) }
 
     should "know its type/name" do
       assert_that(subject.type).equals(:skip)
@@ -350,13 +354,14 @@ module Assert::Result
     end
 
     should "not allow creating for a test with non-TestSkipped exceptions" do
-      assert_that { Skip.for_test(test1, RuntimeError.new) }.raises(ArgumentError)
+      assert_that{ Skip.for_test(test1, RuntimeError.new) }
+        .raises(ArgumentError)
     end
   end
 
   class InitErrorTests < UnitTests
     desc "Error when init"
-    subject { Error.new({}) }
+    subject{ Error.new({}) }
 
     should "know its class-level type/name" do
       assert_that(subject.class.type).equals(:error)
@@ -377,13 +382,13 @@ module Assert::Result
     end
 
     should "not allow creating for a test without an exception" do
-      assert_that { Error.for_test(test1, Factory.string) }.raises(ArgumentError)
+      assert_that{ Error.for_test(test1, Factory.string) }.raises(ArgumentError)
     end
   end
 
   class InitBacktraceTests < UnitTests
     desc "Backtrace when init"
-    subject { Backtrace.new(Factory.backtrace) }
+    subject{ Backtrace.new(Factory.backtrace) }
 
     should have_cmeths :parse, :to_s
     should have_imeths :filtered
@@ -393,7 +398,8 @@ module Assert::Result
     end
 
     should "render as a string by joining on the newline" do
-      assert_that(Backtrace.to_s(subject)).equals(subject.join(Backtrace::DELIM))
+      assert_that(Backtrace.to_s(subject))
+        .equals(subject.join(Backtrace::DELIM))
     end
 
     should "be an Array" do

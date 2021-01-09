@@ -8,10 +8,10 @@ require "assert/suite"
 module Assert::Context::SuiteDSL
   class UnitTests < Assert::Context
     desc "Assert::Context::SuiteDSL"
-    subject { Factory.context_class(parent_class1) }
+    subject{ Factory.context_class(parent_class1) }
 
-    let(:parent_class1)  { Factory.context_class }
-    let(:custom_suite1)  { Factory.modes_off_suite }
+    let(:parent_class1){ Factory.context_class }
+    let(:custom_suite1){ Factory.modes_off_suite }
 
     should "use `Assert.suite` by default" do
       assert_that(subject.suite).equals(Assert.suite)
@@ -30,7 +30,7 @@ module Assert::Context::SuiteDSL
       parent_class1.suite(custom_suite1)
     end
 
-    let(:custom_suite2) { Factory.modes_off_suite }
+    let(:custom_suite2){ Factory.modes_off_suite }
 
     should "default to its parent's suite" do
       assert_that(subject.suite).equals(custom_suite1)

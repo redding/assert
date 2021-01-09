@@ -6,20 +6,20 @@ require "assert/assertions"
 require "assert/utils"
 
 module Assert::Assertions
-  class AssertTrueTests < Assert::Context
+  class AssertIsATests < Assert::Context
     include Assert::Test::TestHelpers
 
-    desc "`assert_true`"
+    desc "`assert_is_a`"
     subject do
       args = args1
       Factory.test do
-        assert_true(true)  # pass
-        assert_true(*args) # fail
+        assert_is_a(String, "object") # pass
+        assert_is_a(*args)            # fail
       end
     end
 
-    let(:desc1){ "assert true fail desc" }
-    let(:args1){ ["whatever", desc1] }
+    let(:desc1){ "assert kind of fail desc" }
+    let(:args1){ [Array, "object", desc1] }
     let(:config1){ subject.config }
 
     should "produce results as expected" do
@@ -30,26 +30,26 @@ module Assert::Assertions
       assert_that(test_run_result_count(:fail)).equals(1)
 
       exp =
-        "#{args1[1]}\nExpected #{Assert::U.show(args1[0], config1)} to "\
-        "be true."
+        "#{args1[2]}\nExpected #{Assert::U.show(args1[1], config1)} "\
+        "(#{args1[1].class}) to be a `#{args1[0]}`."
       assert_that(test_run_results(:fail).first.message).equals(exp)
     end
   end
 
-  class AssertNotTrueTests < Assert::Context
+  class AssertIsNotATests < Assert::Context
     include Assert::Test::TestHelpers
 
-    desc "`assert_not_true`"
+    desc "`assert_not_kind_of`"
     subject do
       args = args1
       Factory.test do
-        assert_not_true(false) # pass
-        assert_not_true(*args) # fail
+        assert_is_not_a(*args)           # fail
+        assert_is_not_a(Array, "object") # pass
       end
     end
 
-    let(:desc1){ "assert not true fail desc" }
-    let(:args1){ [true, desc1] }
+    let(:desc1){ "assert not kind of fail desc" }
+    let(:args1){ [String, "object", desc1] }
     let(:config1){ subject.config }
 
     should "produce results as expected" do
@@ -60,26 +60,26 @@ module Assert::Assertions
       assert_that(test_run_result_count(:fail)).equals(1)
 
       exp =
-        "#{args1[1]}\nExpected #{Assert::U.show(args1[0], config1)} to "\
-        "not be true."
+        "#{args1[2]}\nExpected #{Assert::U.show(args1[1], config1)} "\
+        "(#{args1[1].class}) to not be a `#{args1[0]}`."
       assert_that(test_run_results(:fail).first.message).equals(exp)
     end
   end
 
-  class AssertFalseTests < Assert::Context
+  class AssertKindOfTests < Assert::Context
     include Assert::Test::TestHelpers
 
-    desc "`assert_false`"
+    desc "`assert_kind_of`"
     subject do
       args = args1
       Factory.test do
-        assert_false(false) # pass
-        assert_false(*args) # fail
+        assert_kind_of(String, "object") # pass
+        assert_kind_of(*args)            # fail
       end
     end
 
-    let(:desc1){ "assert false fail desc" }
-    let(:args1){ ["whatever", desc1] }
+    let(:desc1){ "assert kind of fail desc" }
+    let(:args1){ [Array, "object", desc1] }
     let(:config1){ subject.config }
 
     should "produce results as expected" do
@@ -90,26 +90,26 @@ module Assert::Assertions
       assert_that(test_run_result_count(:fail)).equals(1)
 
       exp =
-        "#{args1[1]}\nExpected #{Assert::U.show(args1[0], config1)} to "\
-        "be false."
+        "#{args1[2]}\nExpected #{Assert::U.show(args1[1], config1)} "\
+        "(#{args1[1].class}) to be a `#{args1[0]}`."
       assert_that(test_run_results(:fail).first.message).equals(exp)
     end
   end
 
-  class AssertNotFalseTests < Assert::Context
+  class AssertNotKindOfTests < Assert::Context
     include Assert::Test::TestHelpers
 
-    desc "`assert_not_false`"
+    desc "`assert_not_kind_of`"
     subject do
       args = args1
       Factory.test do
-        assert_not_false(true)  # pass
-        assert_not_false(*args) # fail
+        assert_not_kind_of(*args)           # fail
+        assert_not_kind_of(Array, "object") # pass
       end
     end
 
-    let(:desc1){ "assert not false fail desc" }
-    let(:args1){ [false, desc1] }
+    let(:desc1){ "assert not kind of fail desc" }
+    let(:args1){ [String, "object", desc1] }
     let(:config1){ subject.config }
 
     should "produce results as expected" do
@@ -120,8 +120,8 @@ module Assert::Assertions
       assert_that(test_run_result_count(:fail)).equals(1)
 
       exp =
-        "#{args1[1]}\nExpected #{Assert::U.show(args1[0], config1)} to "\
-        "not be false."
+        "#{args1[2]}\nExpected #{Assert::U.show(args1[1], config1)} "\
+        "(#{args1[1].class}) to not be a `#{args1[0]}`."
       assert_that(test_run_results(:fail).first.message).equals(exp)
     end
   end

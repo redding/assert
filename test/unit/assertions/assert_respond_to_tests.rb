@@ -10,17 +10,17 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_respond_to`"
-    subject {
+    subject do
       args = args1
       Factory.test do
         assert_respond_to(:abs, 1) # pass
         assert_respond_to(*args)   # fail
       end
-    }
+    end
 
-    let(:desc1) { "assert respond to fail desc" }
-    let(:args1) { [:abs, "1", desc1] }
-    let(:config1) { subject.config }
+    let(:desc1){ "assert respond to fail desc" }
+    let(:args1){ [:abs, "1", desc1] }
+    let(:config1){ subject.config }
 
     should "produce results as expected" do
       subject.run(&test_run_callback)
@@ -41,17 +41,17 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_not_respond_to`"
-    subject {
+    subject do
       args = args1
       Factory.test do
         assert_not_respond_to(*args)     # fail
         assert_not_respond_to(:abs, "1") # pass
       end
-    }
+    end
 
-    let(:desc1) { "assert not respond to fail desc" }
-    let(:args1) { [:abs, 1, desc1] }
-    let(:config1) { subject.config }
+    let(:desc1){ "assert not respond to fail desc" }
+    let(:args1){ [:abs, 1, desc1] }
+    let(:config1){ subject.config }
 
     should "produce results as expected" do
       subject.run(&test_run_callback)

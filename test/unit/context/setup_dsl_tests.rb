@@ -6,9 +6,9 @@ require "assert/context/setup_dsl"
 module Assert::Context::SetupDSL
   class UnitTests < Assert::Context
     desc "Assert::Context::SetupDSL"
-    subject { Factory.modes_off_context_class }
+    subject{ Factory.modes_off_context_class }
 
-    let(:block1) { ::Proc.new {} }
+    let(:block1){ ::Proc.new{} }
   end
 
   class SetupTeardownOnceMethodsTests < UnitTests
@@ -38,7 +38,7 @@ module Assert::Context::SetupDSL
   class SetupTeardownWithMethodNameTests < UnitTests
     desc "methods given a method name"
 
-    let(:method_name1) { :something_amazing }
+    let(:method_name1){ :something_amazing }
 
     should "add the method name to the context" do
       subject.setup(method_name1)
@@ -50,20 +50,28 @@ module Assert::Context::SetupDSL
   end
 
   class ParentContextClassTests < UnitTests
-    subject { Factory.modes_off_context_class(parent_class1) }
+    subject{ Factory.modes_off_context_class(parent_class1) }
 
-    let(:parent_class1)  { Factory.modes_off_context_class }
+    let(:parent_class1){ Factory.modes_off_context_class }
   end
 
   class SetupTeardownMultipleTests < ParentContextClassTests
     desc "with multiple calls"
 
-    let(:parent_setup_block1)     { ::Proc.new { self.setup_status     = "the setup"     } }
-    let(:parent_teardown_block1)  { ::Proc.new { self.teardown_status += "the teardown"  } }
-    let(:context_setup_block1)    { ::Proc.new { self.setup_status    += " has been run" } }
-    let(:context_teardown_block1) { ::Proc.new { self.teardown_status += "has been run " } }
+    let(:parent_setup_block1) do
+      ::Proc.new{ self.setup_status = "the setup" }
+    end
+    let(:parent_teardown_block1) do
+      ::Proc.new{ self.teardown_status += "the teardown" }
+    end
+    let(:context_setup_block1) do
+      ::Proc.new{ self.setup_status += " has been run" }
+    end
+    let(:context_teardown_block1) do
+      ::Proc.new{ self.teardown_status += "has been run " }
+    end
 
-    let(:test_status_class) {
+    let(:test_status_class) do
       Class.new do
         attr_accessor :setup_status, :teardown_status
         define_method(:setup_something) do
@@ -73,7 +81,7 @@ module Assert::Context::SetupDSL
           self.teardown_status = "with something "
         end
       end
-    }
+    end
 
     should "run its parent and its own blocks in the correct order" do
       parent_class1.setup(&parent_setup_block1)
@@ -84,17 +92,19 @@ module Assert::Context::SetupDSL
       subject.teardown(&context_teardown_block1)
 
       subject.send("run_setups", obj = test_status_class.new)
-      assert_that(obj.setup_status).equals("the setup has been run with something")
+      assert_that(obj.setup_status)
+        .equals("the setup has been run with something")
 
       subject.send("run_teardowns", obj = test_status_class.new)
-      assert_that(obj.teardown_status).equals("with something has been run the teardown")
+      assert_that(obj.teardown_status)
+        .equals("with something has been run the teardown")
     end
   end
 
   class AroundMethodTests < ParentContextClassTests
     desc "with multiple `around` calls"
 
-    let(:test_status_class) { Class.new { attr_accessor :out_status } }
+    let(:test_status_class){ Class.new{ attr_accessor :out_status } }
 
     should "run its parent and its own blocks in the correct order" do
       parent_class1.around do |block|

@@ -12,18 +12,21 @@ module Assert
       out
     end
 
-    # show objects in a human-readable manner and make the output diff-able. This
-    # expands on the basic `show` util by escaping newlines and making object id
-    # hex-values generic.
+    # show objects in a human-readable manner and make the output diff-able.
+    # This expands on the basic `show` util by escaping newlines and making
+    # object id hex-values generic.
     def self.show_for_diff(obj, config)
-      show(obj, config).gsub(/\\n/, "\n").gsub(/:0x[a-fA-F0-9]{4,}/m, ":0xXXXXXX")
+      show(obj, config)
+        .gsub(/\\n/, "\n")
+        .gsub(/:0x[a-fA-F0-9]{4,}/m, ":0xXXXXXX")
     end
 
     # open a tempfile and yield it
     def self.tempfile(name, content)
       require "tempfile"
       Tempfile.open(name) do |tmpfile|
-        tmpfile.puts(content); tmpfile.flush
+        tmpfile.puts(content)
+        tmpfile.flush
         yield tmpfile if block_given?
       end
     end
@@ -34,7 +37,8 @@ module Assert
       Proc.new{ |obj| PP.pp(obj, +"", width || 79).strip }
     end
 
-    # Return true if if either show output has newlines or is bigger than 29 chars
+    # Return true if if either show output has newlines or is bigger than 29
+    # chars.
     def self.default_use_diff_proc
       Proc.new do |exp_show_output, act_show_output|
         exp_show_output.include?("\n") || exp_show_output.size > 29 ||
@@ -62,10 +66,15 @@ module Assert
     def self.git_changed_proc
       Proc.new do |config, test_paths|
         files = []
-        cmd = [
-          "git diff --no-ext-diff --name-only #{config.changed_ref}", # changed files
-          "git ls-files --others --exclude-standard"                  # added files
-        ].map{ |c| "#{c} -- #{test_paths.join(" ")}" }.join(" && ")
+        cmd =
+          [
+            # changed files
+            "git diff --no-ext-diff --name-only #{config.changed_ref}",
+            # added files
+            "git ls-files --others --exclude-standard",
+          ]
+            .map{ |c| "#{c} -- #{test_paths.join(" ")}" }
+            .join(" && ")
         Assert::CLI.bench("Load only changed files") do
           files = `#{cmd}`.split("\n")
         end

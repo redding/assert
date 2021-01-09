@@ -27,9 +27,9 @@ module Assert
     orig_caller = caller_locations
     begin
       MuchStub.stub_send(*args, &block)
-    rescue MuchStub::NotStubbedError => err
-      err.set_backtrace(orig_caller.map(&:to_s))
-      raise err
+    rescue MuchStub::NotStubbedError => ex
+      ex.set_backtrace(orig_caller.map(&:to_s))
+      raise ex
     end
   end
 
@@ -80,7 +80,7 @@ module Assert
 
     # See MuchStub::CallSpy#inspect.
     def inspect
-      "#<Assert::StubCallSpy:#{"0x0%x" % (self.__id__ << 1)}>"
+      "#<Assert::StubCallSpy:#{"0x0%x" % (__id__ << 1)}>"
     end
   end
 end

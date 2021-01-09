@@ -16,12 +16,13 @@ module Assert::Test::TestHelpers
     receiver.class_eval do
       setup do
         @test_run_results = []
-        @run_callback = proc { |result| @test_run_results << result }
+        @run_callback = proc{ |result| @test_run_results << result }
       end
     end
 
     private
 
+    # rubocop:disable Lint/NestedMethodDefinition
     def test_run_callback
       @run_callback
     end
@@ -42,5 +43,6 @@ module Assert::Test::TestHelpers
     def last_test_run_result
       @test_run_results.last
     end
+    # rubocop:enable Lint/NestedMethodDefinition
   end
 end

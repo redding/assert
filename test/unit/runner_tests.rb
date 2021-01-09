@@ -12,9 +12,9 @@ require "assert/view"
 class Assert::Runner
   class UnitTests < Assert::Context
     desc "Assert::Runner"
-    subject { unit_class }
+    subject{ unit_class }
 
-    let(:unit_class) { Assert::Runner }
+    let(:unit_class){ Assert::Runner }
 
     should "include the config helpers" do
       assert_that(subject).includes(Assert::ConfigHelpers)
@@ -23,14 +23,14 @@ class Assert::Runner
 
   class InitTests < UnitTests
     desc "when init"
-    subject { unit_class.new(config1) }
+    subject{ unit_class.new(config1) }
 
     setup do
       config1.suite Assert::DefaultSuite.new(config1)
       config1.view  Assert::View.new(config1, StringIO.new(+"", "w+"))
     end
 
-    let(:config1) { Factory.modes_off_config }
+    let(:config1){ Factory.modes_off_config }
 
     should have_readers :config
     should have_imeths :runner, :run
@@ -49,7 +49,7 @@ class Assert::Runner
 
   class RunTests < InitTests
     desc "and run"
-    subject { runner_class1.new(config1) }
+    subject{ runner_class1.new(config1) }
 
     setup do
       @view_output = +""
@@ -64,9 +64,13 @@ class Assert::Runner
       @result_count = subject.run
     end
 
-    let(:runner_class1) { Class.new(unit_class) { include CallbackMixin } }
-    let(:ci1) { Factory.context_info(Factory.modes_off_context_class) }
-    let(:test1) { Factory.test("should pass", ci1){ assert(1==1) } }
+    let(:runner_class1) do
+      Class.new(unit_class){ include CallbackMixin }
+    end
+    let(:ci1){ Factory.context_info(Factory.modes_off_context_class) }
+    # rubocop:disable Lint/BinaryOperatorWithIdenticalOperands
+    let(:test1){ Factory.test("should pass", ci1){ assert(1 == 1) } }
+    # rubocop:enable Lint/BinaryOperatorWithIdenticalOperands
 
     should "return the fail+error result count as an integer exit code" do
       assert_that(@result_count).equals(0)
@@ -75,7 +79,7 @@ class Assert::Runner
       error_count = Factory.integer
       Assert.stub(subject, :fail_result_count){ fail_count }
       Assert.stub(subject, :error_result_count){ error_count }
-      Assert.stub(test1, :run){ } # no-op
+      Assert.stub(test1, :run){} # no-op
       result_count = subject.run
 
       assert_that(result_count).equals(fail_count + error_count)
@@ -85,7 +89,8 @@ class Assert::Runner
       # itself
       assert_that(subject.on_start_called).is_true
       assert_that(subject.before_test_called).equals([test1])
-      assert_that(subject.on_result_called.last).is_instance_of(Assert::Result::Pass)
+      assert_that(subject.on_result_called.last)
+        .is_instance_of(Assert::Result::Pass)
       assert_that(subject.after_test_called).equals([test1])
       assert_that(subject.on_finish_called).is_true
 
@@ -93,7 +98,8 @@ class Assert::Runner
       suite = config1.suite
       assert_that(suite.on_start_called).is_true
       assert_that(suite.before_test_called).equals([test1])
-      assert_that(suite.on_result_called.last).is_instance_of(Assert::Result::Pass)
+      assert_that(suite.on_result_called.last)
+        .is_instance_of(Assert::Result::Pass)
       assert_that(suite.after_test_called).equals([test1])
       assert_that(suite.on_finish_called).is_true
 
@@ -101,7 +107,8 @@ class Assert::Runner
       view = config1.view
       assert_that(view.on_start_called).is_true
       assert_that(view.before_test_called).equals([test1])
-      assert_that(view.on_result_called.last).is_instance_of(Assert::Result::Pass)
+      assert_that(view.on_result_called.last)
+        .is_instance_of(Assert::Result::Pass)
       assert_that(view.after_test_called).equals([test1])
       assert_that(view.on_finish_called).is_true
     end
@@ -118,7 +125,9 @@ class Assert::Runner
     end
 
     should "run only a single test if a single test is configured" do
-      test = Factory.test("should pass", ci1){ assert(1==1) }
+      # rubocop:disable Lint/BinaryOperatorWithIdenticalOperands
+      test = Factory.test("should pass", ci1){ assert(1 == 1) }
+      # rubocop:enable Lint/BinaryOperatorWithIdenticalOperands
       config1.suite.clear_tests_to_run
       config1.suite.on_test(test)
       config1.single_test test.file_line.to_s
@@ -127,8 +136,11 @@ class Assert::Runner
       assert_that(runner.before_test_called).equals([test])
     end
 
-    should "not run any tests if a single test is configured but can't be found" do
-      test = Factory.test("should pass", ci1){ assert(1==1) }
+    should "not run any tests if a single test is configured but "\
+           "can't be found" do
+      # rubocop:disable Lint/BinaryOperatorWithIdenticalOperands
+      test = Factory.test("should pass", ci1){ assert(1 == 1) }
+      # rubocop:enable Lint/BinaryOperatorWithIdenticalOperands
       config1.suite.clear_tests_to_run
       config1.suite.on_test(test)
       config1.single_test Factory.string
@@ -137,7 +149,8 @@ class Assert::Runner
       assert_that(runner.before_test_called).is_nil
     end
 
-    should "describe running only a single test if a single test is configured" do
+    should "describe running only a single test if a single test is "\
+           "configured" do
       config1.suite.clear_tests_to_run
       config1.suite.on_test(test1)
       config1.single_test test1.file_line.to_s

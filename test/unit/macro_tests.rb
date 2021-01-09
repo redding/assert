@@ -6,14 +6,14 @@ require "assert/macro"
 class Assert::Macro
   class UnitTests < Assert::Context
     desc "Assert::Macro"
-    subject { unit_class }
+    subject{ unit_class }
 
-    let(:unit_class) { Assert::Macro }
+    let(:unit_class){ Assert::Macro }
   end
 
   class InitTests < UnitTests
     desc "when init"
-    subject { unit_class.new {} }
+    subject{ unit_class.new{} }
 
     should "have an accessor for its (optional) name" do
       assert_that(subject).responds_to(:name)
@@ -21,11 +21,11 @@ class Assert::Macro
     end
 
     should "default its name if no given" do
-      assert_that((unit_class.new {}).name).equals("run this macro")
+      assert_that((unit_class.new{}).name).equals("run this macro")
     end
 
     should "initialize with a given name" do
-      assert_that((unit_class.new("test") {}).name).equals("test")
+      assert_that((unit_class.new("test"){}).name).equals("test")
     end
 
     should "be a Proc" do
@@ -33,7 +33,7 @@ class Assert::Macro
     end
 
     should "complain if you create a macro without a block" do
-      assert_that { unit_class.new }.raises(ArgumentError)
+      assert_that{ unit_class.new }.raises(ArgumentError)
     end
   end
 
@@ -41,7 +41,7 @@ class Assert::Macro
     desc "have_instance_methods macro: this class"
     subject do
       class ::InstExample
-        (1..6).each {|i| define_method("method_#{i}") {}}
+        (1..6).each{ |i| define_method("method_#{i}"){} }
       end
       ::InstExample.new
     end
@@ -62,7 +62,7 @@ class Assert::Macro
     subject do
       class ::ClassExample
         class << self
-          (1..6).each {|i| define_method("method_#{i}") {}}
+          (1..6).each{ |i| define_method("method_#{i}"){} }
         end
       end
       ::ClassExample.new
@@ -83,7 +83,7 @@ class Assert::Macro
     desc "have_readers macro: this class"
     subject do
       class ::ReaderExample
-        (1..6).each {|i| attr_reader "method_#{i}"}
+        (1..6).each{ |i| attr_reader "method_#{i}" }
       end
       ::ReaderExample.new
     end
@@ -103,7 +103,7 @@ class Assert::Macro
     desc "have_writers macro: this class"
     subject do
       class ::WriterExample
-        (1..6).each {|i| attr_writer "method_#{i}"}
+        (1..6).each{ |i| attr_writer "method_#{i}" }
       end
       ::WriterExample.new
     end
@@ -123,7 +123,7 @@ class Assert::Macro
     desc "have_accessors macro: this class"
     subject do
       class ::AccessorExample
-        (1..6).each {|i| attr_accessor "method_#{i}"}
+        (1..6).each{ |i| attr_accessor "method_#{i}" }
       end
       ::AccessorExample.new
     end

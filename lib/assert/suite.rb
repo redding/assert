@@ -27,21 +27,31 @@ module Assert
       @end_time   = @start_time
     end
 
-    def suite; self; end
+    def suite
+      self
+    end
 
     def setup(&block)
-      self.setups << (block || proc{})
+      setups << (block || proc{})
     end
     alias_method :startup, :setup
 
     def teardown(&block)
-      self.teardowns << (block || proc{})
+      teardowns << (block || proc{})
     end
     alias_method :shutdown, :teardown
 
-    def tests_to_run?;      @tests.size > 0; end
-    def tests_to_run_count; @tests.size;     end
-    def clear_tests_to_run; @tests.clear;    end
+    def tests_to_run?
+      @tests.any?
+    end
+
+    def tests_to_run_count
+      @tests.size
+    end
+
+    def clear_tests_to_run
+      @tests.clear
+    end
 
     def find_test_to_run(file_line)
       @tests.find{ |t| t.file_line == file_line }
@@ -51,32 +61,46 @@ module Assert
       @tests.sort.sort_by(&sort_by_proc)
     end
 
-    def test_count;          end
-    def result_count;        end
-    def pass_result_count;   end
-    def fail_result_count;   end
-    def error_result_count;  end
-    def skip_result_count;   end
-    def ignore_result_count; end
+    def test_count
+    end
+
+    def result_count
+    end
+
+    def pass_result_count
+    end
+
+    def fail_result_count
+    end
+
+    def error_result_count
+    end
+
+    def skip_result_count
+    end
+
+    def ignore_result_count
+    end
 
     def run_time
       @end_time - @start_time
     end
 
     def test_rate
-      get_rate(self.test_count, self.run_time)
+      get_rate(test_count, run_time)
     end
 
     def result_rate
-      get_rate(self.result_count, self.run_time)
+      get_rate(result_count, run_time)
     end
 
     # Callbacks
 
-    # define callback handlers to do special behavior during the test run.  These
-    # will be called by the test runner
+    # define callback handlers to do special behavior during the test run.
+    # These will be called by the test runner.
 
-    def before_load(test_files); end
+    def before_load(test_files)
+    end
 
     # this is required to load tests into the suite, be sure to `super` if you
     # override this method
@@ -84,19 +108,34 @@ module Assert
       @tests << test
     end
 
-    def after_load;        end
-    def on_start;          end
-    def before_test(test); end
-    def on_result(result); end
-    def after_test(test);  end
-    def on_finish;         end
-    def on_info(test);     end
-    def on_interrupt(err); end
+    def after_load
+    end
+
+    def on_start
+    end
+
+    def before_test(test)
+    end
+
+    def on_result(result)
+    end
+
+    def after_test(test)
+    end
+
+    def on_finish
+    end
+
+    def on_info(test)
+    end
+
+    def on_interrupt(err)
+    end
 
     def inspect
       "#<#{self.class}:#{"0x0%x" % (object_id << 1)}"\
-      " test_count=#{self.test_count.inspect}"\
-      " result_count=#{self.result_count.inspect}>"
+      " test_count=#{test_count.inspect}"\
+      " result_count=#{result_count.inspect}>"
     end
   end
 end

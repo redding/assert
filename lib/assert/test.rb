@@ -9,16 +9,16 @@ module Assert
     # Test is some code/method to run in the scope of a Context that may
     # produce results.
     def self.name_file_line_context_data(ci, name)
-      { :name      => ci.test_name(name),
-        :file_line => ci.called_from
+      { name: ci.test_name(name),
+        file_line: ci.called_from,
       }
     end
 
     def self.for_block(name, context_info, config, &block)
-      self.new(self.name_file_line_context_data(context_info, name).merge({
-        :context_info => context_info,
-        :config       => config,
-        :code         => block
+      new(name_file_line_context_data(context_info, name).merge({
+        context_info: context_info,
+        config: config,
+        code: block,
       }))
     end
 
@@ -31,8 +31,13 @@ module Assert
       @file_line ||= FileLine.parse((@build_data[:file_line] || "").to_s)
     end
 
-    def file_name; self.file_line.file;      end
-    def line_num;  self.file_line.line.to_i; end
+    def file_name
+      file_line.file
+    end
+
+    def line_num
+      file_line.line.to_i
+    end
 
     def name
       @name ||= (@build_data[:name] || "")
@@ -51,7 +56,7 @@ module Assert
     end
 
     def context_class
-      self.context_info.klass
+      context_info.klass
     end
 
     def config
@@ -64,22 +69,22 @@ module Assert
 
     def run(&result_callback)
       @result_callback = result_callback || proc{ |result| } # noop by default
-      scope = self.context_class.new(self, self.config, @result_callback)
+      scope = context_class.new(self, config, @result_callback)
       start_time = Time.now
       capture_output do
-        self.context_class.run_arounds(scope){ run_test(scope) }
+        context_class.run_arounds(scope){ run_test(scope) }
       end
       @result_callback = nil
       @run_time = Time.now - start_time
     end
 
-    def <=>(other_test)
-      self.name <=> other_test.name
+    def <=>(other)
+      name <=> other.name
     end
 
     def inspect
       attributes_string = ([:name, :context_info].collect do |attr|
-        "@#{attr}=#{self.send(attr).inspect}"
+        "@#{attr}=#{send(attr).inspect}"
       end).join(" ")
       "#<#{self.class}:#{"0x0%x" % (object_id << 1)} #{attributes_string}>"
     end
@@ -89,33 +94,33 @@ module Assert
     def run_test(scope)
       begin
         # run any assert style "setup do" setups
-        self.context_class.run_setups(scope)
+        context_class.run_setups(scope)
         # run any test/unit style "def setup" setups
         scope.setup if scope.respond_to?(:setup)
         # run the code block
-        scope.instance_eval(&(self.code || proc{}))
-      rescue Result::TestFailure => err
-        capture_result(Result::Fail, err)
-      rescue Result::TestSkipped => err
-        capture_result(Result::Skip, err)
-      rescue SignalException => err
-        raise(err)
-      rescue Exception => err
-        capture_result(Result::Error, err)
+        scope.instance_eval(&(code || proc{}))
+      rescue Result::TestFailure => ex
+        capture_result(Result::Fail, ex)
+      rescue Result::TestSkipped => ex
+        capture_result(Result::Skip, ex)
+      rescue SignalException => ex
+        raise(ex)
+      rescue => ex
+        capture_result(Result::Error, ex)
       ensure
         begin
           # run any assert style "teardown do" teardowns
-          self.context_class.run_teardowns(scope)
+          context_class.run_teardowns(scope)
           # run any test/unit style "def teardown" teardowns
           scope.teardown if scope.respond_to?(:teardown)
-        rescue Result::TestFailure => err
-          capture_result(Result::Fail, err)
-        rescue Result::TestSkipped => err
-          capture_result(Result::Skip, err)
-        rescue SignalException => err
-          raise(err)
-        rescue Exception => err
-          capture_result(Result::Error, err)
+        rescue Result::TestFailure => ex
+          capture_result(Result::Fail, ex)
+        rescue Result::TestSkipped => ex
+          capture_result(Result::Skip, ex)
+        rescue SignalException => ex
+          raise(ex)
+        rescue => ex
+          capture_result(Result::Error, ex)
         end
       end
     end
@@ -125,7 +130,7 @@ module Assert
     end
 
     def capture_output(&block)
-      if self.config.capture_output == true
+      if config.capture_output == true
         orig_stdout = $stdout.clone
         $stdout = capture_io
         block.call
@@ -136,7 +141,7 @@ module Assert
     end
 
     def capture_io
-      StringIO.new(self.output, "a+")
+      StringIO.new(output, "a+")
     end
   end
 end

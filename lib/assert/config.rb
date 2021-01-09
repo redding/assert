@@ -11,7 +11,7 @@ module Assert
     def self.settings(*items)
       items.each do |item|
         define_method(item) do |*args|
-          if !(value = args.size > 1 ? args : args.first).nil?
+          unless (value = args.size > 1 ? args : args.first).nil?
             instance_variable_set("@#{item}", value)
           end
           instance_variable_get("@#{item}")
@@ -53,30 +53,30 @@ module Assert
       @list           = false
       @debug          = false
 
-      self.apply(settings || {})
+      apply(settings || {})
     end
 
     def apply(settings)
       settings.keys.each do |name|
-        if !settings[name].nil? && self.respond_to?(name.to_s)
-          self.send(name.to_s, settings[name])
+        if !settings[name].nil? && respond_to?(name.to_s)
+          send(name.to_s, settings[name])
         end
       end
       @single_test_file_line = nil
     end
 
     def single_test?
-      !self.single_test.empty?
+      !single_test.empty?
     end
 
     def single_test_file_line
       @single_test_file_line ||= Assert::FileLine.parse(
-        File.expand_path(self.single_test, Dir.pwd)
+        File.expand_path(single_test, Dir.pwd),
       )
     end
 
     def single_test_file_path
-      self.single_test_file_line.file if self.single_test_file_line
+      single_test_file_line&.file
     end
   end
 end

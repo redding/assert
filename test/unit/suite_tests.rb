@@ -10,9 +10,9 @@ require "test/support/inherited_stuff"
 class Assert::Suite
   class UnitTests < Assert::Context
     desc "Assert::Suite"
-    subject { unit_class }
+    subject{ unit_class }
 
-    let(:unit_class) { Assert::Suite }
+    let(:unit_class){ Assert::Suite }
 
     should "include the config helpers" do
       assert_that(subject).includes(Assert::ConfigHelpers)
@@ -21,9 +21,9 @@ class Assert::Suite
 
   class InitTests < UnitTests
     desc "when init"
-    subject { unit_class.new(config1) }
+    subject{ unit_class.new(config1) }
 
-    let(:config1) { Factory.modes_off_config }
+    let(:config1){ Factory.modes_off_config }
 
     should have_readers :config, :setups, :teardowns
     should have_accessors :start_time, :end_time
@@ -74,8 +74,10 @@ class Assert::Suite
       Assert.stub(subject, :result_count){ count }
 
       assert_that(subject.run_time).equals(time)
-      assert_that(subject.test_rate).equals((subject.test_count / subject.run_time))
-      assert_that(subject.result_rate).equals((subject.result_count / subject.run_time))
+      assert_that(subject.test_rate)
+        .equals((subject.test_count / subject.run_time))
+      assert_that(subject.result_rate)
+        .equals((subject.result_count / subject.run_time))
     end
 
     should "add setup procs" do
@@ -106,17 +108,37 @@ class Assert::Suite
       tests1.each{ |test| subject.on_test(test) }
     end
 
-    let(:ci1) { proc{ Factory.context_info(Factory.modes_off_context_class) } }
-    let(:tests1) {
+    let(:ci1){ proc{ Factory.context_info(Factory.modes_off_context_class) } }
+    let(:tests1) do
+      # rubocop:disable Lint/BinaryOperatorWithIdenticalOperands
       [
-        Factory.test("should nothing", ci1.call){ },
-        Factory.test("should pass",    ci1.call){ assert(1==1); refute(1==0) },
-        Factory.test("should fail",    ci1.call){ ignore; assert(1==0); refute(1==1) },
-        Factory.test("should ignore",  ci1.call){ ignore },
-        Factory.test("should skip",    ci1.call){ skip; ignore; assert(1==1) },
-        Factory.test("should error",   ci1.call){ raise Exception; ignore; assert(1==1) }
+        Factory.test("should nothing", ci1.call) do
+        end,
+        Factory.test("should pass", ci1.call) do
+          assert(1 == 1)
+          refute(1 == 0)
+        end,
+        Factory.test("should fail", ci1.call) do
+          ignore
+          assert(1 == 0)
+          refute(1 == 1)
+        end,
+        Factory.test("should ignore", ci1.call) do
+          ignore
+        end,
+        Factory.test("should skip", ci1.call) do
+          skip
+          ignore
+          assert(1 == 1)
+        end,
+        Factory.test("should error", ci1.call) do
+          raise Exception
+          ignore # rubocop:disable Lint/UnreachableCode
+          assert(1 == 1)
+        end,
       ]
-    }
+      # rubocop:enable Lint/BinaryOperatorWithIdenticalOperands
+    end
 
     should "know its tests-to-run attrs" do
       assert_that(subject.tests_to_run_count).equals(tests1.size)

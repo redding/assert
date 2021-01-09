@@ -31,26 +31,28 @@ module Assert
     end
 
     def on_finish
-      if self.test_count > 0
-        dump_test_results
-      end
+      dump_test_results if test_count > 0
 
       # show profile output
       if show_test_profile_info?
         # sort the test datas fastest to slowest
-        @test_datas.values.sort{ |a, b| a.run_time <=> b.run_time }.each do |test_data|
-          puts "#{formatted_run_time(test_data.run_time)} seconds,"\
-               " #{test_data.result_count} results,"\
-               " #{formatted_result_rate(test_data.result_rate)} results/s --"\
-               " #{test_data.context}: #{test_data.name.inspect}"
-        end
+        @test_datas
+          .values
+          .sort{ |a, b| a.run_time <=> b.run_time }
+          .each do |test_data|
+            puts "#{formatted_run_time(test_data.run_time)} seconds,"\
+                 " #{test_data.result_count} results,"\
+                 " #{formatted_result_rate(test_data.result_rate)} results/s "\
+                 "-- #{test_data.context}: #{test_data.name.inspect}"
+          end
         puts
       end
 
       # style the summaries of each result set
-      styled_results_sentence = results_summary_sentence do |summary, result_type|
-        ansi_styled_msg(summary, result_type)
-      end
+      styled_results_sentence =
+        results_summary_sentence do |summary, result_type|
+          ansi_styled_msg(summary, result_type)
+        end
 
       puts "#{result_count_statement}: #{styled_results_sentence}"
       puts
@@ -68,7 +70,7 @@ module Assert
       puts
     end
 
-    def on_interrupt(err)
+    def on_interrupt(_err)
       dump_test_results
     end
 
@@ -82,7 +84,7 @@ module Assert
     def set_callbacks
       @metaclass = class << self; self; end
       if accumulate_test_data?
-        @metaclass.class_eval <<-callbacks
+        @metaclass.class_eval <<-RUBY
           def before_test(test)
             test_data = get_test_data(test)
             puts  "\#{test_data.name.inspect} (\#{test_data.context})"
@@ -91,32 +93,46 @@ module Assert
           end
 
           def on_result(result)
-            print ansi_styled_msg(self.send("\#{result.to_sym}_abbrev"), result.type)
-            @results_to_dump << ResultData.for_result(result) if dumpable_result?(result)
+            print(
+              ansi_styled_msg(
+                self.send("\#{result.to_sym}_abbrev"),
+                result.type,
+              )
+            )
+            @results_to_dump <<
+              ResultData.for_result(result) if dumpable_result?(result)
             find_test_data(result.test_file_line).result_count += 1
           end
 
           def after_test(test)
             test_data = find_test_data(test.file_line)
-            test_data.run_time    = test.run_time
-            test_data.result_rate = get_rate(test_data.result_count, test_data.run_time)
+            test_data.run_time = test.run_time
+            test_data.result_rate =
+              get_rate(test_data.result_count, test_data.run_time)
 
             if show_test_verbose_info?
               print " \#{formatted_run_time(test_data.run_time)} seconds,"\
                     " \#{test_data.result_count} results,"\
-                    " \#{formatted_result_rate(test_data.result_rate)} results/s\n"
+                    " \#{formatted_result_rate(test_data.result_rate)} "\
+                    "results/s\n"
             else
               print "\n"
             end
           end
-        callbacks
+        RUBY
       else
-        @metaclass.class_eval <<-callbacks
+        @metaclass.class_eval <<-RUBY
           def on_result(result)
-            print ansi_styled_msg(self.send("\#{result.to_sym}_abbrev"), result.type)
-            @results_to_dump << ResultData.for_result(result) if dumpable_result?(result)
+            print(
+              ansi_styled_msg(
+                self.send("\#{result.to_sym}_abbrev"),
+                result.type
+              )
+            )
+            @results_to_dump <<
+              ResultData.for_result(result) if dumpable_result?(result)
           end
-        callbacks
+        RUBY
       end
     end
 
@@ -158,27 +174,28 @@ module Assert
       end
     end
 
-    attrs = [:name, :context, :file_line, :result_count, :run_time, :result_rate]
+    attrs =
+      [:name, :context, :file_line, :result_count, :run_time, :result_rate]
     class TestData < Struct.new(*attrs)
       def self.for_test(t)
-        self.new(t.name, t.context_class, t.file_line.to_s, 0, 0.0, 0.0)
+        new(t.name, t.context_class, t.file_line.to_s, 0, 0.0, 0.0)
       end
     end
 
     attrs = [:type, :details, :output, :test_id, :sort_by]
     class ResultData < Struct.new(*attrs)
       def self.for_result(r)
-        self.new(r.type, r.to_s, r.output, r.test_id, self.sort_by(r))
+        new(r.type, r.to_s, r.output, r.test_id, sort_by(r))
       end
 
       def self.sort_by(r)
         [r.test_file_name, r.test_line_num, r.file_name, r.line_num]
       end
 
-      def <=>(other_rd)
+      def <=>(other)
         # show in reverse definition order
-        if other_rd.kind_of?(ResultData)
-          other_rd.sort_by <=> self.sort_by
+        if other.is_a?(ResultData)
+          other.sort_by <=> sort_by
         else
           super
         end

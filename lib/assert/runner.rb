@@ -14,21 +14,21 @@ module Assert
       @config = config
     end
 
-    def runner; self; end
+    def runner
+      self
+    end
 
     def run
-      self.on_start
-      self.suite.on_start
-      self.view.on_start
+      on_start
+      suite.on_start
+      view.on_start
 
-      if self.single_test?
-        self.view.print "Running test: #{self.single_test_file_line}"
-      elsif self.tests_to_run?
-        self.view.print "Running tests in random order"
+      if single_test?
+        view.print "Running test: #{single_test_file_line}"
+      elsif tests_to_run?
+        view.print "Running tests in random order"
       end
-      if self.tests_to_run?
-        self.view.puts ", seeded with \"#{self.runner_seed}\""
-      end
+      view.puts ", seeded with \"#{runner_seed}\"" if tests_to_run?
 
       @current_running_test = nil
 
@@ -36,46 +36,46 @@ module Assert
       # (Ctrl+T on Macs), process it
       if Signal.list.keys.include?("INFO")
         Signal.trap("INFO") do
-          self.on_info(@current_running_test)
-          self.suite.on_info(@current_running_test)
-          self.view.on_info(@current_running_test)
+          on_info(@current_running_test)
+          suite.on_info(@current_running_test)
+          view.on_info(@current_running_test)
         end
       end
 
       begin
-        self.suite.start_time = Time.now
-        self.suite.setups.each(&:call)
-        tests_to_run.tap{ self.suite.clear_tests_to_run }.delete_if do |test|
+        suite.start_time = Time.now
+        suite.setups.each(&:call)
+        tests_to_run.tap{ suite.clear_tests_to_run }.delete_if do |test|
           @current_running_test = test
 
-          self.before_test(test)
-          self.suite.before_test(test)
-          self.view.before_test(test)
+          before_test(test)
+          suite.before_test(test)
+          view.before_test(test)
           test.run do |result|
-            self.on_result(result)
-            self.suite.on_result(result)
-            self.view.on_result(result)
+            on_result(result)
+            suite.on_result(result)
+            view.on_result(result)
           end
-          self.after_test(test)
-          self.suite.after_test(test)
-          self.view.after_test(test)
+          after_test(test)
+          suite.after_test(test)
+          view.after_test(test)
 
           # always delete `test` from `tests_to_run` since it has been run
           true
         end
-        self.suite.teardowns.each(&:call)
-        self.suite.end_time = Time.now
-      rescue Interrupt => err
-        self.on_interrupt(err)
-        self.suite.on_interrupt(err)
-        self.view.on_interrupt(err)
-        raise(err)
+        suite.teardowns.each(&:call)
+        suite.end_time = Time.now
+      rescue Interrupt => ex
+        on_interrupt(ex)
+        suite.on_interrupt(ex)
+        view.on_interrupt(ex)
+        raise(ex)
       end
 
-      (self.fail_result_count + self.error_result_count).tap do
-        self.view.on_finish
-        self.suite.on_finish
-        self.on_finish
+      (fail_result_count + error_result_count).tap do
+        view.on_finish
+        suite.on_finish
+        on_finish
       end
     end
 
@@ -84,24 +84,41 @@ module Assert
     # define callback handlers to do special behavior during the test run. These
     # will be called by the test runner
 
-    def before_load(test_files); end
-    def after_load;              end
-    def on_start;                end
-    def before_test(test);       end
-    def on_result(result);       end
-    def after_test(test);        end
-    def on_finish;               end
-    def on_info(test);           end
-    def on_interrupt(err);       end
+    def before_load(test_files)
+    end
+
+    def after_load
+    end
+
+    def on_start
+    end
+
+    def before_test(test)
+    end
+
+    def on_result(result)
+    end
+
+    def after_test(test)
+    end
+
+    def on_finish
+    end
+
+    def on_info(test)
+    end
+
+    def on_interrupt(err)
+    end
 
     private
 
     def tests_to_run
-      srand self.runner_seed
-      if self.single_test?
-        [self.suite.find_test_to_run(self.single_test_file_line)].compact
+      srand runner_seed
+      if single_test?
+        [suite.find_test_to_run(single_test_file_line)].compact
       else
-        self.suite.sorted_tests_to_run{ rand self.tests_to_run_count }
+        suite.sorted_tests_to_run{ rand tests_to_run_count }
       end
     end
   end

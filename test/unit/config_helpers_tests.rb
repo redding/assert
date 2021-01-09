@@ -8,9 +8,9 @@ require "assert/config"
 module Assert::ConfigHelpers
   class UnitTests < Assert::Context
     desc "Assert::ConfigHelpers"
-    subject { unit_class }
+    subject{ unit_class }
 
-    let(:unit_class) {
+    let(:unit_class) do
       Class.new do
         include Assert::ConfigHelpers
 
@@ -20,12 +20,12 @@ module Assert::ConfigHelpers
           @config ||= [Assert.config, Assert::Config.new].sample
         end
       end
-    }
+    end
   end
 
   class InitTests < UnitTests
     desc "when init"
-    subject { unit_class.new }
+    subject{ unit_class.new }
 
     should have_imeths :runner, :suite, :view
     should have_imeths :runner_seed, :single_test?, :single_test_file_line
@@ -51,10 +51,10 @@ module Assert::ConfigHelpers
     end
 
     should "know if it is in single test mode" do
-      Assert.stub(subject.config, :single_test?) { true }
+      Assert.stub(subject.config, :single_test?){ true }
       assert_that(subject.single_test?).is_true
 
-      Assert.stub(subject.config, :single_test?) { false }
+      Assert.stub(subject.config, :single_test?){ false }
       assert_that(subject.single_test?).is_false
     end
 
@@ -119,7 +119,8 @@ module Assert::ConfigHelpers
 
       result_rate = Factory.float
       exp = format % result_rate
-      assert_that(subject.formatted_result_rate(result_rate, format)).equals(exp)
+      assert_that(subject.formatted_result_rate(result_rate, format))
+        .equals(exp)
       assert_that(subject.formatted_result_rate(result_rate)).equals(exp)
     end
 
@@ -137,17 +138,21 @@ module Assert::ConfigHelpers
     end
 
     should "know whether to show test profile info" do
-      assert_that(subject.show_test_profile_info?).equals(!!subject.config.profile)
+      assert_that(subject.show_test_profile_info?)
+        .equals(!!subject.config.profile)
     end
 
     should "know whether to show verbose info" do
-      assert_that(subject.show_test_verbose_info?).equals(!!subject.config.verbose)
+      assert_that(subject.show_test_verbose_info?)
+        .equals(!!subject.config.verbose)
     end
 
     should "know what result types occur in a suite's results" do
       result_types = [:pass, :fail, :ignore, :skip, :error]
       result_count = Factory.integer
-      Assert.stub(subject, "#{result_types.sample}_result_count"){ result_count }
+      Assert.stub(subject, "#{result_types.sample}_result_count") do
+        result_count
+      end
 
       exp = result_types.select do |type_sym|
         subject.send("#{type_sym}_result_count") > 0

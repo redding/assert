@@ -10,17 +10,17 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_match`"
-    subject {
+    subject do
       args = args1
       Factory.test do
         assert_match(/a/, "a string") # pass
         assert_match(*args)           # fail
       end
-    }
+    end
 
-    let(:desc1) { "assert match fail desc" }
-    let(:args1) { ["not", "a string", desc1] }
-    let(:config1) { subject.config }
+    let(:desc1){ "assert match fail desc" }
+    let(:args1){ ["not", "a string", desc1] }
+    let(:config1){ subject.config }
 
     should "produce results as expected" do
       subject.run(&test_run_callback)
@@ -40,17 +40,17 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_not_match`"
-    subject {
+    subject do
       args = args1
       Factory.test do
         assert_not_match(*args)             # fail
         assert_not_match("not", "a string") # pass
       end
-    }
+    end
 
-    let(:desc1) { "assert not match fail desc" }
-    let(:args1) { [/a/, "a string", desc1] }
-    let(:config1) { subject.config }
+    let(:desc1){ "assert not match fail desc" }
+    let(:args1){ [/a/, "a string", desc1] }
+    let(:config1){ subject.config }
 
     should "produce results as expected" do
       subject.run(&test_run_callback)

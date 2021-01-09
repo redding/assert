@@ -12,9 +12,9 @@ require "assert/view"
 module Assert::ViewHelpers
   class UnitTests < Assert::Context
     desc "Assert::ViewHelpers"
-    subject { unit_class }
+    subject{ unit_class }
 
-    let(:unit_class) {
+    let(:unit_class) do
       test_opt_val = test_opt_val1
       Class.new do
         include Assert::ViewHelpers
@@ -27,9 +27,9 @@ module Assert::ViewHelpers
           @config ||= [Assert.config, Assert::Config.new].sample
         end
       end
-    }
+    end
 
-    let(:test_opt_val1) { Factory.string }
+    let(:test_opt_val1){ Factory.string }
 
     should have_imeths :option
 
@@ -53,7 +53,7 @@ module Assert::ViewHelpers
 
   class InitTests < UnitTests
     desc "when init"
-    subject { unit_class.new }
+    subject{ unit_class.new }
 
     should have_imeths :captured_output, :re_run_test_cmd
     should have_imeths :tests_to_run_count_statement, :result_count_statement
@@ -77,7 +77,9 @@ module Assert::ViewHelpers
     end
 
     should "know its tests-to-run count and result count statements" do
-      exp = "#{subject.tests_to_run_count} test#{"s" if subject.tests_to_run_count != 1}"
+      exp =
+        "#{subject.tests_to_run_count} "\
+        "test#{"s" if subject.tests_to_run_count != 1}"
       assert_that(subject.tests_to_run_count_statement).equals(exp)
 
       exp = "#{subject.result_count} result#{"s" if subject.result_count != 1}"
@@ -91,7 +93,7 @@ module Assert::ViewHelpers
       items = 2.times.map{ Factory.string }
       assert_that(subject.to_sentence(items)).equals(items.join(" and "))
 
-      items = (Factory.integer(3)+2).times.map{ Factory.string }
+      items = (Factory.integer(3) + 2).times.map{ Factory.string }
       exp = [items[0..-2].join(", "), items.last].join(", and ")
       assert_that(subject.to_sentence(items)).equals(exp)
     end
@@ -103,7 +105,7 @@ module Assert::ViewHelpers
       Assert.stub(subject, :result_count){ 1 }
       assert_that(subject.all_pass_result_summary_msg).equals("pass")
 
-      Assert.stub(subject, :result_count){ Factory.integer(10)+1 }
+      Assert.stub(subject, :result_count){ Factory.integer(10) + 1 }
       assert_that(subject.all_pass_result_summary_msg).equals("all pass")
     end
 
@@ -115,7 +117,7 @@ module Assert::ViewHelpers
 
       Assert.stub(subject, :all_pass?){ false }
       res_type = [:pass, :ignore, :fail, :skip, :error].sample
-      exp = "#{subject.send("#{res_type}_result_count")} #{res_type.to_s}"
+      exp = "#{subject.send("#{res_type}_result_count")} #{res_type}"
       assert_that(subject.result_summary_msg(res_type)).equals(exp)
     end
 
@@ -139,7 +141,7 @@ module Assert::ViewHelpers
 
   class AnsiTests < UnitTests
     desc "Ansi"
-    subject { Ansi }
+    subject{ Ansi }
 
     should have_imeths :code_for
 
@@ -162,10 +164,12 @@ module Assert::ViewHelpers
 
   class AnsiInitTests < UnitTests
     desc "when mixed in on a view"
-    subject { view1 }
+    subject{ view1 }
 
-    let(:view_class1) { Class.new(Assert::View){ include Ansi } }
-    let(:view1) { view_class1.new(Factory.modes_off_config, StringIO.new(+"", "w+")) }
+    let(:view_class1){ Class.new(Assert::View){ include Ansi } }
+    let(:view1) do
+      view_class1.new(Factory.modes_off_config, StringIO.new(+"", "w+"))
+    end
 
     should have_imeths :ansi_styled_msg
 
@@ -190,7 +194,10 @@ module Assert::ViewHelpers
       Assert.stub(subject, "#{result_type}_styles"){ [] }
       assert_that(subject.ansi_styled_msg(msg, result_type)).equals(msg)
 
-      styles = Factory.integer(3).times.map{ Assert::ViewHelpers::Ansi::CODES.keys.sample }
+      styles =
+        Factory.integer(3).times.map do
+          Assert::ViewHelpers::Ansi::CODES.keys.sample
+        end
       Assert.stub(subject, "#{result_type}_styles"){ styles }
       exp_code = Assert::ViewHelpers::Ansi.code_for(*styles)
       exp = exp_code + msg + Assert::ViewHelpers::Ansi.code_for(:reset)

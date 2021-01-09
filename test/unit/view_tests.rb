@@ -11,9 +11,9 @@ require "assert/view_helpers"
 class Assert::View
   class UnitTests < Assert::Context
     desc "Assert::View"
-    subject { unit_class }
+    subject{ unit_class }
 
-    let(:unit_class) { Assert::View }
+    let(:unit_class){ Assert::View }
 
     should have_instance_method :require_user_view
 
@@ -28,10 +28,10 @@ class Assert::View
 
   class InitTests < UnitTests
     desc "when init"
-    subject { Assert::View.new(config1, io1) }
+    subject{ Assert::View.new(config1, io1) }
 
-    let(:io1)     { StringIO.new(+"", "w+") }
-    let(:config1) { Factory.modes_off_config }
+    let(:io1){ StringIO.new(+"", "w+") }
+    let(:config1){ Factory.modes_off_config }
 
     should have_readers :config
     should have_imeths :view, :is_tty?

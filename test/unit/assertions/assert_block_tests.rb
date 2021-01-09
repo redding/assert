@@ -8,15 +8,15 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_block`"
-    subject {
+    subject do
       desc = desc1
       Factory.test do
-        assert_block { true }        # pass
-        assert_block(desc) { false } # fail
+        assert_block{ true }        # pass
+        assert_block(desc){ false } # fail
       end
-    }
+    end
 
-    let(:desc1) { "assert block fail desc" }
+    let(:desc1){ "assert block fail desc" }
 
     should "produce results as expected" do
       subject.run(&test_run_callback)
@@ -34,15 +34,15 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_not_block`"
-    subject {
+    subject do
       desc = desc1
       Factory.test do
-        assert_not_block(desc) { true } # fail
-        assert_not_block { false }      # pass
+        assert_not_block(desc){ true } # fail
+        assert_not_block{ false }      # pass
       end
-    }
+    end
 
-    let(:desc1) { "assert not block fail desc" }
+    let(:desc1){ "assert not block fail desc" }
 
     should "produce results as expected" do
       subject.run(&test_run_callback)

@@ -4,13 +4,14 @@ module Assert; end
 class Assert::Context; end
 
 module Assert::Context::SubjectDSL
-  # Add a piece of description text or return the full description for the context
+  # Add a piece of description text or return the full description
+  # for the context.
   def description(text = nil)
     if text
-      self.descriptions << text.to_s
+      descriptions << text.to_s
     else
-      parent = self.superclass.desc if self.superclass.respond_to?(:desc)
-      own = self.descriptions
+      parent = superclass.desc if superclass.respond_to?(:desc)
+      own = descriptions
       [parent, *own].compact.reject(&:empty?).join(" ")
     end
   end
@@ -21,9 +22,7 @@ module Assert::Context::SubjectDSL
     if block_given?
       @subject = block
     else
-      @subject || if superclass.respond_to?(:subject)
-        superclass.subject
-      end
+      @subject || (superclass.subject if superclass.respond_to?(:subject))
     end
   end
 
