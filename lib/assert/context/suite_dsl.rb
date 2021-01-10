@@ -8,7 +8,8 @@ class Assert::Context
       if suite_obj
         @suite = suite_obj
       else
-        @suite || if superclass.respond_to?(:suite)
+        @suite ||
+        if superclass.respond_to?(:suite)
           superclass.suite
         else
           Assert.suite

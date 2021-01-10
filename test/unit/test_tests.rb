@@ -10,14 +10,16 @@ require "assert/result"
 class Assert::Test
   class UnitTests < Assert::Context
     desc "Assert::Test"
-    subject { unit_class }
+    subject{ unit_class }
 
-    let(:unit_class) { Assert::Test }
+    let(:unit_class){ Assert::Test }
 
-    let(:context_class1) { Factory.modes_off_context_class { desc "context class" } }
-    let(:context_info1)  { Factory.context_info(context_class1) }
-    let(:config1)        { Factory.modes_off_config }
-    let(:test_code1)     { proc { assert(true) } }
+    let(:context_class1) do
+      Factory.modes_off_context_class{ desc "context class" }
+    end
+    let(:context_info1){ Factory.context_info(context_class1) }
+    let(:config1){ Factory.modes_off_config }
+    let(:test_code1){ proc{ assert(true) } }
 
     should have_imeths :name_file_line_context_data, :for_block
 
@@ -50,24 +52,26 @@ class Assert::Test
 
   class InitWithDataTests < UnitTests
     desc "when init with data"
-    subject { unit_class.new(meta_data1.merge(run_data1)) }
+    subject{ unit_class.new(meta_data1.merge(run_data1)) }
 
-    let(:file_line1) { Assert::FileLine.new(Factory.string, Factory.integer.to_s) }
-    let(:meta_data1) {
+    let(:file_line1) do
+      Assert::FileLine.new(Factory.string, Factory.integer.to_s)
+    end
+    let(:meta_data1) do
       {
-        :file_line => file_line1.to_s,
-        :name      => Factory.string,
-        :output    => Factory.string,
-        :run_time  => Factory.float(1.0),
+        file_line: file_line1.to_s,
+        name: Factory.string,
+        output: Factory.string,
+        run_time: Factory.float(1.0),
       }
-    }
-    let(:run_data1) {
+    end
+    let(:run_data1) do
       {
-        :context_info => context_info1,
-        :config       => config1,
-        :code         => test_code1
+        context_info: context_info1,
+        config: config1,
+        code: test_code1,
       }
-    }
+    end
 
     should have_imeths :file_line, :file_name, :line_num
     should have_imeths :name, :output, :run_time
@@ -107,9 +111,12 @@ class Assert::Test
     end
 
     should "have a custom inspect that only shows limited attributes" do
-      attrs = [:name, :context_info].collect do |method|
-        "@#{method}=#{subject.send(method).inspect}"
-      end.join(" ")
+      attrs =
+        [:name, :context_info]
+          .map{ |method|
+            "@#{method}=#{subject.send(method).inspect}"
+          }
+          .join(" ")
       exp = "#<#{subject.class}:#{"0x0%x" % (subject.object_id << 1)} #{attrs}>"
       assert_that(subject.inspect).equals(exp)
     end
@@ -118,13 +125,13 @@ class Assert::Test
   class PassFailIgnoreHandlingTests < UnitTests
     include Assert::Test::TestHelpers
 
-    subject {
+    subject do
       Factory.test("pass fail ignore test", context_info1) do
         ignore("something")
         assert(true)
         assert(false)
       end
-    }
+    end
 
     setup do
       subject.context_class.setup do
@@ -184,7 +191,7 @@ class Assert::Test
     end
 
     should "capture fails in the context setup" do
-      test = Factory.test("setup halt-on-fail test", context_info1){ }
+      test = Factory.test("setup halt-on-fail test", context_info1){}
       test.context_class.setup{ raise Assert::Result::TestFailure }
       test.run(&test_run_callback)
 
@@ -192,7 +199,7 @@ class Assert::Test
     end
 
     should "capture fails in the context teardown" do
-      test = Factory.test("teardown halt-on-fail test", context_info1){ }
+      test = Factory.test("teardown halt-on-fail test", context_info1){}
       test.context_class.teardown{ raise Assert::Result::TestFailure }
       test.run(&test_run_callback)
 
@@ -201,11 +208,13 @@ class Assert::Test
 
     private
 
-    def assert_failed(test)
+    def assert_failed(_test)
       with_backtrace(caller) do
-        assert_that(test_run_result_count).equals(1, "too many/few fail results")
+        assert_that(test_run_result_count)
+          .equals(1, "too many/few fail results")
         test_run_results.each do |result|
-          assert_that(result).is_kind_of(Assert::Result::Fail, "not a fail result")
+          assert_that(result)
+            .is_kind_of(Assert::Result::Fail, "not a fail result")
         end
       end
     end
@@ -222,7 +231,7 @@ class Assert::Test
     end
 
     should "capture skips in the context setup" do
-      test = Factory.test("setup skip test", context_info1){ }
+      test = Factory.test("setup skip test", context_info1){}
       test.context_class.setup{ skip }
       test.run(&test_run_callback)
 
@@ -230,7 +239,7 @@ class Assert::Test
     end
 
     should "capture skips in the context teardown" do
-      test = Factory.test("teardown skip test", context_info1){ }
+      test = Factory.test("teardown skip test", context_info1){}
       test.context_class.teardown{ skip }
       test.run(&test_run_callback)
 
@@ -239,11 +248,13 @@ class Assert::Test
 
     private
 
-    def assert_skipped(test)
+    def assert_skipped(_test)
       with_backtrace(caller) do
-        assert_that(test_run_result_count).equals(1, "too many/few skip results")
+        assert_that(test_run_result_count)
+          .equals(1, "too many/few skip results")
         test_run_results.each do |result|
-          assert_that(result).is_kind_of(Assert::Result::Skip, "not a skip result")
+          assert_that(result)
+            .is_kind_of(Assert::Result::Skip, "not a skip result")
         end
       end
     end
@@ -262,7 +273,7 @@ class Assert::Test
     end
 
     should "capture errors in the context setup" do
-      test = Factory.test("setup error test", context_info1){ }
+      test = Factory.test("setup error test", context_info1){}
       test.context_class.setup{ raise "an error" }
       test.run(&test_run_callback)
 
@@ -270,7 +281,7 @@ class Assert::Test
     end
 
     should "capture errors in the context teardown" do
-      test = Factory.test("teardown error test", context_info1){ }
+      test = Factory.test("teardown error test", context_info1){}
       test.context_class.teardown{ raise "an error" }
       test.run(&test_run_callback)
 
@@ -279,11 +290,13 @@ class Assert::Test
 
     private
 
-    def assert_errored(test)
+    def assert_errored(_test)
       with_backtrace(caller) do
-        assert_that(test_run_result_count).equals(1, "too many/few error results")
+        assert_that(test_run_result_count)
+          .equals(1, "too many/few error results")
         test_run_results.each do |result|
-          assert_that(result).is_kind_of(Assert::Result::Error, "not an error result")
+          assert_that(result)
+            .is_kind_of(Assert::Result::Error, "not an error result")
         end
       end
     end
@@ -295,27 +308,27 @@ class Assert::Test
         raise SignalException, "USR1"
       end
 
-      assert_that { test.run }.raises(SignalException)
+      assert_that{ test.run }.raises(SignalException)
     end
 
     should "raises signal exceptions in the context setup" do
-      test = Factory.test("setup signal test", context_info1){ }
+      test = Factory.test("setup signal test", context_info1){}
       test.context_class.setup{ raise SignalException, "INT" }
 
-      assert_that { test.run }.raises(SignalException)
+      assert_that{ test.run }.raises(SignalException)
     end
 
     should "raises signal exceptions in the context teardown" do
-      test = Factory.test("teardown signal test", context_info1){ }
+      test = Factory.test("teardown signal test", context_info1){}
       test.context_class.teardown{ raise SignalException, "TERM" }
 
-      assert_that { test.run }.raises(SignalException)
+      assert_that{ test.run }.raises(SignalException)
     end
   end
 
   class ComparingTests < UnitTests
     desc "<=> another test"
-    subject { Factory.test("mmm") }
+    subject{ Factory.test("mmm") }
 
     should "return 1 with a test named 'aaa' (greater than it)" do
       assert_that(subject <=> Factory.test("aaa")).equals(1)
@@ -332,14 +345,14 @@ class Assert::Test
 
   class CaptureOutTests < UnitTests
     desc "when capturing std out"
-    subject {
+    subject do
       Factory.test("stdout", capture_config1) do
         puts "std out from the test"
         assert true
       end
-    }
+    end
 
-    let(:capture_config1) { Assert::Config.new(:capture_output => true) }
+    let(:capture_config1){ Assert::Config.new(capture_output: true) }
 
     should "capture any io from the test" do
       subject.run
@@ -349,12 +362,12 @@ class Assert::Test
 
   class FullCaptureOutTests < CaptureOutTests
     desc "across setup, teardown, and meth calls"
-    subject {
+    subject do
       Factory.test("fullstdouttest", capture_config1) do
         puts "std out from the test"
         assert a_method_an_assert_calls
       end
-    }
+    end
 
     setup do
       subject.context_class.setup{ puts "std out from the setup" }

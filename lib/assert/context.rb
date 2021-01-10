@@ -38,7 +38,7 @@ module Assert
       @__assert_pending__      = 0
 
       @__assert_result_callback__ = proc do |result|
-        if !@__assert_with_bt__.empty?
+        unless @__assert_with_bt__.empty?
           result.set_with_bt(@__assert_with_bt__.dup)
         end
         result_callback.call(result)
@@ -63,7 +63,8 @@ module Assert
     end
 
     # The opposite of assert. Check if the result is false. If so, create a new
-    # pass result. Otherwise create a new fail result with the desc and fail msg.
+    # pass result. Otherwise create a new fail result with the desc and
+    # fail msg.
     def assert_not(assertion, fail_desc = nil)
       assert(!assertion, fail_desc) do
         "Failed assert_not: assertion was "\
@@ -74,8 +75,7 @@ module Assert
 
     def assert_that(
           actual_value = Assert::ActualValue.not_given,
-          &actual_value_block
-        )
+          &actual_value_block)
       Assert::ActualValue.new(actual_value, context: self, &actual_value_block)
     end
 
@@ -87,7 +87,7 @@ module Assert
       else
         capture_result(
           Assert::Result::Fail,
-          "Pending pass (make it not pending)"
+          "Pending pass (make it not pending)",
         )
       end
     end
@@ -107,12 +107,10 @@ module Assert
         else
           capture_result(Assert::Result::Fail, message || "")
         end
+      elsif halt_on_fail?
+        raise Result::TestSkipped, "Pending fail: #{message || ""}"
       else
-        if halt_on_fail?
-          raise Result::TestSkipped, "Pending fail: #{message || ""}"
-        else
-          capture_result(Assert::Result::Skip, "Pending fail: #{message || ""}")
-        end
+        capture_result(Assert::Result::Skip, "Pending fail: #{message || ""}")
       end
     end
     alias_method :flunk, :fail
@@ -139,11 +137,11 @@ module Assert
       begin
         @__assert_with_bt__.push(bt.first)
         instance_eval(&block)
-      rescue Result::TestSkipped, Result::TestFailure => e
-        if e.assert_with_bt.nil? && !@__assert_with_bt__.empty?
-          e.assert_with_bt = @__assert_with_bt__.dup
+      rescue Result::TestSkipped, Result::TestFailure => ex
+        if ex.assert_with_bt.nil? && !@__assert_with_bt__.empty?
+          ex.assert_with_bt = @__assert_with_bt__.dup
         end
-        raise(e)
+        raise(ex)
       ensure
         @__assert_with_bt__.pop
       end
@@ -178,12 +176,10 @@ module Assert
 
     def capture_result(result_klass, msg)
       @__assert_result_callback__.call(
-        result_klass.for_test(@__assert_running_test__, msg, caller_locations)
+        result_klass.for_test(@__assert_running_test__, msg, caller_locations),
       )
     end
 
-    def __assert_config__
-      @__assert_config__
-    end
+    attr_reader :__assert_config__
   end
 end

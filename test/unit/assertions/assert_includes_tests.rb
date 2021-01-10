@@ -10,17 +10,17 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_includes`"
-    subject {
+    subject do
       args = args1
       Factory.test do
         assert_includes(1, [1]) # pass
         assert_includes(*args)  # fail
       end
-    }
+    end
 
-    let(:desc1) { "assert includes fail desc" }
-    let(:args1) { [2, [1], desc1] }
-    let(:config1) { subject.config }
+    let(:desc1){ "assert includes fail desc" }
+    let(:args1){ [2, [1], desc1] }
+    let(:config1){ subject.config }
 
     should "produce results as expected" do
       subject.run(&test_run_callback)
@@ -41,17 +41,17 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_not_included`"
-    subject {
+    subject do
       args = args1
       Factory.test do
         assert_not_included(2, [1]) # pass
         assert_not_included(*args)  # fail
       end
-    }
+    end
 
-    let(:desc1) { "assert not included fail desc" }
-    let(:args1) { [1, [1], desc1] }
-    let(:config1) { subject.config }
+    let(:desc1){ "assert not included fail desc" }
+    let(:args1){ [1, [1], desc1] }
+    let(:config1){ subject.config }
 
     should "produce results as expected" do
       subject.run(&test_run_callback)

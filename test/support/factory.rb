@@ -10,11 +10,17 @@ module Factory
   extend Assert::Factory
 
   def self.context_info_called_from
-    File.expand_path("#{Factory.path}_tests.rb:#{Factory.integer}", Dir.pwd)
+    File.expand_path(
+      "#{Factory.path}_tests.rb:#{Factory.integer}",
+      Dir.pwd,
+    )
   end
 
   def self.context_info(context_klass = nil)
-    Assert::ContextInfo.new(context_klass || self.context_class, context_info_called_from)
+    Assert::ContextInfo.new(
+      context_klass || context_class,
+      context_info_called_from,
+    )
   end
 
   # Generate an anonymous `Context` inherited from `Assert::Context` by default.
@@ -24,9 +30,8 @@ module Factory
     klass = Class.new(inherit_from || Assert::Context, &block)
     default = const_name = "FactoryAssertContext"
 
-    while(Object.const_defined?(const_name)) do
-      const_name = "#{default}#{rand(Time.now.to_i)}"
-    end
+    const_name =
+      "#{default}#{rand(Time.now.to_i)}" while Object.const_defined?(const_name)
     Object.const_set(const_name, klass)
     klass
   end
@@ -35,9 +40,9 @@ module Factory
 
   def self.test(*args, &block)
     config, context_info, name = [
-      args.last.kind_of?(Assert::Config) ? args.pop : self.modes_off_config,
-      args.last.kind_of?(Assert::ContextInfo) ? args.pop : self.context_info,
-      args.last.kind_of?(::String) ? args.pop : "a test"
+      args.last.is_a?(Assert::Config) ? args.pop : modes_off_config,
+      args.last.is_a?(Assert::ContextInfo) ? args.pop : self.context_info,
+      args.last.is_a?(::String) ? args.pop : "a test",
     ]
     Assert::Test.for_block(name, context_info, config, &block)
   end
@@ -45,15 +50,27 @@ module Factory
   # Generate results for use in testing.
 
   def self.pass_result(msg = nil)
-    Assert::Result::Pass.for_test(Factory.test(Factory.string), msg || Factory.string, [])
+    Assert::Result::Pass.for_test(
+      Factory.test(Factory.string),
+      msg || Factory.string,
+      [],
+    )
   end
 
   def self.ignore_result(msg = nil)
-    Assert::Result::Ignore.for_test(Factory.test(Factory.string), msg || Factory.string, [])
+    Assert::Result::Ignore.for_test(
+      Factory.test(Factory.string),
+      msg || Factory.string,
+      [],
+    )
   end
 
   def self.fail_result(msg = nil)
-    Assert::Result::Fail.for_test(Factory.test(Factory.string), msg || Factory.string, [])
+    Assert::Result::Fail.for_test(
+      Factory.test(Factory.string),
+      msg || Factory.string,
+      [],
+    )
   end
 
   def self.skip_result(exception = nil)
@@ -68,23 +85,23 @@ module Factory
 
   def self.modes_off_config
     Assert::Config.new({
-      :capture_output => false,
-      :halt_on_fail   => false,
-      :changed_only   => false,
-      :pp_objects     => false,
-      :debug          => false
+      capture_output: false,
+      halt_on_fail: false,
+      changed_only: false,
+      pp_objects: false,
+      debug: false,
     })
   end
 
   def self.modes_off_suite
-    Assert::DefaultSuite.new(self.modes_off_config)
+    Assert::DefaultSuite.new(modes_off_config)
   end
 
   def self.modes_off_context_class(*args, &block)
-    suite_obj = self.modes_off_suite
-    self.context_class(*args) do
+    suite_obj = modes_off_suite
+    context_class(*args) do
       suite(suite_obj)
-      instance_eval(&block) if !block.nil?
+      instance_eval(&block) unless block.nil?
     end
   end
 
@@ -93,7 +110,7 @@ module Factory
     Factory.modes_off_context_class.new(
       test,
       test.config,
-      result_block || proc { |r| }
+      result_block || proc{ |r| },
     )
   end
 

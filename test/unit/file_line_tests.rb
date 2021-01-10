@@ -6,19 +6,19 @@ require "assert/file_line"
 class Assert::FileLine
   class UnitTests < Assert::Context
     desc "Assert::FileLine"
-    subject { unit_class }
+    subject{ unit_class }
 
-    let(:unit_class) { Assert::FileLine }
+    let(:unit_class){ Assert::FileLine }
 
-    let(:file1) { "#{Factory.path}_tests.rb" }
-    let(:line1) { Factory.integer.to_s }
+    let(:file1){ "#{Factory.path}_tests.rb" }
+    let(:line1){ Factory.integer.to_s }
 
     should have_imeths :parse
 
     should "know how to parse and init from a file line path string" do
       file_line_path = [
         "#{file1}:#{line1}",
-        "#{file1}:#{line1} #{Factory.string}"
+        "#{file1}:#{line1} #{Factory.string}",
       ].sample
       file_line = subject.parse(file_line_path)
 
@@ -47,7 +47,7 @@ class Assert::FileLine
 
   class InitTests < UnitTests
     desc "when init"
-    subject { unit_class.new(file1, line1) }
+    subject{ unit_class.new(file1, line1) }
 
     should have_readers :file, :line
 
@@ -73,7 +73,7 @@ class Assert::FileLine
       no = unit_class.new("#{Factory.path}_tests.rb", Factory.integer.to_s)
 
       assert_that(subject).equals(yes)
-      assert_not_equal no,  subject
+      assert_not_equal no, subject
     end
   end
 end

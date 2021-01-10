@@ -7,7 +7,7 @@ module Assert
     # will be instance_eval'd in that Assert::Context.
     attr_accessor :name
 
-    def initialize(name = nil, *args, &block)
+    def initialize(name = nil, *_args)
       raise ArgumentError unless block_given?
       @name = name || "run this macro"
       super()

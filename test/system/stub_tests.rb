@@ -10,7 +10,7 @@ class Assert::Stub
 
   class InstanceTests < SystemTests
     desc "for instance methods"
-    subject { TestClass.new }
+    subject{ TestClass.new }
 
     setup do
       Assert.stub(subject, :noargs){ "default" }
@@ -56,33 +56,33 @@ class Assert::Stub
     end
 
     should "not allow stubbing methods with invalid arity" do
-      assert_that { Assert.stub(subject, :noargs).with(1){ } }.raises
+      assert_that{ Assert.stub(subject, :noargs).with(1){} }.raises
 
-      assert_that { Assert.stub(subject, :withargs).with{ } }.raises
-      assert_that { Assert.stub(subject, :withargs).with(1, 2){ } }.raises
+      assert_that{ Assert.stub(subject, :withargs).with{} }.raises
+      assert_that{ Assert.stub(subject, :withargs).with(1, 2){} }.raises
 
-      assert_that { Assert.stub(subject, :minargs).with{ } }.raises
-      assert_that { Assert.stub(subject, :minargs).with(1){ } }.raises
+      assert_that{ Assert.stub(subject, :minargs).with{} }.raises
+      assert_that{ Assert.stub(subject, :minargs).with(1){} }.raises
 
-      assert_that { Assert.stub(subject, :withblock).with(1){ } }.raises
+      assert_that{ Assert.stub(subject, :withblock).with(1){} }.raises
     end
 
     should "not allow calling methods with invalid arity" do
-      assert_that { subject.noargs(1) }.raises
+      assert_that{ subject.noargs(1) }.raises
 
-      assert_that { subject.withargs }.raises
-      assert_that { subject.withargs(1, 2) }.raises
+      assert_that{ subject.withargs }.raises
+      assert_that{ subject.withargs(1, 2) }.raises
 
-      assert_that { subject.minargs }.raises
-      assert_that { subject.minargs(1) }.raises
+      assert_that{ subject.minargs }.raises
+      assert_that{ subject.minargs(1) }.raises
 
-      assert_that { subject.withblock(1) }.raises
+      assert_that{ subject.withblock(1) }.raises
     end
   end
 
   class ClassTests < SystemTests
     desc "for singleton methods on a class"
-    subject { TestClass }
+    subject{ TestClass }
 
     setup do
       Assert.stub(subject, :noargs){ "default" }
@@ -129,33 +129,33 @@ class Assert::Stub
     end
 
     should "not allow stubbing methods with invalid arity" do
-      assert_that { Assert.stub(subject, :noargs).with(1){ } }.raises
+      assert_that{ Assert.stub(subject, :noargs).with(1){} }.raises
 
-      assert_that { Assert.stub(subject, :withargs).with{ } }.raises
-      assert_that { Assert.stub(subject, :withargs).with(1, 2){ } }.raises
+      assert_that{ Assert.stub(subject, :withargs).with{} }.raises
+      assert_that{ Assert.stub(subject, :withargs).with(1, 2){} }.raises
 
-      assert_that { Assert.stub(subject, :minargs).with{ } }.raises
-      assert_that { Assert.stub(subject, :minargs).with(1){ } }.raises
+      assert_that{ Assert.stub(subject, :minargs).with{} }.raises
+      assert_that{ Assert.stub(subject, :minargs).with(1){} }.raises
 
-      assert_that { Assert.stub(subject, :withblock).with(1){ } }.raises
+      assert_that{ Assert.stub(subject, :withblock).with(1){} }.raises
     end
 
     should "not allow calling methods with invalid arity" do
-      assert_that { subject.noargs(1) }.raises
+      assert_that{ subject.noargs(1) }.raises
 
-      assert_that { subject.withargs }.raises
-      assert_that { subject.withargs(1, 2) }.raises
+      assert_that{ subject.withargs }.raises
+      assert_that{ subject.withargs(1, 2) }.raises
 
-      assert_that { subject.minargs }.raises
-      assert_that { subject.minargs(1) }.raises
+      assert_that{ subject.minargs }.raises
+      assert_that{ subject.minargs(1) }.raises
 
-      assert_that { subject.withblock(1) }.raises
+      assert_that{ subject.withblock(1) }.raises
     end
   end
 
   class ModuleTests < SystemTests
     desc "for singleton methods on a module"
-    subject { TestModule }
+    subject{ TestModule }
 
     setup do
       Assert.stub(subject, :noargs){ "default" }
@@ -202,33 +202,33 @@ class Assert::Stub
     end
 
     should "not allow stubbing methods with invalid arity" do
-      assert_that { Assert.stub(subject, :noargs).with(1){ } }.raises
+      assert_that{ Assert.stub(subject, :noargs).with(1){} }.raises
 
-      assert_that { Assert.stub(subject, :withargs).with{ } }.raises
-      assert_that { Assert.stub(subject, :withargs).with(1, 2){ } }.raises
+      assert_that{ Assert.stub(subject, :withargs).with{} }.raises
+      assert_that{ Assert.stub(subject, :withargs).with(1, 2){} }.raises
 
-      assert_that { Assert.stub(subject, :minargs).with{ } }.raises
-      assert_that { Assert.stub(subject, :minargs).with(1){ } }.raises
+      assert_that{ Assert.stub(subject, :minargs).with{} }.raises
+      assert_that{ Assert.stub(subject, :minargs).with(1){} }.raises
 
-      assert_that { Assert.stub(subject, :withblock).with(1){ } }.raises
+      assert_that{ Assert.stub(subject, :withblock).with(1){} }.raises
     end
 
     should "not allow calling methods with invalid arity" do
-      assert_that { subject.noargs(1) }.raises
+      assert_that{ subject.noargs(1) }.raises
 
-      assert_that { subject.withargs }.raises
-      assert_that { subject.withargs(1, 2) }.raises
+      assert_that{ subject.withargs }.raises
+      assert_that{ subject.withargs(1, 2) }.raises
 
-      assert_that { subject.minargs }.raises
-      assert_that { subject.minargs(1) }.raises
+      assert_that{ subject.minargs }.raises
+      assert_that{ subject.minargs(1) }.raises
 
-      assert_that { subject.withblock(1) }.raises
+      assert_that{ subject.withblock(1) }.raises
     end
   end
 
   class ExtendedTests < SystemTests
     desc "for extended methods"
-    subject { Class.new{ extend TestMixin } }
+    subject{ Class.new{ extend TestMixin } }
 
     setup do
       Assert.stub(subject, :noargs){ "default" }
@@ -275,35 +275,35 @@ class Assert::Stub
     end
 
     should "not allow stubbing methods with invalid arity" do
-      assert_that { Assert.stub(subject, :noargs).with(1){ } }.raises
+      assert_that{ Assert.stub(subject, :noargs).with(1){} }.raises
 
-      assert_that { Assert.stub(subject, :withargs).with{ } }.raises
-      assert_that { Assert.stub(subject, :withargs).with(1, 2){ } }.raises
+      assert_that{ Assert.stub(subject, :withargs).with{} }.raises
+      assert_that{ Assert.stub(subject, :withargs).with(1, 2){} }.raises
 
-      assert_that { Assert.stub(subject, :minargs).with{ } }.raises
-      assert_that { Assert.stub(subject, :minargs).with(1){ } }.raises
+      assert_that{ Assert.stub(subject, :minargs).with{} }.raises
+      assert_that{ Assert.stub(subject, :minargs).with(1){} }.raises
 
-      assert_that { Assert.stub(subject, :withblock).with(1){ } }.raises
+      assert_that{ Assert.stub(subject, :withblock).with(1){} }.raises
     end
 
     should "not allow calling methods with invalid arity" do
-      assert_that { subject.noargs(1) }.raises
+      assert_that{ subject.noargs(1) }.raises
 
-      assert_that { subject.withargs }.raises
-      assert_that { subject.withargs(1, 2) }.raises
+      assert_that{ subject.withargs }.raises
+      assert_that{ subject.withargs(1, 2) }.raises
 
-      assert_that { subject.minargs }.raises
-      assert_that { subject.minargs(1) }.raises
+      assert_that{ subject.minargs }.raises
+      assert_that{ subject.minargs(1) }.raises
 
-      assert_that { subject.withblock(1) }.raises
+      assert_that{ subject.withblock(1) }.raises
     end
   end
 
   class IncludedTests < SystemTests
     desc "for an included method"
-    subject {
-      Class.new { include TestMixin }.new
-    }
+    subject do
+      Class.new{ include TestMixin }.new
+    end
 
     setup do
       Assert.stub(subject, :noargs){ "default" }
@@ -350,33 +350,33 @@ class Assert::Stub
     end
 
     should "not allow stubbing methods with invalid arity" do
-      assert_that { Assert.stub(subject, :noargs).with(1){ } }.raises
+      assert_that{ Assert.stub(subject, :noargs).with(1){} }.raises
 
-      assert_that { Assert.stub(subject, :withargs).with{ } }.raises
-      assert_that { Assert.stub(subject, :withargs).with(1, 2){ } }.raises
+      assert_that{ Assert.stub(subject, :withargs).with{} }.raises
+      assert_that{ Assert.stub(subject, :withargs).with(1, 2){} }.raises
 
-      assert_that { Assert.stub(subject, :minargs).with{ } }.raises
-      assert_that { Assert.stub(subject, :minargs).with(1){ } }.raises
+      assert_that{ Assert.stub(subject, :minargs).with{} }.raises
+      assert_that{ Assert.stub(subject, :minargs).with(1){} }.raises
 
-      assert_that { Assert.stub(subject, :withblock).with(1){ } }.raises
+      assert_that{ Assert.stub(subject, :withblock).with(1){} }.raises
     end
 
     should "not allow calling methods with invalid arity" do
-      assert_that { subject.noargs(1) }.raises
+      assert_that{ subject.noargs(1) }.raises
 
-      assert_that { subject.withargs }.raises
-      assert_that { subject.withargs(1, 2) }.raises
+      assert_that{ subject.withargs }.raises
+      assert_that{ subject.withargs(1, 2) }.raises
 
-      assert_that { subject.minargs }.raises
-      assert_that { subject.minargs(1) }.raises
+      assert_that{ subject.minargs }.raises
+      assert_that{ subject.minargs(1) }.raises
 
-      assert_that { subject.withblock(1) }.raises
+      assert_that{ subject.withblock(1) }.raises
     end
   end
 
   class InheritedClassTests < SystemTests
     desc "for an inherited class method"
-    subject { Class.new(TestClass) }
+    subject{ Class.new(TestClass) }
 
     setup do
       Assert.stub(subject, :noargs){ "default" }
@@ -423,33 +423,33 @@ class Assert::Stub
     end
 
     should "not allow stubbing methods with invalid arity" do
-      assert_that { Assert.stub(subject, :noargs).with(1){ } }.raises
+      assert_that{ Assert.stub(subject, :noargs).with(1){} }.raises
 
-      assert_that { Assert.stub(subject, :withargs).with{ } }.raises
-      assert_that { Assert.stub(subject, :withargs).with(1, 2){ } }.raises
+      assert_that{ Assert.stub(subject, :withargs).with{} }.raises
+      assert_that{ Assert.stub(subject, :withargs).with(1, 2){} }.raises
 
-      assert_that { Assert.stub(subject, :minargs).with{ } }.raises
-      assert_that { Assert.stub(subject, :minargs).with(1){ } }.raises
+      assert_that{ Assert.stub(subject, :minargs).with{} }.raises
+      assert_that{ Assert.stub(subject, :minargs).with(1){} }.raises
 
-      assert_that { Assert.stub(subject, :withblock).with(1){ } }.raises
+      assert_that{ Assert.stub(subject, :withblock).with(1){} }.raises
     end
 
     should "not allow calling methods with invalid arity" do
-      assert_that { subject.noargs(1) }.raises
+      assert_that{ subject.noargs(1) }.raises
 
-      assert_that { subject.withargs }.raises
-      assert_that { subject.withargs(1, 2) }.raises
+      assert_that{ subject.withargs }.raises
+      assert_that{ subject.withargs(1, 2) }.raises
 
-      assert_that { subject.minargs }.raises
-      assert_that { subject.minargs(1) }.raises
+      assert_that{ subject.minargs }.raises
+      assert_that{ subject.minargs(1) }.raises
 
-      assert_that { subject.withblock(1) }.raises
+      assert_that{ subject.withblock(1) }.raises
     end
   end
 
   class InheritedInstanceTests < SystemTests
     desc "for an inherited instance method"
-    subject { Class.new(TestClass).new }
+    subject{ Class.new(TestClass).new }
 
     setup do
       Assert.stub(subject, :noargs){ "default" }
@@ -496,33 +496,33 @@ class Assert::Stub
     end
 
     should "not allow stubbing methods with invalid arity" do
-      assert_that { Assert.stub(subject, :noargs).with(1){ } }.raises
+      assert_that{ Assert.stub(subject, :noargs).with(1){} }.raises
 
-      assert_that { Assert.stub(subject, :withargs).with{ } }.raises
-      assert_that { Assert.stub(subject, :withargs).with(1, 2){ } }.raises
+      assert_that{ Assert.stub(subject, :withargs).with{} }.raises
+      assert_that{ Assert.stub(subject, :withargs).with(1, 2){} }.raises
 
-      assert_that { Assert.stub(subject, :minargs).with{ } }.raises
-      assert_that { Assert.stub(subject, :minargs).with(1){ } }.raises
+      assert_that{ Assert.stub(subject, :minargs).with{} }.raises
+      assert_that{ Assert.stub(subject, :minargs).with(1){} }.raises
 
-      assert_that { Assert.stub(subject, :withblock).with(1){ } }.raises
+      assert_that{ Assert.stub(subject, :withblock).with(1){} }.raises
     end
 
     should "not allow calling methods with invalid arity" do
-      assert_that { subject.noargs(1) }.raises
+      assert_that{ subject.noargs(1) }.raises
 
-      assert_that { subject.withargs }.raises
-      assert_that { subject.withargs(1, 2) }.raises
+      assert_that{ subject.withargs }.raises
+      assert_that{ subject.withargs(1, 2) }.raises
 
-      assert_that { subject.minargs }.raises
-      assert_that { subject.minargs(1) }.raises
+      assert_that{ subject.minargs }.raises
+      assert_that{ subject.minargs(1) }.raises
 
-      assert_that { subject.withblock(1) }.raises
+      assert_that{ subject.withblock(1) }.raises
     end
   end
 
   class DelegateClassTests < SystemTests
     desc "a class that delegates another object"
-    subject { DelegateClass }
+    subject{ DelegateClass }
 
     setup do
       Assert.stub(subject, :noargs){ "default" }
@@ -569,33 +569,33 @@ class Assert::Stub
     end
 
     should "allow stubbing methods with invalid arity" do
-      assert_that { Assert.stub(subject, :noargs).with(1){ } }.does_not_raise
+      assert_that{ Assert.stub(subject, :noargs).with(1){} }.does_not_raise
 
-      assert_that { Assert.stub(subject, :withargs).with{ } }.does_not_raise
-      assert_that { Assert.stub(subject, :withargs).with(1, 2){ } }.does_not_raise
+      assert_that{ Assert.stub(subject, :withargs).with{} }.does_not_raise
+      assert_that{ Assert.stub(subject, :withargs).with(1, 2){} }.does_not_raise
 
-      assert_that { Assert.stub(subject, :minargs).with{ } }.does_not_raise
-      assert_that { Assert.stub(subject, :minargs).with(1){ } }.does_not_raise
+      assert_that{ Assert.stub(subject, :minargs).with{} }.does_not_raise
+      assert_that{ Assert.stub(subject, :minargs).with(1){} }.does_not_raise
 
-      assert_that { Assert.stub(subject, :withblock).with(1){ } }.does_not_raise
+      assert_that{ Assert.stub(subject, :withblock).with(1){} }.does_not_raise
     end
 
     should "allow calling methods with invalid arity" do
-      assert_that { subject.noargs(1) }.does_not_raise
+      assert_that{ subject.noargs(1) }.does_not_raise
 
-      assert_that { subject.withargs }.does_not_raise
-      assert_that { subject.withargs(1, 2) }.does_not_raise
+      assert_that{ subject.withargs }.does_not_raise
+      assert_that{ subject.withargs(1, 2) }.does_not_raise
 
-      assert_that { subject.minargs }.does_not_raise
-      assert_that { subject.minargs(1) }.does_not_raise
+      assert_that{ subject.minargs }.does_not_raise
+      assert_that{ subject.minargs(1) }.does_not_raise
 
-      assert_that { subject.withblock(1) }.does_not_raise
+      assert_that{ subject.withblock(1) }.does_not_raise
     end
   end
 
   class DelegateInstanceTests < SystemTests
     desc "an instance that delegates another object"
-    subject { DelegateClass.new }
+    subject{ DelegateClass.new }
 
     setup do
       Assert.stub(subject, :noargs){ "default" }
@@ -642,27 +642,27 @@ class Assert::Stub
     end
 
     should "allow stubbing methods with invalid arity" do
-      assert_that { Assert.stub(subject, :noargs).with(1){ } }.does_not_raise
+      assert_that{ Assert.stub(subject, :noargs).with(1){} }.does_not_raise
 
-      assert_that { Assert.stub(subject, :withargs).with{ } }.does_not_raise
-      assert_that { Assert.stub(subject, :withargs).with(1, 2){ } }.does_not_raise
+      assert_that{ Assert.stub(subject, :withargs).with{} }.does_not_raise
+      assert_that{ Assert.stub(subject, :withargs).with(1, 2){} }.does_not_raise
 
-      assert_that { Assert.stub(subject, :minargs).with{ } }.does_not_raise
-      assert_that { Assert.stub(subject, :minargs).with(1){ } }.does_not_raise
+      assert_that{ Assert.stub(subject, :minargs).with{} }.does_not_raise
+      assert_that{ Assert.stub(subject, :minargs).with(1){} }.does_not_raise
 
-      assert_that { Assert.stub(subject, :withblock).with(1){ } }.does_not_raise
+      assert_that{ Assert.stub(subject, :withblock).with(1){} }.does_not_raise
     end
 
     should "allow calling methods with invalid arity" do
-      assert_that { subject.noargs(1) }.does_not_raise
+      assert_that{ subject.noargs(1) }.does_not_raise
 
-      assert_that { subject.withargs }.does_not_raise
-      assert_that { subject.withargs(1, 2) }.does_not_raise
+      assert_that{ subject.withargs }.does_not_raise
+      assert_that{ subject.withargs(1, 2) }.does_not_raise
 
-      assert_that { subject.minargs }.does_not_raise
-      assert_that { subject.minargs(1) }.does_not_raise
+      assert_that{ subject.minargs }.does_not_raise
+      assert_that{ subject.minargs(1) }.does_not_raise
 
-      assert_that { subject.withblock(1) }.does_not_raise
+      assert_that{ subject.withblock(1) }.does_not_raise
     end
   end
 
@@ -673,8 +673,8 @@ class Assert::Stub
       Assert.stub(child_class, :new){ "child" }
     end
 
-    let(:parent_class) { Class.new }
-    let(:child_class) { Class.new(parent_class) }
+    let(:parent_class){ Class.new }
+    let(:child_class){ Class.new(parent_class) }
 
     should "allow stubbing the methods individually" do
       assert_that(parent_class.new).equals("parent")
@@ -683,37 +683,73 @@ class Assert::Stub
   end
 
   class TestClass
-    def self.noargs; end
-    def self.withargs(a); end
-    def self.anyargs(*args); end
-    def self.minargs(a, b, *args); end
-    def self.withblock(&block); end
+    def self.noargs
+    end
 
-    def noargs; end
-    def withargs(a); end
-    def anyargs(*args); end
-    def minargs(a, b, *args); end
-    def withblock(&block); end
+    def self.withargs(a)
+    end
+
+    def self.anyargs(*args)
+    end
+
+    def self.minargs(a, b, *args)
+    end
+
+    def self.withblock(&block)
+    end
+
+    def noargs
+    end
+
+    def withargs(a)
+    end
+
+    def anyargs(*args)
+    end
+
+    def minargs(a, b, *args)
+    end
+
+    def withblock(&block)
+    end
   end
 
   module TestModule
-    def self.noargs; end
-    def self.withargs(a); end
-    def self.anyargs(*args); end
-    def self.minargs(a, b, *args); end
-    def self.withblock(&block); end
+    def self.noargs
+    end
+
+    def self.withargs(a)
+    end
+
+    def self.anyargs(*args)
+    end
+
+    def self.minargs(a, b, *args)
+    end
+
+    def self.withblock(&block)
+    end
   end
 
   module TestMixin
-    def noargs; end
-    def withargs(a); end
-    def anyargs(*args); end
-    def minargs(a, b, *args); end
-    def withblock(&block); end
+    def noargs
+    end
+
+    def withargs(a)
+    end
+
+    def anyargs(*args)
+    end
+
+    def minargs(a, b, *args)
+    end
+
+    def withblock(&block)
+    end
   end
 
   class DelegateClass
-    def self.respond_to?(*args)
+    def self.respond_to_missing?(*args)
       TestClass.respond_to?(*args) || super
     end
 
@@ -725,7 +761,7 @@ class Assert::Stub
       @delegate = TestClass.new
     end
 
-    def respond_to?(*args)
+    def respond_to_missing?(*args)
       @delegate.respond_to?(*args) || super
     end
 

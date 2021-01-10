@@ -3,7 +3,7 @@
 module Assert
   class FileLine
     def self.parse(file_line_path)
-      self.new(*(file_line_path.to_s.match(/(^[^\:]*)\:*(\d*).*$/) || [])[1..2])
+      new(*(file_line_path.to_s.match(/(^[^\:]*)\:*(\d*).*$/) || [])[1..2])
     end
 
     attr_reader :file, :line
@@ -13,13 +13,13 @@ module Assert
     end
 
     def to_s
-      "#{self.file}:#{self.line}"
+      "#{file}:#{line}"
     end
 
-    def ==(other_file_line)
-      if other_file_line.kind_of?(FileLine)
-        self.file == other_file_line.file &&
-        self.line == other_file_line.line
+    def ==(other)
+      if other.is_a?(FileLine)
+        file == other.file &&
+        line == other.line
       else
         super
       end

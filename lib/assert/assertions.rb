@@ -6,11 +6,15 @@ module Assert
   module Assertions
     IGNORED_ASSERTION_HELPERS =
       [
-        :assert_throws,     :assert_nothing_thrown,
-        :assert_operator,   :refute_operator,
-        :assert_in_epsilon, :refute_in_epsilon,
-        :assert_in_delta,   :refute_in_delta,
-        :assert_send
+        :assert_throws,
+        :assert_nothing_thrown,
+        :assert_operator,
+        :refute_operator,
+        :assert_in_epsilon,
+        :refute_in_epsilon,
+        :assert_in_delta,
+        :refute_in_delta,
+        :assert_send,
       ]
 
     def assert_block(desc = nil)
@@ -24,13 +28,15 @@ module Assert
 
     def assert_empty(collection, desc = nil)
       assert(collection.empty?, desc) do
-        "Expected #{Assert::U.show(collection, __assert_config__)} to be empty."
+        "Expected #{Assert::U.show(collection, __assert_config__)} to "\
+        "be empty."
       end
     end
 
     def assert_not_empty(collection, desc = nil)
       assert(!collection.empty?, desc) do
-        "Expected #{Assert::U.show(collection, __assert_config__)} to not be empty."
+        "Expected #{Assert::U.show(collection, __assert_config__)} to "\
+        "not be empty."
       end
     end
     alias_method :refute_empty, :assert_not_empty
@@ -45,7 +51,8 @@ module Assert
           "Expected does not equal actual, diff:\n"\
           "#{c.run_diff_proc.call(exp_show, act_show)}"
         else
-          "Expected #{Assert::U.show(act, c)} to be equal to #{Assert::U.show(exp, c)}."
+          "Expected #{Assert::U.show(act, c)} to "\
+          "be equal to #{Assert::U.show(exp, c)}."
         end
       end
     end
@@ -60,20 +67,21 @@ module Assert
           "Expected equals actual, diff:\n"\
           "#{c.run_diff_proc.call(exp_show, act_show)}"
         else
-          "Expected #{Assert::U.show(act, c)} to not be equal to #{Assert::U.show(exp, c)}."
+          "Expected #{Assert::U.show(act, c)} to "\
+          "not be equal to #{Assert::U.show(exp, c)}."
         end
       end
     end
     alias_method :refute_equal, :assert_not_equal
 
     def assert_file_exists(file_path, desc = nil)
-      assert(File.exists?(File.expand_path(file_path)), desc) do
+      assert(File.exist?(File.expand_path(file_path)), desc) do
         "Expected #{Assert::U.show(file_path, __assert_config__)} to exist."
       end
     end
 
     def assert_not_file_exists(file_path, desc = nil)
-      assert(!File.exists?(File.expand_path(file_path)), desc) do
+      assert(!File.exist?(File.expand_path(file_path)), desc) do
         "Expected #{Assert::U.show(file_path, __assert_config__)} to not exist."
       end
     end
@@ -99,36 +107,41 @@ module Assert
 
     def assert_instance_of(klass, instance, desc = nil)
       assert(instance.instance_of?(klass), desc) do
-        "Expected #{Assert::U.show(instance, __assert_config__)} (#{instance.class})"\
-        " to be an instance of #{klass}."
+        "Expected #{Assert::U.show(instance, __assert_config__)} "\
+        "(#{instance.class}) to be an instance of #{klass}."
       end
     end
 
     def assert_not_instance_of(klass, instance, desc = nil)
       assert(!instance.instance_of?(klass), desc) do
-        "Expected #{Assert::U.show(instance, __assert_config__)} (#{instance.class})"\
-        " to not be an instance of #{klass}."
+        "Expected #{Assert::U.show(instance, __assert_config__)} "\
+        "(#{instance.class}) to not be an instance of #{klass}."
       end
     end
     alias_method :refute_instance_of, :assert_not_instance_of
 
-    def assert_kind_of(klass, instance, desc = nil)
-      assert(instance.kind_of?(klass), desc) do
-        "Expected #{Assert::U.show(instance, __assert_config__)} (#{instance.class})"\
-        " to be a kind of #{klass}."
+    def assert_is_a(klass, instance, desc = nil)
+      assert(instance.is_a?(klass), desc) do
+        "Expected #{Assert::U.show(instance, __assert_config__)} "\
+        "(#{instance.class}) to be a `#{klass}`."
       end
     end
+    alias_method :assert_kind_of, :assert_is_a
 
-    def assert_not_kind_of(klass, instance, desc = nil)
-      assert(!instance.kind_of?(klass), desc) do
-        "Expected #{Assert::U.show(instance, __assert_config__)} (#{instance.class})"\
-        " to not be a kind of #{klass}."
+    def assert_is_not_a(klass, instance, desc = nil)
+      assert(!instance.is_a?(klass), desc) do
+        "Expected #{Assert::U.show(instance, __assert_config__)} "\
+        "(#{instance.class}) to not be a `#{klass}`."
       end
     end
-    alias_method :refute_kind_of, :assert_not_kind_of
+    alias_method :assert_not_a, :assert_is_not_a
+    alias_method :assert_not_kind_of, :assert_is_not_a
+    alias_method :refute_is_a, :assert_is_not_a
+    alias_method :refute_kind_of, :assert_is_not_a
 
     def assert_match(exp, act, desc = nil)
-      exp_regex = String === exp && String === act ? /#{Regexp.escape(exp)}/ : exp
+      exp_regex =
+        String === exp && String === act ? /#{Regexp.escape(exp)}/ : exp
       assert(act =~ exp_regex, desc) do
         "Expected #{Assert::U.show(act, __assert_config__)}"\
         " to match #{Assert::U.show(exp, __assert_config__)}."
@@ -185,7 +198,7 @@ module Assert
     alias_method :refute_false, :assert_not_false
 
     def assert_raises(*exceptions, &block)
-      desc = exceptions.last.kind_of?(String) ? exceptions.pop : nil
+      desc = exceptions.last.is_a?(String) ? exceptions.pop : nil
       err = RaisedException.new(exceptions, &block)
       assert(err.raised?, desc){ err.msg }
       err.exception
@@ -193,7 +206,7 @@ module Assert
     alias_method :assert_raise, :assert_raises
 
     def assert_nothing_raised(*exceptions, &block)
-      desc = exceptions.last.kind_of?(String) ? exceptions.pop : nil
+      desc = exceptions.last.is_a?(String) ? exceptions.pop : nil
       err = NoRaisedException.new(exceptions, &block)
       assert(!err.raised?, desc){ err.msg }
     end
@@ -205,15 +218,15 @@ module Assert
           desc: nil,
           from: Assert::ActualValue.not_given,
           to: Assert::ActualValue.not_given,
-          &block
-        )
+          &block)
       desc_msg = desc ? "#{desc}\n" : ""
       from_eval = instance_eval(ruby_string_to_eval)
       if Assert::ActualValue.given?(from)
         assert_equal(
           from,
           from_eval,
-          "#{desc_msg}Expected `#{ruby_string_to_eval}` to change from `#{from.inspect}`."
+          "#{desc_msg}Expected `#{ruby_string_to_eval}` to "\
+          "change from `#{from.inspect}`.",
         )
       end
 
@@ -224,7 +237,8 @@ module Assert
         assert_equal(
           to,
           to_eval,
-          "#{desc_msg}Expected `#{ruby_string_to_eval}` to change to `#{to.inspect}`."
+          "#{desc_msg}Expected `#{ruby_string_to_eval}` to "\
+          "change to `#{to.inspect}`.",
         )
       end
 
@@ -236,7 +250,7 @@ module Assert
           from_eval,
           to_eval,
           "#{desc_msg}Expected `#{ruby_string_to_eval}` to change; "\
-          "it was `#{from_eval.inspect}` and didn't change."
+          "it was `#{from_eval.inspect}` and didn't change.",
         )
       end
     end
@@ -245,15 +259,15 @@ module Assert
           ruby_string_to_eval,
           desc: nil,
           from: Assert::ActualValue.not_given,
-          &block
-        )
+          &block)
       desc_msg = desc ? "#{desc}\n" : ""
       from_eval = instance_eval(ruby_string_to_eval)
       if Assert::ActualValue.given?(from)
         assert_equal(
           from,
           from_eval,
-          "#{desc_msg}Expected `#{ruby_string_to_eval}` to not change from `#{from.inspect}`."
+          "#{desc_msg}Expected `#{ruby_string_to_eval}` to "\
+          "not change from `#{from.inspect}`.",
         )
       end
 
@@ -264,23 +278,23 @@ module Assert
         from_eval,
         to_eval,
         "#{desc_msg}Expected `#{ruby_string_to_eval}` to not change; "\
-        "it was `#{from_eval.inspect}` and changed to `#{to_eval.inspect}`."
+        "it was `#{from_eval.inspect}` and changed to `#{to_eval.inspect}`.",
       )
     end
     alias_method :refute_changes, :assert_not_changes
 
     def assert_respond_to(method, object, desc = nil)
       assert(object.respond_to?(method), desc) do
-        "Expected #{Assert::U.show(object, __assert_config__)} (#{object.class})"\
-        " to respond to `#{method}`."
+        "Expected #{Assert::U.show(object, __assert_config__)} "\
+        "(#{object.class}) to respond to `#{method}`."
       end
     end
     alias_method :assert_responds_to, :assert_respond_to
 
     def assert_not_respond_to(method, object, desc = nil)
       assert(!object.respond_to?(method), desc) do
-        "Expected #{Assert::U.show(object, __assert_config__)} (#{object.class})"\
-        " to not respond to `#{method}`."
+        "Expected #{Assert::U.show(object, __assert_config__)} "\
+        "(#{object.class}) to not respond to `#{method}`."
       end
     end
     alias_method :assert_not_responds_to, :assert_not_respond_to
@@ -299,8 +313,8 @@ module Assert
           "Expected #{act_id} to be the same as #{exp_id}, diff:\n"\
           "#{c.run_diff_proc.call(exp_show, act_show)}"
         else
-          "Expected #{Assert::U.show(act, c)} (#{act_id}) to be the same as"\
-          " #{Assert::U.show(exp, c)} (#{exp_id})."
+          "Expected #{Assert::U.show(act, c)} (#{act_id}) to "\
+          "be the same as #{Assert::U.show(exp, c)} (#{exp_id})."
         end
       end
     end
@@ -317,8 +331,8 @@ module Assert
           "Expected #{act_id} to not be the same as #{exp_id}, diff:\n"\
           "#{c.run_diff_proc.call(exp_show, act_show)}"
         else
-          "Expected #{Assert::U.show(act, c)} (#{act_id}) to not be the same as"\
-          " #{Assert::U.show(exp, c)} (#{exp_id})."
+          "Expected #{Assert::U.show(act, c)} (#{act_id}) to "\
+          "not be the same as #{Assert::U.show(exp, c)} (#{exp_id})."
         end
       end
     end
@@ -337,7 +351,16 @@ module Assert
 
       def initialize(exceptions, &block)
         @exceptions = exceptions
-        begin; block.call; rescue Exception => @exception; end
+        # rubocop:disable Lint/SuppressedException
+        # rubocop:disable Lint/RescueException
+        # rubocop:disable Naming/RescuedExceptionsVariableName
+        begin
+          block.call
+        rescue Exception => @exception
+        end
+        # rubocop:enable Lint/SuppressedException
+        # rubocop:enable Lint/RescueException
+        # rubocop:enable Naming/RescuedExceptionsVariableName
         @msg = "#{exceptions_sentence(@exceptions)} #{exception_details}"
       end
 
@@ -349,7 +372,11 @@ module Assert
 
       def is_one_of?(exception, exceptions)
         exceptions.empty? || exceptions.any? do |exp|
-          exp.instance_of?(Module) ? exception.kind_of?(exp) : exception.class == exp
+          if exp.instance_of?(Module)
+            exception.is_a?(exp)
+          else
+            exception.class == exp
+          end
         end
       end
 
@@ -364,13 +391,16 @@ module Assert
       def exception_details(raised_msg = nil, no_raised_msg = nil)
         if @exception
           backtrace = Assert::Result::Backtrace.new(@exception.backtrace)
-          [ raised_msg,
+          [
+            raised_msg,
             "Class: `#{@exception.class}`",
             "Message: `#{@exception.message.inspect}`",
             "---Backtrace---",
             backtrace.filtered.to_s,
-            "---------------"
-          ].compact.join("\n")
+            "---------------",
+          ]
+            .compact
+            .join("\n")
         else
           no_raised_msg
         end
@@ -379,7 +409,10 @@ module Assert
 
     class RaisedException < CheckException
       def exception_details
-        super("exception expected, not:", "exception expected but nothing raised.")
+        super(
+          "exception expected, not:",
+          "exception expected but nothing raised."
+        )
       end
     end
 

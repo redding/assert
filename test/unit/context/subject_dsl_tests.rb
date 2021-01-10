@@ -6,10 +6,10 @@ require "assert/context/subject_dsl"
 module Assert::Context::SubjectDSL
   class UnitTests < Assert::Context
     desc "Assert::Context::SubjectDSL"
-    subject { Factory.modes_off_context_class(parent_class1) }
+    subject{ Factory.modes_off_context_class(parent_class1) }
 
-    let(:parent_class1)  { Factory.modes_off_context_class }
-    let(:subject_block1) { Proc.new {} }
+    let(:parent_class1){ Factory.modes_off_context_class }
+    let(:subject_block1){ Proc.new{} }
   end
 
   class DescriptionTests < UnitTests

@@ -10,17 +10,17 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_empty`"
-    subject {
+    subject do
       args = args1
       Factory.test do
         assert_empty([])    # pass
         assert_empty(*args) # fail
       end
-    }
+    end
 
-    let(:desc1) { "assert empty fail desc" }
-    let(:args1) { [[1], desc1] }
-    let(:config1) { subject.config }
+    let(:desc1){ "assert empty fail desc" }
+    let(:args1){ [[1], desc1] }
+    let(:config1){ subject.config }
 
     should "produce results as expected" do
       subject.run(&test_run_callback)
@@ -30,7 +30,8 @@ module Assert::Assertions
       assert_that(test_run_result_count(:fail)).equals(1)
 
       exp =
-        "#{args1[1]}\nExpected #{Assert::U.show(args1[0], config1)} to be empty."
+        "#{args1[1]}\nExpected #{Assert::U.show(args1[0], config1)} to be "\
+        "empty."
       assert_that(test_run_results(:fail).first.message).equals(exp)
     end
   end
@@ -39,17 +40,17 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_not_empty`"
-    subject {
+    subject do
       args = args1
       Factory.test do
         assert_not_empty([1])   # pass
         assert_not_empty(*args) # fail
       end
-    }
+    end
 
-    let(:desc1) { "assert not empty fail desc" }
-    let(:args1) { [[], desc1] }
-    let(:config1) { subject.config }
+    let(:desc1){ "assert not empty fail desc" }
+    let(:args1){ [[], desc1] }
+    let(:config1){ subject.config }
 
     should "produce results as expected" do
       subject.run(&test_run_callback)
@@ -59,7 +60,8 @@ module Assert::Assertions
       assert_that(test_run_result_count(:fail)).equals(1)
 
       exp =
-        "#{args1[1]}\nExpected #{Assert::U.show(args1[0], config1)} to not be empty."
+        "#{args1[1]}\nExpected #{Assert::U.show(args1[0], config1)} to not "\
+        "be empty."
       assert_that(test_run_results(:fail).first.message).equals(exp)
     end
   end

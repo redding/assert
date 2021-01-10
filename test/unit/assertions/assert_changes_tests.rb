@@ -8,30 +8,30 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_changes`"
-    subject {
+    subject do
       desc = desc1
       Factory.test do
         @my_var = 1
-        assert_changes("@my_var", from: 1, to: 2) { @my_var = 2 } # pass
+        assert_changes("@my_var", from: 1, to: 2){ @my_var = 2 } # pass
         @my_var = 1
-        assert_changes("@my_var", from: 1) { @my_var = 2 }        # pass
+        assert_changes("@my_var", from: 1){ @my_var = 2 }        # pass
         @my_var = 1
-        assert_changes("@my_var", to: 2) { @my_var = 2 }          # pass
+        assert_changes("@my_var", to: 2){ @my_var = 2 }          # pass
         @my_var = 1
-        assert_changes("@my_var", desc: desc) { @my_var = 2 }     # pass
+        assert_changes("@my_var", desc: desc){ @my_var = 2 }     # pass
 
         @my_var = 1
-        assert_changes("@my_var", from: 2, to: 1) { @my_var = 2 } # fail
+        assert_changes("@my_var", from: 2, to: 1){ @my_var = 2 } # fail
         @my_var = 1
-        assert_changes("@my_var", from: 2) { @my_var = 2 }        # fail
+        assert_changes("@my_var", from: 2){ @my_var = 2 }        # fail
         @my_var = 1
-        assert_changes("@my_var", to: 1) { @my_var = 2 }          # fail
+        assert_changes("@my_var", to: 1){ @my_var = 2 }          # fail
         @my_var = 1
-        assert_changes("@my_var", desc: desc) { @my_var = 1 }     # fail
+        assert_changes("@my_var", desc: desc){ @my_var = 1 }     # fail
       end
-    }
+    end
 
-    let(:desc1) { "assert changes fail desc" }
+    let(:desc1){ "assert changes fail desc" }
 
     should "produce results as expected" do
       subject.run(&test_run_callback)
@@ -50,7 +50,9 @@ module Assert::Assertions
           "it was `1` and didn't change",
         ]
       messages = test_run_results(:fail).map(&:message)
-      messages.each_with_index{ |msg, n| assert_that(msg).matches(/^#{exp[n]}/) }
+      messages.each_with_index do |msg, n|
+        assert_that(msg).matches(/^#{exp[n]}/)
+      end
     end
   end
 
@@ -58,24 +60,24 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_changes`"
-    subject {
+    subject do
       desc = desc1
       Factory.test do
         @my_var = 1
-        assert_not_changes("@my_var", from: 1) { @my_var = 1 }    # pass
+        assert_not_changes("@my_var", from: 1){ @my_var = 1 }    # pass
         @my_var = 1
-        assert_not_changes("@my_var", desc: desc) { @my_var = 1 } # pass
+        assert_not_changes("@my_var", desc: desc){ @my_var = 1 } # pass
 
         @my_var = 1
-        assert_not_changes("@my_var", from: 2) { @my_var = 1 }    # fail
+        assert_not_changes("@my_var", from: 2){ @my_var = 1 }    # fail
         @my_var = 1
-        assert_not_changes("@my_var", from: 1) { @my_var = 2 }    # fail
+        assert_not_changes("@my_var", from: 1){ @my_var = 2 }    # fail
         @my_var = 1
-        assert_not_changes("@my_var", desc: desc) { @my_var = 2 } # fail
+        assert_not_changes("@my_var", desc: desc){ @my_var = 2 } # fail
       end
-    }
+    end
 
-    let(:desc1) { "assert not changes fail desc" }
+    let(:desc1){ "assert not changes fail desc" }
 
     should "produce results as expected" do
       subject.run(&test_run_callback)
@@ -93,7 +95,9 @@ module Assert::Assertions
           "it was `1` and changed to `2`",
         ]
       messages = test_run_results(:fail).map(&:message)
-      messages.each_with_index{ |msg, n| assert_that(msg).matches(/^#{exp[n]}/) }
+      messages.each_with_index do |msg, n|
+        assert_that(msg).matches(/^#{exp[n]}/)
+      end
     end
   end
 end

@@ -37,15 +37,17 @@ class Assert::ActualValue
     @context.assert_not_changes(*args, &@value)
   end
 
-  def is_a_kind_of(expected_class, *args)
-    @context.assert_kind_of(expected_class, @value, *args)
+  def is_a(expected_class, *args)
+    @context.assert_is_a(expected_class, @value, *args)
   end
-  alias_method :is_kind_of, :is_a_kind_of
+  alias_method :is_a_kind_of, :is_a
+  alias_method :is_kind_of, :is_a
 
-  def is_not_a_kind_of(expected_class, *args)
-    @context.assert_not_kind_of(expected_class, @value, *args)
+  def is_not_a(expected_class, *args)
+    @context.assert_is_not_a(expected_class, @value, *args)
   end
-  alias_method :is_not_kind_of, :is_not_a_kind_of
+  alias_method :is_not_a_kind_of, :is_not_a
+  alias_method :is_not_kind_of, :is_not_a
 
   def is_an_instance_of(expected_class, *args)
     @context.assert_instance_of(expected_class, @value, *args)

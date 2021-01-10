@@ -3,7 +3,6 @@
 require "assert"
 
 class Assert::Test
-
   class SystemTests < Assert::Context
     include Assert::Test::TestHelpers
 
@@ -16,7 +15,7 @@ class Assert::Test
 
   class NoResultsTests < SystemTests
     desc "when producing no results"
-    subject { Factory.test }
+    subject{ Factory.test }
 
     should "generate 0 results" do
       assert_that(test_run_result_count).equals(0)
@@ -25,7 +24,13 @@ class Assert::Test
 
   class PassTests < SystemTests
     desc "when passing a single assertion"
-    subject { Factory.test{ assert(1 == 1) } }
+    subject do
+      Factory.test do
+        assert(
+          1 == 1, # rubocop:disable Lint/BinaryOperatorWithIdenticalOperands
+        )
+      end
+    end
 
     should "generate 1 result" do
       assert_that(test_run_result_count).equals(1)
@@ -38,7 +43,7 @@ class Assert::Test
 
   class FailTests < SystemTests
     desc "when failing a single assertion"
-    subject { Factory.test{ assert(1 == 0) } }
+    subject{ Factory.test{ assert(1 == 0) } }
 
     should "generate 1 result" do
       assert_that(test_run_result_count).equals(1)
@@ -51,7 +56,7 @@ class Assert::Test
 
   class SkipTests < SystemTests
     desc "when skipping once"
-    subject { Factory.test{ skip } }
+    subject{ Factory.test{ skip } }
 
     should "generate 1 result" do
       assert_that(test_run_result_count).equals(1)
@@ -64,7 +69,7 @@ class Assert::Test
 
   class ErrorTests < SystemTests
     desc "when erroring once"
-    subject { Factory.test{ raise("WHAT") } }
+    subject{ Factory.test{ raise("WHAT") } }
 
     should "generate 1 result" do
       assert_that(test_run_result_count).equals(1)
@@ -77,12 +82,14 @@ class Assert::Test
 
   class MixedTests < SystemTests
     desc "when passing 1 assertion and failing 1 assertion"
-    subject {
+    subject do
       Factory.test do
-        assert(1 == 1)
+        assert(
+          1 == 1, # rubocop:disable Lint/BinaryOperatorWithIdenticalOperands
+        )
         assert(1 == 0)
       end
-    }
+    end
 
     should "generate 2 total results" do
       assert_that(test_run_result_count).equals(2)
@@ -98,14 +105,17 @@ class Assert::Test
   end
 
   class MixedSkipTests < SystemTests
-    desc "when passing 1 assertion and failing 1 assertion with a skip call in between"
-    subject {
+    desc "when passing 1 assertion and failing 1 assertion with a skip call "\
+         "in between"
+    subject do
       Factory.test do
-        assert(1 == 1)
+        assert(
+          1 == 1, # rubocop:disable Lint/BinaryOperatorWithIdenticalOperands
+        )
         skip
         assert(1 == 0)
       end
-    }
+    end
 
     should "generate 2 total results" do
       assert_that(test_run_result_count).equals(2)
@@ -129,14 +139,17 @@ class Assert::Test
   end
 
   class MixedErrorTests < SystemTests
-    desc "when passing 1 assertion and failing 1 assertion with an exception raised in between"
-    subject {
+    desc "when passing 1 assertion and failing 1 assertion with an exception "\
+         "raised in between"
+    subject do
       Factory.test do
-        assert(1 == 1)
-        raise Exception, "something errored"
-        assert(1 == 0)
+        assert(
+          1 == 1, # rubocop:disable Lint/BinaryOperatorWithIdenticalOperands
+        )
+        raise "something errored"
+        assert(1 == 0) # rubocop:disable Lint/UnreachableCode
       end
-    }
+    end
 
     should "generate 2 total results" do
       assert_that(test_run_result_count).equals(2)
@@ -160,14 +173,17 @@ class Assert::Test
   end
 
   class MixedPassTests < SystemTests
-    desc "when passing 1 assertion and failing 1 assertion with a pass call in between"
-    subject {
+    desc "when passing 1 assertion and failing 1 assertion with a pass call "\
+         "in between"
+    subject do
       Factory.test do
-        assert(1 == 1)
+        assert(
+          1 == 1, # rubocop:disable Lint/BinaryOperatorWithIdenticalOperands
+        )
         pass
         assert(1 == 0)
       end
-    }
+    end
 
     should "generate 3 total results" do
       assert_that(test_run_result_count).equals(3)
@@ -187,14 +203,17 @@ class Assert::Test
   end
 
   class MixedFailTests < SystemTests
-    desc "when failing 1 assertion and passing 1 assertion with a fail call in between"
-    subject {
+    desc "when failing 1 assertion and passing 1 assertion with a fail call "\
+         "in between"
+    subject do
       Factory.test do
         assert(1 == 0)
-        fail
-        assert(1 == 1)
+        fail # rubocop:disable Style/SignalException
+        assert( # rubocop:disable Lint/UnreachableCode
+          1 == 1, # rubocop:disable Lint/BinaryOperatorWithIdenticalOperands
+        )
       end
-    }
+    end
 
     should "generate 3 total results" do
       assert_that(test_run_result_count).equals(3)
@@ -214,14 +233,17 @@ class Assert::Test
   end
 
   class MixedFlunkTests < SystemTests
-    desc "has failing 1 assertion and passing 1 assertion with a flunk call in between"
-    subject {
+    desc "has failing 1 assertion and passing 1 assertion with a flunk call "\
+         "in between"
+    subject do
       Factory.test do
         assert(1 == 0)
         flunk
-        assert(1 == 1)
+        assert(
+          1 == 1, # rubocop:disable Lint/BinaryOperatorWithIdenticalOperands
+        )
       end
-    }
+    end
 
     should "generate 3 total results" do
       assert_that(test_run_result_count).equals(3)
@@ -242,18 +264,20 @@ class Assert::Test
 
   class WithSetupsTests < SystemTests
     desc "that has setup logic"
-    subject {
-      Factory.test("t", Factory.context_info(context_class1)) { pass "TEST" }
-    }
+    subject do
+      Factory.test("t", Factory.context_info(context_class1)){ pass "TEST" }
+    end
 
-    let(:context_class1) {
+    let(:context_class1) do
       Factory.context_class do
         # assert style
-        setup { pass "assert style setup" }
+        setup{ pass "assert style setup" }
         # test/unit style
-        def setup; pass "test/unit style setup"; end
+        def setup
+          pass "test/unit style setup"
+        end
       end
-    }
+    end
 
     should "execute all setup logic when run" do
       assert_that(test_run_result_count(:pass)).equals(3)
@@ -265,18 +289,20 @@ class Assert::Test
 
   class WithTeardownsTests < SystemTests
     desc "that has teardown logic"
-    subject {
-      Factory.test("t", Factory.context_info(context_class1)) { pass "TEST" }
-    }
+    subject do
+      Factory.test("t", Factory.context_info(context_class1)){ pass "TEST" }
+    end
 
-    let(:context_class1) {
+    let(:context_class1) do
       Factory.context_class do
         # assert style
-        teardown { pass "assert style teardown" }
+        teardown{ pass "assert style teardown" }
         # test/unit style
-        def teardown; pass "test/unit style teardown"; end
+        def teardown
+          pass "test/unit style teardown"
+        end
       end
-    }
+    end
 
     should "execute all teardown logic when run" do
       assert_that(test_run_result_count(:pass)).equals(3)
@@ -288,39 +314,39 @@ class Assert::Test
 
   class WithAroundsTests < SystemTests
     desc "that has around logic (in addition to setups/teardowns)"
-    subject {
-      Factory.test("t", Factory.context_info(context_class1)) { pass "TEST" }
-    }
+    subject do
+      Factory.test("t", Factory.context_info(context_class1)){ pass "TEST" }
+    end
 
-    let(:parent_context_class1) {
+    let(:parent_context_class1) do
       Factory.modes_off_context_class do
         around do |block|
           pass "parent around start"
           block.call
           pass "parent around end"
         end
-        setup { pass "parent setup" }
-        teardown { pass "parent teardown" }
+        setup{ pass "parent setup" }
+        teardown{ pass "parent teardown" }
       end
-    }
-    let(:context_class1) {
+    end
+    let(:context_class1) do
       Factory.modes_off_context_class(parent_context_class1) do
-        setup { pass "child setup1" }
+        setup{ pass "child setup1" }
         around do |block|
           pass "child around1 start"
           block.call
           pass "child around1 end"
         end
-        teardown { pass "child teardown1" }
-        setup { pass "child setup2" }
+        teardown{ pass "child teardown1" }
+        setup{ pass "child setup2" }
         around do |block|
           pass "child around2 start"
           block.call
           pass "child around2 end"
         end
-        teardown { pass "child teardown2" }
+        teardown{ pass "child teardown2" }
       end
-    }
+    end
 
     should "run the arounds outside of the setups/teardowns/test" do
       assert_that(test_run_result_count(:pass)).equals(13)
@@ -329,7 +355,7 @@ class Assert::Test
         "parent around start", "child around1 start", "child around2 start",
         "parent setup", "child setup1", "child setup2", "TEST",
         "child teardown1", "child teardown2", "parent teardown",
-        "child around2 end", "child around1 end", "parent around end"
+        "child around2 end", "child around1 end", "parent around end",
       ]
       assert_that(test_run_result_messages).equals(exp)
     end

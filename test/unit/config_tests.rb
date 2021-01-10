@@ -12,14 +12,14 @@ require "assert/runner"
 class Assert::Config
   class UnitTests < Assert::Context
     desc "Assert::Config"
-    subject { unit_class }
+    subject{ unit_class }
 
-    let(:unit_class) { Assert::Config }
+    let(:unit_class){ Assert::Config }
   end
 
   class InitTests < UnitTests
     desc "when init"
-    subject { unit_class.new }
+    subject{ unit_class.new }
 
     should have_imeths :view, :suite, :runner
     should have_imeths :test_dir, :test_helper, :test_file_suffixes
@@ -65,17 +65,17 @@ class Assert::Config
 
     should "apply settings given from a hash" do
       assert subject.halt_on_fail
-      subject.apply(:halt_on_fail => false)
+      subject.apply(halt_on_fail: false)
       assert_that(subject.halt_on_fail).is_false
 
       assert_that(Assert::Config.new.halt_on_fail).is_true
-      assert_that(Assert::Config.new(:halt_on_fail => false).halt_on_fail).is_false
+      assert_that(Assert::Config.new(halt_on_fail: false).halt_on_fail).is_false
     end
 
     should "know if it is in single test mode" do
       assert_that(subject.single_test?).is_false
 
-      subject.apply(:single_test => Factory.string)
+      subject.apply(single_test: Factory.string)
       assert_that(subject.single_test?).is_true
     end
 
@@ -84,7 +84,7 @@ class Assert::Config
       assert_that(subject.single_test_file_line).equals(exp)
 
       file_line_path = "#{Factory.path}_tests.rb:#{Factory.integer}"
-      subject.apply(:single_test => file_line_path)
+      subject.apply(single_test: file_line_path)
 
       exp = Assert::FileLine.parse(File.expand_path(file_line_path, Dir.pwd))
       assert_that(subject.single_test_file_line).equals(exp)
@@ -96,8 +96,9 @@ class Assert::Config
 
       path = "#{Factory.path}_tests.rb"
       file_line_path = "#{path}:#{Factory.integer}"
-      subject.apply(:single_test => file_line_path)
-      assert_that(subject.single_test_file_path).equals(File.expand_path(path, Dir.pwd))
+      subject.apply(single_test: file_line_path)
+      assert_that(subject.single_test_file_path)
+        .equals(File.expand_path(path, Dir.pwd))
     end
   end
 end

@@ -16,16 +16,18 @@ module Assert
 
     def self.require_user_view(view_name)
       views_file = File.expand_path(
-        File.join("#{ENV["HOME"]}/.assert/views", view_name, "lib", view_name)
+        File.join("#{ENV["HOME"]}/.assert/views", view_name, "lib", view_name),
       )
 
-      if File.exists?(view_name) || File.exists?(view_name + ".rb")
+      if File.exist?(view_name) || File.exist?(view_name + ".rb")
         require view_name
-      elsif File.exists?(views_file + ".rb")
+      elsif File.exist?(views_file + ".rb")
         require views_file
       else
-        msg = "[WARN] Can't find or require #{view_name.inspect} view."
-        msg << " Did you install it in `~/.assert/views`?" if !view_name.match(/\A\//)
+        msg = +"[WARN] Can't find or require #{view_name.inspect} view."
+        unless view_name.match(%r{\A/})
+          msg << " Did you install it in `~/.assert/views`?"
+        end
         warn msg
       end
     end
@@ -48,11 +50,13 @@ module Assert
     attr_reader :config
 
     def initialize(config, output_io)
-      @config , @output_io, = config, output_io
+      @config, @output_io, = config, output_io
       @output_io.sync = true if @output_io.respond_to?(:sync=)
     end
 
-    def view; self; end
+    def view
+      self
+    end
 
     def is_tty?
       !!@output_io.isatty
@@ -79,19 +83,41 @@ module Assert
     #                   the test suite
     # * `on_interrupt`: called when the test suite is interrupted while running
     #                   the interrupt exception is passed as an arg
-    def before_load(test_files); end
-    def after_load;              end
-    def on_start;                end
-    def before_test(test);       end
-    def on_result(result);       end
-    def after_test(test);        end
-    def on_finish;               end
-    def on_info(test);           end
-    def on_interrupt(err);       end
+    def before_load(test_files)
+    end
+
+    def after_load
+    end
+
+    def on_start
+    end
+
+    def before_test(test)
+    end
+
+    def on_result(result)
+    end
+
+    def after_test(test)
+    end
+
+    def on_finish
+    end
+
+    def on_info(test)
+    end
+
+    def on_interrupt(err)
+    end
 
     # IO capture
 
-    def puts(*args); @output_io.puts(*args); end
-    def print(*args); @output_io.print(*args); end
+    def puts(*args)
+      @output_io.puts(*args)
+    end
+
+    def print(*args)
+      @output_io.print(*args)
+    end
   end
 end

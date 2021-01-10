@@ -8,18 +8,18 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_raises`"
-    subject {
+    subject do
       desc = desc1
       Factory.test do
-        assert_raises(StandardError, RuntimeError) { raise(StandardError) }    # pass
-        assert_raises(StandardError, RuntimeError, desc) { raise(Exception) }  # fail
-        assert_raises(RuntimeError, desc) { raise(StandardError) }             # fail
-        assert_raises(RuntimeError, desc) { true }                             # fail
-        assert_raises(desc) { true }                                           # fail
+        assert_raises(StandardError, RuntimeError){ raise(StandardError) }
+        assert_raises(StandardError, RuntimeError, desc){ raise(Exception) }
+        assert_raises(RuntimeError, desc){ raise(StandardError) }
+        assert_raises(RuntimeError, desc){ true }
+        assert_raises(desc){ true }
       end
-    }
+    end
 
-    let(:desc1) { "assert raises fail desc" }
+    let(:desc1){ "assert raises fail desc" }
 
     should "produce results as expected" do
       subject.run(&test_run_callback)
@@ -36,7 +36,9 @@ module Assert::Assertions
           "#{desc1}\nAn exception expected but nothing raised.",
         ]
       messages = test_run_results(:fail).map(&:message)
-      messages.each_with_index{ |msg, n| assert_that(msg).matches(/^#{exp[n]}/) }
+      messages.each_with_index do |msg, n|
+        assert_that(msg).matches(/^#{exp[n]}/)
+      end
     end
 
     should "return any raised exception instance" do
@@ -45,7 +47,7 @@ module Assert::Assertions
 
       test =
         Factory.test do
-          error = assert_raises(RuntimeError) { raise(RuntimeError, error_msg) }
+          error = assert_raises(RuntimeError){ raise(error_msg) }
         end
       test.run
 
@@ -53,7 +55,7 @@ module Assert::Assertions
       assert_that(error).is_kind_of(RuntimeError)
       assert_that(error.message).equals(error_msg)
 
-      test = Factory.test { error = assert_raises(RuntimeError) {} }
+      test = Factory.test{ error = assert_raises(RuntimeError){} }
       test.run
 
       assert_that(error).is_nil
@@ -64,17 +66,19 @@ module Assert::Assertions
     include Assert::Test::TestHelpers
 
     desc "`assert_nothing_raised`"
-    subject {
+    subject do
       desc = desc1
       Factory.test do
-        assert_nothing_raised(StandardError, RuntimeError, desc) { raise(StandardError) } # fail
-        assert_nothing_raised(RuntimeError) { raise(StandardError) }                      # pass
-        assert_nothing_raised(desc) { raise(RuntimeError) }                               # fail
-        assert_nothing_raised { true }                                                    # pass
+        assert_nothing_raised(StandardError, RuntimeError, desc) do
+          raise(StandardError)
+        end
+        assert_nothing_raised(RuntimeError){ raise(StandardError) }
+        assert_nothing_raised(desc){ raise(RuntimeError) }
+        assert_nothing_raised{ true }
       end
-    }
+    end
 
-    let(:desc1) { "assert nothing raised fail desc" }
+    let(:desc1){ "assert nothing raised fail desc" }
 
     should "produce results as expected" do
       subject.run(&test_run_callback)
@@ -85,11 +89,14 @@ module Assert::Assertions
 
       exp =
         [
-          "#{desc1}\nStandardError or RuntimeError exception not expected, but raised:",
+          "#{desc1}\nStandardError or RuntimeError exception not expected, "\
+          "but raised:",
           "#{desc1}\nAn exception not expected, but raised:",
         ]
       messages = test_run_results(:fail).map(&:message)
-      messages.each_with_index{ |msg, n| assert_that(msg).matches(/^#{exp[n]}/) }
+      messages.each_with_index do |msg, n|
+        assert_that(msg).matches(/^#{exp[n]}/)
+      end
     end
   end
 end

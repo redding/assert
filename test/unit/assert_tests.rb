@@ -9,9 +9,9 @@ require "much-stub"
 module Assert
   class UnitTests < Assert::Context
     desc "Assert"
-    subject { unit_class }
+    subject{ unit_class }
 
-    let(:unit_class) { Assert }
+    let(:unit_class){ Assert }
 
     should have_imeths :config, :configure, :view, :suite, :runner
     should have_imeths :stubs, :stub, :unstub, :unstub!, :stub_send
@@ -31,15 +31,20 @@ module Assert
   end
 
   class StubTests < UnitTests
-    let(:class1) {
+    let(:class1) do
       Class.new do
-        def initialize(value); @value = value; end
-        def mymeth; @value; end
+        def initialize(value)
+          @value = value
+        end
+
+        def mymeth
+          @value
+        end
       end
-    }
-    let(:object1) { class1.new(orig_value1) }
-    let(:orig_value1) { Factory.string }
-    let(:stub_value1) { Factory.string }
+    end
+    let(:object1){ class1.new(orig_value1) }
+    let(:orig_value1){ Factory.string }
+    let(:stub_value1){ Factory.string }
 
     should "build a stub" do
       stub1 = Assert.stub(object1, :mymeth)
@@ -49,9 +54,9 @@ module Assert
     should "build a stub with an on_call block" do
       my_meth_called_with = nil
       stub1 =
-        Assert.stub_on_call(object1, :mymeth) { |call|
+        Assert.stub_on_call(object1, :mymeth) do |call|
           my_meth_called_with = call
-        }
+        end
 
       object1.mymeth
       assert_kind_of MuchStub::Stub, stub1
@@ -66,7 +71,7 @@ module Assert
 
     should "set the stub's do block if given a block" do
       Assert.stub(object1, :mymeth)
-      assert_that { object1.mymeth }.raises(MuchStub::NotStubbedError)
+      assert_that{ object1.mymeth }.raises(MuchStub::NotStubbedError)
       Assert.stub(object1, :mymeth){ stub_value1 }
       assert_that(object1.mymeth).equals(stub_value1)
     end
@@ -111,7 +116,7 @@ module Assert
 
     should "be able to call a stub's original method" do
       err =
-        assert_that {
+        assert_that{
           Assert.stub_send(object1, :mymeth)
         }.raises(MuchStub::NotStubbedError)
       assert_that(err.message).includes("not stubbed.")
@@ -125,9 +130,9 @@ module Assert
 
     should "be able to add a stub tap" do
       my_meth_called_with = nil
-      Assert.stub_tap(object1, :mymeth){ |value, *args, &block|
+      Assert.stub_tap(object1, :mymeth) do |_value, *args|
         my_meth_called_with = args
-      }
+      end
 
       assert_that(object1.mymeth).equals(orig_value1)
       assert_that(my_meth_called_with).equals([])
@@ -135,9 +140,9 @@ module Assert
 
     should "be able to add a stub tap with an on_call block" do
       my_meth_called_with = nil
-      Assert.stub_tap_on_call(object1, :mymeth){ |value, call|
+      Assert.stub_tap_on_call(object1, :mymeth) do |_value, call|
         my_meth_called_with = call
-      }
+      end
 
       assert_that(object1.mymeth).equals(orig_value1)
       assert_that(my_meth_called_with.args).equals([])
@@ -145,10 +150,21 @@ module Assert
 
     should "be able to add a stubbed spy" do
       myclass = Class.new do
-        def one; self; end
-        def two(val); self; end
-        def three; self; end
-        def ready?; false; end
+        def one
+          self
+        end
+
+        def two(_val)
+          self
+        end
+
+        def three
+          self
+        end
+
+        def ready?
+          false
+        end
       end
       myobj = myclass.new
 
@@ -158,7 +174,8 @@ module Assert
           :one,
           :two,
           :three,
-          ready?: true)
+          ready?: true,
+        )
 
       assert_that(myobj.one).equals(spy)
       assert_that(myobj.two("a")).equals(spy)
