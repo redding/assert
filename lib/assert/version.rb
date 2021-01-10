@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
 module Assert
-  VERSION = "2.19.2"
+  VERSION = "2.19.3"
 end
