@@ -29,6 +29,7 @@ class Assert::Config
     should have_imeths :verbose, :list, :debug
     should have_imeths :apply, :single_test?
     should have_imeths :single_test_file_line, :single_test_file_path
+    should have_imeths :env_runner_seed, :random_runner_seed
 
     should "default the view, suite, and runner" do
       assert_that(subject.view).is_kind_of(Assert::DefaultView)
@@ -61,6 +62,29 @@ class Assert::Config
       assert_that(subject.verbose).is_false
       assert_that(subject.list).is_false
       assert_that(subject.debug).is_false
+    end
+
+    should "prefer a SEED env var, if present, for the runner seed value" do
+      orig_env_seed = ENV["SEED"]
+      new_env_seed = Factory.integer
+      ENV["SEED"] = new_env_seed.to_s
+
+      config = unit_class.new
+      assert_that(config.env_runner_seed).equals(new_env_seed.to_s)
+      assert_that(config.runner_seed).equals(config.env_runner_seed.to_i)
+
+      ENV["SEED"] = orig_env_seed
+    end
+
+    should "fallback to a random runner seed value if no SEED env var" do
+      orig_env_seed = ENV["SEED"]
+      ENV["SEED"] = nil
+
+      config = unit_class.new
+      assert_that(config.random_runner_seed).is_not_nil
+      assert_that(config.runner_seed).equals(config.random_runner_seed.to_i)
+
+      ENV["SEED"] = orig_env_seed
     end
 
     should "apply settings given from a hash" do
