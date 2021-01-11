@@ -41,7 +41,7 @@ module Assert
       @run_diff_proc = Assert::U.syscmd_diff_proc
 
       # option settings
-      @runner_seed    = begin; srand; srand % 0xFFFF; end.to_i
+      @runner_seed    = (env_runner_seed || random_runner_seed).to_i
       @changed_only   = false
       @changed_ref    = ""
       @single_test    = ""
@@ -77,6 +77,18 @@ module Assert
 
     def single_test_file_path
       single_test_file_line&.file
+    end
+
+    def env_runner_seed
+      ENV["SEED"]
+    end
+
+    def random_runner_seed
+      @random_runner_seed ||=
+        begin
+          srand
+          srand % 0xFFFF
+        end
     end
   end
 end
