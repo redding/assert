@@ -8,6 +8,9 @@ require "assert/version"
 
 module Assert
   class CLI
+    SUCCESS_EXIT_STATUS = 0
+    ERROR_EXIT_STATUS   = 1
+
     def self.debug?(args)
       args.include?("-d") || args.include?("--debug")
     end
@@ -68,25 +71,31 @@ module Assert
     end
 
     def run
+      fails_plus_errors_count = 0
       begin
         @cli.parse!(@args)
         catch(:halt) do
-          Assert::AssertRunner.new(Assert.config, @cli.args, @cli.opts).run
+          fails_plus_errors_count =
+            Assert::AssertRunner.new(Assert.config, @cli.args, @cli.opts).run
         end
       rescue CLIRB::HelpExit
         puts help
+        exit(SUCCESS_EXIT_STATUS)
       rescue CLIRB::VersionExit
         puts Assert::VERSION
+        exit(SUCCESS_EXIT_STATUS)
       rescue CLIRB::Error => ex
         puts "#{ex.message}\n\n"
         puts Assert.config.debug ? ex.backtrace.join("\n") : help
-        exit(1)
+        exit(ERROR_EXIT_STATUS)
       rescue => ex
         puts "#{ex.class}: #{ex.message}"
         puts ex.backtrace.join("\n")
-        exit(1)
+        exit(ERROR_EXIT_STATUS)
       end
-      exit(0)
+      exit(
+        fails_plus_errors_count == 0 ? SUCCESS_EXIT_STATUS : ERROR_EXIT_STATUS,
+      )
     end
 
     def help
