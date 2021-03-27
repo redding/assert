@@ -23,9 +23,9 @@ Gem::Specification.new do |gem|
 
   gem.required_ruby_version = "~> 2.5"
 
-  gem.add_development_dependency("much-style-guide", ["~> 0.5.0"])
+  gem.add_development_dependency("much-style-guide", ["~> 0.6.1"])
 
-  gem.add_dependency("much-factory",   ["~> 0.2.1"])
+  gem.add_dependency("much-factory",   ["~> 0.2.2"])
   gem.add_dependency("much-not-given", ["~> 0.1.2"])
   gem.add_dependency("much-stub",      ["~> 0.1.7"])
 end
