@@ -37,13 +37,14 @@ module Assert
       @__assert_with_bt__      = []
       @__assert_pending__      = 0
 
-      @__assert_result_callback__ = proc do |result|
-        unless @__assert_with_bt__.empty?
-          result.set_with_bt(@__assert_with_bt__.dup)
+      @__assert_result_callback__ =
+        proc do |result|
+          unless @__assert_with_bt__.empty?
+            result.set_with_bt(@__assert_with_bt__.dup)
+          end
+          result_callback.call(result)
+          result
         end
-        result_callback.call(result)
-        result
-      end
     end
 
     # Check if the result is true. If so, create a new pass result,  Otherwise
@@ -52,12 +53,13 @@ module Assert
       if assertion
         pass
       else
-        what = if block_given?
-          yield
-        else
-          "Failed assert: assertion was "\
-          "`#{Assert::U.show(assertion, __assert_config__)}`."
-        end
+        what =
+          if block_given?
+            yield
+          else
+            "Failed assert: assertion was "\
+            "`#{Assert::U.show(assertion, __assert_config__)}`."
+          end
         fail(fail_message(desc, what))
       end
     end

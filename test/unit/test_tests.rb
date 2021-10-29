@@ -182,9 +182,10 @@ class Assert::Test
     desc "when in halt-on-fail mode"
 
     should "capture fail results" do
-      test = Factory.test("halt-on-fail test", context_info1) do
-        raise Assert::Result::TestFailure
-      end
+      test =
+        Factory.test("halt-on-fail test", context_info1) do
+          raise Assert::Result::TestFailure
+        end
       test.run(&test_run_callback)
 
       assert_failed(test)
@@ -264,9 +265,10 @@ class Assert::Test
     include Assert::Test::TestHelpers
 
     should "capture error results" do
-      test = Factory.test("error test", context_info1) do
-        raise StandardError, "WHAT"
-      end
+      test =
+        Factory.test("error test", context_info1) do
+          raise StandardError, "WHAT"
+        end
       test.run(&test_run_callback)
 
       assert_errored(test)
@@ -304,9 +306,10 @@ class Assert::Test
 
   class SignalExceptionHandlingTests < UnitTests
     should "raise any signal exceptions and not capture as an error" do
-      test = Factory.test("signal test", context_info1) do
-        raise SignalException, "USR1"
-      end
+      test =
+        Factory.test("signal test", context_info1) do
+          raise SignalException, "USR1"
+        end
 
       assert_that{ test.run }.raises(SignalException)
     end

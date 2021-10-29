@@ -77,7 +77,7 @@ module Assert::Macros
 
       def have_writer(*methods)
         called = methods.last.is_a?(Array) ? methods.pop : caller_locations
-        writer_meths = methods.collect{ |m| "#{m}=" }
+        writer_meths = methods.map{ |m| "#{m}=" }
         writer_meths << called
         have_instance_methods(*writer_meths)
       end
@@ -85,7 +85,7 @@ module Assert::Macros
 
       def not_have_writer(*methods)
         called = methods.last.is_a?(Array) ? methods.pop : caller_locations
-        writer_meths = methods.collect{ |m| "#{m}=" }
+        writer_meths = methods.map{ |m| "#{m}=" }
         writer_meths << called
         not_have_instance_methods(*writer_meths)
       end
@@ -93,7 +93,7 @@ module Assert::Macros
 
       def have_accessor(*methods)
         called = methods.last.is_a?(Array) ? methods.pop : caller_locations
-        accessor_meths = methods.collect{ |m| [m, "#{m}="] }.flatten
+        accessor_meths = methods.map{ |m| [m, "#{m}="] }.flatten
         accessor_meths << called
         have_instance_methods(*accessor_meths)
       end
@@ -101,7 +101,7 @@ module Assert::Macros
 
       def not_have_accessor(*methods)
         called = methods.last.is_a?(Array) ? methods.pop : caller_locations
-        accessor_meths = methods.collect{ |m| [m, "#{m}="] }.flatten
+        accessor_meths = methods.map{ |m| [m, "#{m}="] }.flatten
         accessor_meths << called
         not_have_instance_methods(*accessor_meths)
       end
