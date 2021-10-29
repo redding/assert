@@ -7,42 +7,42 @@ module Assert
     MuchStub.stubs
   end
 
-  def self.stub(*args, &block)
-    MuchStub.stub(*args, &block)
+  def self.stub(*pargs, **kargs, &block)
+    MuchStub.stub(*pargs, **kargs, &block)
   end
 
-  def self.stub_on_call(*args, &block)
-    MuchStub.stub_on_call(*args, &block)
+  def self.stub_on_call(*pargs, **kargs, &block)
+    MuchStub.stub_on_call(*pargs, **kargs, &block)
   end
 
-  def self.unstub(*args)
-    MuchStub.unstub(*args)
+  def self.unstub(*pargs, **kargs)
+    MuchStub.unstub(*pargs, **kargs)
   end
 
   def self.unstub!
     MuchStub.unstub!
   end
 
-  def self.stub_send(*args, &block)
+  def self.stub_send(*pargs, **kargs, &block)
     orig_caller = caller_locations
     begin
-      MuchStub.stub_send(*args, &block)
+      MuchStub.stub_send(*pargs, **kargs, &block)
     rescue MuchStub::NotStubbedError => ex
       ex.set_backtrace(orig_caller.map(&:to_s))
       raise ex
     end
   end
 
-  def self.stub_tap(*args, &block)
-    MuchStub.tap(*args, &block)
+  def self.stub_tap(*pargs, **kargs, &block)
+    MuchStub.tap(*pargs, **kargs, &block)
   end
 
-  def self.stub_tap_on_call(*args, &block)
-    MuchStub.tap_on_call(*args, &block)
+  def self.stub_tap_on_call(*pargs, **kargs, &block)
+    MuchStub.tap_on_call(*pargs, **kargs, &block)
   end
 
-  def self.stub_spy(*args, &block)
-    MuchStub.spy(*args, &block)
+  def self.stub_spy(*pargs, **kargs, &block)
+    MuchStub.spy(*pargs, **kargs, &block)
   end
 
   StubCall = MuchStub::Call
