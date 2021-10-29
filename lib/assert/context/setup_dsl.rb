@@ -44,7 +44,7 @@ class Assert::Context
 
     def run_arounds(scope, &run_block)
       context_block =
-        arounds.compact.reverse.inject(run_block) do |run_b, around_b|
+        arounds.compact.reverse.reduce(run_block) do |run_b, around_b|
           Proc.new{ scope.instance_exec(run_b, &around_b) }
         end
 

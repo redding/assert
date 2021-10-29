@@ -19,30 +19,28 @@ module Assert::Test::TestHelpers
         @run_callback = proc{ |result| @test_run_results << result }
       end
     end
+  end
 
-    private
+  private
 
-    # rubocop:disable Lint/NestedMethodDefinition
-    def test_run_callback
-      @run_callback
-    end
+  def test_run_callback
+    @run_callback
+  end
 
-    def test_run_results(type = nil)
-      return @test_run_results if type.nil?
-      @test_run_results.select{ |r| r.type == type }
-    end
+  def test_run_results(type = nil)
+    return @test_run_results if type.nil?
+    @test_run_results.select{ |r| r.type == type }
+  end
 
-    def test_run_result_count(type = nil)
-      test_run_results(type).count
-    end
+  def test_run_result_count(type = nil)
+    test_run_results(type).count
+  end
 
-    def test_run_result_messages
-      @test_run_results.map(&:message)
-    end
+  def test_run_result_messages
+    @test_run_results.map(&:message)
+  end
 
-    def last_test_run_result
-      @test_run_results.last
-    end
-    # rubocop:enable Lint/NestedMethodDefinition
+  def last_test_run_result
+    @test_run_results.last
   end
 end

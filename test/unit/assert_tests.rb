@@ -101,11 +101,12 @@ module Assert
     end
 
     should "auto-unstub any stubs on teardown" do
-      context_class = ::Factory.modes_off_context_class do
-        setup do
-          Assert.stub(+"1", :to_s){ "one" }
+      context_class =
+        ::Factory.modes_off_context_class do
+          setup do
+            Assert.stub(+"1", :to_s){ "one" }
+          end
         end
-      end
 
       context_class.run_setups("scope")
       assert_that(Assert.stubs.size).equals(1)
@@ -149,23 +150,24 @@ module Assert
     end
 
     should "be able to add a stubbed spy" do
-      myclass = Class.new do
-        def one
-          self
-        end
+      myclass =
+        Class.new do
+          def one
+            self
+          end
 
-        def two(_val)
-          self
-        end
+          def two(_val)
+            self
+          end
 
-        def three
-          self
-        end
+          def three
+            self
+          end
 
-        def ready?
-          false
+          def ready?
+            false
+          end
         end
-      end
       myobj = myclass.new
 
       spy =

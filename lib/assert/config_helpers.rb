@@ -100,9 +100,10 @@ module Assert
 
     # return a list of result type symbols that have actually occurred
     def ocurring_result_types
-      @result_types ||= [:pass, :fail, :ignore, :skip, :error].select do |sym|
-        send("#{sym}_result_count") > 0
-      end
+      @result_types ||=
+        [:pass, :fail, :ignore, :skip, :error].select do |sym|
+          send("#{sym}_result_count") > 0
+        end
     end
 
     private

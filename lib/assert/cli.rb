@@ -43,31 +43,65 @@ module Assert
 
     def initialize(*args)
       @args = args
-      @cli = CLIRB.new do
-        option "runner_seed", "use a given seed to run tests",
-               abbrev: "s", value: Integer
-        option "changed_only", "only run test files with changes",
-               abbrev: "c"
-        option "changed_ref", "reference for changes, use with `-c` opt",
-               abbrev: "r", value: ""
-        option "single_test", "only run the test on the given file/line",
-               abbrev: "t", value: ""
-        option "pp_objects", "pretty-print objects in fail messages",
-               abbrev: "p"
-        option "capture_output", "capture stdout and display in result details",
-               abbrev: "o"
-        option "halt_on_fail", "halt a test when it fails",
-               abbrev: "h"
-        option "profile", "output test profile info",
-               abbrev: "e"
-        option "verbose", "output verbose runtime test info",
-               abbrev: "v"
-        option "list", "list test files on $stdout",
-               abbrev: "l"
+      @cli =
+        CLIRB.new do
+          option(
+            "runner_seed",
+            "use a given seed to run tests",
+            abbrev: "s",
+            value: Integer,
+          )
+          option(
+            "changed_only",
+            "only run test files with changes",
+            abbrev: "c",
+          )
+          option(
+            "changed_ref",
+            "reference for changes, use with `-c` opt",
+            abbrev: "r",
+            value: "",
+          )
+          option(
+            "single_test",
+            "only run the test on the given file/line",
+            abbrev: "t",
+            value: "",
+          )
+          option(
+            "pp_objects",
+            "pretty-print objects in fail messages",
+            abbrev: "p",
+          )
+          option(
+            "capture_output",
+            "capture stdout and display in result details",
+            abbrev: "o",
+          )
+          option(
+            "halt_on_fail",
+            "halt a test when it fails",
+            abbrev: "h",
+          )
+          option(
+            "profile",
+            "output test profile info",
+            abbrev: "e",
+          )
+          option(
+            "verbose",
+            "output verbose runtime test info",
+            abbrev: "v",
+          )
+          option(
+            "list",
+            "list test files on $stdout",
+            abbrev: "l",
+          )
 
-        # show loaded test files, cli err backtraces, etc
-        option "debug", "run in debug mode", abbrev: "d"
-      end
+          # show loaded test files, cli err backtraces, etc
+          option "debug", "run in debug mode", abbrev: "d"
+        end
     end
 
     def run

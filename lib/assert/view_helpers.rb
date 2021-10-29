@@ -78,10 +78,11 @@ module Assert
       # if a block is given, yield each msg in the breakdown for custom
       # formatting.
       def results_summary_sentence
-        summaries = ocurring_result_types.map do |result_type|
-          summary_msg = result_summary_msg(result_type)
-          block_given? ? yield(summary_msg, result_type) : summary_msg
-        end
+        summaries =
+          ocurring_result_types.map do |result_type|
+            summary_msg = result_summary_msg(result_type)
+            block_given? ? yield(summary_msg, result_type) : summary_msg
+          end
         to_sentence(summaries)
       end
     end

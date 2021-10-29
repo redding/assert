@@ -88,13 +88,14 @@ module Assert
     end
 
     def lookup_test_files(test_paths)
-      file_paths = if config.changed_only
-        changed_test_files(test_paths)
-      elsif config.single_test?
-        globbed_test_files([config.single_test_file_path])
-      else
-        globbed_test_files(test_paths)
-      end
+      file_paths =
+        if config.changed_only
+          changed_test_files(test_paths)
+        elsif config.single_test?
+          globbed_test_files([config.single_test_file_path])
+        else
+          globbed_test_files(test_paths)
+        end
 
       file_paths.select{ |p| is_test_file?(p) }.sort
     end
@@ -104,14 +105,14 @@ module Assert
     end
 
     def globbed_test_files(test_paths)
-      test_paths.inject(Set.new) do |paths, path|
+      test_paths.reduce(Set.new) do |paths, path|
         p = File.expand_path(path, Dir.pwd)
         paths + Dir.glob("#{p}*") + Dir.glob("#{p}*/**/*")
       end
     end
 
     def is_test_file?(path)
-      config.test_file_suffixes.inject(false) do |result, suffix|
+      config.test_file_suffixes.reduce(false) do |result, suffix|
         result || path =~ /#{suffix}$/
       end
     end

@@ -83,7 +83,7 @@ module Assert
     end
 
     def inspect
-      attributes_string = ([:name, :context_info].collect do |attr|
+      attributes_string = ([:name, :context_info].map do |attr|
         "@#{attr}=#{send(attr).inspect}"
       end).join(" ")
       "#<#{self.class}:#{"0x0%x" % (object_id << 1)} #{attributes_string}>"

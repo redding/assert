@@ -65,11 +65,12 @@ module Assert::Assertions
     end
 
     should "have a custom ignore message for each helper in the constant" do
-      exp = Assert::Assertions::IGNORED_ASSERTION_HELPERS.map do |helper|
-        "The assertion `#{helper}` is not supported."\
-        " Please use another assertion or the basic `assert`."
-      end
-      assert_that(test_run_results.collect(&:message)).equals(exp)
+      exp =
+        Assert::Assertions::IGNORED_ASSERTION_HELPERS.map do |helper|
+          "The assertion `#{helper}` is not supported."\
+          " Please use another assertion or the basic `assert`."
+        end
+      assert_that(test_run_results.map(&:message)).equals(exp)
     end
   end
 end

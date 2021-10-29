@@ -154,9 +154,10 @@ module Assert::ConfigHelpers
         result_count
       end
 
-      exp = result_types.select do |type_sym|
-        subject.send("#{type_sym}_result_count") > 0
-      end
+      exp =
+        result_types.select do |type_sym|
+          subject.send("#{type_sym}_result_count") > 0
+        end
       assert_that(subject.ocurring_result_types).equals(exp)
     end
   end

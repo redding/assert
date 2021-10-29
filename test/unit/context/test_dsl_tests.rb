@@ -36,9 +36,10 @@ module Assert::Context::TestDSL
            "called" do
       d, b = test_desc1, test_block1
       context, test = build_eval_context{ test_eventually(d, &b) }
-      err = capture_err(Assert::Result::TestSkipped) do
-        context.instance_eval(&test.code)
-      end
+      err =
+        capture_err(Assert::Result::TestSkipped) do
+          context.instance_eval(&test.code)
+        end
 
       assert_that(context.class.suite.tests_to_run_count).equals(1)
       assert_that(err.message).equals("TODO")
@@ -49,9 +50,10 @@ module Assert::Context::TestDSL
            "called" do
       d, b = test_desc1, test_block1
       context, test = build_eval_context{ should_eventually(d, &b) }
-      err = capture_err(Assert::Result::TestSkipped) do
-        context.instance_eval(&test.code)
-      end
+      err =
+        capture_err(Assert::Result::TestSkipped) do
+          context.instance_eval(&test.code)
+        end
 
       assert_that(context.class.suite.tests_to_run_count).equals(1)
       assert_that(err.message).equals("TODO")
@@ -61,9 +63,10 @@ module Assert::Context::TestDSL
     should "skip with the msg \"TODO\" when `test` called with no block" do
       d = test_desc1
       context, test = build_eval_context{ test(d) } # no block passed
-      err = capture_err(Assert::Result::TestSkipped) do
-        context.instance_eval(&test.code)
-      end
+      err =
+        capture_err(Assert::Result::TestSkipped) do
+          context.instance_eval(&test.code)
+        end
 
       assert_that(context.class.suite.tests_to_run_count).equals(1)
       assert_that(err.message).equals("TODO")
@@ -73,9 +76,10 @@ module Assert::Context::TestDSL
     should "skip with the msg \"TODO\" when `should` called with no block" do
       d = test_desc1
       context, test = build_eval_context{ should(d) } # no block passed
-      err = capture_err(Assert::Result::TestSkipped) do
-        context.instance_eval(&test.code)
-      end
+      err =
+        capture_err(Assert::Result::TestSkipped) do
+          context.instance_eval(&test.code)
+        end
 
       assert_that(context.class.suite.tests_to_run_count).equals(1)
       assert_that(err.message).equals("TODO")
@@ -86,9 +90,10 @@ module Assert::Context::TestDSL
            "no block" do
       d = test_desc1
       context, test = build_eval_context{ test_eventually(d) } # no block given
-      err = capture_err(Assert::Result::TestSkipped) do
-        context.instance_eval(&test.code)
-      end
+      err =
+        capture_err(Assert::Result::TestSkipped) do
+          context.instance_eval(&test.code)
+        end
 
       assert_that(context.class.suite.tests_to_run_count).equals(1)
       assert_that(err.message).equals("TODO")
@@ -99,9 +104,10 @@ module Assert::Context::TestDSL
            "no block" do
       d = test_desc1
       context, test = build_eval_context{ should_eventually(d) }
-      err = capture_err(Assert::Result::TestSkipped) do
-        context.instance_eval(&test.code)
-      end
+      err =
+        capture_err(Assert::Result::TestSkipped) do
+          context.instance_eval(&test.code)
+        end
 
       assert_that(context.class.suite.tests_to_run_count).equals(1)
       assert_that(err.message).equals("TODO")
