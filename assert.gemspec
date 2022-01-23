@@ -27,5 +27,5 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency("much-factory",   ["~> 0.2.3"])
   gem.add_dependency("much-not-given", ["~> 0.1.3"])
-  gem.add_dependency("much-stub",      ["~> 0.1.9"])
+  gem.add_dependency("much-stub",      ["~> 0.1.10"])
 end
